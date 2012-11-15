@@ -1,0 +1,11 @@
+<script id="catalogListTmpl" type="text/html">
+    <li data-bind="css: cssli">
+        <a href="#" data-bind="html: title, click: clickItem "></a>
+    </li>
+</script>
+
+<script id="catalogTmpl" type="text/html">
+    <div class="top_tabs" id="catalogSection" data-bind="foreach: sections">
+        <span data-bind="text: title, css: cssSpan"></span>
+    </div>
+</script>
