@@ -1,16 +1,18 @@
 var JSSettings = {
     host : "http://pokupo-server.asmsoft.ru/",
-    //host : "http://test-server.ru/",
     pathToJS : "js/",
     pathToTmpl : "tmpl/",
+    pathToData : "services/data.php?query=",
     pathToCore: "index.html",
     containerIdForTmpl : "container_tmpl",
     containerIdForCatalog : "catalog",
-    scripts : ['easyXDM.debug.js', 'knockout-2.2.0.js', 'Widget.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
-    tmplForCatalog : "getTmplForCatalog",
+    scripts : ['easyXDM.min.js', 'knockout-2.2.0.js', 'Widget.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
+    tmplForCatalog : "catalogTmpl.html",
     dataForCatalog : "getCatalogData",
     dataForSection : "getSectionData",
-    hashParameters : {}
+    inputParameters : {},
+    hashParameters : {},
+    styleCatalog : {'position' : 'absolute', 'top' : '100px', 'left' : '5%', 'width' : '20%', 'height' : '200px', 'background' : '#ddd'}
 }
 
 var EventDispatcher = {
@@ -76,7 +78,7 @@ var JSLoader = {
                 $("#" + JSSettings.containerIdForTmpl).append(msg);
             }
         });
-        socket.postMessage(tmpl);
+        socket.postMessage(JSSettings.pathToTmpl + tmpl);
     },
     
     LoadJson : function(data, id){
@@ -87,7 +89,7 @@ var JSLoader = {
                 EventDispatcher.dispatchEvent('onload.data.catalog%%' + id, t);
             }
         });
-        socket.postMessage(data + "%%" + id);
+        socket.postMessage(JSSettings.pathToData + data + "&parentId=" + id);
     },
     
     LoadSectionJson : function(data){
@@ -98,7 +100,7 @@ var JSLoader = {
                 EventDispatcher.dispatchEvent('onload.data.sectionCatalog', t);
             }
         });
-        socket.postMessage(data);
+        socket.postMessage(JSSettings.pathToData + data + '&shopId=' + JSSettings.inputParameters['shopId']);
     }
 }
 
@@ -107,8 +109,8 @@ var JSCore = {
     InitLoader : function(){
         JSLoader.Init();
         JSCore.ParserPath();
+        JSCore.ParserInputParameters();
     },
-    
     Extend : function (Child, Parent) {
         var F = function() { }
         F.prototype = Parent.prototype
@@ -123,6 +125,16 @@ var JSCore = {
         for(var i = 0; i <= parameters.length-1; i++){
             var parameter = parameters[i].split('='); 
             JSSettings.hashParameters[parameter[0]] = parameter[1]; 
+        }
+    },
+    ParserInputParameters : function(){
+        var parameters = $('script').filter(function(){
+            var reg = /JSCore.js/;
+            return reg.test($(this).attr('src'));
+        }).attr('src').split('?')[1].split('&');
+        for(var i = 0; i <= parameters.length-1; i++){
+            var parameter = parameters[i].split('=');
+            JSSettings.inputParameters[parameter[0]] = parameter[1];
         }
     }
 }

@@ -11,37 +11,14 @@
     <body>
         <script type="text/javascript">
             var socket = new easyXDM.Socket({
-                   onMessage: function(message, origin){
-                    var test = message.split('%%');
-                    switch(test[0]){
-                        case JSSettings.tmplForCatalog:
-                            $.ajax({
-                                url: '/tmpl/catalogTmpl.html',
-                                success: function (data){
-                                    socket.postMessage( data );
-                                }
-                            });
-                            break;
-                        case JSSettings.dataForCatalog:
-                            $.ajax({
-                                url: '/services/data.php?catalog=categories&id=' + test[1],
-                                    success: function (data){
-                                        socket.postMessage( data );
-                                    }
-                            });
-                            break;
-                        case JSSettings.dataForSection:
-                            $.ajax({
-                                url: '/services/data.php?catalog=sections',
-                                    success: function (data){
-                                        socket.postMessage( data );
-                                    }
-                            });
-                            break;
-                        default:
-                            socket.postMessage( { result: error, data: 'unknown command received' } );
-                    }
-                   }
+                onMessage: function(message, origin){
+                    $.ajax({
+                        url: '/' + message,
+                        success: function (data){
+                            socket.postMessage( data );
+                        }
+                    });
+                }
             });
         </script>
     </body>

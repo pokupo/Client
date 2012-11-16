@@ -6,6 +6,7 @@ var CatalogWidget = {
     Init : function(){
         CatalogWidget.InitEvent();
         CatalogWidget.SetParametersFromHash();
+        CatalogWidget.Positioning();
     },
     LoadTmpl : function(){
         if($('#' + JSSettings.containerIdForTmpl).length == 0)
@@ -66,8 +67,10 @@ var CatalogWidget = {
                     for(var j = 0; j <= data.items.length-1; j++){
                         JSLoader.LoadJson(JSSettings.dataForCatalog, data.items[j].id);
                         EventDispatcher.addEventListener('onload.data.catalog%%' + data.items[j].id, function (data){
-                            CatalogWidget.FilingData(data.items, data.parentId);
-                            CatalogWidget.Render('.catalogCategories_' + data.parentId, data.parentId)
+                            if(data.length != 0){
+                                CatalogWidget.FilingData(data.items, data.parentId);
+                                CatalogWidget.Render('.catalogCategories_' + data.parentId, data.parentId)
+                            }
                         });
                     };
                 });
@@ -79,7 +82,12 @@ var CatalogWidget = {
             var href = "/section=" + CatalogWidget.ActiveSection + "&category=" + CatalogWidget.ActiveItem;
             window.location.hash = href;
             document.title = data.title;
-        })
+        });
+        
+//        $(window).resize(function(){
+//            var heightWindow = $()
+//            alert('Размеры окна браузера изменены.');
+//        });
     },
     FilingDataSection : function(data){
         var Section = function(data, active){
@@ -137,7 +145,23 @@ var CatalogWidget = {
     SetParametersFromHash : function(){
         CatalogWidget.ActiveSection = JSSettings.hashParameters['section'];
         CatalogWidget.ActiveItem = JSSettings.hashParameters['category'];
-    } 
+    },
+    Positioning : function(){
+        if(JSSettings.inputParameters['pos'] == 'absolute'){
+            if(JSSettings.inputParameters['top'])
+                JSSettings.styleCatalog['top'] = JSSettings.inputParameters['top'];
+            if(JSSettings.inputParameters['left'])
+                JSSettings.styleCatalog['left'] = JSSettings.inputParameters['left'];
+            if(JSSettings.inputParameters['width'])
+                JSSettings.styleCatalog['width'] = JSSettings.inputParameters['width'];
+            if(JSSettings.inputParameters['hight'])
+                JSSettings.styleCatalog['hight'] = JSSettings.inputParameters['hight'];
+            
+            $().ready(function(){
+                $('#catalog').css(JSSettings.styleCatalog);
+            });
+        }
+    }
 }
     
 JSCore.InitLoader();

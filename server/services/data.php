@@ -3,7 +3,7 @@ require_once('settings.php');
 
 class Datas{ 
 
-    static function GetSection($shopId, $test=null){
+    static function GetSection($shopId){
         $sectionJson = file_get_contents(Settings::HostApi . Settings::CatalogPathApi . $shopId .'/root/noblock/active');
         $sections = json_decode($sectionJson, true);
         $items = array();
@@ -15,7 +15,7 @@ class Datas{
         return $items;
     }
     
-    static function GetCategoriesForRoot($id, $test = null){
+    static function GetCategoriesForRoot($id){
         $categoryJson = file_get_contents(Settings::HostApi . Settings::CatalogPathApi . $id.'/children/noblock/active');
         $category = json_decode($categoryJson, true);
 
@@ -32,11 +32,11 @@ class Datas{
     }
 }
 
-if($catalog = $_GET['catalog']){
-    if($catalog == 'sections')
-        echo json_encode(Datas::GetSection(1, $_GET['test']));
-    elseif($catalog == 'categories' )
-        echo json_encode(Datas::GetCategoriesForRoot($_GET['id']));
+if($catalog = $_GET['query']){
+    if($catalog == 'getSectionData')
+        echo json_encode(Datas::GetSection($_GET['shopId']));
+    elseif($catalog == 'getCatalogData' )
+        echo json_encode(Datas::GetCategoriesForRoot($_GET['parentId']));
     exit;
 }
 echo json_encode(array());
