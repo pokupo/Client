@@ -17,7 +17,6 @@ var JSSettings = {
 
 var EventDispatcher = {
     eventListeners : [],
-    
     addEventListener : function (event, callback) {
         this.eventListeners[event] = this.eventListeners[event] || [];
         if (this.eventListeners[event]) {
@@ -25,7 +24,6 @@ var EventDispatcher = {
             this.eventListeners[event].push(callback);
         }
     },
-
     removeEventListener : function(event, func){
         for(var i = 0, len = this.eventListeners[event].length; i < len; i+=1){
             if (this.eventListeners[event][i] == func){
@@ -33,7 +31,6 @@ var EventDispatcher = {
             }
         }
     },
-
     dispatchEvent : function(event, data){
         if (this.eventListeners[event]) {
             var listeners = this.eventListeners[event], len = listeners.length;
@@ -44,10 +41,8 @@ var EventDispatcher = {
     }	
 }
 
-var JSLoader = {
-    
+var JSLoader = {   
     Init : function(){
-        
         var loadedCount = 0;
         
         this.loaded = false;
@@ -70,17 +65,18 @@ var JSLoader = {
             });
         }
     },
-    
     LoadTmpl : function(tmpl){
         var socket = new  easyXDM.Socket({
             remote: JSSettings.host + JSSettings.pathToCore,
             onMessage: function(msg) {
+                if($('#' + JSSettings.containerIdForTmpl).length == 0)
+                    $('body').append("<div id='" + JSSettings.containerIdForTmpl + "'></div>");
                 $("#" + JSSettings.containerIdForTmpl).append(msg);
+                EventDispatcher.dispatchEvent('onload.tmpl');
             }
         });
         socket.postMessage(JSSettings.pathToTmpl + tmpl);
     },
-    
     LoadJson : function(data, id){
         var socket = new  easyXDM.Socket({
             remote: JSSettings.host + JSSettings.pathToCore,
@@ -91,7 +87,6 @@ var JSLoader = {
         });
         socket.postMessage(JSSettings.pathToData + data + "&parentId=" + id);
     },
-    
     LoadSectionJson : function(data){
         var socket = new  easyXDM.Socket({
             remote: JSSettings.host + JSSettings.pathToCore,
@@ -105,7 +100,6 @@ var JSLoader = {
 }
 
 var JSCore = {
-    
     InitLoader : function(){
         JSLoader.Init();
         JSCore.ParserPath();
