@@ -8,11 +8,13 @@ var CatalogWidget = {
         tmplForCatalog : "catalogTmpl.html",
         dataForCatalog : "getCatalogData",
         dataForSection : "getSectionData",
+        inputParameters : {},
         styleCatalog : {'position' : 'absolute', 'top' : '100px', 'left' : '5%', 'width' : '20%', 'height' : '200px', 'background' : '#ddd'}
     },
     Init : function(){
         CatalogWidget.InitEvent();
         CatalogWidget.SetParametersFromHash();
+        CatalogWidget.SetInputParameters();
         CatalogWidget.SetPosition();
     },
     Load:{
@@ -143,7 +145,12 @@ var CatalogWidget = {
             self.id = data.id;
             self.title = data.title;
             self.countGoods = data.countGoods;
-            //self.textItem = data.title + '<span>' + data.countGoods + '</span>';
+            self.textItem = ko.computed(function(){
+                var text = data.title;
+                if(data.countGoods && data.countGoods > 0)
+                    text = text + ' <span>' + data.countGoods + '</span>';
+                return text;
+            }, this);
             self.cssli = 'catalogCategories_' + data.id;
             self.clickItem = function() {
                 EventDispatcher.dispatchEvent('catalog.click.item', data)
@@ -169,19 +176,17 @@ var CatalogWidget = {
         CatalogWidget.ActiveSection = JSSettings.hashParameters['section'];
         CatalogWidget.ActiveItem = JSSettings.hashParameters['category'];
     },
+    SetInputParameters : function(){
+        CatalogWidget.Settings.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
+    },
     SetPosition : function(){
-        if(JSSettings.inputParameters['pos'] == 'absolute'){
-            if(JSSettings.inputParameters['top'])
-                CatalogWidget.Settings.styleCatalog['top'] = JSSettings.inputParameters['top'];
-            if(JSSettings.inputParameters['left'])
-                CatalogWidget.Settings.styleCatalog['left'] = JSSettings.inputParameters['left'];
-            if(JSSettings.inputParameters['width'])
-                CatalogWidget.Settings.styleCatalog['width'] = JSSettings.inputParameters['width'];
-            if(JSSettings.inputParameters['hight'])
-                CatalogWidget.Settings.styleCatalog['hight'] = JSSettings.inputParameters['hight'];
-            
+        if(CatalogWidget.Settings.inputParameters['position'] == 'absolute'){
+            for(var key in CatalogWidget.Settings.inputParameters){
+                if(CatalogWidget.Settings.styleCatalog[key])
+                   CatalogWidget.Settings.styleCatalog[key] = CatalogWidget.Settings.inputParameters[key];
+            }
             $().ready(function(){
-                $('#catalog').css(JSSettings.styleCatalog);
+                $('#catalog').css(CatalogWidget.Settings.styleCatalog);
             });
         }
     }

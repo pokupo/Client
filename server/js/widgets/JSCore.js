@@ -30,7 +30,7 @@ var EventDispatcher = {
         if (this.eventListeners[event]) {
             var listeners = this.eventListeners[event], len = listeners.length;
             while (len--) {
-                listeners[len](data);   //callback with self
+                listeners[len](data);
             }
         }
     }	
@@ -75,7 +75,7 @@ var JSCore = {
     InitLoader : function(){
         JSLoader.Init();
         JSCore.ParserPath();
-        JSCore.ParserInputParameters();
+        JSCore.SetInputParameters();
     },
     Extend : function (Child, Parent) {
         var F = function() { }
@@ -93,15 +93,29 @@ var JSCore = {
             JSSettings.hashParameters[parameter[0]] = parameter[1]; 
         }
     },
-    ParserInputParameters : function(){
-        var parameters = $('script').filter(function(){
-            var reg = /JSCore.js/;
-            return reg.test($(this).attr('src'));
-        }).attr('src').split('?')[1].split('&');
-        for(var i = 0; i <= parameters.length-1; i++){
-            var parameter = parameters[i].split('=');
-            JSSettings.inputParameters[parameter[0]] = parameter[1];
+    ParserInputParameters : function(scriptName){
+        var obj = {};
+        
+        var attr = $('script').filter(function(){
+            return scriptName.test($(this).attr('src'));
+        }).attr('src');
+        
+        if(attr){
+           var string = attr.split('?');
+           if(string.length > 1){
+              var parameters = string[1].split('&');
+
+               for(var i = 0; i <= parameters.length-1; i++){
+                   var parameter = parameters[i].split('=');
+                   obj[parameter[0]] = parameter[1];
+               }
+           }
         }
+        
+        return obj;
+    },
+    SetInputParameters : function(){
+        JSSettings.inputParameters = JSCore.ParserInputParameters(/JSCore.js/);
     }
 }
 

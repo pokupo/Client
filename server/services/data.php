@@ -25,7 +25,10 @@ class Datas{
         
         $items = array();
         foreach($category as $one){
-            $items[] = array('id' => $one['id'], 'title' =>$one['name_category']);
+            $countGoods = 0;
+            if(key_exists('count_goods', $one))
+                $countGoods = $one['count_goods'];
+            $items[] = array('id' => $one['id'], 'title' =>$one['name_category'], 'countGoods' => $countGoods);
         }
         
         return array('parentId' => $id,'items' => $items);
