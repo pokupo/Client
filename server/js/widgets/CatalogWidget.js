@@ -3,17 +3,41 @@ var CatalogWidget = {
     Items : null,
     ActiveSection : null,
     ActiveItem : null,
+    Settings: {
+        containerIdForCatalog : "catalog",
+        tmplForCatalog : "catalogTmpl.html",
+        dataForCatalog : "getCatalogData",
+        dataForSection : "getSectionData",
+        styleCatalog : {'position' : 'absolute', 'top' : '100px', 'left' : '5%', 'width' : '20%', 'height' : '200px', 'background' : '#ddd'}
+    },
     Init : function(){
         CatalogWidget.InitEvent();
         CatalogWidget.SetParametersFromHash();
-        CatalogWidget.Positioning();
+        CatalogWidget.SetPosition();
     },
-    LoadTmpl : function(){ 
-        JSLoader.LoadTmpl(JSSettings.tmplForCatalog);
+    Load:{
+        Tmpl : function(){ 
+            JSLoader.Load(JSSettings.pathToTmpl + CatalogWidget.Settings.tmplForCatalog, function(data){
+                if($('#' + JSSettings.containerIdForTmpl).length == 0)
+                    $('body').append("<div id='" + JSSettings.containerIdForTmpl + "'></div>");
+                $("#" + JSSettings.containerIdForTmpl).append(data);
+                EventDispatcher.dispatchEvent('onload.catalog.tmpl');
+            })
+        },
+        SectionData : function(){
+            JSLoader.Load(JSSettings.pathToData + CatalogWidget.Settings.dataForSection + '&shopId=' + JSSettings.inputParameters['shopId'], function(data){
+                EventDispatcher.dispatchEvent('onload.data.sectionCatalog', JSON.parse(data));
+            })
+        },
+        CatalogData : function(id){
+            JSLoader.Load(JSSettings.pathToData + CatalogWidget.Settings.dataForCatalog + "&parentId=" + id, function(data){
+                EventDispatcher.dispatchEvent('onload.data.catalog%%' + id, JSON.parse(data));
+            })
+        }
     },
     RenderSection : function(){
         if($('.sidebar_block_menu').length == 0)
-            $("#" + JSSettings.containerIdForCatalog).html('<div class="sidebar_block_menu" data-bind=\'template: { name: "catalogTmpl" }\'></div>');
+            $("#" + CatalogWidget.Settings.containerIdForCatalog).html('<div class="sidebar_block_menu" data-bind=\'template: { name: "catalogTmpl" }\'></div>');
 
         ko.applyBindings(CatalogWidget.Sections, document.getElementById('catalogSection'));
     },
@@ -28,11 +52,11 @@ var CatalogWidget = {
     },
     InitEvent : function(){
         EventDispatcher.addEventListener('onload.scripts', function (data){ 
-            CatalogWidget.LoadTmpl();
+            CatalogWidget.Load.Tmpl();
         });
         
-        EventDispatcher.addEventListener('onload.tmpl', function (data){
-            JSLoader.LoadSectionJson(JSSettings.dataForSection);
+        EventDispatcher.addEventListener('onload.catalog.tmpl', function (data){
+            CatalogWidget.Load.SectionData();
         });
         
         EventDispatcher.addEventListener('catalog.section.rendering.ready', function (data){
@@ -50,7 +74,7 @@ var CatalogWidget = {
         });
         
         EventDispatcher.addEventListener('onload.data.sectionCatalog', function (data){
-            CatalogWidget.FilingDataSection(data);
+            CatalogWidget.FilDataSection(data);
             EventDispatcher.dispatchEvent('onload.data.catalog', data);
             CatalogWidget.RenderSection();
             EventDispatcher.dispatchEvent('catalog.section.rendering.ready', data);
@@ -59,21 +83,22 @@ var CatalogWidget = {
         EventDispatcher.addEventListener('onload.data.catalog', function (sections){
             CatalogWidget.ViewModelItems = ko.observableArray;
             for(var i = 0; i <= sections.length-1; i++){
-                JSLoader.LoadJson(JSSettings.dataForCatalog, sections[i].id);
-                
+                CatalogWidget.Load.CatalogData(sections[i].id);
                 EventDispatcher.addEventListener('onload.data.catalog%%' + sections[i].id, function (data){
-                    CatalogWidget.FilingData(data.items, data.parentId);
-                    CatalogWidget.Render('.sidebar_block_menu', data.parentId)
-                    
-                    for(var j = 0; j <= data.items.length-1; j++){
-                        JSLoader.LoadJson(JSSettings.dataForCatalog, data.items[j].id);
-                        EventDispatcher.addEventListener('onload.data.catalog%%' + data.items[j].id, function (data){
-                            if(data.length != 0){
-                                CatalogWidget.FilingData(data.items, data.parentId);
-                                CatalogWidget.Render('.catalogCategories_' + data.parentId, data.parentId)
-                            }
-                        });
-                    };
+                    if(data.length != 0){
+                        CatalogWidget.FilData(data.items, data.parentId);
+                        CatalogWidget.Render('.sidebar_block_menu', data.parentId)
+
+                        for(var j = 0; j <= data.items.length-1; j++){
+                            CatalogWidget.Load.CatalogData(data.items[j].id);
+                            EventDispatcher.addEventListener('onload.data.catalog%%' + data.items[j].id, function (data){
+                                if(data.length != 0){
+                                    CatalogWidget.FilData(data.items, data.parentId);
+                                    CatalogWidget.Render('.catalogCategories_' + data.parentId, data.parentId)
+                                }
+                            });
+                        };
+                    }
                 });
             }
         });
@@ -86,7 +111,7 @@ var CatalogWidget = {
         });
         
     },
-    FilingDataSection : function(data){
+    FilDataSection : function(data){
         var Section = function(data, active){
             var self = this;
             self.id = data.id;
@@ -112,12 +137,13 @@ var CatalogWidget = {
 
         CatalogWidget.Section =  ViewModel();
     },
-    FilingData : function(data, id){
+    FilData : function(data, id){
         var ItemCatalog = function(data) {
             var self = this;
             self.id = data.id;
             self.title = data.title;
-            self.type = data.type;
+            self.countGoods = data.countGoods;
+            //self.textItem = data.title + '<span>' + data.countGoods + '</span>';
             self.cssli = 'catalogCategories_' + data.id;
             self.clickItem = function() {
                 EventDispatcher.dispatchEvent('catalog.click.item', data)
@@ -143,16 +169,16 @@ var CatalogWidget = {
         CatalogWidget.ActiveSection = JSSettings.hashParameters['section'];
         CatalogWidget.ActiveItem = JSSettings.hashParameters['category'];
     },
-    Positioning : function(){
+    SetPosition : function(){
         if(JSSettings.inputParameters['pos'] == 'absolute'){
             if(JSSettings.inputParameters['top'])
-                JSSettings.styleCatalog['top'] = JSSettings.inputParameters['top'];
+                CatalogWidget.Settings.styleCatalog['top'] = JSSettings.inputParameters['top'];
             if(JSSettings.inputParameters['left'])
-                JSSettings.styleCatalog['left'] = JSSettings.inputParameters['left'];
+                CatalogWidget.Settings.styleCatalog['left'] = JSSettings.inputParameters['left'];
             if(JSSettings.inputParameters['width'])
-                JSSettings.styleCatalog['width'] = JSSettings.inputParameters['width'];
+                CatalogWidget.Settings.styleCatalog['width'] = JSSettings.inputParameters['width'];
             if(JSSettings.inputParameters['hight'])
-                JSSettings.styleCatalog['hight'] = JSSettings.inputParameters['hight'];
+                CatalogWidget.Settings.styleCatalog['hight'] = JSSettings.inputParameters['hight'];
             
             $().ready(function(){
                 $('#catalog').css(JSSettings.styleCatalog);

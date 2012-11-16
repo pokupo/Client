@@ -5,14 +5,9 @@ var JSSettings = {
     pathToData : "services/data.php?query=",
     pathToCore: "index.html",
     containerIdForTmpl : "container_tmpl",
-    containerIdForCatalog : "catalog",
-    scripts : ['easyXDM.min.js', 'knockout-2.2.0.js', 'Widget.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
-    tmplForCatalog : "catalogTmpl.html",
-    dataForCatalog : "getCatalogData",
-    dataForSection : "getSectionData",
+    scripts : ['easyXDM.min.js', 'knockout-2.2.0.js', 'widgets/Widget.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
     inputParameters : {},
-    hashParameters : {},
-    styleCatalog : {'position' : 'absolute', 'top' : '100px', 'left' : '5%', 'width' : '20%', 'height' : '200px', 'background' : '#ddd'}
+    hashParameters : {}
 }
 
 var EventDispatcher = {
@@ -65,37 +60,14 @@ var JSLoader = {
             });
         }
     },
-    LoadTmpl : function(tmpl){
+    Load : function(data, callback){
         var socket = new  easyXDM.Socket({
             remote: JSSettings.host + JSSettings.pathToCore,
             onMessage: function(msg) {
-                if($('#' + JSSettings.containerIdForTmpl).length == 0)
-                    $('body').append("<div id='" + JSSettings.containerIdForTmpl + "'></div>");
-                $("#" + JSSettings.containerIdForTmpl).append(msg);
-                EventDispatcher.dispatchEvent('onload.tmpl');
+                if(callback)callback(msg);
             }
         });
-        socket.postMessage(JSSettings.pathToTmpl + tmpl);
-    },
-    LoadJson : function(data, id){
-        var socket = new  easyXDM.Socket({
-            remote: JSSettings.host + JSSettings.pathToCore,
-            onMessage: function(msg) {
-                var t = JSON.parse(msg);
-                EventDispatcher.dispatchEvent('onload.data.catalog%%' + id, t);
-            }
-        });
-        socket.postMessage(JSSettings.pathToData + data + "&parentId=" + id);
-    },
-    LoadSectionJson : function(data){
-        var socket = new  easyXDM.Socket({
-            remote: JSSettings.host + JSSettings.pathToCore,
-            onMessage: function(msg) {
-                var t = JSON.parse(msg);
-                EventDispatcher.dispatchEvent('onload.data.sectionCatalog', t);
-            }
-        });
-        socket.postMessage(JSSettings.pathToData + data + '&shopId=' + JSSettings.inputParameters['shopId']);
+        socket.postMessage(data);
     }
 }
 
