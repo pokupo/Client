@@ -8,20 +8,18 @@ var CatalogWidget = {
         CatalogWidget.SetParametersFromHash();
         CatalogWidget.Positioning();
     },
-    LoadTmpl : function(){
-        if($('#' + JSSettings.containerIdForTmpl).length == 0)
-            $('body').append("<div id='" + JSSettings.containerIdForTmpl + "'></div>");  
+    LoadTmpl : function(){ 
         JSLoader.LoadTmpl(JSSettings.tmplForCatalog);
     },
     RenderSection : function(){
         if($('.sidebar_block_menu').length == 0)
-            $("#" + JSSettings.containerIdForCatalog).html('<div class="sidebar_block_menu" data-bind="template: { name: \'catalogTmpl\' }"></div>');
+            $("#" + JSSettings.containerIdForCatalog).html('<div class="sidebar_block_menu" data-bind=\'template: { name: "catalogTmpl" }\'></div>');
 
         ko.applyBindings(CatalogWidget.Sections, document.getElementById('catalogSection'));
     },
     Render : function(parentBlock,id){
         var ulId = 'catalogCategories_' + id;
-        $(parentBlock).append('<ul id="' + ulId + '" style="display: none" data-bind="template: { name: \'catalogListTmpl\', foreach: items }"></ul>');
+        $(parentBlock).append('<ul id="' + ulId + '" style="display: none" data-bind=\'template: { name: "catalogListTmpl", foreach: items }\'></ul>');
         if(id == CatalogWidget.ActiveSection)
             $('#' + ulId).show();
             
@@ -31,6 +29,9 @@ var CatalogWidget = {
     InitEvent : function(){
         EventDispatcher.addEventListener('onload.scripts', function (data){ 
             CatalogWidget.LoadTmpl();
+        });
+        
+        EventDispatcher.addEventListener('onload.tmpl', function (data){
             JSLoader.LoadSectionJson(JSSettings.dataForSection);
         });
         
@@ -84,10 +85,6 @@ var CatalogWidget = {
             document.title = data.title;
         });
         
-//        $(window).resize(function(){
-//            var heightWindow = $()
-//            alert('Размеры окна браузера изменены.');
-//        });
     },
     FilingDataSection : function(data){
         var Section = function(data, active){
