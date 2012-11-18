@@ -1,7 +1,7 @@
 <?php
 require_once('settings.php');
 
-class Datas{ 
+class Data{ 
 
     static function GetSection($shopId){
         $sectionJson = file_get_contents(Settings::HostApi . Settings::CatalogPathApi . $shopId .'/root/noblock/active');
@@ -37,9 +37,9 @@ class Datas{
 
 if($catalog = $_GET['query']){
     if($catalog == 'getSectionData')
-        echo json_encode(Datas::GetSection($_GET['shopId']));
+        echo json_encode(Data::GetSection($_GET['shopId']));
     elseif($catalog == 'getCatalogData' )
-        echo json_encode(Datas::GetCategoriesForRoot($_GET['parentId']));
+        echo json_encode(Data::GetCategoriesForRoot($_GET['parentId']));
     exit;
 }
 echo json_encode(array());

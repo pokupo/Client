@@ -4,8 +4,7 @@ var JSSettings = {
     pathToTmpl : "tmpl/",
     pathToData : "services/data.php?query=",
     pathToCore: "index.html",
-    containerIdForTmpl : "container_tmpl",
-    scripts : ['easyXDM.min.js', 'knockout-2.2.0.js', 'widgets/Widget.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
+    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
     inputParameters : {},
     hashParameters : {}
 }
@@ -37,45 +36,35 @@ var EventDispatcher = {
 }
 
 var JSLoader = {   
-    Init : function(){
-        var loadedCount = 0;
-        
-        this.loaded = false;
-
-        function registerLoaded(){
-            loadedCount ++;
-            if (loadedCount == JSSettings.scripts.length){
-                onReady();
-            }
-        }
-        
-        function onReady(){
-            EventDispatcher.dispatchEvent('onload.scripts');
-            this.loaded = true;
-        }
-        
-        for(var i in JSSettings.scripts){
-            $.getScript(JSSettings.host + JSSettings.pathToJS + JSSettings.scripts[i], function(){
-                registerLoaded();
-            });
+    LoadedCount : 0,
+    Init : function(sripts, pathToJs){
+        JSLoader.Load(sripts, pathToJs);
+    },
+    RegisterLoaded: function(scripts){
+        JSLoader.LoadedCount = JSLoader.LoadedCount + 1;
+        if (JSLoader.LoadedCount == scripts.length){
+            JSLoader.OnReady();
         }
     },
-    Load : function(data, callback){
-        var socket = new  easyXDM.Socket({
-            remote: JSSettings.host + JSSettings.pathToCore,
-            onMessage: function(msg) {
-                if(callback)callback(msg);
-            }
-        });
-        socket.postMessage(data);
+    OnReady : function(){
+        EventDispatcher.dispatchEvent('onload.scripts');
+    },
+    Load : function(scripts, pathToJs){
+        for(var i in scripts){
+            $.getScript(pathToJs + scripts[i], function(){
+                JSLoader.RegisterLoaded(scripts);
+            });
+        }
     }
 }
 
 var JSCore = {
-    InitLoader : function(){
-        JSLoader.Init();
+    Init : function(){
+        JSLoader.Init(JSSettings.scripts, JSSettings.host + JSSettings.pathToJS);
         JSCore.ParserPath();
         JSCore.SetInputParameters();
+        JSCore.ShopId = JSSettings.inputParameters['shopId'];
+        XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
     },
     Extend : function (Child, Parent) {
         var F = function() { }
@@ -119,4 +108,24 @@ var JSCore = {
     }
 }
 
-
+var XDMTransport = {
+    Remote : "",
+    Init: function(url){
+        XDMTransport.Remote = url;
+    },
+    LoadTmpl: function(data, callback){
+        XDMTransport.Load(JSSettings.pathToTmpl + data, callback);
+    },
+    LoadData: function(data, callback){
+        XDMTransport.Load(JSSettings.pathToData + data, callback);
+    },
+    Load : function(data, callback){
+        var socket = new  easyXDM.Socket({
+            remote: XDMTransport.Remote,
+            onMessage: function(msg) {
+                if(callback)callback(msg);
+            }
+        });
+        socket.postMessage(data);
+    }
+}
