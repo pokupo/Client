@@ -2,30 +2,30 @@ var JSSettings = {
     host : "http://pokupo-server.asmsoft.ru/",
     pathToJS : "js/",
     pathToTmpl : "tmpl/",
-    pathToData : "services/data.php?query=",
+    pathToData : "services/DataProxy.php?query=",
     pathToCore: "index.html",
-    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
+    scripts : ['easyXDM.min.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
     inputParameters : {},
     hashParameters : {}
 }
 
 var EventDispatcher = {
     eventListeners : [],
-    addEventListener : function (event, callback) {
+    AddEventListener : function (event, callback) {
         this.eventListeners[event] = this.eventListeners[event] || [];
         if (this.eventListeners[event]) {
-            removeEventListener(event, callback);
+            EventDispatcher.RemoveEventListener(event, callback);
             this.eventListeners[event].push(callback);
         }
     },
-    removeEventListener : function(event, func){
+    RemoveEventListener : function(event, func){
         for(var i = 0, len = this.eventListeners[event].length; i < len; i+=1){
             if (this.eventListeners[event][i] == func){
                 this.eventListeners[event].splice(i, 1);
             }
         }
     },
-    dispatchEvent : function(event, data){
+    DispatchEvent : function(event, data){
         if (this.eventListeners[event]) {
             var listeners = this.eventListeners[event], len = listeners.length;
             while (len--) {
@@ -36,18 +36,18 @@ var EventDispatcher = {
 }
 
 var JSLoader = {   
-    LoadedCount : 0,
+    loadedCount : 0,
     Init : function(sripts, pathToJs){
         JSLoader.Load(sripts, pathToJs);
     },
     RegisterLoaded: function(scripts){
-        JSLoader.LoadedCount = JSLoader.LoadedCount + 1;
-        if (JSLoader.LoadedCount == scripts.length){
+        JSLoader.loadedCount = JSLoader.loadedCount + 1;
+        if (JSLoader.loadedCount == scripts.length){
             JSLoader.OnReady();
         }
     },
     OnReady : function(){
-        EventDispatcher.dispatchEvent('onload.scripts');
+        EventDispatcher.DispatchEvent('onload.scripts');
     },
     Load : function(scripts, pathToJs){
         for(var i in scripts){
@@ -109,9 +109,9 @@ var JSCore = {
 }
 
 var XDMTransport = {
-    Remote : "",
+    remote : "",
     Init: function(url){
-        XDMTransport.Remote = url;
+        XDMTransport.remote = url;
     },
     LoadTmpl: function(data, callback){
         XDMTransport.Load(JSSettings.pathToTmpl + data, callback);
@@ -121,7 +121,7 @@ var XDMTransport = {
     },
     Load : function(data, callback){
         var socket = new  easyXDM.Socket({
-            remote: XDMTransport.Remote,
+            remote: XDMTransport.remote,
             onMessage: function(msg) {
                 if(callback)callback(msg);
             }

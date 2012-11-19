@@ -1,4 +1,5 @@
-/client
+/client/images
+/client/logs
 /server/logs
 /server/images
 /server/css

@@ -6,7 +6,7 @@ var Widget = {
     Init : function(){
         Widget.SetContainerTmpl();
     },
-    SetContainerTmpl : function(){
+    CreateContainer : function(){
         if($('#' + Widget.Settings.containerIdForTmpl).length == 0)
             $('body').append("<div id='" + Widget.Settings.containerIdForTmpl + "'></div>");
     }
