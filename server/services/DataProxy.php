@@ -39,42 +39,22 @@ class DataProxy implements IProxy {
     
     public function Query(){
         $this->Route();
-        $this->PrintResult($this->responseData);
+        print $this->responseData;
     }
 
     private function GetData($url) {
-        $jsonData = file_get_contents($url);
-        $data = json_decode($jsonData, true);
-        if (key_exists('message_error', $data)) {
-            return array();
-        }
-        return $data;
-    }
-
-    private function FillData($data) {
-        $items = array();
-        foreach ($data as $one) {
-            $countGoods = 0;
-            if (key_exists('count_goods', $one))
-                $countGoods = $one['count_goods'];
-            $items[] = array('id' => $one['id'], 'title' => $one['name_category'], 'countGoods' => $countGoods);
-        }
-
-        return $items;
+        return file_get_contents($url);
     }
 
     private function GetSection() {
         $sections = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->shopId . '/root/noblock/active');
-        $this->responseData = $this->FillData($sections);
+        $this->responseData = $sections;
     }
 
     private function GetCategoriesForRoot() {
         $category = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->parentId . '/children/noblock/active');
-        $this->responseData = array('parentId' => $this->parentId, 'items' => $this->FillData($category));
-    }
-
-    private function PrintResult($data) {
-        echo json_encode($data);
+        $category = '{"parentId" : "'.$this->parentId.'", "items": '.$category.'}';
+        $this->responseData = $category;
     }
 }
 $proxy = new DataProxy(Settings::HostApi , Settings::CatalogPathApi, $_GET);

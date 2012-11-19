@@ -21,6 +21,13 @@ var CatalogWidget = {
         }
     },
     Init : function(){
+        if ( JSCore !== undefined && JSCore.isReady ){
+            CatalogWidget.InitWidget();
+        }else{
+            window.setTimeout(CatalogWidget.Init, 100);
+        }
+    },
+    InitWidget : function(){
         CatalogWidget.RegisterEvents();
         CatalogWidget.SetParametersFromHash();
         CatalogWidget.SetInputParameters();
@@ -44,6 +51,17 @@ var CatalogWidget = {
             XDMTransport.LoadData(CatalogWidget.Settings.dataForCatalog + "&parentId=" + id, function(data){
                 EventDispatcher.DispatchEvent('onload.data.catalog%%' + id, JSON.parse(data));
             })
+        },
+        ChildrenCategory : function(data){
+            for(var j = 0; j <= data.items.length-1; j++){
+                CatalogWidget.Load.CatalogData(data.items[j].id);
+                EventDispatcher.AddEventListener('onload.data.catalog%%' + data.items[j].id, function (data){
+                    if(data.items.message_error === undefined){
+                        CatalogWidget.FillData(data.items, data.parentId);
+                        CatalogWidget.Render('.catalogCategories_' + data.parentId, data.parentId)
+                    }
+                });
+            };
         }
     },
     RenderSection : function(){
@@ -62,9 +80,15 @@ var CatalogWidget = {
         $(parentBlock).filter('li').addClass('menuparent');
     },
     RegisterEvents : function(){
-        EventDispatcher.AddEventListener('onload.scripts', function (data){ 
+
+        if(JSLoader.loaded){
             CatalogWidget.Load.Tmpl();
-        });
+        }
+        else{
+            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
+                CatalogWidget.Load.Tmpl();
+            });
+        }
         
         EventDispatcher.AddEventListener('onload.catalog.tmpl', function (data){
             CatalogWidget.Load.SectionData();
@@ -96,19 +120,12 @@ var CatalogWidget = {
             for(var i = 0; i <= sections.length-1; i++){
                 CatalogWidget.Load.CatalogData(sections[i].id);
                 EventDispatcher.AddEventListener('onload.data.catalog%%' + sections[i].id, function (data){
-                    if(data.length != 0){
+                    data.items.message_error
+                    if(data.items.message_error === undefined){
                         CatalogWidget.FillData(data.items, data.parentId);
                         CatalogWidget.Render('.sidebar_block_menu', data.parentId)
 
-                        for(var j = 0; j <= data.items.length-1; j++){
-                            CatalogWidget.Load.CatalogData(data.items[j].id);
-                            EventDispatcher.AddEventListener('onload.data.catalog%%' + data.items[j].id, function (data){
-                                if(data.length != 0){
-                                    CatalogWidget.FillData(data.items, data.parentId);
-                                    CatalogWidget.Render('.catalogCategories_' + data.parentId, data.parentId)
-                                }
-                            });
-                        };
+                        CatalogWidget.Load.ChildrenCategory(data);
                     }
                 });
             }
@@ -169,12 +186,12 @@ var CatalogWidget = {
 var CatalogItem = function(data) {
     var self = this;
     self.id = data.id;
-    self.title = data.title;
-    self.countGoods = data.countGoods;
+    self.title = data.name_category;
+    self.countGoods = data.count_goods;
     self.textItem = ko.computed(function(){
-        var text = data.title;
-        if(data.countGoods && data.countGoods > 0)
-            text = text + ' <span>' + data.countGoods + '</span>';
+        var text = data.name_category;
+        if(data.count_goods && data.count_goods > 0)
+            text = text + ' <span>' + data.count_goods + '</span>';
         return text;
     }, this);
     self.cssli = 'catalogCategories_' + data.id;
@@ -192,7 +209,7 @@ var CatalogViewModel = function(id, items) {
 var Section = function(data, active){
     var self = this;
     self.id = data.id;
-    self.title = data.title;
+    self.title = data.name_category;
     self.cssUl = 'catalogCategories_' + data.id;
     self.cssSpan = 'listCategories_' + data.id + active;
 }
@@ -202,7 +219,6 @@ var SectionViewModel = function(sections) {
     self.sections = ko.observableArray(sections); 
 }
 
-JSCore.Init();
 CatalogWidget.Init();
 
 
