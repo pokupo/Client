@@ -5,7 +5,7 @@ var CatalogWidget = {
     activeItem : null,
     Settings: {
         containerIdForCatalog : "catalog",
-        tmplForCatalog : "catalogTmpl.html",
+        tmplForCatalog : "catalog/catalogTmpl.html",
         dataForCatalog : "getCatalogData",
         dataForSection : "getSectionData",
         inputParameters : {},
