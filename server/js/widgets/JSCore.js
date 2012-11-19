@@ -62,11 +62,12 @@ var JSLoader = {
 
 var JSCore = {
     isReady : false,
+    shopId : null,
     Init : function(){
         JSLoader.Init(JSSettings.scripts, JSSettings.host + JSSettings.pathToJS);
         JSCore.ParserPath();
         JSCore.SetInputParameters();
-        JSCore.ShopId = JSSettings.inputParameters['shopId'];
+        JSCore.shopId = JSSettings.inputParameters['shopId'];
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
     },
