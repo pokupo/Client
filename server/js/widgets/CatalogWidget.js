@@ -67,13 +67,13 @@ var CatalogWidget = function(conteiner){
     };
     self.RenderSection = function(){
         if($('.sidebar_block_menu').length == 0)
-            $("#" + self.settings.containerIdForCatalog).html('<div class="sidebar_block_menu" data-bind=\'template: { name: "catalogTmpl" }\'></div>');
-
+            $("#" + self.settings.containerIdForCatalog).append($('script#catalogTmpl').html());
         ko.applyBindings(self.sections, document.getElementById('catalogSection'));
     };
     self.Render = function(parentBlock,id){
         var ulId = 'catalogCategories_' + id;
-        $(parentBlock).append('<ul id="' + ulId + '" style="display: none" data-bind=\'template: { name: "catalogListTmpl", foreach: items }\'></ul>');
+        $(parentBlock).append($('script#catalogUlTmpl').html());
+        $(parentBlock + ' .sectionCategories').attr('id', ulId);
         if(id == self.activeSection)
             $('#' + ulId).show();
             
@@ -204,6 +204,7 @@ var CatalogItem = function(data) {
 var CatalogViewModel = function(id, items) {
     var self = this;
     self.parentId = id;
+    self.cssUl = 'catalogCategories_' + id;
     self.items = ko.observableArray(items); 
 }
 
