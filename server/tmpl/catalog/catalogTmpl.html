@@ -4,7 +4,12 @@
     </li>
 </script>
 <script type="text/html" id="catalogTmpl">
-    <div class="top_tabs" id="catalogSection" data-bind="foreach: sections">
-        <span data-bind="text: title, css: cssSpan"></span>
+    <div class="sidebar_block_menu">
+        <div class="top_tabs" id="catalogSection" data-bind="foreach: sections">
+            <span data-bind="text: title, css: cssSpan"></span>
+        </div>
     </div>
+</script>
+<script type="text/html" id="catalogUlTmpl">
+     <ul class="sectionCategories" data-bind='template: { name: "catalogListTmpl", foreach: items }'></ul>
 </script>
