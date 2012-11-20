@@ -15,10 +15,10 @@ class DataProxy implements IProxy {
     public function DataProxy($host, $path, $params) {
         $this->host = $host;
         $this->path = $path;
-        $this->parseRequestParams($params);
+        $this->ParseRequestParams($params);
     }
     
-    private function parseRequestParams($params){
+    private function ParseRequestParams($params){
         $this->shopId = $params['shopId'];
         $this->query = $params['query'];
         $this->parentId = $params['parentId'];
