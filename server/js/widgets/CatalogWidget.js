@@ -73,7 +73,7 @@ var CatalogWidget = function(conteiner){
     self.Render = function(parentBlock,id){
         var ulId = 'catalogCategories_' + id;
         $(parentBlock).append($('script#catalogUlTmpl').html());
-        $(parentBlock + ' .sectionCategories').attr('id', ulId);
+        $(parentBlock + ' .sectionCategories:last').attr('id', ulId);
         if(id == self.activeSection)
             $('#' + ulId).show();
             
