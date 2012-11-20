@@ -1,5 +1,5 @@
 var Widget = function(){
-    this.BaseSettings = {
+    this.settings = {
         containerIdForTmpl : "container_tmpl",
         shopId : JSSettings.inputParameters['shopId']
     };
