@@ -4,8 +4,8 @@
     </li>
 </script>
 <script type="text/html" id="catalogTmpl">
-    <div class="sidebar_block_menu">
-        <div class="top_tabs" id="catalogSection" data-bind="foreach: sections">
+    <div class="sidebar_block_menu" data-bind="css: sectionCss, with: sections">
+        <div class="top_tabs" data-bind="foreach: sections">
             <span data-bind="text: title, css: cssSpan"></span>
         </div>
     </div>

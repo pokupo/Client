@@ -4,9 +4,8 @@ var JSSettings = {
     pathToTmpl : "tmpl/",
     pathToData : "services/DataProxy.php?query=",
     pathToCore: "index.html",
-    scripts : ['easyXDM.min.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
-    inputParameters : {},
-    hashParameters : {}
+    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js', 'widgets/Slider.js', 'jquery.jcarousel.min.js'],
+    inputParameters : {}
 }
 
 var EventDispatcher = {
@@ -65,27 +64,17 @@ var JSCore = {
     shopId : null,
     Init : function(){
         JSLoader.Init(JSSettings.scripts, JSSettings.host + JSSettings.pathToJS);
-        JSCore.ParserPath();
         JSCore.SetInputParameters();
         JSCore.shopId = JSSettings.inputParameters['shopId'];
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
     },
     Extend : function (Child, Parent) {
-        var F = function() { }
-        F.prototype = Parent.prototype
-        Child.prototype = new F()
-        Child.prototype.constructor = Child
-        Child.superclass = Parent.prototype
-    },
-    ParserPath : function(){
-        var hash = window.location.hash;
-        hash = hash.replace(/(^#\/)/g, '')
-        var parameters = hash.split('&');
-        for(var i = 0; i <= parameters.length-1; i++){
-            var parameter = parameters[i].split('='); 
-            JSSettings.hashParameters[parameter[0]] = parameter[1]; 
-        }
+        var F = function() { };
+        F.prototype = Parent.prototype;
+        Child.prototype = new F();
+        Child.prototype.constructor = Child;
+        Child.superclass = Parent.prototype;
     },
     ParserInputParameters : function(scriptName){
         var obj = {};
