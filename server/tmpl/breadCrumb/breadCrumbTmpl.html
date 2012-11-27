@@ -4,18 +4,13 @@
             <tr>
                 <td class="first"></td>
                 <td class="text">
-                    <a href="index.html"><img title="" alt="" src="images/br_fon_5.png" /></a>
+                    <a href="#" data-bind="click: ToHomepage"><img title="" alt="" src="images/br_fon_5.png" /></a>
                 </td>
-                
                 <!-- ko foreach: crumbs -->
                 <td class="second"></td>
-                <td class="text">
-                    <div class="newListSelected" tabindex="0" style="position: relative;" data-bind="css: cssItem">
-                        <div class="selectedTxt" data-bind="text: title, click: ClickItem"></div>
-                    </div>
+                <td class="text" data-bind="css: cssItem"> 
                 </td>
                 <!-- /ko -->
-
                 <td class="second"></td>
                 <td class="text" data-bind="text: lastItem"></td>
                 <td class="last"></td>
@@ -25,7 +20,10 @@
 </script>
 
 <script type="text/html" id="breadCrumbSelectListTmpl">
-    <ul class="newList selectListBreadCrumb" style="visibility: visible; top: 0px; height: 150px; left: 0px; display: none;" data-bind="foreach: listCrumbs">
-        <li><a href="#" data-bind="text: title, onclick: ClickItem"></a></li>
-    </ul>
+    <select data-bind="foreach: listCrumbs">
+        <option value="" data-bind="value: id, text: title"></option>
+    </select>
 </script>
+<!--<select data-bind="options: listCrumbs, optionsText: 'title', value: 'id'">
+        
+    </select>-->

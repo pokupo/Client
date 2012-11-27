@@ -1,14 +1,14 @@
 <script type="text/html" id="blockSliderTmpl">
     <div class="block_front_slider promoBlocks">
-        <div class="block_title" data-bind="text: titleSliderBlock"></div>
-        <div id="block-views-slider-block_1" data-bind="css: cssSliderBlockContainer">
+        <div class="block_title" data-bind="text: titleBlock"></div>
+        <div id="block-views-slider-block_1" data-bind="css: cssBlockContainer">
             <div class="content">
                 <div class="view-slider">
                     <div class="view-content">
-                        <!-- ko foreach: contentSliderBlock -->
-                        <div data-bind="css: cssSliderBlockContentItem">
-                            <a href="#" data-bind="attr: {href: imageHrefSliderBlockContent}">
-                                <img title="" alt="" src="" data-bind="attr: {src: routeImageSliderBlockContent, title: chortNameSliderBlockContent}"/>
+                        <!-- ko foreach: contentBlock -->
+                        <div data-bind="css: cssBlockContent">
+                            <a href="#" data-bind="attr: {href: imageHrefBlockContent}">
+                                <img title="" alt="" src="" data-bind="attr: {src: routeImageBlockContent, title: chortNameBlockContent}"/>
                             </a>
                         </div>
                         <!-- /ko -->
@@ -19,25 +19,27 @@
     </div>
 </script>
 
+
 <script type="text/html" id="blockCaruselTmpl">
     <div class="block_front_carusel promoBlocks">
         <div class="block_title" data-bind="text: titleBlock"></div>
         <a href="#" class="all_link">Все<span>→</span></a>
         <div class="cont">
-            <ul id="jcarousel">
-                <!-- ko foreach: content -->
+            <ul id="jcarousel" data-bind="css: cssBlockContainer">
+                <!-- ko foreach: contentBlock -->
                 <li>
                     <div class="photo">
-                        <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/>
+                        <img title="" alt="" src="" data-bind="attr: {src: routeImageBlockContent, title: chortNameBlockContent}"/>
                         <div class="save">
                             <span class="text_1">скидка</span>
-                            <span class="text_2" data-bind="text: discount"></span>
+                            <span class="text_2" data-bind="text: discountBlockContent"></span>
                         </div>
                     </div>
-                    <div class="title"><a href="#" data-bind="text: chortName"></a></div>
+                    <div class="title"><a href="#" data-bind="text: chortNameBlockContent"></a></div>
                     <span class="price">
-                        <span>450 руб.</span>
-                        <br />9 400 руб.</span>
+                        <span data-bind="text: OldPriceBlockContent"></span>
+                        <br /><span style="color: #099033;display: inline-block;font: 18px/20px arial;text-decoration:none" data-bind="text: sellCostBlockContent"></span>
+                    </span>
                     <a href="#" class="bay">Купить</a>
                 </li>
                 <!-- /ko -->
@@ -46,34 +48,23 @@
     </div>
 </script>
 
+
 <script type="text/html" id="blockTovarsTmpl">
     <div class="block_front_tovars promoBlocks">
-        <div class="block_title">Лидеры продаж</div>
+        <div class="block_title" data-bind="text: titleBlock"></div>
         <a href="#" class="all_link">Все<span>→</span></a>
         <table>
-            <tr class="col_2">
-                <td class="row_1">
-                    <div class="photo"><img title="" alt="" src="images/img_1.png" /></div>
-                    <div class="title"><a href="#">Кофе натуральный растворимый порошкообразный Lacomba</a></div>
-                    <div class="category">Магазин: <a href="#">Три поросенка Три поросенка Три поросенка</a> <span class="rating_shop">1298</span> (<span>+100</span>/<span>-5</span>)</div>
-                    <span class="price">400 руб.</span>
-                    <a href="#" class="bay">Купить</a>
-                </td>
-                <td class="row_2">
-                    <div class="photo"><img title="" alt="" src="images/img_2.png" /></div>
-                    <div class="title"><a href="#">Мебельная ткань Искусственная замша</a></div>
-                    <div class="category">Магазин: <a href="#">Три поросенка</a> <span class="rating_shop">1298</span> (<span>+100</span>/<span>-5</span>)</div>
-                    <span class="price">690 руб.</span>
-                    <a href="#" class="bay">Купить</a>
-                </td>
-                <td class="row_3">
-                    <div class="photo"><img title="" alt="" src="images/img_3.png" /></div>
-                    <div class="title"><a href="#">Диваны Джоконда 5 М от мебельной компании RosMarkt</a></div>
-                    <div class="category">Магазин: <a href="#">Три поросенка</a> <span class="rating_shop">1298</span> (<span>+100</span>/<span>-5</span>)</div>
-                    <span class="price">9 400 руб.</span>
-                    <a href="#" class="bay">Купить</a>
-                </td>
-            </tr>
+            <tbody data-bind="foreach: contentBlock"> 
+                <tr class="col_2" data-bind="foreach: str">
+                    <td class="row_1">
+                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImageBlockContent, title: chortNameBlockContent}"/></div>
+                        <div class="title"><a href="#" data-bind="text: chortNameBlockContent"></a></div>
+                        <div class="category">Магазин: <a href="#" data-bind="text: shopNameBlockContent"></a> <span class="rating_shop" data-bind="text: reviewsBlockContent"></span> (<span>+100</span>/<span>-5</span>)</div>
+                        <span class="price" data-bind="text: sellCostBlockContent"></span>
+                        <a href="#" class="bay">Купить</a>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </script>

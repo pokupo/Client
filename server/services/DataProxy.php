@@ -73,19 +73,7 @@ class DataProxy implements IProxy {
     }
     
     private function GetCategoryInfo(){
-        $category = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->parentId . '/info/');
-        if($this->parentId == 888){
-            $category = '{
-                "id":888,
-                "name_category":"Рекомендуем",
-                "type_category":"block",
-                "type_goods":"fisical",
-                "type_view" : "slider",
-                "default_act" : "",
-                "status":"active",
-                "count_goods":445
-            }';
-        }
+        $category = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->category . '/info/');
         $this->responseData = $category;
     }
     

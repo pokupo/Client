@@ -31,9 +31,6 @@ $(document).ready(function(){
     DD_roundies.addRule('.sidebar_block_5 .all_link', '5px');
     DD_roundies.addRule('.block_front_tovars', '5px');
     DD_roundies.addRule('.block_front_tovars .all_link', '5px');
-    DD_roundies.addRule('.block_front_carusel', '5px');
-    DD_roundies.addRule('.block_front_carusel .all_link', '5px');
-    DD_roundies.addRule('.block_front_slider .block_title', '5px 5px 0 0');
-    DD_roundies.addRule('.block_front_slider', '0 0 5px 5px');
+    
 });
 

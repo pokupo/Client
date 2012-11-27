@@ -1,16 +1,20 @@
 Parameters = {
-    activeSection : null,
-    activeItem : null,
-    activeCatalog : null,
-    lastItem : null,
+    catalogs : [],
+    crumbsTitle : [],
+    activeSection : 0,
+    activeItem : 0,
+    activeCatalog : 0,
+    defaultCatalog : 0,
+    lastItem : 0,
     typeCategory : "",
-    shopId : null,
+    shopId : 0,
     cache : {
         'path' : {},
         'childrenCategory' : {},
         'block' : {},
         'contentBlock' : {},
-        'roots': {}
+        'roots': {},
+        'infoCategory' : {}
     }
 }
 
@@ -25,7 +29,7 @@ function Widget(){
         dataCategoryInfo : 'getCategoryInfo',
         containerIdForTmpl : "container_tmpl",
         hashParameters : {
-        }
+    }
     };
     this.Init = function(){
         if ( JSCore !== undefined && JSCore.isReady){
@@ -46,26 +50,37 @@ function Widget(){
     };
     this.Events = function(){
         EventDispatcher.AddEventListener('widget.click.item', function (data){
-            if(data.type_category == "section"){
-                Parameters.activeSection = data.id;
-                Parameters.activeItem = null;
-                var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection
+            var title = 'Домашняя';
+            if(data){
+                if(data.type_category == "section"){
+                    Parameters.activeSection = data.id;
+                    Parameters.activeItem = 0;
+                    var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection
+                }
+                else{
+                    Parameters.activeItem = data.id;
+                    var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                }
+
+                Parameters.lastItem = data.id;
+                Parameters.typeCategory = data.type_category;
+                title = data.name_category;
+
+                if(Parameters.typeCategory == 'section')
+                    EventDispatcher.DispatchEvent('widget.change.section', data.id);
+                else if(Parameters.typeCategory == 'category')
+                    EventDispatcher.DispatchEvent('widget.change.category', data.id);
             }
             else{
-                Parameters.activeItem = data.id;
-                 var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                Parameters.activeSection = 0;
+                Parameters.activeItem = 0;
+                Parameters.lastItem = 0;
+                Parameters.typeCategory = "";
+                href = '';
             }
-            
-            Parameters.lastItem = data.id;
-            Parameters.typeCategory = data.type_category;
-            
-            if(Parameters.typeCategory == 'section')
-                EventDispatcher.DispatchEvent('widget.change.section', data.id);
-            else if(Parameters.typeCategory == 'category')
-                EventDispatcher.DispatchEvent('widget.change.category', data.id);
 
             window.location.hash = href;
-            document.title = data.name_category;
+            document.title = title;
             EventDispatcher.DispatchEvent('widget.changeHash')
         });
         
@@ -93,6 +108,20 @@ function Widget(){
             if(callback)callback();
         })
     };
+    this.LoadPath = function(callback){
+        if(Parameters.lastItem){
+            if(!Parameters.cache.path[Parameters.lastItem]){
+                XDMTransport.LoadData(this.settings.dataPathForItem + '&category=' + Parameters.lastItem, function(data){
+                    var path = JSON.parse(data)['path'];
+                    Parameters.cache.path[Parameters.lastItem] = path;
+                    EventDispatcher.DispatchEvent('onload.data.path', path);
+                })
+            }
+            else{
+                EventDispatcher.DispatchEvent('onload.data.path', Parameters.cache.path[Parameters.lastItem]);
+            }
+        }
+    };
     this.ParserPath = function(){
         var hash = window.location.hash;
         hash = hash.replace(/(^#\/)/g, '')
@@ -103,18 +132,18 @@ function Widget(){
         }
     };
     this.SetParametersFromHash = function(){
-        Parameters.activeCatalog = this.settings.hashParameters['catalog'];
-        if(Parameters.activeCatalog){
+        if(this.settings.hashParameters['catalog']){
+            Parameters.activeCatalog = this.settings.hashParameters['catalog'];
             Parameters.lastItem = Parameters.activeCatalog;
             Parameters.typeCategory = 'section';
         }
-        Parameters.activeSection = this.settings.hashParameters['section'];
-        if(Parameters.activeSection){
+        if(this.settings.hashParameters['section']){
+            Parameters.activeSection = this.settings.hashParameters['section'];
             Parameters.lastItem = Parameters.activeSection;
             Parameters.typeCategory = 'section';
         }
-        Parameters.activeItem = this.settings.hashParameters['category'];
-        if(Parameters.activeItem){
+        if(this.settings.hashParameters['category']){
+            Parameters.activeItem = this.settings.hashParameters['category'];
             Parameters.lastItem = Parameters.activeItem;
             Parameters.typeCategory = 'category';
         }

@@ -19,9 +19,11 @@ var CatalogWidget = function(conteiner){
         self.settingsCatalog.containerIdForCatalog = conteiner;
         self.CreateContainer();
         self.RegisterEvents();
-        self.SetParametersFromHash();
         self.SetInputParameters();
         self.SetPosition();
+    };
+    self.SetInputParameters = function(){
+        self.settingsCatalog.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
     };
     self.Load = {
         SectionData : function(){
@@ -46,41 +48,30 @@ var CatalogWidget = function(conteiner){
                 EventDispatcher.DispatchEvent('onload.data.catalog%%' + id, JSON.parse(Parameters.cache.childrenCategory[id]));
             }
         },
-        ChildrenCategory : function(data){
-            for(var j = 0; j <= data.items.length-1; j++){
-                self.Load.CatalogData(data.items[j].id);
-                EventDispatcher.AddEventListener('onload.data.catalog%%' + data.items[j].id, function (data){
+        ChildrenCategory : function(section){
+            for(var j = 0; j <= section.items().length-1; j++){
+                var id = section.items()[j].id;
+                self.Load.CatalogData(id);
+                EventDispatcher.AddEventListener('onload.data.catalog%%' + id, function (data){
                     if(data.items.message_error === undefined){
-                        self.FillData(data.items, data.parentId);
-                        self.Render('.catalogCategories_' + data.parentId, data.parentId)
+                        self.FillData(data);
                     }
                 });
             };
         }
     };
-    self.RenderSection = function(){
-        if($('.sidebar_block_menu').length == 0)
-            $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
-        ko.applyBindings(self.sections, $('.catalogSection')[0]);
-    };
-    self.Render = function(parentBlock,id){
-        var ulId = 'catalogCategories_' + id;
-        $(parentBlock).append($('script#catalogUlTmpl').html());
-        $(parentBlock + ' .sectionCategories:last').attr('id', ulId).hide();
-        if(id == Parameters.activeCatalog)
-            $('#catalogCategories_' + Parameters.activeCatalog).show();
-            
-        ko.applyBindings(self.items, document.getElementById(ulId));
-        $(parentBlock).filter('li').addClass('menuparent');
-    };
     self.RegisterEvents = function(){
 
         if(JSLoader.loaded){
-            self.LoadTmpl(self.settingsCatalog.tmplForCatalog, function(){ EventDispatcher.DispatchEvent('onload.catalog.tmpl')});
+            self.LoadTmpl(self.settingsCatalog.tmplForCatalog, function(){
+                EventDispatcher.DispatchEvent('onload.catalog.tmpl')
+                });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl(self.settingsCatalog.tmplForCatalog, function(){EventDispatcher.DispatchEvent('onload.catalog.tmpl')});
+                self.LoadTmpl(self.settingsCatalog.tmplForCatalog, function(){
+                    EventDispatcher.DispatchEvent('onload.catalog.tmpl')
+                });
             });
         }
         
@@ -98,61 +89,91 @@ var CatalogWidget = function(conteiner){
                 Parameters.typeCategory = data.type_category;
                 $(this).addClass('active');
                 $(blockMenu + ' ul').hide();
-                $(blockMenu + ' #catalogCategories_' + id).show();
+                $(blockMenu + ' .catalogCategories_' + id).show();
                 var href = "/catalog=" + Parameters.activeCatalog;
                 window.location.hash = href;
+                EventDispatcher.DispatchEvent('widget.changeHash');
             });
         });
         
         EventDispatcher.AddEventListener('onload.data.sectionCatalog', function (data){
             self.FillDataSection(data);
             EventDispatcher.DispatchEvent('onload.data.catalog', data);
-            self.RenderSection();
+        });
+        
+        EventDispatcher.AddEventListener('catalogWidget.fill.section', function(data){
+            self.RenderSection(data);
             EventDispatcher.DispatchEvent('catalog.section.rendering.ready', data);
         });
 
         EventDispatcher.AddEventListener('onload.data.catalog', function (sections){
-            self.ViewModelItems = ko.observableArray;
             for(var i = 0; i <= sections.length-1; i++){
                 self.Load.CatalogData(sections[i].id);
                 EventDispatcher.AddEventListener('onload.data.catalog%%' + sections[i].id, function (data){
-                    data.items.message_error
                     if(data.items.message_error === undefined){
-                        self.FillData(data.items, data.parentId);
-                        self.Render('.sidebar_block_menu', data.parentId)
-
-                        self.Load.ChildrenCategory(data);
+                        self.FillData(data);
                     }
                 });
             }
         });
+        
+        EventDispatcher.AddEventListener('catalogWidget.fill.item', function(data){
+            self.Render(data)
+        });
+        
+        EventDispatcher.AddEventListener('catalogWidget.rendered.item', function(data){
+            self.Load.ChildrenCategory(data);
+        });
+        
+        EventDispatcher.AddEventListener('widget.changeHash', function (data){
+            self.Update();
+        });
+        
+        EventDispatcher.AddEventListener('onload.data.path', function(data){
+            self.RenderBackToTop()
+        });
     };
+    self.Update = function(){
+        if(Parameters.typeCategory == 'section'){
+            self.LoadPath();
+        }
+    }
     self.FillDataSection = function(data){
-        var sections = [];
-        for(var i = 0; i <= data.length-1; i++){
-            var active = '';
-            if(Parameters.activeCatalog == data[i].id || (i == 0 && Parameters.activeCatalog == null)){
-                Parameters.activeCatalog = data[i].id;
-                Parameters.typeCategory = 'section';
-                active = ' active';
-            }
-            sections[i] = (new Section(data[i], active));
-        }
-
-        self.sections =  SectionViewModel(sections);
+        var section = new SectionViewModel();
+        section.AddSection(data);
     };
-    self.FillData = function(data, id){
-        var items = [];
-        for(var i = 0; i <= data.length-1; i++){
-            items[i] = (new CatalogItem(data[i]));
-        }
- 
-        if(!self.items)
-            self.items = ko.observableArray();
-        self.items.push = CatalogViewModel(id, items);
+    self.FillData = function(data){
+        var items = new CatalogViewModel();
+        items.AddItem(data);
     };
-    self.SetInputParameters = function(){
-        self.settingsCatalog.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
+    self.RenderSection = function(data){
+        if($('.sidebar_block_menu').length == 0)
+            $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
+        ko.applyBindings(data, $('#catalog')[0]);
+        delete data;
+    };
+    self.RenderBackToTop = function(){
+        
+    }
+    self.Render = function(data){
+        if(Parameters.catalogs[data.parentId]){    
+            $('.sidebar_block_menu').append($('script#catalogUlTmpl').html());
+            var conteiner = $('.sidebar_block_menu  .sectionCategories:last');
+            conteiner.hide();
+            ko.applyBindings(data, conteiner[0]);
+            delete data;
+            
+            EventDispatcher.DispatchEvent('catalogWidget.rendered.item', data);
+        }
+        else{
+            $('.' + data.cssUl).append($('script#catalogUlTmpl').html());
+            $('.' + data.cssUl + ' .sectionCategories').hide();
+            ko.applyBindings(data, $('.' + data.cssUl + ' .sectionCategories')[0]);
+        }
+        if(data.parentId == Parameters.activeCatalog){
+            $('.' + data.cssUl).show();
+        }
+        $('.' + data.cssUl).filter('li').addClass('menuparent');
     };
     self.SetPosition = function(){
         if(self.settingsCatalog.inputParameters['position'] == 'absolute'){
@@ -184,25 +205,57 @@ var CatalogItem = function(data) {
     }
 }
 
-var CatalogViewModel = function(id, items) {
+var CatalogViewModel = function() {
     var self = this;
-    self.parentId = id;
-    self.cssUl = 'catalogCategories_' + id;
-    self.items = ko.observableArray(items); 
+    self.parentId = 0;
+    self.cssUl = '';
+    self.items = ko.observableArray();
+    self.ReturnTop = function(){
+        alert('back to top');
+        //EventDispatcher.DispatchEvent('widget.click.item', data)
+    }
+    self.AddItem = function(data){
+        self.parentId = data.parentId;
+        self.cssUl = 'catalogCategories_' + data.parentId;
+        for(var i = 0; i <= data.items.length-1; i++){
+            self.items.push(new CatalogItem(data.items[i]));
+        }
+        EventDispatcher.DispatchEvent('catalogWidget.fill.item', self);
+    }
 }
 
 var Section = function(data, active){
     var self = this;
     self.id = data.id;
     self.title = data.name_category;
+    self.active = '';
     self.cssUl = 'catalogCategories_' + data.id;
     self.cssSpan = 'listCategories_' + data.id + active;
+    self.ClickSection = function() {
+        self.active = true;
+        EventDispatcher.DispatchEvent('widget.click.item', data)
+    }
 }
 
-var SectionViewModel = function(sections) {
+var SectionViewModel = function() {
     var self = this;
     self.sectionCss = 'catalogSection';
-    self.sections = ko.observableArray(sections); 
+    self.sections = ko.observableArray();
+    self.AddSection = function(data){
+        for(var i = 0; i <= data.length-1; i++){
+            var active = '';
+            if(i == 0)
+                Parameters.defaultCatalog = data[i].id;
+            if(Parameters.activeCatalog == data[i].id || (i == 0 && Parameters.activeCatalog == 0)){
+                Parameters.activeCatalog = data[i].id;
+                Parameters.typeCategory = 'section';
+                active = ' active';
+            }
+            Parameters.catalogs[data[i].id] = data[i].id;
+            self.sections.push(new Section(data[i], active));
+        }
+        EventDispatcher.DispatchEvent('catalogWidget.fill.section', self);
+    }
 }
 
 var TestCatalog = {

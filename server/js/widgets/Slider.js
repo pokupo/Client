@@ -40,4 +40,7 @@ function InitSlider(cssSliderContainer){
         }
         timer++;
     }, 3000);
+    
+    DD_roundies.addRule('.block_front_slider .block_title', '5px 5px 0 0');
+    DD_roundies.addRule('.block_front_slider', '0 0 5px 5px');
 }
