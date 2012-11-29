@@ -4,7 +4,6 @@ Parameters = {
     activeSection : 0,
     activeItem : 0,
     activeCatalog : 0,
-    defaultCatalog : 0,
     lastItem : 0,
     typeCategory : "",
     shopId : 0,
@@ -13,6 +12,7 @@ Parameters = {
         'childrenCategory' : {},
         'block' : {},
         'contentBlock' : {},
+        'content' : {},
         'roots': {},
         'infoCategory' : {}
     }
@@ -52,7 +52,13 @@ function Widget(){
         EventDispatcher.AddEventListener('widget.click.item', function (data){
             var title = 'Домашняя';
             if(data){
-                if(data.type_category == "section"){
+                if(data.type_category == "section" && Parameters.catalogs[data.id]){
+                    Parameters.activeSection = 0;
+                    Parameters.activeItem = 0;
+                    Parameters.activeItem = data.id;
+                    var href = "/catalog=" + Parameters.activeCatalog
+                }
+                else if(data.type_category == "section" && !Parameters.catalogs[data.id]){
                     Parameters.activeSection = data.id;
                     Parameters.activeItem = 0;
                     var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection
@@ -75,17 +81,13 @@ function Widget(){
                 Parameters.activeSection = 0;
                 Parameters.activeItem = 0;
                 Parameters.lastItem = 0;
-                Parameters.typeCategory = "";
+                Parameters.typeCategory = "homepage";
                 href = '';
             }
 
             window.location.hash = href;
             document.title = title;
-            EventDispatcher.DispatchEvent('widget.changeHash')
-        });
-        
-        EventDispatcher.AddEventListener('widget.click.content', function(data){
-            alert('click product');
+            EventDispatcher.DispatchEvent('widget.changeHash');
         });
     };
     this.CreateContainer = function(){
@@ -108,7 +110,7 @@ function Widget(){
             if(callback)callback();
         })
     };
-    this.LoadPath = function(callback){
+    this.LoadPath = function(){
         if(Parameters.lastItem){
             if(!Parameters.cache.path[Parameters.lastItem]){
                 XDMTransport.LoadData(this.settings.dataPathForItem + '&category=' + Parameters.lastItem, function(data){

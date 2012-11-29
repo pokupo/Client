@@ -23,7 +23,7 @@
 <script type="text/html" id="blockCaruselTmpl">
     <div class="block_front_carusel promoBlocks">
         <div class="block_title" data-bind="text: titleBlock"></div>
-        <a href="#" class="all_link">Все<span>→</span></a>
+        <a href="#" class="all_link" data-bind="click: ClickCategory">Все<span>→</span></a>
         <div class="cont">
             <ul id="jcarousel" data-bind="css: cssBlockContainer">
                 <!-- ko foreach: contentBlock -->
@@ -35,7 +35,7 @@
                             <span class="text_2" data-bind="text: discountBlockContent"></span>
                         </div>
                     </div>
-                    <div class="title"><a href="#" data-bind="text: chortNameBlockContent"></a></div>
+                    <div class="title"><a href="#" data-bind="text: chortNameBlockContent, click: ClickTovars"></a></div>
                     <span class="price">
                         <span data-bind="text: OldPriceBlockContent"></span>
                         <br /><span style="color: #099033;display: inline-block;font: 18px/20px arial;text-decoration:none" data-bind="text: sellCostBlockContent"></span>
@@ -52,7 +52,7 @@
 <script type="text/html" id="blockTovarsTmpl">
     <div class="block_front_tovars promoBlocks">
         <div class="block_title" data-bind="text: titleBlock"></div>
-        <a href="#" class="all_link">Все<span>→</span></a>
+        <a href="#" class="all_link" data-bind="click: ClickCategory">Все<span>→</span></a>
         <table>
             <tbody data-bind="foreach: contentBlock"> 
                 <tr class="col_2" data-bind="foreach: str">

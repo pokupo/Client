@@ -58,6 +58,33 @@ var CatalogWidget = function(conteiner){
                     }
                 });
             };
+        },
+        Info : function(id, callback){
+            if(!Parameters.cache.infoCategory[id]){
+                XDMTransport.LoadData(self.settings.dataCategoryInfo + "&category=" + id, function(data){
+                    Parameters.cache.infoCategory[id] = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                })
+            }
+            else{
+                if(callback)
+                    callback(JSON.parse(Parameters.cache.infoCategory[id]));
+            }
+        },
+        Path : function(id, callback){
+            if(!Parameters.cache.path[id]){
+                XDMTransport.LoadData(self.settings.dataPathForItem + '&category=' + id, function(data){
+                    var path = JSON.parse(data)['path'];
+                    Parameters.cache.path[id] = path;
+                    if(callback)
+                        callback(path);
+                })
+            }
+            else{
+                if(callback)
+                    callback(Parameters.cache.path[id]);
+            }
         }
     };
     self.RegisterEvents = function(){
@@ -65,7 +92,7 @@ var CatalogWidget = function(conteiner){
         if(JSLoader.loaded){
             self.LoadTmpl(self.settingsCatalog.tmplForCatalog, function(){
                 EventDispatcher.DispatchEvent('onload.catalog.tmpl')
-                });
+            });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
@@ -76,34 +103,35 @@ var CatalogWidget = function(conteiner){
         }
         
         EventDispatcher.AddEventListener('onload.catalog.tmpl', function (data){
-            self.Load.SectionData();
+            if(Parameters.lastItem == 0)
+                self.Load.SectionData();
+            else
+                self.Update();
         });
         
-        EventDispatcher.AddEventListener('catalog.section.rendering.ready', function (data){
-            var blockMenu = '.sidebar_block_menu';
-            $(blockMenu + ' .top_tabs span').click(function(){
+        EventDispatcher.AddEventListener('onload.data.sectionCatalog', function (data){
+            self.FillDataSection(data, function(data){
+                var blockMenu = '.sidebar_block_menu';
                 $(blockMenu + ' .top_tabs span').removeClass('active');
-                var id = $(this).attr('class').split('_')[1];
-                Parameters.activeCatalog = id;
-                Parameters.lastItem = id;
-                Parameters.typeCategory = data.type_category;
-                $(this).addClass('active');
+                Parameters.activeCatalog = data.id;
+                Parameters.lastItem = data.id;
+                Parameters.typeCategory = "section";
+                $('.listCategories_' + data.id).addClass('active');
                 $(blockMenu + ' ul').hide();
-                $(blockMenu + ' .catalogCategories_' + id).show();
+                $(blockMenu + ' .catalogCategories_' + data.id).show();
                 var href = "/catalog=" + Parameters.activeCatalog;
                 window.location.hash = href;
                 EventDispatcher.DispatchEvent('widget.changeHash');
             });
-        });
-        
-        EventDispatcher.AddEventListener('onload.data.sectionCatalog', function (data){
-            self.FillDataSection(data);
             EventDispatcher.DispatchEvent('onload.data.catalog', data);
         });
         
         EventDispatcher.AddEventListener('catalogWidget.fill.section', function(data){
+            if(Parameters.activeCatalog == 0){
+                Parameters.activeCatalog = data.sections()[0].id;
+                Parameters.lastItem = data.sections()[0].id;
+            }
             self.RenderSection(data);
-            EventDispatcher.DispatchEvent('catalog.section.rendering.ready', data);
         });
 
         EventDispatcher.AddEventListener('onload.data.catalog', function (sections){
@@ -129,50 +157,76 @@ var CatalogWidget = function(conteiner){
             self.Update();
         });
         
-        EventDispatcher.AddEventListener('onload.data.path', function(data){
-            self.RenderBackToTop()
-        });
     };
     self.Update = function(){
-        if(Parameters.typeCategory == 'section'){
-            self.LoadPath();
+        if(Parameters.typeCategory == 'section' && !Parameters.catalogs[Parameters.lastItem]){
+            self.Load.Path(Parameters.lastItem, function(data){
+                if(data[data.length-1]){
+                    data[data.length-1].name_category = 'Вверх';
+                    self.FillDataSection(data[data.length-1], function(){
+                        if(data[data.length-2]){
+                            if(Parameters.catalogs[data[data.length-2].id])
+                                self.Load.SectionData();
+                            EventDispatcher.DispatchEvent('widget.click.item', data[data.length-2])
+                        }
+                        else{
+                            self.Load.SectionData();
+                            EventDispatcher.DispatchEvent('widget.click.item', data[data.length-1])
+                        }
+                    });
+                    EventDispatcher.DispatchEvent('onload.data.catalog', [data[data.length-1]]);
+                }
+                else{
+                    self.Load.SectionData();
+                    EventDispatcher.DispatchEvent('widget.click.item', data[0])
+                }
+            });
+        }
+        if(Parameters.typeCategory == 'homepage'){
+            self.Load.SectionData();
         }
     }
-    self.FillDataSection = function(data){
+    self.FillDataSection = function(data, callback){
         var section = new SectionViewModel();
-        section.AddSection(data);
+        section.AddSection(data, callback);
+    };
+    self.FillDataBackToSection = function(data){
+        var section = new BackToSectionViewModel();
+        section.AddSection(data)
     };
     self.FillData = function(data){
         var items = new CatalogViewModel();
         items.AddItem(data);
     };
     self.RenderSection = function(data){
-        if($('.sidebar_block_menu').length == 0)
-            $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
+        $("#" + self.settingsCatalog.containerIdForCatalog).empty();
+        $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
         ko.applyBindings(data, $('#catalog')[0]);
+        if(data.sections().length > 1)
+            $('.sidebar_block_menu .listCategories_' + Parameters.activeCatalog).addClass('active');
+        else
+            $('.sidebar_block_menu span[class^=listCategories]').addClass('active');
         delete data;
     };
-    self.RenderBackToTop = function(){
-        
-    }
     self.Render = function(data){
-        if(Parameters.catalogs[data.parentId]){    
+        if($('.listCategories_' + data.parentId).length > 0){
             $('.sidebar_block_menu').append($('script#catalogUlTmpl').html());
             var conteiner = $('.sidebar_block_menu  .sectionCategories:last');
             conteiner.hide();
             ko.applyBindings(data, conteiner[0]);
             delete data;
-            
             EventDispatcher.DispatchEvent('catalogWidget.rendered.item', data);
         }
         else{
             $('.' + data.cssUl).append($('script#catalogUlTmpl').html());
-            $('.' + data.cssUl + ' .sectionCategories').hide();
             ko.applyBindings(data, $('.' + data.cssUl + ' .sectionCategories')[0]);
+            delete data;
         }
-        if(data.parentId == Parameters.activeCatalog){
-            $('.' + data.cssUl).show();
-        }
+
+        if($('.sidebar_block_menu span[class^=listCategories]').length == 1)
+            $('.sidebar_block_menu > ul').show();
+        else
+            $('.catalogCategories_' + Parameters.activeCatalog).show();
         $('.' + data.cssUl).filter('li').addClass('menuparent');
     };
     self.SetPosition = function(){
@@ -193,13 +247,13 @@ var CatalogItem = function(data) {
     self.id = data.id;
     self.title = data.name_category;
     self.countGoods = data.count_goods;
+    self.cssli = 'catalogCategories_' + data.id;
     self.TextItem = ko.computed(function(){
         var text = data.name_category;
         if(data.count_goods && data.count_goods > 0)
             text = text + ' <span>' + data.count_goods + '</span>';
         return text;
     }, this);
-    self.cssli = 'catalogCategories_' + data.id;
     self.ClickItem = function() {
         EventDispatcher.DispatchEvent('widget.click.item', data)
     }
@@ -210,10 +264,6 @@ var CatalogViewModel = function() {
     self.parentId = 0;
     self.cssUl = '';
     self.items = ko.observableArray();
-    self.ReturnTop = function(){
-        alert('back to top');
-        //EventDispatcher.DispatchEvent('widget.click.item', data)
-    }
     self.AddItem = function(data){
         self.parentId = data.parentId;
         self.cssUl = 'catalogCategories_' + data.parentId;
@@ -224,16 +274,16 @@ var CatalogViewModel = function() {
     }
 }
 
-var Section = function(data, active){
+var Section = function(data, callback){
     var self = this;
     self.id = data.id;
+    self.callback = callback;
     self.title = data.name_category;
-    self.active = '';
-    self.cssUl = 'catalogCategories_' + data.id;
-    self.cssSpan = 'listCategories_' + data.id + active;
+    self.cssBlock = 'catalogCategories_' + data.id;
+    self.cssSpan = 'listCategories_' + data.id;
     self.ClickSection = function() {
-        self.active = true;
-        EventDispatcher.DispatchEvent('widget.click.item', data)
+        if(self.callback)
+            self.callback(self);
     }
 }
 
@@ -241,20 +291,34 @@ var SectionViewModel = function() {
     var self = this;
     self.sectionCss = 'catalogSection';
     self.sections = ko.observableArray();
-    self.AddSection = function(data){
-        for(var i = 0; i <= data.length-1; i++){
-            var active = '';
-            if(i == 0)
-                Parameters.defaultCatalog = data[i].id;
-            if(Parameters.activeCatalog == data[i].id || (i == 0 && Parameters.activeCatalog == 0)){
-                Parameters.activeCatalog = data[i].id;
-                Parameters.typeCategory = 'section';
-                active = ' active';
+    self.AddSection = function(data, callback){
+        if(data && data.length){
+            for(var i = 0; i <= data.length-1; i++){
+                Parameters.catalogs[data[i].id] = data[i].id;
+                self.sections.push(new Section(data[i], callback));
             }
-            Parameters.catalogs[data[i].id] = data[i].id;
-            self.sections.push(new Section(data[i], active));
+        }
+        else if(data){
+            Parameters.lastItem = data.id;
+            Parameters.typeCategory = 'section';
+            self.sections.push(new Section(data,  callback));
         }
         EventDispatcher.DispatchEvent('catalogWidget.fill.section', self);
+    };
+}
+
+var BackToSectionViewModel = function(){
+    var self = this;
+    self.id = '';
+    self.title = '';
+    self.items = ko.observableArray();
+    self.ReturnToTop = function(){
+        
+    };
+    self.AddSection = function(data){
+        self.id = data.id;
+        self.title = data.name_category;
+        EventDispatcher.DispatchEvent('catalogWidget.fill.backToSection', self);
     }
 }
 

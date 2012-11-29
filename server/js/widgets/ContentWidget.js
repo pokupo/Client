@@ -37,14 +37,10 @@ var ContentWidget = function(conteiner){
             }
         },
         Content : function(parentId){
-            if(Parameters.cache.contentBlock[parentId].content != undefined){
+            if(Parameters.cache.content[parentId] == undefined){
                 XDMTransport.LoadData(self.settings.dataForContent + "&parentId=" + parentId, function(data){
-                    var t = JSON.parse(data);
-                    Parameters.cache.contentBlock[parentId] = {
-                        sort : Parameters.cache.contentBlock[parentId]['sort'], 
-                        block : Parameters.cache.contentBlock[parentId]['block'], 
-                        content : t
-                    };
+                    Parameters.cache.content[parentId] = data;
+
                     self.FillBlock(Parameters.cache.contentBlock[parentId]);
                 })
             }
@@ -84,18 +80,24 @@ var ContentWidget = function(conteiner){
             }
         });
 
-        EventDispatcher.AddEventListener('onload.content.tmpl', function (data){
-            alert('content')
+//        EventDispatcher.AddEventListener('onload.content.tmpl', function (data){
+//            alert('content')
+//        });
+        
+        EventDispatcher.AddEventListener('contentWidget.click.tovars', function(data){
+            self.RenderTovars(data);
         });
         
-        
+        EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
+            //self.Load.Content(data.idBlock);
+            alert(data.idBlock);
+        });
     };
     self.BustBlock = function(data){
         for(var i = 0; i <= data.length - 1; i++){
             Parameters.cache.contentBlock[data[i].id] = {
                 sort : i, 
-                block : data[i], 
-                content : []
+                block : data[i]
             };
             self.InsertContainer(i, data[i].type_view);
             self.Load.Content(data[i].id);
@@ -122,6 +124,10 @@ var ContentWidget = function(conteiner){
         ko.applyBindings(data, $('#' + data.cssBlock)[0]);
         $('#' + data.cssBlock).show();
     }
+    self.RenderTovars = function(data){
+        alert(data.chortNameBlockContent);
+    }
+    
 }
 
 /* Block */
@@ -139,13 +145,15 @@ var BlockViewModel = function(data){
     self.contentBlock  = ko.observableArray();
     
     self.AddContent = function(){
-        for(var i = 0; i <= data.content.length-1; i++){
+        var content = JSON.parse(Parameters.cache.content[data.block.id]);
+        console.log(content.length);
+        for(var i = 0; i <= content.length-1; i++){
             if(data.block.type_view == 'table'){
                 var str = new BlockTrForTableViewModel();
                 for(var j = 0; j <= 2; j++){
                     i = i + j;
-                    if(data.content[i]){
-                        str.AddStr(new BlockContentViewModel(data.content[i], i));
+                    if(content[i]){
+                        str.AddStr(new BlockContentViewModel(content[i], i));
                     }
                     else
                         break;
@@ -155,10 +163,14 @@ var BlockViewModel = function(data){
                 delete str;
             }
             else{
-                self.contentBlock.push(new BlockContentViewModel(data.content[i], i));
+                self.contentBlock.push(new BlockContentViewModel(content[i], i));
             }
         }
+        console.log(self.contentBlock().length);
         EventDispatcher.DispatchEvent('contentWidget.fill.block', self);
+    };
+    self.ClickCategory = function(){
+        EventDispatcher.DispatchEvent('contentWidget.click.category', self);
     };
 }
 var BlockContentViewModel = function(data, i){
@@ -184,11 +196,10 @@ var BlockContentViewModel = function(data, i){
     self.cssBlockContent = 'views-row views-row-' + (i+1);
     
     self.OldPriceBlockContent = ko.computed(function(){
-        
         return parseInt(data.discount)*parseInt(data.sell_cost.replace(' ', ''))/100  + " руб.";
     }, this);
-    self.ClickItemBlockContent = function(){
-        EventDispatcher.DispatchEvent('widget.click.content', data)
+    self.ClickTovars = function(){
+        EventDispatcher.DispatchEvent('contentWidget.click.tovars', self);
     }
 }
 

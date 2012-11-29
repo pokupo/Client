@@ -4,18 +4,17 @@
     </li>
 </script>
 <script type="text/html" id="catalogTmpl">
-    <div class="sidebar_block_menu" data-bind="css: sectionCss">
+    <div class="sidebar_block_menu">
         <div class="top_tabs" data-bind="foreach: sections">
-            <span data-bind="text: title, css: cssSpan"></span>
+            <span data-bind="text: title, css: cssSpan, click: ClickSection"></span>
         </div>
     </div>
 </script>
-<script type="text/html">
+<script type="text/html" id="sectionTmpl">
     <div class="sidebar_block_menu">
         <div class="top_tabs">
-            <span class="return active" data-bind="click: ReturnTop">Вверх</span> 
+            <span class="return active" data-bind="click: ReturnToTop">Вверх</span> 
         </div>
-        <ul class="sectionCategories" data-bind='template: { name: "catalogListTmpl", foreach: items }, css: cssUl'></ul>
     </div>
 </script>
 <script type="text/html" id="catalogUlTmpl">
