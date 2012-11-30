@@ -1,1 +1,177 @@
-<script type="text/html" id="contentTmpl"></script>
+<script type="text/html" id="contentTileTmpl">
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="category_block_1">
+                    <!-- ko foreach: content -->
+                    <div class="row">
+                        <div class="row_center">
+                            <table>
+                                <tr data-bind="foreach: str">
+                                    <td class="tab_row_1">
+                                        <div class="row_content">
+                                            <div class="photo">
+                                                <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/>
+                                                <!-- ko if: discount > 0 -->
+                                                <div class="save">
+                                                    <span class="text_1">скидка</span>
+                                                    <span class="text_2" data-bind="text: discount"></span>
+                                                </div>
+                                                <!-- /ko -->
+                                            </div>
+                                            <div class="title">
+                                                <a href="#" data-bind="text:chortName"></a> 
+                                                <!-- ko if: idAuction > 0 -->
+                                                <a href="#"><img title="" alt="" src="" data-bind="attr: {text: routIconAuction}"/></a>
+                                                <!-- /ko -->
+                                            </div>
+                                            <div class="category">Магазин: <a href="#" data-bind="text: shopName"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                            <div class="price">
+                                                <!-- ko if: discount > 0 -->
+                                                <span data-bind="text: sellGoods"></span><br />
+                                                <!-- /ko -->
+                                                <!--ko text: sellCost --><!--/ko-->
+                                            </div>
+                                            <div class="bay"><a href="#">Купить</a></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if pageCount > 1-->
+                    <div class="pager"></div>
+                    <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="contentTableTmpl">
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="category_block_2">
+                    <!-- ko foreach: content -->
+                    <div class="row">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td style="width: 212px;">
+                                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
+                                    </td>
+                                    <td style="vertical-align: top;">
+                                        <div class="title"><a href="#" data-bind="text: chortName"></a></div>
+                                        <div class="category">Магазин: <a href="#" data-bind="text: shopName"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                        <div class="body" data-bind="html: description"></div>
+                                        <div class="price" data-bind="text: sellCost"></div>
+                                        <div class="bay"><a href="#">Купить</a></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if pageCount > 1-->
+                    <div class="pager"></div>
+                    <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="contentListTmpl">
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="category_block_3">
+                    <div class="rows rows_1">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td class="row_1">Изображение</td>
+                                    <td class="row_2">Название</td>
+                                    <td class="row_3">Магазин</td>
+                                    <td class="row_4">Цена</td>
+                                    <td class="row_5">Купить</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ko foreach: content -->
+                    <div class="rows">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td class="row_1"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></td>
+                                    <td class="row_2"><a href="#" data-bind="text: chortName"></a></td>
+                                    <td class="row_3"><a href="#" data-bind="text: shopName"></a></td>
+                                    <td class="row_4" data-bind="text: sellCost"></td>
+                                    <td class="row_5"><a href="#">Купить</a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if pageCount > 1-->
+                    <div class="pager"></div>
+                    <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="contentFiletrTmpl">
+    <div class="salespeople_serch">
+        <div class="content">
+            <table style="width: 100%;">
+                <tr>
+                    <td>
+                        <form class="serch_form" action="" data-bind="submit: FilterNameGoods">
+                            <input class="form_text" type="text" name="text" value="" placeholder="Поиск товара"  data-bind="value: filterName"/>
+                            <input class="form_submit" type="submit" value=""/>
+                        </form>
+                    </td>
+                    <td>
+                        <div class="sorting_block">
+                            <span class="count">
+                                Количество:
+                                <!-- ko foreach: {data: listPerPage, as: 'count'} -->
+                                <a href="#" class="" data-bind="css: {'active': count == $parent.countGoodsPerPage}, text: count, click: $parent.SelectCount"></a> • 
+                                <!-- /ko-->
+                            </span>
+                            <span class="sort">
+                                <select class="form_select">
+                                    <option value="rating">рейтингу</option>
+                                    <option value="name">названию</option>
+                                    <option value="cost">цене</option>
+                                </select>
+                                <span>Сортировать по:</span>
+                            </span>
+                        </div>
+                    </td>
+                    <td style="width: 50px;">
+                        <div class="block_type" style="margin-top: 0px;">
+                            <a class="link_1" href="#" data-bind="css: {'active' : typeView == 'tile'}, click: selectTypeView.ClickTile"></a>
+                            <a class="link_2" href="#" data-bind="css: {'active' : typeView == 'table'}, click: selectTypeView.ClickTable"></a>
+                            <a class="link_3" href="#" data-bind="css: {'active' : typeView == 'list'}, click: selectTypeView.ClickList"></a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</script>

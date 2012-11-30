@@ -61,7 +61,7 @@ var CatalogWidget = function(conteiner){
         },
         Info : function(id, callback){
             if(!Parameters.cache.infoCategory[id]){
-                XDMTransport.LoadData(self.settings.dataCategoryInfo + "&category=" + id, function(data){
+                XDMTransport.LoadData(self.settings.dataCategoryInfo + "&categoryId=" + id, function(data){
                     Parameters.cache.infoCategory[id] = data;
                     if(callback)
                         callback(JSON.parse(data));
@@ -74,7 +74,7 @@ var CatalogWidget = function(conteiner){
         },
         Path : function(id, callback){
             if(!Parameters.cache.path[id]){
-                XDMTransport.LoadData(self.settings.dataPathForItem + '&category=' + id, function(data){
+                XDMTransport.LoadData(self.settings.dataPathForItem + '&categoryId=' + id, function(data){
                     var path = JSON.parse(data)['path'];
                     Parameters.cache.path[id] = path;
                     if(callback)

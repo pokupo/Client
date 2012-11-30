@@ -30,17 +30,6 @@ var BreadCrumbWidget = function(conteiner){
             else{
                 self.FillDataSelectListBreadCrumb(JSON.parse(Parameters.cache.childrenCategory[id]), id);
             }
-        },
-        Info : function(id){
-            if(!Parameters.cache.infoCategory[id]){
-                XDMTransport.LoadData(self.settings.dataCategoryInfo + "&category=" + id, function(data){
-                    Parameters.cache.infoCategory[id] = data;
-                    EventDispatcher.DispatchEvent('widget.click.item', JSON.parse(data));
-                })
-            }
-            else{
-                EventDispatcher.DispatchEvent('widget.click.item', JSON.parse(Parameters.cache.infoCategory[id]));
-            }
         }
     };
     self.RegisterEvents = function(){
@@ -115,7 +104,8 @@ var BreadCrumbWidget = function(conteiner){
                 for(var i=0; i<=conteiner.length-1; i++){
                     $("#" + self.settingBreadCrumb.containerIdForBreadCrumb[i]).hide();
                 }
-                self.Load.Info($('.' + data.cssSelectList + ' select').getSetSSValue())
+                self.BaseLoad.Info($('.' + data.cssSelectList + ' select').getSetSSValue(),  function(data){
+                    EventDispatcher.DispatchEvent('widget.click.item', data)})
             });
         }
     }

@@ -1,4 +1,8 @@
 Parameters = {
+    pathToImages : "http://dev.pokupo.ru/images",
+    routIconAuction : this.pathToImages + "ico_30.png",
+    sortingBlockContainer : '.sorting_block',
+    listSort : {'name' : 'названию', 'rating' : 'рейтингу', 'cost' : 'цене'},
     catalogs : [],
     crumbsTitle : [],
     activeSection : 0,
@@ -14,11 +18,13 @@ Parameters = {
         'contentBlock' : {},
         'content' : {},
         'roots': {},
-        'infoCategory' : {}
+        'infoCategory' : {},
+        'typeView' : ''
     }
 }
 
 function Widget(){
+    var self = this;
     this.isReady = false;
     this.settings = {
         dataForCatalog : "getCatalogData",
@@ -65,7 +71,10 @@ function Widget(){
                 }
                 else{
                     Parameters.activeItem = data.id;
-                    var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                    if(Parameters.activeSection != 0)
+                        var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                    else
+                        var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem;
                 }
 
                 Parameters.lastItem = data.id;
@@ -103,6 +112,48 @@ function Widget(){
             }
         }
     };
+    this.BaseLoad  = {
+        Blocks : function(parentId, callback){
+            if(!Parameters.cache.block[parentId]){
+                XDMTransport.LoadData(self.settings.dataBlocksForCatalog + "&parentId=" + parentId, function(data){
+                    Parameters.cache.block[parentId] = data;
+                    if(callback)
+                        callback(JSON.parse(data))
+                })
+            }
+            else{
+                if(callback)
+                        callback(JSON.parse(Parameters.cache.block[parentId]))
+            }
+        },
+        Content : function(categoryId, startContent, countGoodsPerPage, orderByContent, filterName, callback){
+            var queryHash = EventDispatcher.MD5(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
+            if(!Parameters.cache.content[queryHash]){
+                XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + filterName, function(data){
+                    Parameters.cache.content[queryHash] = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                })
+            }
+            else{
+                if(callback)
+                    callback(JSON.parse(Parameters.cache.content[queryHash]));
+            }
+        },
+        Info : function(id, callback){
+            if(!Parameters.cache.infoCategory[id]){
+                XDMTransport.LoadData(self.settings.dataCategoryInfo + "&categoryId=" + id, function(data){
+                    Parameters.cache.infoCategory[id] = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                })
+            }
+            else{
+                if(callback)
+                    callback(JSON.parse(Parameters.cache.infoCategory[id]))
+            }
+        }
+    }
     this.LoadTmpl = function(tmpl, callback){
         var self = this;
         XDMTransport.LoadTmpl(tmpl,function(data){
@@ -113,7 +164,7 @@ function Widget(){
     this.LoadPath = function(){
         if(Parameters.lastItem){
             if(!Parameters.cache.path[Parameters.lastItem]){
-                XDMTransport.LoadData(this.settings.dataPathForItem + '&category=' + Parameters.lastItem, function(data){
+                XDMTransport.LoadData(this.settings.dataPathForItem + '&categoryId=' + Parameters.lastItem, function(data){
                     var path = JSON.parse(data)['path'];
                     Parameters.cache.path[Parameters.lastItem] = path;
                     EventDispatcher.DispatchEvent('onload.data.path', path);

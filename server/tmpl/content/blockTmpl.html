@@ -6,9 +6,9 @@
                 <div class="view-slider">
                     <div class="view-content">
                         <!-- ko foreach: contentBlock -->
-                        <div data-bind="css: cssBlockContent">
-                            <a href="#" data-bind="attr: {href: imageHrefBlockContent}">
-                                <img title="" alt="" src="" data-bind="attr: {src: routeImageBlockContent, title: chortNameBlockContent}"/>
+                        <div data-bind="css: cssBlock">
+                            <a href="#" data-bind="attr: {href: imageHref}">
+                                <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/>
                             </a>
                         </div>
                         <!-- /ko -->
@@ -29,16 +29,18 @@
                 <!-- ko foreach: contentBlock -->
                 <li>
                     <div class="photo">
-                        <img title="" alt="" src="" data-bind="attr: {src: routeImageBlockContent, title: chortNameBlockContent}"/>
+                        <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/>
                         <div class="save">
                             <span class="text_1">скидка</span>
-                            <span class="text_2" data-bind="text: discountBlockContent"></span>
+                            <span class="text_2" data-bind="text: discount"></span>
                         </div>
                     </div>
-                    <div class="title"><a href="#" data-bind="text: chortNameBlockContent, click: ClickTovars"></a></div>
+                    <div class="title"><a href="#" data-bind="text: chortName, click: ClickTovars"></a></div>
                     <span class="price">
-                        <span data-bind="text: OldPriceBlockContent"></span>
-                        <br /><span style="color: #099033;display: inline-block;font: 18px/20px arial;text-decoration:none" data-bind="text: sellCostBlockContent"></span>
+                        <span data-bind="text: sellGoods"></span>
+                        <br />
+                        <!--ko text: sellCost --><!--/ko-->
+                    </span>
                     </span>
                     <a href="#" class="bay">Купить</a>
                 </li>
@@ -49,7 +51,7 @@
 </script>
 
 
-<script type="text/html" id="blockTovarsTmpl">
+<script type="text/html" id="blockTileTmpl">
     <div class="block_front_tovars promoBlocks">
         <div class="block_title" data-bind="text: titleBlock"></div>
         <a href="#" class="all_link" data-bind="click: ClickCategory">Все<span>→</span></a>
@@ -57,10 +59,10 @@
             <tbody data-bind="foreach: contentBlock"> 
                 <tr class="col_2" data-bind="foreach: str">
                     <td class="row_1">
-                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImageBlockContent, title: chortNameBlockContent}"/></div>
-                        <div class="title"><a href="#" data-bind="text: chortNameBlockContent"></a></div>
-                        <div class="category">Магазин: <a href="#" data-bind="text: shopNameBlockContent"></a> <span class="rating_shop" data-bind="text: reviewsBlockContent"></span> (<span>+100</span>/<span>-5</span>)</div>
-                        <span class="price" data-bind="text: sellCostBlockContent"></span>
+                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
+                        <div class="title"><a href="#" data-bind="text: chortName"></a></div>
+                        <div class="category">Магазин: <a href="#" data-bind="text: shopName"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                        <span class="price" data-bind="text: sellCost"></span>
                         <a href="#" class="bay">Купить</a>
                     </td>
                 </tr>

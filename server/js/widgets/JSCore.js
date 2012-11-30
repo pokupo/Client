@@ -4,7 +4,7 @@ var JSSettings = {
     pathToTmpl : "tmpl/",
     pathToData : "services/DataProxy.php?query=",
     pathToCore: "index.html",
-    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
+    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'jquery.pagination.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
     inputParameters : {}
 }
 
@@ -238,40 +238,7 @@ var EventDispatcher = {
         var temp = WordToHex(a)+WordToHex(b)+WordToHex(c)+WordToHex(d);
 
         return temp.toLowerCase();
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    //    eventListeners : [],
-    //    AddEventListener : function (event, callback) {
-    //        if(!this.eventListeners[event]){
-    //            this.eventListeners[event] = this.eventListeners[event] || [];
-    //            if (this.eventListeners[event]) {
-    //                EventDispatcher.RemoveEventListener(event, callback);
-    //                this.eventListeners[event].push(callback);
-    //            }
-    //        }
-    //    },
-    //    RemoveEventListener : function(event, func){
-    //        for(var i = 0, len = this.eventListeners[event].length; i < len; i+=1){
-    //            if (this.eventListeners[event][i] == func){
-    //                this.eventListeners[event].splice(i, 1);
-    //            }
-    //        }
-    //    },
-    //    DispatchEvent : function(event, data){
-    //        if (this.eventListeners[event]) {
-    //            var listeners = this.eventListeners[event], len = listeners.length;
-    //            while (len--) {
-    //                listeners[len](data);
-    //            }
-    //        }
-    //    }	
+    }	
 }
 
 var JSLoader = { 
@@ -309,13 +276,7 @@ var JSCore = {
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
     },
-    Extend : function (Child, Parent) {
-        var F = function() { };
-        F.prototype = Parent.prototype;
-        Child.prototype = new F();
-        Child.prototype.constructor = Child;
-        Child.superclass = Parent.prototype;
-    },
+    
     ParserInputParameters : function(scriptName){
         var obj = {};
         
