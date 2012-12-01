@@ -4,7 +4,7 @@ var JSSettings = {
     pathToTmpl : "tmpl/",
     pathToData : "services/DataProxy.php?query=",
     pathToCore: "index.html",
-    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'jquery.pagination.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
+    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
     inputParameters : {}
 }
 

@@ -43,9 +43,21 @@
                         </div>
                     </div>
                     <!-- /ko -->
-                    <!-- ko if pageCount > 1-->
-                    <div class="pager"></div>
-                    <!-- /ko -->
+                    
+                    <div class="pager">
+                        <ul >
+                            <!-- ko foreach: paging -->
+                            <li data-bind="css: cssLink">
+                                <!-- ko ifnot: current -->
+                                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                                <!-- /ko -->
+                                <!-- ko text: current ? title : '' --><!-- /ko -->
+                            </li>
+                            <!-- /ko-->
+                        </ul>
+                    </div>
+                   
+                </div>
                 </div>
             </td>
         </tr>
@@ -80,8 +92,8 @@
                         </div>
                     </div>
                     <!-- /ko -->
-                    <!-- ko if pageCount > 1-->
-                    <div class="pager"></div>
+                    <!-- ko if NumPages > 1-->
+                    <div class="pager" data-bind="template: { name: 'pagingTmpl', data: paging }"></div>
                     <!-- /ko -->
                 </div>
             </td>
@@ -125,8 +137,8 @@
                         </div>
                     </div>
                     <!-- /ko -->
-                    <!-- ko if pageCount > 1-->
-                    <div class="pager"></div>
+                    <!-- ko if NumPages > 1-->
+                    <div class="pager" data-bind="template: { name: 'pagingTmpl', data: paging }"></div>
                     <!-- /ko -->
                 </div>
             </td>
@@ -150,7 +162,7 @@
                             <span class="count">
                                 Количество:
                                 <!-- ko foreach: {data: listPerPage, as: 'count'} -->
-                                <a href="#" class="" data-bind="css: {'active': count == $parent.countGoodsPerPage}, text: count, click: $parent.SelectCount"></a> • 
+                                <a href="#" class="" data-bind="css: {'active': count == $parent.itemsPerPage}, text: count, click: $parent.SelectCount"></a> • 
                                 <!-- /ko-->
                             </span>
                             <span class="sort">
@@ -174,4 +186,23 @@
             </table>
         </div>
     </div>
+</script>
+
+<script type="text/html" id="pagingTmpl">
+    <ul >
+        <!-- ko foreach: $data -->
+        <li><a href="#" data-bind="text: title"></a></li>
+        <!-- /ko-->
+        
+        
+<!--        <li class="item_li"><a href="#">1</a></li>
+        <li class="curent">2</li>
+        <li class="item_li"><a href="#">3</a></li>
+        ...
+        <li class="item_li"><a href="#">12</a></li>
+        <li class="item_li"><a href="#">13</a></li>
+        <li class="item_li"><a href="#">14</a></li>
+
+        <li class="last"><a href="#"></a></li>-->
+    </ul>
 </script>

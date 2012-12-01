@@ -2,7 +2,11 @@ Parameters = {
     pathToImages : "http://dev.pokupo.ru/images",
     routIconAuction : this.pathToImages + "ico_30.png",
     sortingBlockContainer : '.sorting_block',
-    listSort : {'name' : 'названию', 'rating' : 'рейтингу', 'cost' : 'цене'},
+    listSort : {
+        'name' : 'названию', 
+        'rating' : 'рейтингу', 
+        'cost' : 'цене'
+    },
     catalogs : [],
     crumbsTitle : [],
     activeSection : 0,
@@ -20,6 +24,21 @@ Parameters = {
         'roots': {},
         'infoCategory' : {},
         'typeView' : ''
+    },
+    paging : {
+        currentPage : 0,
+        itemsPerPage : 20,
+        numDisplayEntries : 3,
+        numEdgeEntries : 3,
+        prevText : ' ',
+        nextText : ' ',
+        ellipseText : '...',
+        prevShowAlways :false,
+        nextShowAlways :false,
+        cssCurrent : 'curent',
+        cssItem : 'item_li',
+        cssPrev : 'first',
+        cssNext : 'last'
     }
 }
 
@@ -123,7 +142,7 @@ function Widget(){
             }
             else{
                 if(callback)
-                        callback(JSON.parse(Parameters.cache.block[parentId]))
+                    callback(JSON.parse(Parameters.cache.block[parentId]))
             }
         },
         Content : function(categoryId, startContent, countGoodsPerPage, orderByContent, filterName, callback){

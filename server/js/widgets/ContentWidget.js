@@ -8,11 +8,12 @@ var ContentWidget = function(conteiner){
         styleCatalog : {},
         inputParameters : {},
         countTovarsInBlock : 6,
-        countGoodsPerPage : 20,
+        itemsPerPage : 20,
         startContent : 0,
         orderByContent : 'name',
         filterName : '',
-        listPerPage : []
+        listPerPage : [],
+        numberPage : 1
     };
     self.SetInputParameters = function(){
         self.settingsContent.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
@@ -23,7 +24,7 @@ var ContentWidget = function(conteiner){
         if(self.settingsContent.inputParameters.content){
             var content = JSON.parse(self.settingsContent.inputParameters.content)
             if(content.defaultCount)
-                self.settingsContent.countGoodsPerPage = content.defaultCount;
+                self.settingsContent.itemsPerPage = content.defaultCount;
             if(content.list)
                 self.settingsContent.listPerPage = content.list;
         }
@@ -77,13 +78,15 @@ var ContentWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
             self.BaseLoad.Info(Parameters.activeItem, function(data){
-                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', {'id':data.id})
+                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', {
+                    'id':data.id
+                })
             })
         });
         
         EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(params){
             if(params.count)
-                self.settingsContent.countGoodsPerPage = params.count;
+                self.settingsContent.itemsPerPage = params.count;
             if(params.orderBy)
                 self.settingsContent.orderByContent = params.orderBy;
             if(params.filterName)
@@ -93,13 +96,13 @@ var ContentWidget = function(conteiner){
             self.BaseLoad.Content(
                 params.id,                              // id категори
                 self.settingsContent.startContent,      // Начальная позиция в списке для получения части списка с этой позиции
-                self.settingsContent.countGoodsPerPage, // Количество товаров в списке
+                self.settingsContent.itemsPerPage, // Количество товаров в списке
                 self.settingsContent.orderByContent,    // Сортировка
                 self.settingsContent.filterName,        // Выборка только тех товаров в названиях которых встречается эта ключевая фраза,
                 function(data){
                     self.FillContent(data, params.id);
                 }
-            )
+                )
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
@@ -128,7 +131,10 @@ var ContentWidget = function(conteiner){
             }).change(function(){
                 data.filters.orderBy = $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue();
                 EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-                    {'id' : data.id, 'orderBy' : $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue()}
+                {
+                    'id' : data.id, 
+                    'orderBy' : $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue()
+                }
                 )
             });
         });
@@ -144,7 +150,7 @@ var ContentWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
 
-        });
+            });
     };
     self.BustBlock = function(data){
         for(var i = 0; i <= data.length - 1; i++){
@@ -153,7 +159,9 @@ var ContentWidget = function(conteiner){
                 block : data[i]
             };
             self.InsertBlockContainer(i, data[i].type_view);
-            self.Load.Content({'id':data[i].id});
+            self.Load.Content({
+                'id':data[i].id
+            });
         }
     };
     self.InsertBlockContainer = function(sort, type){
@@ -192,23 +200,35 @@ var ContentWidget = function(conteiner){
     self.RenderList = function(data){
         ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
         
-        $(".pager").pagination(data.countGoods, {
-            items_per_page: self.settingsContent.countGoodsPerPage,
-            num_display_entries: 3,
-            num_edge_entries: 3,
-            prev_text: ' ',
-            next_text: ' ',
-            prev_show_always:false,
-            next_show_always:false,
-            callback: self.ClickPageLink
-        });
+        console.log(data.paging());
+        
+    //        $(".pager").pagination(data.countGoods, {
+    //            current_page: self.settingsContent.numberPage-1,
+    //            items_per_page: self.settingsContent.itemsPerPage,
+    //            num_display_entries: 3,
+    //            num_edge_entries: 3,
+    //            prev_text: ' ',
+    //            next_text: ' ',
+    //            prev_show_always:false,
+    //            next_show_always:false,
+    //            callback: self.ClickPageLink
+    //        });
     };
     self.RenderBlock = function(data){
         ko.applyBindings(data, $('#' + data.cssBlock)[0]);
         $('#' + data.cssBlock).show();
     }
     self.ClickPageLink = function(page_index, jq){
-        alert(page_index);
+        if(self.settingsContent.numberPage != page_index+1){
+            var start = (page_index + 1) * self.settingsContent.itemsPerPage;
+            self.settingsContent.numberPage = page_index+1;
+            EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
+            {
+                'id' : Parameters.lastItem, 
+                'start' : start
+            }
+            )
+        }
     }
 }
 
@@ -321,33 +341,30 @@ var ListContentViewModel = function(settings){
     self.defaultAct    = '';
 
     self.content  = ko.observableArray();
-    self.paginate = {
-        curent : 1,
-        pages : ko.observableArray(),
-        ClickNextPage : function(){
-            alert('next');
-        },
-        ClickPreviosPage : function(){
-            alert('previos');
-        }
-    }
+    self.paging = ko.observableArray();
     self.filters = {
         typeView : self.typeView,
         orderBy : settings.orderByContent,
         filterName : settings.filterName,
-        countGoodsPerPage : settings.countGoodsPerPage,
+        itemsPerPage : Parameters.paging.itemsPerPage,
         listPerPage : settings.listPerPage,
         countOptionList : ko.observable(settings.listPerPage.length-1),
         FilterNameGoods : function(data){
             self.filters.filterName = $(data.text).val();
             EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-                {'id' : self.id, 'filterName' : self.filters.filterName}
+            {
+                'id' : self.id, 
+                'filterName' : self.filters.filterName
+            }
             )
         },
         SelectCount : function(count){
-            self.filters.countGoodsPerPage = count;
+            self.filters.itemsPerPage = count;
             EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-                {'id' : self.id, 'count' : count}
+            {
+                'id' : self.id, 
+                'count' : count
+            }
             ) 
         },
         selectTypeView : {
@@ -412,34 +429,104 @@ var ListContentViewModel = function(settings){
                     self.content.push(new BlockContentViewModel(data[i], i));
                 }
             }
+            self.AddPages();
             EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
         }
     };
-    self.CountPage = function() {
-        return Math.ceil(self.countGoods/settings.countGoodsPerPage
-    )};
-//    self.Pagenation = function(){
-//        self.countPage = Math.ceil(self.countGoods/settings.countGoodsPerPage);
-//        var start = 1;
-//        for(var i = 1; i <= self.countPage; i++){
-//            self.paginate.pages = new PageLink(self.id, i, start);
-//            start = start + settings.countGoodsPerPage;
-//        }
-//        
-//    };
     self.GetQueryHash = function(categoryId){
-        return EventDispatcher.MD5(categoryId + settings.startContent + settings.countGoodsPerPage + settings.orderByContent + settings.filterName);
+        return EventDispatcher.MD5(categoryId + settings.startContent + settings.itemsPerPage + settings.orderByContent + settings.filterName);
     };
+    self.NumPages = function(){
+        return Math.ceil(self.countGoods/settings.itemsPerPage)
+    };
+    self.GetInterval = function(){
+        var ne_half = Math.ceil(Parameters.paging.numDisplayEntries/2);
+        var np = self.NumPages();
+        var upper_limit = np-Parameters.paging.numDisplayEntries;
+        var start = Parameters.paging.currentPage>ne_half?Math.max(Math.min(Parameters.paging.currentPage-ne_half, upper_limit), 0):0;
+        var end = Parameters.paging.currentPage>ne_half?Math.min(Parameters.paging.currentPage+ne_half, np):Math.min(Parameters.paging.numDisplayEntries, np);
+        return [start,end];
+    };
+    self.AppendItem = function(page_id, appendopts){
+        var np = self.NumPages();   
+        page_id = page_id<0?0:(page_id<np?page_id:np-1); // Normalize page id to sane value
+            
+        appendopts = jQuery.extend({
+            text : page_id+1, 
+            classes : ""
+        }, appendopts||{});
+            
+        if(page_id == Parameters.paging.currentPage){
+            self.paging.push(new Page(true, page_id, appendopts.text, Parameters.paging.cssCurrent));
+        }
+        else
+        {
+            self.paging.push( new Page(false, page_id, appendopts.text, appendopts.classes));
+        }
+    };
+    self.AddPages = function(){
+        var interval = self.GetInterval();
+        var np = self.NumPages();
+
+        if(Parameters.paging.prevText && (Parameters.paging.currentPage > 0 || Parameters.paging.prevShowAlways)){
+            self.AppendItem(Parameters.paging.currentPage-1, {
+                text : Parameters.paging.prevText,
+                classes : Parameters.paging.cssPrev
+            })
+        }
+        // Generate starting points
+        
+        if (interval[0] > 0 && Parameters.paging.numEdgeEntries > 0)
+        {
+            var end = Math.min(Parameters.paging.numEdgeEntries, interval[0]);
+            for(var i=0; i<end; i++) {
+                self.AppendItem(i)
+            }
+            if(Parameters.paging.numEdgeEntries < interval[0] && Parameters.paging.ellipseText)
+            {
+                self.paging.push(new Page(true, 0, Parameters.paging.ellipseText, Parameters.paging.cssItem));
+            }
+        }
+        // Generate interval links
+        for(var i=interval[0]; i<interval[1]; i++) {
+            self.AppendItem(i)
+        }
+        // Generate ending points
+        if (interval[1] < np && Parameters.paging.numEdgeEntries > 0)
+        {
+            if(np-Parameters.paging.numEdgeEntries > interval[1]&& Parameters.paging.ellipseText)
+            {
+                self.paging.push(new Page(true, 0, Parameters.paging.ellipseText, Parameters.paging.cssItem));
+            }
+            
+            var begin = Math.max(np-Parameters.paging.numEdgeEntries, interval[1]);
+            for(var i=begin; i<np; i++) {
+                self.AppendItem(i)
+            }
+				
+        }
+        // Generate "Next"-Link
+        if(Parameters.paging.nextText && (Parameters.paging.currentPage < np-1 || Parameters.paging.nextShowAlways)){
+            self.AppendItem(Parameters.paging.currentPage+1, {
+                text : Parameters.paging.nextText,
+                classes : Parameters.paging.cssNext
+            })
+        }
+    }
 }
 
-var PageLink = new function(categoryId, i, start){
+var Page = function(current, pageId, title, cssLink){
     var self = this;
-    self.start = i;
-    self.title = start;
-    self.ClickPage = function(){
-        EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-            {'id' : categoryId, 'start' : start}
-        )
+    self.pageId = pageId;
+    self.title = title;
+    self.current = current;
+    self.cssLink = ko.computed(function(){
+        if(cssLink)
+            return cssLink;
+        return Parameters.paging.cssItem;
+    }, this);
+    self.ClickLinkPage = function(){
+        alert(self.pageId);
     }
 }
 /* End Content*/
