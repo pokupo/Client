@@ -8,12 +8,25 @@ var ContentWidget = function(conteiner){
         styleCatalog : {},
         inputParameters : {},
         countTovarsInBlock : 6,
-        itemsPerPage : 20,
-        startContent : 0,
         orderByContent : 'name',
         filterName : '',
         listPerPage : [],
-        numberPage : 1
+        paging : {
+            currentPage : 1,
+            itemsPerPage : 20,
+            numDisplayEntries : 3,
+            numEdgeEntries : 3,
+            prevText : ' ',
+            nextText : ' ',
+            ellipseText : '...',
+            prevShowAlways :false,
+            nextShowAlways :false,
+            cssCurrent : 'curent',
+            cssItem : 'item_li',
+            cssPrev : 'first',
+            cssNext : 'last',
+            startContent : 1
+        }
     };
     self.SetInputParameters = function(){
         self.settingsContent.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
@@ -24,10 +37,16 @@ var ContentWidget = function(conteiner){
         if(self.settingsContent.inputParameters.content){
             var content = JSON.parse(self.settingsContent.inputParameters.content)
             if(content.defaultCount)
-                self.settingsContent.itemsPerPage = content.defaultCount;
+                self.settingsContent.paging.itemsPerPage = content.defaultCount;
             if(content.list)
                 self.settingsContent.listPerPage = content.list;
         }
+        if(Parameters.cache.pageId > 1){
+            self.settingsContent.paging.currentPage = Parameters.cache.pageId;
+            self.settingsContent.paging.startContent = (Parameters.cache.pageId-1)*self.settingsContent.paging.itemsPerPage + 1;
+            Parameters.cache.pageId = 1;
+        }
+        
     };
     self.InitWidget = function(){
         self.settingsContent.conteinerIdForContent = conteiner;
@@ -86,17 +105,17 @@ var ContentWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(params){
             if(params.count)
-                self.settingsContent.itemsPerPage = params.count;
+                self.settingsContent.paging.itemsPerPage = params.count;
             if(params.orderBy)
                 self.settingsContent.orderByContent = params.orderBy;
             if(params.filterName)
                 self.settingsContent.filterName = params.filterName;
             if(params.start)
-                self.settingsContent.startContent = params.start;
+                self.settingsContent.paging.startContent = params.start;
             self.BaseLoad.Content(
                 params.id,                              // id категори
-                self.settingsContent.startContent,      // Начальная позиция в списке для получения части списка с этой позиции
-                self.settingsContent.itemsPerPage, // Количество товаров в списке
+                self.settingsContent.paging.startContent,      // Начальная позиция в списке для получения части списка с этой позиции
+                self.settingsContent.paging.itemsPerPage,      // Количество товаров в списке
                 self.settingsContent.orderByContent,    // Сортировка
                 self.settingsContent.filterName,        // Выборка только тех товаров в названиях которых встречается эта ключевая фраза,
                 function(data){
@@ -145,8 +164,8 @@ var ContentWidget = function(conteiner){
         });
     
         EventDispatcher.AddEventListener('contentWidget.click.goods', function(data){
-            self.RenderTovars(data);
-        });
+            //self.RenderTovars(data);
+            });
         
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
 
@@ -199,36 +218,10 @@ var ContentWidget = function(conteiner){
     };
     self.RenderList = function(data){
         ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
-        
-        console.log(data.paging());
-        
-    //        $(".pager").pagination(data.countGoods, {
-    //            current_page: self.settingsContent.numberPage-1,
-    //            items_per_page: self.settingsContent.itemsPerPage,
-    //            num_display_entries: 3,
-    //            num_edge_entries: 3,
-    //            prev_text: ' ',
-    //            next_text: ' ',
-    //            prev_show_always:false,
-    //            next_show_always:false,
-    //            callback: self.ClickPageLink
-    //        });
-    };
+    }
     self.RenderBlock = function(data){
         ko.applyBindings(data, $('#' + data.cssBlock)[0]);
         $('#' + data.cssBlock).show();
-    }
-    self.ClickPageLink = function(page_index, jq){
-        if(self.settingsContent.numberPage != page_index+1){
-            var start = (page_index + 1) * self.settingsContent.itemsPerPage;
-            self.settingsContent.numberPage = page_index+1;
-            EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-            {
-                'id' : Parameters.lastItem, 
-                'start' : start
-            }
-            )
-        }
     }
 }
 
@@ -281,11 +274,10 @@ var BlockContentViewModel = function(data, i){
     self.id = data.id;
     self.chortName = data.chort_name;
     self.fullName = data.full_name;
-    self.routeImage = Parameters.pathToImages + data.route_image;
+    self.routeImage = Parameters.pathToImages +  data.route_image;
     self.countTovars = data.count;
     self.sellGoods = data.sell_goods + " руб.";
-    self.sellCost = data.sell_end_cost + " руб."; 
-    //self.shortDescription = data.short_description;
+    self.sellCost = data.sell_end_cost + " руб.";
     self.description = ko.computed(function(){
         if(data.description)
             return data.description;
@@ -303,7 +295,7 @@ var BlockContentViewModel = function(data, i){
     self.shopId = data.id_shop;
     self.shopName = data.name_shop;
     self.ratingShop = data.rating_shop;
-    self.routeLogoShop =Parameters.pathToImages + data.route_logo_shop;
+    self.routeLogoShop = Parameters.pathToImages + data.route_logo_shop;
     self.positiveOpinion = '+' + data.positive_opinion;
     self.negativeOpinion = '-' + data.negative_opinion;
     self.keyWords = data.key_words;
@@ -317,8 +309,18 @@ var BlockContentViewModel = function(data, i){
     self.imageHref = '#' + (i+1);
     self.cssBlock = 'views-row views-row-' + (i+1);
     
-    self.ClickTovars = function(){
+    self.ClickGoods = function(){
+        alert(self.id);
         EventDispatcher.DispatchEvent('contentWidget.click.goods', self);
+    }
+    self.ClickShop = function(){
+        alert(self.shopId);
+    }
+    self.ClickBuy = function(){
+    //alert()
+    }
+    self.ClickAuction = function(){
+        
     }
 }
 var BlockTrForTableViewModel = function(){
@@ -346,7 +348,7 @@ var ListContentViewModel = function(settings){
         typeView : self.typeView,
         orderBy : settings.orderByContent,
         filterName : settings.filterName,
-        itemsPerPage : Parameters.paging.itemsPerPage,
+        itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : settings.listPerPage,
         countOptionList : ko.observable(settings.listPerPage.length-1),
         FilterNameGoods : function(data){
@@ -360,6 +362,14 @@ var ListContentViewModel = function(settings){
         },
         SelectCount : function(count){
             self.filters.itemsPerPage = count;
+            settings.paging.itemsPerPage = count;
+            settings.paging.currentPage = 1;
+            settings.paging.startContent = 0;
+            if(Parameters.activeSection != 0)
+            var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+            else
+                var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem;
+            window.location.hash = href;
             EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
             {
                 'id' : self.id, 
@@ -429,62 +439,79 @@ var ListContentViewModel = function(settings){
                     self.content.push(new BlockContentViewModel(data[i], i));
                 }
             }
-            self.AddPages();
+            self.AddPages(settings);
             EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
         }
     };
     self.GetQueryHash = function(categoryId){
-        return EventDispatcher.MD5(categoryId + settings.startContent + settings.itemsPerPage + settings.orderByContent + settings.filterName);
+        return EventDispatcher.MD5(categoryId + settings.paging.startContent + settings.paging.itemsPerPage + settings.orderByContent + settings.filterName);
     };
     self.NumPages = function(){
-        return Math.ceil(self.countGoods/settings.itemsPerPage)
+        return Math.ceil(self.countGoods/settings.paging.itemsPerPage)
     };
     self.GetInterval = function(){
-        var ne_half = Math.ceil(Parameters.paging.numDisplayEntries/2);
+        var ne_half = Math.ceil(settings.paging.numDisplayEntries/2);
         var np = self.NumPages();
-        var upper_limit = np-Parameters.paging.numDisplayEntries;
-        var start = Parameters.paging.currentPage>ne_half?Math.max(Math.min(Parameters.paging.currentPage-ne_half, upper_limit), 0):0;
-        var end = Parameters.paging.currentPage>ne_half?Math.min(Parameters.paging.currentPage+ne_half, np):Math.min(Parameters.paging.numDisplayEntries, np);
-        return [start,end];
+        var upper_limit = np-settings.paging.numDisplayEntries;
+        var start = settings.paging.currentPage>ne_half?Math.max(Math.min(settings.paging.currentPage-ne_half, upper_limit), 0):0;
+        var end = settings.paging.currentPage>ne_half?Math.min(settings.paging.currentPage+ne_half, np):Math.min(settings.paging.numDisplayEntries, np);
+        return [start + 1,end + 1];
     };
     self.AppendItem = function(page_id, appendopts){
-        var np = self.NumPages();   
-        page_id = page_id<0?0:(page_id<np?page_id:np-1); // Normalize page id to sane value
+        var np = self.NumPages();
+        page_id = page_id<1 ? 1 : (page_id<np ? page_id : np);
             
         appendopts = jQuery.extend({
-            text : page_id+1, 
+            text : page_id, 
             classes : ""
         }, appendopts||{});
             
-        if(page_id == Parameters.paging.currentPage){
-            self.paging.push(new Page(true, page_id, appendopts.text, Parameters.paging.cssCurrent));
+        if(page_id == settings.paging.currentPage){
+            self.paging.push(new Page({
+                current : true, 
+                pageId : page_id,
+                title : appendopts.text, 
+                cssLink : settings.paging.cssCurrent,
+                settings : settings
+            }));
         }
         else
         {
-            self.paging.push( new Page(false, page_id, appendopts.text, appendopts.classes));
+            self.paging.push( new Page({
+                current : false, 
+                pageId : page_id,
+                title : appendopts.text, 
+                cssLink : appendopts.classes,
+                settings : settings
+            }));
         }
     };
-    self.AddPages = function(){
+    self.AddPages = function(settings){
+        self.paging = ko.observableArray();
         var interval = self.GetInterval();
         var np = self.NumPages();
-
-        if(Parameters.paging.prevText && (Parameters.paging.currentPage > 0 || Parameters.paging.prevShowAlways)){
-            self.AppendItem(Parameters.paging.currentPage-1, {
-                text : Parameters.paging.prevText,
-                classes : Parameters.paging.cssPrev
+        if(settings.paging.prevText && (settings.paging.currentPage > 1 || settings.paging.prevShowAlways)){
+            self.AppendItem(settings.paging.currentPage-1, {
+                text : settings.paging.prevText,
+                classes : settings.paging.cssPrev
             })
         }
         // Generate starting points
-        
-        if (interval[0] > 0 && Parameters.paging.numEdgeEntries > 0)
+        if (interval[0] > 0 && settings.paging.numEdgeEntries > 0)
         {
-            var end = Math.min(Parameters.paging.numEdgeEntries, interval[0]);
-            for(var i=0; i<end; i++) {
+            var end = Math.min(settings.paging.numEdgeEntries, interval[0]);
+            for(var i=1; i<end; i++) {
                 self.AppendItem(i)
             }
-            if(Parameters.paging.numEdgeEntries < interval[0] && Parameters.paging.ellipseText)
+            if(settings.paging.numEdgeEntries < interval[0] && settings.paging.ellipseText)
             {
-                self.paging.push(new Page(true, 0, Parameters.paging.ellipseText, Parameters.paging.cssItem));
+                self.paging.push(new Page({
+                    current : true, 
+                    pageId : 0,
+                    title : settings.paging.ellipseText, 
+                    cssLink : settings.paging.cssItem,
+                    settings : settings
+                }));
             }
         }
         // Generate interval links
@@ -492,41 +519,60 @@ var ListContentViewModel = function(settings){
             self.AppendItem(i)
         }
         // Generate ending points
-        if (interval[1] < np && Parameters.paging.numEdgeEntries > 0)
+        if (interval[1] < np && settings.paging.numEdgeEntries > 0)
         {
-            if(np-Parameters.paging.numEdgeEntries > interval[1]&& Parameters.paging.ellipseText)
+            if(np-settings.paging.numEdgeEntries > interval[1]&& settings.paging.ellipseText)
             {
-                self.paging.push(new Page(true, 0, Parameters.paging.ellipseText, Parameters.paging.cssItem));
+                self.paging.push(new Page({
+                    current : true, 
+                    pageId : 0,
+                    title : settings.paging.ellipseText, 
+                    cssLink : settings.paging.cssItem,
+                    settings : settings
+                }));
             }
+            var begin = Math.max(np-settings.paging.numEdgeEntries, interval[1])+1;
             
-            var begin = Math.max(np-Parameters.paging.numEdgeEntries, interval[1]);
-            for(var i=begin; i<np; i++) {
+            for(var i=begin; i<=np; i++) {
                 self.AppendItem(i)
-            }
-				
+            }		
         }
         // Generate "Next"-Link
-        if(Parameters.paging.nextText && (Parameters.paging.currentPage < np-1 || Parameters.paging.nextShowAlways)){
-            self.AppendItem(Parameters.paging.currentPage+1, {
-                text : Parameters.paging.nextText,
-                classes : Parameters.paging.cssNext
+        if(settings.paging.nextText && (settings.paging.currentPage < np || settings.paging.nextShowAlways)){
+            self.AppendItem(settings.paging.currentPage+1, {
+                text : settings.paging.nextText,
+                classes : settings.paging.cssNext
             })
         }
     }
 }
 
-var Page = function(current, pageId, title, cssLink){
+var Page = function(opt){
     var self = this;
-    self.pageId = pageId;
-    self.title = title;
-    self.current = current;
+    self.pageId = opt.pageId;
+    self.title = opt.title;
+    self.current = opt.current;
     self.cssLink = ko.computed(function(){
-        if(cssLink)
-            return cssLink;
-        return Parameters.paging.cssItem;
+        if(opt.cssLink)
+            return opt.cssLink;
+        return opt.settings.paging.cssItem;
     }, this);
     self.ClickLinkPage = function(){
-        alert(self.pageId);
+        var start = (self.pageId-1) * opt.settings.paging.itemsPerPage + 1;
+        opt.settings.paging.currentPage = self.pageId;
+        
+        if(Parameters.activeSection != 0)
+            var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem + "&page=" + self.pageId;
+        else
+            var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem + "&page=" + self.pageId;
+        window.location.hash = href;
+        
+        EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
+        {
+            'id' : Parameters.lastItem, 
+            'start' : start
+        }
+        )
     }
 }
 /* End Content*/

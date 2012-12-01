@@ -1,11 +1,11 @@
 Parameters = {
     pathToImages : "http://dev.pokupo.ru/images",
-    routIconAuction : this.pathToImages + "ico_30.png",
+    routIconAuction : "http://dev.pokupo.ru/images/ico_30.png",
     sortingBlockContainer : '.sorting_block',
     listSort : {
-        'name' : 'названию', 
-        'rating' : 'рейтингу', 
-        'cost' : 'цене'
+        name : 'названию', 
+        rating : 'рейтингу', 
+        cost : 'цене'
     },
     catalogs : [],
     crumbsTitle : [],
@@ -16,29 +16,15 @@ Parameters = {
     typeCategory : "",
     shopId : 0,
     cache : {
-        'path' : {},
-        'childrenCategory' : {},
-        'block' : {},
-        'contentBlock' : {},
-        'content' : {},
-        'roots': {},
-        'infoCategory' : {},
-        'typeView' : ''
-    },
-    paging : {
-        currentPage : 0,
-        itemsPerPage : 20,
-        numDisplayEntries : 3,
-        numEdgeEntries : 3,
-        prevText : ' ',
-        nextText : ' ',
-        ellipseText : '...',
-        prevShowAlways :false,
-        nextShowAlways :false,
-        cssCurrent : 'curent',
-        cssItem : 'item_li',
-        cssPrev : 'first',
-        cssNext : 'last'
+        path : {},
+        childrenCategory : {},
+        block : {},
+        contentBlock : {},
+        content : {},
+        roots: {},
+        infoCategory : {},
+        typeView : '',
+        pageId: 1
     }
 }
 
@@ -218,6 +204,9 @@ function Widget(){
             Parameters.activeItem = this.settings.hashParameters['category'];
             Parameters.lastItem = Parameters.activeItem;
             Parameters.typeCategory = 'category';
+        }
+        if(this.settings.hashParameters['page']){
+            Parameters.cache.pageId = this.settings.hashParameters['page'];
         }
     };
 }

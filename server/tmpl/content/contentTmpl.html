@@ -11,7 +11,7 @@
                         <div class="row_center">
                             <table>
                                 <tr data-bind="foreach: str">
-                                    <td class="tab_row_1">
+                                    <td class="tab_row_1" data-bind="css: {auction: idAuction() > 0}">
                                         <div class="row_content">
                                             <div class="photo">
                                                 <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/>
@@ -23,19 +23,19 @@
                                                 <!-- /ko -->
                                             </div>
                                             <div class="title">
-                                                <a href="#" data-bind="text:chortName"></a> 
-                                                <!-- ko if: idAuction > 0 -->
-                                                <a href="#"><img title="" alt="" src="" data-bind="attr: {text: routIconAuction}"/></a>
+                                                <a href="#" data-bind="text:chortName, click: ClickGoods"></a> 
+                                                <!-- ko if: idAuction() > 0 -->
+                                                <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
                                                 <!-- /ko -->
                                             </div>
-                                            <div class="category">Магазин: <a href="#" data-bind="text: shopName"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                            <div class="category">Магазин: <a href="#" data-bind="text: shopName, click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
                                             <div class="price">
                                                 <!-- ko if: discount > 0 -->
                                                 <span data-bind="text: sellGoods"></span><br />
                                                 <!-- /ko -->
                                                 <!--ko text: sellCost --><!--/ko-->
                                             </div>
-                                            <div class="bay"><a href="#">Купить</a></div>
+                                            <div class="bay"><a href="#" data-bind="click: ClickBuy">Купить</a></div>
                                         </div>
                                     </td>
                                 </tr>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <!-- /ko -->
-                    
+                    <!-- ko if: paging().length > 1 -->
                     <div class="pager">
                         <ul >
                             <!-- ko foreach: paging -->
@@ -56,7 +56,7 @@
                             <!-- /ko-->
                         </ul>
                     </div>
-                   
+                    <!-- /ko -->
                 </div>
                 </div>
             </td>
@@ -73,7 +73,7 @@
             <td>
                 <div class="category_block_2">
                     <!-- ko foreach: content -->
-                    <div class="row">
+                    <div class="row" data-bind="css: {auction: idAuction() > 0}">
                         <div class="row_content">
                             <table>
                                 <tr>
@@ -81,20 +81,34 @@
                                         <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
                                     </td>
                                     <td style="vertical-align: top;">
-                                        <div class="title"><a href="#" data-bind="text: chortName"></a></div>
-                                        <div class="category">Магазин: <a href="#" data-bind="text: shopName"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                        <div class="title">
+                                            <a href="#" data-bind="text: chortName, click: ClickGoods"></a>
+                                            <!-- ko if: idAuction() > 0 -->
+                                            <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                                            <!-- /ko -->
+                                        </div>
+                                        <div class="category">Магазин: <a href="#" data-bind="text: shopName, click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
                                         <div class="body" data-bind="html: description"></div>
                                         <div class="price" data-bind="text: sellCost"></div>
-                                        <div class="bay"><a href="#">Купить</a></div>
+                                        <div class="bay"><a href="#" data-bind="click: ClickBuy">Купить</a></div>
                                     </td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                     <!-- /ko -->
-                    <!-- ko if NumPages > 1-->
-                    <div class="pager" data-bind="template: { name: 'pagingTmpl', data: paging }"></div>
-                    <!-- /ko -->
+                    <div class="pager">
+                        <ul >
+                            <!-- ko foreach: paging -->
+                            <li data-bind="css: cssLink">
+                                <!-- ko ifnot: current -->
+                                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                                <!-- /ko -->
+                                <!-- ko text: current ? title : '' --><!-- /ko -->
+                            </li>
+                            <!-- /ko-->
+                        </ul>
+                    </div>
                 </div>
             </td>
         </tr>
@@ -123,23 +137,37 @@
                         </div>
                     </div>
                     <!-- ko foreach: content -->
-                    <div class="rows">
+                    <div class="rows"  data-bind="css: {auction: idAuction() > 0}">
                         <div class="row_content">
                             <table>
                                 <tr>
                                     <td class="row_1"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></td>
-                                    <td class="row_2"><a href="#" data-bind="text: chortName"></a></td>
-                                    <td class="row_3"><a href="#" data-bind="text: shopName"></a></td>
+                                    <td class="row_2">
+                                        <a href="#" data-bind="text: chortName, click: ClickGoods"></a>
+                                        <!-- ko if: idAuction() > 0 -->
+                                        <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                                        <!-- /ko -->
+                                    </td>
+                                    <td class="row_3"><a href="#" data-bind="text: shopName, click: ClickShop"></a></td>
                                     <td class="row_4" data-bind="text: sellCost"></td>
-                                    <td class="row_5"><a href="#">Купить</a></td>
+                                    <td class="row_5"><a href="#" data-bind="click: ClickBuy">Купить</a></td>
                                 </tr>
                             </table>
                         </div>
                     </div>
                     <!-- /ko -->
-                    <!-- ko if NumPages > 1-->
-                    <div class="pager" data-bind="template: { name: 'pagingTmpl', data: paging }"></div>
-                    <!-- /ko -->
+                    <div class="pager">
+                        <ul >
+                            <!-- ko foreach: paging -->
+                            <li data-bind="css: cssLink">
+                                <!-- ko ifnot: current -->
+                                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                                <!-- /ko -->
+                                <!-- ko text: current ? title : '' --><!-- /ko -->
+                            </li>
+                            <!-- /ko-->
+                        </ul>
+                    </div>
                 </div>
             </td>
         </tr>
@@ -186,23 +214,4 @@
             </table>
         </div>
     </div>
-</script>
-
-<script type="text/html" id="pagingTmpl">
-    <ul >
-        <!-- ko foreach: $data -->
-        <li><a href="#" data-bind="text: title"></a></li>
-        <!-- /ko-->
-        
-        
-<!--        <li class="item_li"><a href="#">1</a></li>
-        <li class="curent">2</li>
-        <li class="item_li"><a href="#">3</a></li>
-        ...
-        <li class="item_li"><a href="#">12</a></li>
-        <li class="item_li"><a href="#">13</a></li>
-        <li class="item_li"><a href="#">14</a></li>
-
-        <li class="last"><a href="#"></a></li>-->
-    </ul>
 </script>
