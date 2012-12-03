@@ -2,63 +2,54 @@ var BreadCrumbWidget = function(conteiner){
     var self = this;
     self.breadCrumb = {};
     self.breadCrumbViewModel = null;
-    self.settingBreadCrumb = {
+    self.settingsBreadCrumb = {
         containerIdForBreadCrumb : conteiner, 
         tmplForBreadCrumb : "breadCrumb/breadCrumbTmpl.html",
         inputParameters : {},
-        styleCatalog : {
+        styleBreadCrumb : {
             'position' : 'absolute', 
-            'top' : '100px', 
+            'top' : '0px', 
             'left' : '5%', 
-            'width' : '20%', 
-            'height' : '200px', 
+            'width' : '100%', 
+            'height' : '50px', 
             'background' : '#ddd'
         }
     };
     self.InitWidget = function(){
-        self.CreateContainer();
         self.RegisterEvents();
+        self.SetInputParameters();
+        self.SetPosition();
     };
-    self.Load = {
-        Section : function(id){
-            if(!Parameters.cache.childrenCategory[id]){
-                XDMTransport.LoadData(self.settings.dataForCatalog + "&parentId=" + id, function(data){
-                    Parameters.cache.childrenCategory[id] = data;
-                    self.FillDataSelectListBreadCrumb(JSON.parse(data), id);
-                })
-            }
-            else{
-                self.FillDataSelectListBreadCrumb(JSON.parse(Parameters.cache.childrenCategory[id]), id);
-            }
-        }
+    self.SetInputParameters = function(){
+        self.settingsBreadCrumb.inputParameters = JSCore.ParserInputParameters(/BreadCrumbWidget.js/);
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.LoadTmpl(self.settingBreadCrumb.tmplForBreadCrumb, function(){
+            self.BaseLoad.Tmpl(self.settingsBreadCrumb.tmplForBreadCrumb, function(){
                 EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl')
                 });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl(self.settingBreadCrumb.tmplForBreadCrumb, function(){
+                self.BaseLoad.Tmpl(self.settingsBreadCrumb.tmplForBreadCrumb, function(){
                     EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl')
                     });
             });
         }
         
         EventDispatcher.AddEventListener('onload.breadCrumb.tmpl', function (data){
-            self.LoadPath();
+            self.BaseLoad.Path(Parameters.lastItem, function(data){EventDispatcher.DispatchEvent('onload.data.path', data)});
         });
         
         EventDispatcher.AddEventListener('widget.changeHash', function (data){
             for(var i=0; i<=conteiner.length-1; i++){
-                $("#" + self.settingBreadCrumb.containerIdForBreadCrumb[i]).hide();
+                $("#" + self.settingsBreadCrumb.containerIdForBreadCrumb[i]).hide();
             }
-            self.LoadPath(); 
+            self.BaseLoad.Path(Parameters.lastItem, function(data){EventDispatcher.DispatchEvent('onload.data.path', data)}); 
         });
         
         EventDispatcher.AddEventListener('onload.data.path', function (data){
-            self.FillDataBreadCrumb(data);
+            self.Fill.BreadCrumb(data);
         });
         
         EventDispatcher.AddEventListener('breadCrumbWidget.fill.item', function (data){
@@ -67,7 +58,9 @@ var BreadCrumbWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('breadCrumbWidget.rendered.item', function(data){
             for(var i = 0; i <= data.crumbs().length-1; i++){
-                self.Load.Section(data.crumbs()[i].id);
+                self.BaseLoad.Section(data.crumbs()[i].id, function(sec){
+                    self.Fill.SelectList(sec.data, sec.parentId)
+                });
             }
         });
         
@@ -75,20 +68,23 @@ var BreadCrumbWidget = function(conteiner){
             self.Render.SelectList(data);
         });
     };
-    self.FillDataBreadCrumb = function(data){
-        var breadCrumb = new BreadCrumbViewModel();
-        breadCrumb.AddCrumbs(data);
-    };
-    self.FillDataSelectListBreadCrumb = function(data, id){
-        var crumb = new SelectListBreadCrumbItemViewModel();
-        crumb.AddSelectList(data, id);
-    };
+    self.Fill = {
+        BreadCrumb : function(data){
+            var breadCrumb = new BreadCrumbViewModel();
+            breadCrumb.AddCrumbs(data);
+        },
+        SelectList : function(data, id){
+            var crumb = new SelectListBreadCrumbItemViewModel();
+            crumb.AddSelectList(data, id);
+        }
+    },
     self.Render = {
         BreadCrumb : function(data){
             for(var i=0; i<=conteiner.length-1; i++){
-                $("#" + self.settingBreadCrumb.containerIdForBreadCrumb[i]).html("");
-                $("#" + self.settingBreadCrumb.containerIdForBreadCrumb[i]).append($('script#breadCrumbTmpl').html()).show();
-                ko.applyBindings(data, $('#' + self.settingBreadCrumb.containerIdForBreadCrumb[i])[0]);
+                $("#" + self.settingsBreadCrumb.containerIdForBreadCrumb[i]).html("");
+                $("#" + self.settingsBreadCrumb.containerIdForBreadCrumb[i]).append($('script#breadCrumbTmpl').html()).show();
+                ko.applyBindings(data, $('#' + self.settingsBreadCrumb.containerIdForBreadCrumb[i])[0]);
+                 delete data;
             }
             EventDispatcher.DispatchEvent('breadCrumbWidget.rendered.item', data);
         },
@@ -101,11 +97,26 @@ var BreadCrumbWidget = function(conteiner){
             $('.' + data.cssSelectList + ' select').sSelect({
                 defaultText: Parameters.crumbsTitle[data.parentId]
             }).change(function(){
+                var id = $('.' + data.cssSelectList + ' select').getSetSSValue();
                 for(var i=0; i<=conteiner.length-1; i++){
-                    $("#" + self.settingBreadCrumb.containerIdForBreadCrumb[i]).hide();
+                    $("#" + self.settingsBreadCrumb.containerIdForBreadCrumb[i]).html("");
                 }
-                self.BaseLoad.Info($('.' + data.cssSelectList + ' select').getSetSSValue(),  function(data){
+                self.BaseLoad.Info( id,  function(data){
                     EventDispatcher.DispatchEvent('widget.click.item', data)})
+            });
+            delete data;
+        }
+    }
+    self.SetPosition = function(){
+        if(self.settingsBreadCrumb.inputParameters['position'] == 'absolute'){
+            for(var key in self.settingsBreadCrumb.inputParameters){
+                if(self.settingsBreadCrumb.styleBreadCrumb[key])
+                    self.settingsBreadCrumb.styleBreadCrumb[key] = self.settingsBreadCrumb.inputParameters[key];
+            }
+            $().ready(function(){
+                for(var i=0; i<=conteiner.length-1; i++){
+                    $("#" + conteiner[i]).css(self.settingsBreadCrumb.styleBreadCrumb);
+                }
             });
         }
     }
@@ -115,12 +126,14 @@ var BreadCrumbItem = function(data){
     var self = this;
     self.id = data.id;
     self.title = data.name_category;
+    self.typeCategory = data.type_category;
     self.cssItem = 'pathItem_' + data.id;
 }
 
 var BreadCrumbViewModel = function(){
     var self = this;
     self.lastItem = "";
+    self.isCategory = false;
     self.crumbs = ko.observableArray();
     self.ToHomepage = function(){
         window.location.hash = '';
@@ -133,7 +146,15 @@ var BreadCrumbViewModel = function(){
                 Parameters.crumbsTitle[data[i].id] = data[i].name_category;
                 self.crumbs.push(new BreadCrumbItem(data[i]));
             }
-            self.lastItem = self.crumbs().pop().title;
+            var last = self.crumbs().pop();
+            self.lastItem = last.title;
+            
+            if(last.typeCategory == 'category' || last.typeCategory == 'block'){
+                self.isCategory = true;
+            }
+            else{
+                self.isCategory = false;
+            }
             EventDispatcher.DispatchEvent('breadCrumbWidget.fill.item', self);
         }
     };
@@ -143,9 +164,6 @@ var SelectListBreadCrumbItem = function(data){
     var self = this;
     self.id = data.id;
     self.title = data.name_category;
-    self.ClickItem = function(){
-        alert('ff');
-    }
 }
 
 var SelectListBreadCrumbItemViewModel = function(){
@@ -154,10 +172,10 @@ var SelectListBreadCrumbItemViewModel = function(){
     self.cssSelectList = '';
     self.listCrumbs = ko.observableArray();
     self.AddSelectList = function(data, id){
-        if(data && data.items){
-            for(var i = 0; i <= data.items.length - 1; i++){
-                if(!Parameters.crumbsTitle[data.items[i].id])
-                    self.listCrumbs.push(new SelectListBreadCrumbItem(data.items[i]));
+        if(data){
+            for(var i = 0; i <= data.length - 1; i++){
+                if(!Parameters.crumbsTitle[data[i].id])
+                    self.listCrumbs.push(new SelectListBreadCrumbItem(data[i]));
             }
             self.parentId = id;
             self.cssSelectList = 'pathItem_' + id;
@@ -170,7 +188,7 @@ var TestBreadCrumb = {
     Init : function(){
         if(typeof Widget == 'function' && JSCore !== undefined){
             BreadCrumbWidget.prototype = new Widget();
-            var breadCrumb = new BreadCrumbWidget(['breadCrumb_1', 'breadCrumb_2']);
+            var breadCrumb = new BreadCrumbWidget(['breadCrumb_1']);
             breadCrumb.Init();
         }
         else{

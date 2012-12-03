@@ -7,7 +7,7 @@ var ContentWidget = function(conteiner){
         inputParameters : {},
         styleCatalog : {},
         inputParameters : {},
-        countTovarsInBlock : 6,
+        countGoodsInBlock : 6,
         orderByContent : 'name',
         filterName : '',
         listPerPage : [],
@@ -25,14 +25,22 @@ var ContentWidget = function(conteiner){
             cssItem : 'item_li',
             cssPrev : 'first',
             cssNext : 'last',
-            startContent : 1
+            startContent : 0
+        },
+        styleContent : {
+            'position' : 'absolute', 
+            'top' : '50px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '600px', 
+            'background' : '#ddd'
         }
     };
     self.SetInputParameters = function(){
         self.settingsContent.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
         
         if(self.settingsContent.inputParameters.block){
-            self.settingsContent.countTovarsInBlock = JSON.parse(self.settingsContent.inputParameters.block).count;
+            self.settingsContent.countGoodsInBlock = JSON.parse(self.settingsContent.inputParameters.block).count;
         }
         if(self.settingsContent.inputParameters.content){
             var content = JSON.parse(self.settingsContent.inputParameters.content)
@@ -51,32 +59,19 @@ var ContentWidget = function(conteiner){
     self.InitWidget = function(){
         self.settingsContent.conteinerIdForContent = conteiner;
         self.SetInputParameters();
-        self.CreateContainer();
         self.RegisterEvents();
+        self.SetPosition();
     };
     self.SelectTypeContent = function(){
         if(Parameters.typeCategory == 'category'){     
-            self.LoadTmpl(self.settingsContent.tmplForContent, function(){
+            self.BaseLoad.Tmpl(self.settingsContent.tmplForContent, function(){
                 EventDispatcher.DispatchEvent('onload.content.tmpl')
             });
         }
         else{
-            self.LoadTmpl(self.settingsContent.tmplForBlock, function(){
+            self.BaseLoad.Tmpl(self.settingsContent.tmplForBlock, function(){
                 EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
             });
-        }
-    };
-    self.Load = {
-        Content : function(parentId){
-            if(Parameters.cache.content[parentId] == undefined){
-                XDMTransport.LoadData(self.settings.dataForContent + "&parentId=" + parentId, function(data){
-                    Parameters.cache.content[parentId] = data;
-                    self.FillBlock(Parameters.cache.contentBlock[parentId]);
-                })
-            }
-            else{
-                self.FillBlock(Parameters.cache.contentBlock[parentId]);
-            }
         }
     };
     self.RegisterEvents = function(){
@@ -97,9 +92,7 @@ var ContentWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
             self.BaseLoad.Info(Parameters.activeItem, function(data){
-                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', {
-                    'id':data.id
-                })
+                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', {'id':data.id})
             })
         });
         
@@ -119,31 +112,31 @@ var ContentWidget = function(conteiner){
                 self.settingsContent.orderByContent,    // Сортировка
                 self.settingsContent.filterName,        // Выборка только тех товаров в названиях которых встречается эта ключевая фраза,
                 function(data){
-                    self.FillContent(data, params.id);
+                    self.Fill.Content(data, params.id);
                 }
-                )
+             )
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
             if(data.typeView == 'slider'){ 
-                self.RenderBlock(data);
+                self.Render.Block(data);
                 new InitSlider(data.cssBlockContainer);
                 delete  data;
             }
             if(data.typeView == 'carousel'){
-                self.RenderBlock(data);
+                self.Render.Block(data);
                 new InitCarousel(data.cssBlockContainer);
                 delete  data;
             }
             if(data.typeView == 'tile'){
-                self.RenderBlock(data);
+                self.Render.Block(data);
                 delete  data;
             }
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.listContent', function(data){
-            self.InsertListContainer(data.typeView);
-            self.RenderList(data);
+            self.InsertContainer.List(data.typeView);
+            self.Render.List(data);
             
             $(Parameters.sortingBlockContainer + ' .sort select').sSelect({
                 defaultText: Parameters.listSort[data.filters.orderBy]
@@ -163,13 +156,20 @@ var ContentWidget = function(conteiner){
             self.SelectTypeContent();
         });
     
-        EventDispatcher.AddEventListener('contentWidget.click.goods', function(data){
-            //self.RenderTovars(data);
-            });
-        
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
+            Parameters.activeItem = data.id;
+            if($('script#contentTileTmpl').length < 0){
+                self.BaseLoad.Tmpl(self.settingsContent.tmplForContent, function(){
+                    EventDispatcher.DispatchEvent('onload.content.tmpl')
+                });
+            }
+            else{
+                EventDispatcher.DispatchEvent('onload.content.tmpl')
+            }
+        });
+        EventDispatcher.AddEventListener('contentWidget.click.goods', function(data){
 
-            });
+        });
     };
     self.BustBlock = function(data){
         for(var i = 0; i <= data.length - 1; i++){
@@ -177,96 +177,126 @@ var ContentWidget = function(conteiner){
                 sort : i, 
                 block : data[i]
             };
-            self.InsertBlockContainer(i, data[i].type_view);
-            self.Load.Content({
-                'id':data[i].id
+            var id = data[i].id;
+            self.InsertContainer.Block(i, data[i].type_view);
+            self.BaseLoad.Content(id, 0, self.settingsContent.countGoodsInBlock, 'name', '',                                     
+                function(data){
+                    self.Fill.Block(Parameters.cache.contentBlock[id]);
+                }
+            )
+        }
+    };
+    self.InsertContainer = {
+        Block : function(sort, type){
+            if(type == 'slider'){ 
+                $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockSliderTmpl').html());
+            }
+            if(type == 'carousel'){
+                $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockCaruselTmpl').html());
+            }
+            if(type == 'tile'){
+                $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockTileTmpl').html());
+            }
+            $("#" + self.settingsContent.conteinerIdForContent + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
+        },
+        List : function(type){
+            $("#" + self.settingsContent.conteinerIdForContent).html('');
+            if(type == 'table'){ 
+                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentTableTmpl').html());
+            }
+            if(type == 'list'){
+                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentListTmpl').html());
+            }
+            if(type == 'tile'){
+                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentTileTmpl').html());
+            }
+        }
+    };
+    self.Fill = {
+        Block : function(data){
+            var block = new BlockViewModel(data, self.settingsContent.countGoodsInBlock);
+            block.AddContent();
+        },
+        Content : function(data, categoryId){
+            var content = new ListContentViewModel(self.settingsContent);
+            content.AddCategoryInfo(categoryId);
+            content.AddContent(data);
+        }
+    };
+    self.Render = {
+        List : function(data){
+            ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
+            delete data;
+        },
+        Block : function(data){
+            ko.applyBindings(data, $('#' + data.cssBlock)[0]);
+            $('#' + data.cssBlock).show();
+            delete data;
+        }
+    };
+    self.SetPosition = function(){
+        if(self.settingsContent.inputParameters['position'] == 'absolute'){
+            for(var key in self.settingsContent.inputParameters){
+                if(self.settingsContent.styleContent[key])
+                    self.settingsContent.styleContent[key] = self.settingsContent.inputParameters[key];
+            }
+            $().ready(function(){
+                $("#" + conteiner).css(self.settingsContent.styleContent);
             });
         }
-    };
-    self.InsertBlockContainer = function(sort, type){
-        if(type == 'slider'){ 
-            $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockSliderTmpl').html());
-        }
-        if(type == 'carousel'){
-            $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockCaruselTmpl').html());
-        }
-        if(type == 'table'){
-            $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockTileTmpl').html());
-        }
-        $("#" + self.settingsContent.conteinerIdForContent + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
-    };
-    self.InsertListContainer = function(type){
-        $("#" + self.settingsContent.conteinerIdForContent).html('');
-        if(type == 'table'){ 
-            $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentTableTmpl').html());
-        }
-        if(type == 'list'){
-            $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentListTmpl').html());
-        }
-        if(type == 'tile'){
-            $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentTileTmpl').html());
-        }
-    };
-    self.FillBlock = function(data){
-        var block = new BlockViewModel(data, self.settingsContent.countGoodsInBlock);
-        block.AddContent();
-    };
-    self.FillContent = function(data, categoryId){
-        var content = new ListContentViewModel(self.settingsContent);
-        content.AddCategoryInfo(categoryId);
-        content.AddContent(data);
-    };
-    self.RenderList = function(data){
-        ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
-    }
-    self.RenderBlock = function(data){
-        ko.applyBindings(data, $('#' + data.cssBlock)[0]);
-        $('#' + data.cssBlock).show();
     }
 }
 
 /* Block */
 var BlockViewModel = function(data, countGoodsInContent){
     var self = this;
-    self.idBlock       = data.block.id;
+    self.id            = data.block.id;
     self.sort          = data.sort;
     self.titleBlock    = data.block.name_category;
     self.typeView      = data.block.type_view;
-    self.countGoods    = data.count_goods;
+    self.countGoods    = data.block.count_goods;
     
     self.cssBlock      = 'block_sort_' + data.sort;
-    self.cssBlockContainer  = 'sliderConteiner_' + data.block.id;
+    self.cssBlockContainer  = 'sliderConteiner_' + self.id ;
     self.imageHref     = '#';
     
     self.contentBlock  = ko.observableArray();
     
     self.AddContent = function(){
-        var content = JSON.parse(Parameters.cache.content[data.block.id]);
-        if(content.length < countGoodsInContent)
-            countGoodsInContent = content.length;
-        for(var i = 0; i <= countGoodsInContent-1; i++){
-            if(data.block.type_view == 'tile'){
-                var str = new BlockTrForTableViewModel();
-                for(var j = 0; j <= 2; j++){
-                    i = i + j;
-                    if(content[i]){
-                        str.AddStr(new BlockContentViewModel(content[i], i));
+        var queryHash = MD5(self.id  + 0 + countGoodsInContent + "name" + "");
+
+        var content = JSON.parse(Parameters.cache.content[queryHash]);
+        if(content && content.length > 1){
+            self.countGoods  = content.shift().count_goods;
+        
+            if(content.length < countGoodsInContent)
+                countGoodsInContent = content.length;
+            
+            var f = 0;
+            for(var i = 0; i <= countGoodsInContent-1; i++){
+                if(self.typeView == 'tile'){
+                    var str = new BlockTrForTableViewModel();
+                    for(var j = 0; j <= 2; j++){
+                        if(content[f]){
+                            str.AddStr(new BlockContentViewModel(content[f], f));
+                            f++;
+                        }
+                        else
+                            break;
                     }
-                    else
-                        break;
+                    if(str.str().length > 0)
+                        self.contentBlock.push(str);
+                    delete str;
                 }
-                if(str.str().length > 0)
-                    self.contentBlock.push(str);
-                delete str;
+                else{
+                    self.contentBlock.push(new BlockContentViewModel(content[i], i));
+                }
             }
-            else{
-                self.contentBlock.push(new BlockContentViewModel(content[i], i));
-            }
+            EventDispatcher.DispatchEvent('contentWidget.fill.block', self);
         }
-        EventDispatcher.DispatchEvent('contentWidget.fill.block', self);
     };
     self.ClickCategory = function(){
-        EventDispatcher.DispatchEvent('contentWidget.click.category', self);
+        EventDispatcher.DispatchEvent('widget.click.item', data.block);
     };
 }
 var BlockContentViewModel = function(data, i){
@@ -274,9 +304,9 @@ var BlockContentViewModel = function(data, i){
     self.id = data.id;
     self.chortName = data.chort_name;
     self.fullName = data.full_name;
-    self.routeImage = Parameters.pathToImages +  data.route_image;
+    self.routeImage = Parameters.pathToImages + data.route_image;
     self.countTovars = data.count;
-    self.sellGoods = data.sell_goods + " руб.";
+    self.sellGoods = data.sell_cost + " руб.";
     self.sellCost = data.sell_end_cost + " руб.";
     self.description = ko.computed(function(){
         if(data.description)
@@ -366,7 +396,7 @@ var ListContentViewModel = function(settings){
             settings.paging.currentPage = 1;
             settings.paging.startContent = 0;
             if(Parameters.activeSection != 0)
-            var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
             else
                 var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem;
             window.location.hash = href;
@@ -410,8 +440,11 @@ var ListContentViewModel = function(settings){
             self.filters.typeView = Parameters.cache.typeView;
         }
         else if(data.type_view){
-            self.typeView  = data.type_view;
-            self.filters.typeView = data.type_view;
+            var typeView = data.type_view;
+            if(data.type_view == 'carousel' || data.type_view == 'slider')
+                var typeView = 'tile';
+            self.typeView  = typeView;
+            self.filters.typeView = typeView;
         }
         self.defaultAct    = data.default_act;
     };
@@ -444,7 +477,7 @@ var ListContentViewModel = function(settings){
         }
     };
     self.GetQueryHash = function(categoryId){
-        return EventDispatcher.MD5(categoryId + settings.paging.startContent + settings.paging.itemsPerPage + settings.orderByContent + settings.filterName);
+        return MD5(categoryId + settings.paging.startContent + settings.paging.itemsPerPage + settings.orderByContent + settings.filterName);
     };
     self.NumPages = function(){
         return Math.ceil(self.countGoods/settings.paging.itemsPerPage)
@@ -455,7 +488,7 @@ var ListContentViewModel = function(settings){
         var upper_limit = np-settings.paging.numDisplayEntries;
         var start = settings.paging.currentPage>ne_half?Math.max(Math.min(settings.paging.currentPage-ne_half, upper_limit), 0):0;
         var end = settings.paging.currentPage>ne_half?Math.min(settings.paging.currentPage+ne_half, np):Math.min(settings.paging.numDisplayEntries, np);
-        return [start + 1,end + 1];
+        return [start + 1,end + 1]; 
     };
     self.AppendItem = function(page_id, appendopts){
         var np = self.NumPages();
@@ -558,7 +591,7 @@ var Page = function(opt){
         return opt.settings.paging.cssItem;
     }, this);
     self.ClickLinkPage = function(){
-        var start = (self.pageId-1) * opt.settings.paging.itemsPerPage + 1;
+        var start = (self.pageId-1) * opt.settings.paging.itemsPerPage;
         opt.settings.paging.currentPage = self.pageId;
         
         if(Parameters.activeSection != 0)

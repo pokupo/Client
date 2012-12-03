@@ -17,6 +17,9 @@
             </tr>
         </table>
     </div>
+    <!-- ko if: isCategory -->
+    <div class="bottom_title" data-bind="text: lastItem"></div>
+    <!-- /ko -->
 </script>
 
 <script type="text/html" id="breadCrumbSelectListTmpl">
@@ -24,6 +27,3 @@
         <option value="" data-bind="value: id, text: title"></option>
     </select>
 </script>
-<!--<select data-bind="options: listCrumbs, optionsText: 'title', value: 'id'">
-        
-    </select>-->

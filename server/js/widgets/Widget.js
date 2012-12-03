@@ -2,6 +2,7 @@ Parameters = {
     pathToImages : "http://dev.pokupo.ru/images",
     routIconAuction : "http://dev.pokupo.ru/images/ico_30.png",
     sortingBlockContainer : '.sorting_block',
+    containerIdForTmpl : "container_tmpl",
     listSort : {
         name : 'названию', 
         rating : 'рейтингу', 
@@ -21,7 +22,7 @@ Parameters = {
         block : {},
         contentBlock : {},
         content : {},
-        roots: {},
+        roots: [],
         infoCategory : {},
         typeView : '',
         pageId: 1
@@ -38,7 +39,6 @@ function Widget(){
         dataForContent : "getContent",
         dataBlocksForCatalog : "getBlock",
         dataCategoryInfo : 'getCategoryInfo',
-        containerIdForTmpl : "container_tmpl",
         hashParameters : {
     }
     };
@@ -63,33 +63,26 @@ function Widget(){
         EventDispatcher.AddEventListener('widget.click.item', function (data){
             var title = 'Домашняя';
             if(data){
+                Parameters.activeSection = 0;
+                Parameters.activeItem = 0;
+                Parameters.typeCategory = data.type_category;
+                Parameters.lastItem = data.id;
+                title = data.name_category;
                 if(data.type_category == "section" && Parameters.catalogs[data.id]){
-                    Parameters.activeSection = 0;
-                    Parameters.activeItem = 0;
-                    Parameters.activeItem = data.id;
-                    var href = "/catalog=" + Parameters.activeCatalog
+                    var href = "/catalog=" + Parameters.activeCatalog;
                 }
                 else if(data.type_category == "section" && !Parameters.catalogs[data.id]){
                     Parameters.activeSection = data.id;
-                    Parameters.activeItem = 0;
                     var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection
                 }
                 else{
                     Parameters.activeItem = data.id;
+                    Parameters.typeCategory = 'category';
                     if(Parameters.activeSection != 0)
                         var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
                     else
                         var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem;
                 }
-
-                Parameters.lastItem = data.id;
-                Parameters.typeCategory = data.type_category;
-                title = data.name_category;
-
-                if(Parameters.typeCategory == 'section')
-                    EventDispatcher.DispatchEvent('widget.change.section', data.id);
-                else if(Parameters.typeCategory == 'category')
-                    EventDispatcher.DispatchEvent('widget.change.category', data.id);
             }
             else{
                 Parameters.activeSection = 0;
@@ -105,8 +98,8 @@ function Widget(){
         });
     };
     this.CreateContainer = function(){
-        if($('#' + this.settings.containerIdForTmpl).length == 0)
-            $('body').append("<div id='" + this.settings.containerIdForTmpl + "'></div>");
+        if($('#' + self.settings.containerIdForTmpl).length == 0)
+            $('#main').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
     };
     this.RegistrCustomBindings = function(){
         ko.bindingHandlers.UpdateId = {
@@ -118,6 +111,42 @@ function Widget(){
         }
     };
     this.BaseLoad  = {
+        Roots : function(callback){
+            if(Parameters.cache.roots){
+                XDMTransport.LoadData(self.settings.dataForSection + '&shopId=' + Parameters.shopId, function(data){
+                    Parameters.cache.roots = data;
+                    var roots = JSON.parse(data);
+                    for(var i = 0; i <= roots.length-1; i++){
+                        Parameters.catalogs[roots[i].id] = roots[i].id;
+                    }
+                    if(callback)
+                        callback(roots);
+                })
+            }
+            else{
+                if(callback)
+                    callback(JSON.parse(Parameters.cache.roots));
+            }
+        },
+        Section : function(parentId, callback){
+            if(!Parameters.cache.childrenCategory[parentId]){
+                XDMTransport.LoadData(self.settings.dataForCatalog + "&parentId=" + parentId, function(data){
+                    Parameters.cache.childrenCategory[parentId] = data;
+                    if(callback)
+                        callback({
+                            'data' : JSON.parse(data), 
+                            'parentId' : parentId
+                        })
+                })
+            }
+            else{
+                if(callback)
+                    callback({
+                        'data' : JSON.parse(Parameters.cache.childrenCategory[parentId]), 
+                        'parentId' : parentId
+                    })
+            }
+        },
         Blocks : function(parentId, callback){
             if(!Parameters.cache.block[parentId]){
                 XDMTransport.LoadData(self.settings.dataBlocksForCatalog + "&parentId=" + parentId, function(data){
@@ -132,7 +161,7 @@ function Widget(){
             }
         },
         Content : function(categoryId, startContent, countGoodsPerPage, orderByContent, filterName, callback){
-            var queryHash = EventDispatcher.MD5(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
+            var queryHash = MD5(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
             if(!Parameters.cache.content[queryHash]){
                 XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + filterName, function(data){
                     Parameters.cache.content[queryHash] = data;
@@ -157,29 +186,30 @@ function Widget(){
                 if(callback)
                     callback(JSON.parse(Parameters.cache.infoCategory[id]))
             }
+        },
+        Tmpl : function(tmpl, callback){
+            self.CreateContainer();
+            XDMTransport.LoadTmpl(tmpl,function(data){
+                $("#" + Parameters.containerIdForTmpl).append(data);
+                if(callback)callback(data);
+            })
+        },
+        Path : function(categoryId, callback){
+            if(categoryId){
+                if(!Parameters.cache.path[categoryId]){
+                    XDMTransport.LoadData(self.settings.dataPathForItem + '&categoryId=' + categoryId, function(data){
+                        Parameters.cache.path[categoryId] = data;
+                        if(callback)
+                            callback(JSON.parse(data)['path']);
+                    })
+                }
+                else{
+                    if(callback)
+                        callback(JSON.parse(Parameters.cache.path[categoryId])['path']);
+                }
+            }
         }
     }
-    this.LoadTmpl = function(tmpl, callback){
-        var self = this;
-        XDMTransport.LoadTmpl(tmpl,function(data){
-            $("#" + self.settings.containerIdForTmpl).append(data);
-            if(callback)callback();
-        })
-    };
-    this.LoadPath = function(){
-        if(Parameters.lastItem){
-            if(!Parameters.cache.path[Parameters.lastItem]){
-                XDMTransport.LoadData(this.settings.dataPathForItem + '&categoryId=' + Parameters.lastItem, function(data){
-                    var path = JSON.parse(data)['path'];
-                    Parameters.cache.path[Parameters.lastItem] = path;
-                    EventDispatcher.DispatchEvent('onload.data.path', path);
-                })
-            }
-            else{
-                EventDispatcher.DispatchEvent('onload.data.path', Parameters.cache.path[Parameters.lastItem]);
-            }
-        }
-    };
     this.ParserPath = function(){
         var hash = window.location.hash;
         hash = hash.replace(/(^#\/)/g, '')

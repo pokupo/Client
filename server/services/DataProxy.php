@@ -97,7 +97,6 @@ class DataProxy implements IProxy {
 
     private function GetCategoriesForRoot() {
         $category = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->parentId . '/children/noblock/active');
-        $category = '{"parentId" : "'.$this->parentId.'", "items": '.$category.'}';
         $this->responseData = $category;
     }
 }
