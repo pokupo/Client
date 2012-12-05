@@ -43,7 +43,7 @@ var CatalogWidget = function(conteiner){
                 var id = section.items()[j].id;
                 self.Load.CatalogData(id);
                 EventDispatcher.AddEventListener('catalogWidget.onload.catalog%%' + id, function (data){
-                    if(data.items.message_error === undefined){
+                    if(data.items.err === undefined){
                         self.Fill.Item(data);
                     }
                 });
@@ -106,7 +106,7 @@ var CatalogWidget = function(conteiner){
             for(var i = 0; i <= sections.length-1; i++){
                 self.Load.CatalogData(sections[i].id);
                 EventDispatcher.AddEventListener('catalogWidget.onload.catalog%%' + sections[i].id, function (data){
-                    if(data.items.message_error === undefined){
+                    if(data.items.err === undefined){
                         self.Fill.Item(data);
                     }
                 });
