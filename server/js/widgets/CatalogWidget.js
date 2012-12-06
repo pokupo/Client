@@ -1,7 +1,5 @@
 var CatalogWidget = function(conteiner){
     var self = this;
-    self.sections = null;
-    self.items = null;
     self.settingsCatalog = {
         isFirst : true,
         containerIdForCatalog : "", //"catalog",
@@ -126,13 +124,13 @@ var CatalogWidget = function(conteiner){
         });
         
         EventDispatcher.AddEventListener('catalogWidget.update.catalog', function(){
-            if(Parameters.typeCategory == 'section' && !Parameters.catalogs[Parameters.lastItem]){
+            if(Parameters.typeCategory == 'section' && !Parameters.cache.catalogs[Parameters.lastItem]){
                 self.BaseLoad.Path(Parameters.lastItem, function(data){
                     if(data[data.length-1]){
                         data[data.length-1].name_category = 'Вверх';
                         self.Fill.Section(data[data.length-1], function(){
                             if(data[data.length-2]){
-                                if(Parameters.catalogs[data[data.length-2].id]){
+                                if(Parameters.cache.catalogs[data[data.length-2].id]){
                                     self.BaseLoad.Roots(function(data){
                                         EventDispatcher.DispatchEvent('catalogWidget.onload.sectionCatalog', data)
                                     })
@@ -156,7 +154,7 @@ var CatalogWidget = function(conteiner){
                     }
                 });
             }
-            else if(Parameters.typeCategory == 'homepage' || Parameters.catalogs[Parameters.lastItem]){
+            else if(Parameters.typeCategory == 'homepage' || Parameters.cache.catalogs[Parameters.lastItem]){
                 self.BaseLoad.Roots(function(data){
                     if(self.settingsCatalog.isFirst || Parameters.typeCategory == 'homepage'){
                         self.settingsCatalog.isFirst = false;
@@ -288,7 +286,7 @@ var SectionViewModel = function() {
     self.AddSection = function(data, callback){
         if(data && data.length){
             for(var i = 0; i <= data.length-1; i++){
-                Parameters.catalogs[data[i].id] = data[i].id;
+                Parameters.cache.catalogs[data[i].id] = data[i].id;
                 self.sections.push(new Section(data[i], callback));
             }
         }

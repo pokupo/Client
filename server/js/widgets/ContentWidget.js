@@ -370,7 +370,6 @@ var ListContentViewModel = function(settings){
     self.titleBlock    = '';
     self.typeView      = 'tile';
     self.countGoods    = 0;
-    self.defaultAct    = '';
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
@@ -446,7 +445,6 @@ var ListContentViewModel = function(settings){
             self.typeView  = typeView;
             self.filters.typeView = typeView;
         }
-        self.defaultAct    = data.default_act;
     };
     self.AddContent = function(data){
         self.content  = ko.observableArray();

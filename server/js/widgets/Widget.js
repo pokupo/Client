@@ -8,8 +8,6 @@ Parameters = {
         rating : 'рейтингу', 
         cost : 'цене'
     },
-    catalogs : [],
-    crumbsTitle : [],
     activeSection : 0,
     activeItem : 0,
     activeCatalog : 0,
@@ -17,6 +15,8 @@ Parameters = {
     typeCategory : "",
     shopId : 0,
     cache : {
+        catalogs : [],
+        crumbsTitle : [],
         path : {},
         childrenCategory : {},
         block : {},
@@ -68,10 +68,10 @@ function Widget(){
                 Parameters.typeCategory = data.type_category;
                 Parameters.lastItem = data.id;
                 title = data.name_category;
-                if(data.type_category == "section" && Parameters.catalogs[data.id]){
+                if(data.type_category == "section" && Parameters.cache.catalogs[data.id]){
                     var href = "/catalog=" + Parameters.activeCatalog;
                 }
-                else if(data.type_category == "section" && !Parameters.catalogs[data.id]){
+                else if(data.type_category == "section" && !Parameters.cache.catalogs[data.id]){
                     Parameters.activeSection = data.id;
                     var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection
                 }
@@ -117,7 +117,7 @@ function Widget(){
                     Parameters.cache.roots = data;
                     var roots = JSON.parse(data);
                     for(var i = 0; i <= roots.length-1; i++){
-                        Parameters.catalogs[roots[i].id] = roots[i].id;
+                        Parameters.cache.catalogs[roots[i].id] = roots[i].id;
                     }
                     if(callback)
                         callback(roots);

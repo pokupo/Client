@@ -1,7 +1,5 @@
 var BreadCrumbWidget = function(conteiner){
     var self = this;
-    self.breadCrumb = {};
-    self.breadCrumbViewModel = null;
     self.settingsBreadCrumb = {
         containerIdForBreadCrumb : conteiner, 
         tmplForBreadCrumb : "breadCrumb/breadCrumbTmpl.html",
@@ -95,7 +93,7 @@ var BreadCrumbWidget = function(conteiner){
             }
             
             $('.' + data.cssSelectList + ' select').sSelect({
-                defaultText: Parameters.crumbsTitle[data.parentId]
+                defaultText: Parameters.cache.crumbsTitle[data.parentId]
             }).change(function(){
                 var id = $('.' + data.cssSelectList + ' select').getSetSSValue();
                 for(var i=0; i<=conteiner.length-1; i++){
@@ -140,10 +138,10 @@ var BreadCrumbViewModel = function(){
         EventDispatcher.DispatchEvent('widget.click.item')
     };
     self.AddCrumbs = function(data){
-        Parameters.crumbsTitle = [];
+        Parameters.cache.crumbsTitle = [];
         if(data){
             for(var i = 0; i <= data.length - 1; i++){
-                Parameters.crumbsTitle[data[i].id] = data[i].name_category;
+                Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category;
                 self.crumbs.push(new BreadCrumbItem(data[i]));
             }
             var last = self.crumbs().pop();
@@ -174,7 +172,7 @@ var SelectListBreadCrumbItemViewModel = function(){
     self.AddSelectList = function(data, id){
         if(data){
             for(var i = 0; i <= data.length - 1; i++){
-                if(!Parameters.crumbsTitle[data[i].id])
+                if(!Parameters.cache.crumbsTitle[data[i].id])
                     self.listCrumbs.push(new SelectListBreadCrumbItem(data[i]));
             }
             self.parentId = id;
