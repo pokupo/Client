@@ -27,6 +27,7 @@ function InitSlider(cssSliderContainer){
         });
         timer = 0;
     }
+
     timer = setInterval(function() {
         if(timer > 3){
             var id = $('.slider-button.active').text();

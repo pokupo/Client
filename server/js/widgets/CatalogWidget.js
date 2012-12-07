@@ -73,6 +73,9 @@ var CatalogWidget = function(conteiner){
                     self.Update();
                 }
             }
+            else{
+                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+            }
         });
         
         EventDispatcher.AddEventListener('catalogWidget.onload.sectionCatalog', function (data){
@@ -120,11 +123,14 @@ var CatalogWidget = function(conteiner){
         });
         
         EventDispatcher.AddEventListener('widget.changeHash', function (data){
+            if(Parameters.typeCategory != "category")
+               self.LoadingIndicator(self.settingsCatalog.containerIdForCatalog);
             self.Update();
         });
         
         EventDispatcher.AddEventListener('catalogWidget.update.catalog', function(){
             if(Parameters.typeCategory == 'section' && !Parameters.cache.catalogs[Parameters.lastItem]){
+                $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
                 self.BaseLoad.Path(Parameters.lastItem, function(data){
                     if(data[data.length-1]){
                         data[data.length-1].name_category = 'Вверх';
@@ -155,6 +161,7 @@ var CatalogWidget = function(conteiner){
                 });
             }
             else if(Parameters.typeCategory == 'homepage' || Parameters.cache.catalogs[Parameters.lastItem]){
+                $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
                 self.BaseLoad.Roots(function(data){
                     if(self.settingsCatalog.isFirst || Parameters.typeCategory == 'homepage'){
                         self.settingsCatalog.isFirst = false;
@@ -163,6 +170,7 @@ var CatalogWidget = function(conteiner){
                 })
             }
             else{
+                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 $("#" + self.settingsCatalog.containerIdForCatalog).empty();
             }
         })

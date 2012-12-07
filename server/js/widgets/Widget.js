@@ -3,6 +3,7 @@ Parameters = {
     routIconAuction : "http://dev.pokupo.ru/images/ico_30.png",
     sortingBlockContainer : '.sorting_block',
     containerIdForTmpl : "container_tmpl",
+    loading : "/loading50.gif",
     listSort : {
         name : 'названию', 
         rating : 'рейтингу', 
@@ -85,9 +86,14 @@ function Widget(){
                 }
             }
             else{
-                Parameters.activeSection = 0;
-                Parameters.activeItem = 0;
-                Parameters.lastItem = 0;
+                var def = 0;
+                for(var key in Parameters.cache.catalogs){
+                    def = Parameters.cache.catalogs[key];
+                    break;
+                }
+                Parameters.activeSection = def;
+                Parameters.activeItem = def;
+                Parameters.lastItem = def;
                 Parameters.typeCategory = "homepage";
                 href = '';
             }
@@ -101,6 +107,20 @@ function Widget(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
             $('#main').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
     };
+    this.LoadingIndicator = function(container){
+        var widthCatalog = $("#" + container).children().width();
+        var heightCatalog = $("#" + container).children().height();
+        if(!heightCatalog)
+            heightCatalog = 400;
+        $("#" + container).children().hide();
+        $("#" + container).html('<div id="loading' + container + 'Container"><img src="' + Parameters.pathToImages + Parameters.loading+ '"/></div>')
+        $("#loading" + container + "Container").css({
+            "width" : widthCatalog,
+            "height" : heightCatalog, 
+            "text-align" : "center",
+            "padding-top" : heightCatalog/2-$("#loading" + container + "Container img").height()/2
+        });
+    }
     this.RegistrCustomBindings = function(){
         ko.bindingHandlers.UpdateId = {
             update: function(element, valueAccessor) {
@@ -162,16 +182,17 @@ function Widget(){
         },
         Content : function(categoryId, startContent, countGoodsPerPage, orderByContent, filterName, callback){
             var queryHash = MD5(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
+            
             if(!Parameters.cache.content[queryHash]){
                 XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + filterName, function(data){
-                    Parameters.cache.content[queryHash] = data;
+                    Parameters.cache.content[queryHash] = {"categoryId" : categoryId , "content" : JSON.parse(data)};
                     if(callback)
-                        callback(JSON.parse(data));
+                        callback(Parameters.cache.content[queryHash]);
                 })
             }
             else{
                 if(callback)
-                    callback(JSON.parse(Parameters.cache.content[queryHash]));
+                    callback(Parameters.cache.content[queryHash]);
             }
         },
         Info : function(id, callback){
