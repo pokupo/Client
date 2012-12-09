@@ -89,6 +89,7 @@ var CatalogWidget = function(conteiner){
                 $(blockMenu + ' ul').hide();
                 $(blockMenu + ' .catalogCategories_' + data.id).show();
                 var href = "/catalog=" + Parameters.activeCatalog;
+                document.title = data.name_category;
                 window.location.hash = href;
                 EventDispatcher.DispatchEvent('widget.click.item', data);
             });
@@ -163,7 +164,7 @@ var CatalogWidget = function(conteiner){
             else if(Parameters.typeCategory == 'homepage' || Parameters.cache.catalogs[Parameters.lastItem]){
                 $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
                 self.BaseLoad.Roots(function(data){
-                    if(self.settingsCatalog.isFirst || Parameters.typeCategory == 'homepage'){
+                    if(self.settingsCatalog.isFirst || Parameters.typeCategory == 'homepage' || Parameters.cache.catalogs[Parameters.lastItem]){
                         self.settingsCatalog.isFirst = false;
                         EventDispatcher.DispatchEvent('catalogWidget.onload.sectionCatalog', data)
                     }
@@ -283,7 +284,7 @@ var Section = function(data, callback){
     self.cssSpan = 'listCategories_' + data.id;
     self.ClickSection = function() {
         if(self.callback)
-            self.callback(self);
+            self.callback(data);
     }
 }
 
