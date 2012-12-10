@@ -103,7 +103,7 @@ var BreadCrumbWidget = function(conteiner){
     },
     self.Render = {
         BreadCrumb : function(data){
-            for(var i=0; i<=conteiner.length-1; i++){
+            for(var i=0; i<=self.settingsBreadCrumb.containerIdForBreadCrumb.length-1; i++){
                 $("#" + self.settingsBreadCrumb.containerIdForBreadCrumb[i]).html("");
                 $("#" + self.settingsBreadCrumb.containerIdForBreadCrumb[i]).append($('script#breadCrumbTmpl').html()).show();
                 ko.applyBindings(data, $('#' + self.settingsBreadCrumb.containerIdForBreadCrumb[i])[0]);
@@ -212,7 +212,7 @@ var TestBreadCrumb = {
     Init : function(){
         if(typeof Widget == 'function' && JSCore !== undefined){
             BreadCrumbWidget.prototype = new Widget();
-            var breadCrumb = new BreadCrumbWidget(['breadCrumb_1']);
+            var breadCrumb = new BreadCrumbWidget(['breadCrumb_1','breadCrumb_2']);
             breadCrumb.Init();
         }
         else{

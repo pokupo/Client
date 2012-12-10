@@ -122,7 +122,7 @@ var ContentWidget = function(conteiner){
                 self.settingsContent.paging.itemsPerPage = params.count;
             if(params.orderBy)
                 self.settingsContent.orderByContent = params.orderBy;
-            if(params.filterName)
+            if(params.filterName || params.filterName == "")
                 self.settingsContent.filterName = params.filterName;
             if(params.start)
                 self.settingsContent.paging.startContent = params.start;
