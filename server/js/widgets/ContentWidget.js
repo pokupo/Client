@@ -11,6 +11,7 @@ var ContentWidget = function(conteiner){
         orderByContent : 'name',
         filterName : '',
         listPerPage : [],
+        slider : [],
         paging : {
             currentPage : 1,
             itemsPerPage : 20,

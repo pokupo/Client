@@ -1,3 +1,6 @@
+
+var timerId = 0;
+
 function InitSlider(cssSliderContainer){
     $('.' + cssSliderContainer).append('<div class=\'main-jc-buttons\'>');
     var timer = 0;
@@ -28,8 +31,10 @@ function InitSlider(cssSliderContainer){
         timer = 0;
     }
 
-    timer = setInterval(function() {
-        if(timer > 3){
+    clearInterval(timerId);
+    timerId = setInterval(function() {
+    
+        //if(timer > 3){
             var id = $('.slider-button.active').text();
             if(id > $('.view-slider').find('.view-content').children().size()-1){
                 change_slide(1);
@@ -38,7 +43,7 @@ function InitSlider(cssSliderContainer){
                 change_slide(oid);
             }
             timer = 50;
-        }
+        //}
         timer++;
     }, 3000);
     
