@@ -236,13 +236,3 @@ var TestBreadCrumb = {
 
 TestBreadCrumb.Init();
 
-//$().ready(function(){
-//    $('html').click(function() {
-//        $('.newList').hide();
-//    })
-//})
-//
-//jQuery.fn.selectList = function() {
-//    $(this).next('ul').show();
-//}
-

@@ -23,31 +23,6 @@ var CatalogWidget = function(conteiner){
     self.SetInputParameters = function(){
         self.settingsCatalog.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
     };
-    self.Load = {
-        CatalogData : function(id){
-            if(!Parameters.cache.childrenCategory[id]){
-                XDMTransport.LoadData(self.settings.dataForCatalog + "&parentId=" + id, function(data){
-                    Parameters.cache.childrenCategory[id] = data;
-                    if(JSON.parse(data))
-                    EventDispatcher.DispatchEvent('catalogWidget.onload.catalog%%' + id, {'parentId' : id , 'items' : JSON.parse(data)});
-                })
-            }
-            else{
-                EventDispatcher.DispatchEvent('catalogWidget.onload.catalog%%' + id, {'parentId' : id , 'items' : JSON.parse(Parameters.cache.childrenCategory[id])});
-            }
-        },
-        ChildrenCategory : function(section){
-            for(var j = 0; j <= section.items().length-1; j++){
-                var id = section.items()[j].id;
-                self.Load.CatalogData(id);
-                EventDispatcher.AddEventListener('catalogWidget.onload.catalog%%' + id, function (data){
-                    if(data.items.err === undefined){
-                        self.Fill.Item(data);
-                    }
-                });
-            };
-        }
-    };
     self.RegisterEvents = function(){
 
         if(JSLoader.loaded){
@@ -157,7 +132,7 @@ var CatalogWidget = function(conteiner){
     self.Render = {
         Catalog : function(data){
             $("#" + self.settingsCatalog.containerIdForCatalog).empty();
-            $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalog2Tmpl').html());
+            $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
             ko.applyBindings(data, $('#catalog')[0]);
         }
     }
