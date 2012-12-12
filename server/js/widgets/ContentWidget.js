@@ -203,7 +203,7 @@ var ContentWidget = function(conteiner){
             };
             self.InsertContainer.Block(i, data[i].type_view);
             
-            var queryHash = MD5(data[i].id  + 0 + self.settingsContent.countGoodsInBlock + "name" + "");
+            var queryHash = EventDispatcher.hashCode(data[i].id  + 0 + self.settingsContent.countGoodsInBlock + "name" + "");
             
             EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
                 self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
@@ -291,7 +291,7 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.contentBlock  = ko.observableArray();
     
     self.AddContent = function(){
-        var queryHash = MD5(self.id  + 0 + countGoodsInContent + "name" + "");
+        var queryHash = EventDispatcher.hashCode(self.id  + 0 + countGoodsInContent + "name" + "");
         var content = Parameters.cache.content[queryHash].content;
         if(content && content.length > 1){
             var last = content.shift()
@@ -506,7 +506,7 @@ var ListContentViewModel = function(settings){
         }
     };
     self.GetQueryHash = function(categoryId){
-        return MD5(categoryId + settings.paging.startContent + settings.paging.itemsPerPage + settings.orderByContent + settings.filterName);
+        return EventDispatcher.hashCode(categoryId + settings.paging.startContent + settings.paging.itemsPerPage + settings.orderByContent + settings.filterName);
     };
     self.NumPages = function(){
         return Math.ceil(self.countGoods/settings.paging.itemsPerPage)

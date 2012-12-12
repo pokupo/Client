@@ -152,6 +152,13 @@ var BreadCrumbItem = function(data){
     self.title = data.name_category;
     self.typeCategory = data.type_category;
     self.cssItem = 'pathItem_' + data.id;
+    self.selectList = ko.observableArray();
+    self.AddSelectList = function(children){
+        for(var i = 0; i <= children.length-1; i++){
+            if(!Parameters.cache.crumbsTitle[children[i].id])
+                self.selectList.push(new SelectListBreadCrumbItem(children[i]));
+        }
+    }
 }
 
 var BreadCrumbViewModel = function(){
@@ -167,8 +174,14 @@ var BreadCrumbViewModel = function(){
         Parameters.cache.crumbsTitle = [];
         if(data){
             for(var i = 0; i <= data.length - 1; i++){
-                Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category;
-                self.crumbs.push(new BreadCrumbItem(data[i]));
+                var breadCrumb = new BreadCrumbItem(data[i]);
+                
+                if(data[i].children){
+                   breadCrumb.AddSelectList(data[i].children);
+                }
+                
+                Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category; 
+                self.crumbs.push(breadCrumb);
             }
             var last = self.crumbs().pop();
             self.lastItem = last.title;
@@ -223,4 +236,13 @@ var TestBreadCrumb = {
 
 TestBreadCrumb.Init();
 
+//$().ready(function(){
+//    $('html').click(function() {
+//        $('.newList').hide();
+//    })
+//})
+//
+//jQuery.fn.selectList = function() {
+//    $(this).next('ul').show();
+//}
 

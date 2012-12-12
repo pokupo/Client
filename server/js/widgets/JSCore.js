@@ -4,7 +4,7 @@ var JSSettings = {
     pathToTmpl : "tmpl/",
     pathToData : "services/DataProxy.php?query=",
     pathToCore: "index.html",
-    scripts : ['widgets/md5.js', 'easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
+    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
     inputParameters : {}
 }
 
@@ -22,9 +22,9 @@ var EventDispatcher = {
     RemoveEventListener : function (event, callback) {
         if (this.events[event]) {
             var listeners = this.events[event];
-            var callbackHash = MD5(callback.toString());
+            var callbackHash = EventDispatcher.hashCode(callback.toString());
             for (var i = listeners.length - 1; i >= 0; --i) {
-                if (MD5(listeners[i].toString()) === callbackHash) {
+                if (EventDispatcher.hashCode(listeners[i].toString()) === callbackHash) {
                     listeners.splice(i, 1);
                     return true;
                 }
@@ -40,6 +40,17 @@ var EventDispatcher = {
                 listeners[len](data);   //callback with self
             }
         }
+    },
+    
+    hashCode : function(str){
+        var hash = 0, i, ch;
+        if (str.length == 0) return hash;
+        for (i = 0; i < str.length; i++) {
+            ch = str.charCodeAt(i);
+            hash = ((hash<<5)-hash)+ch;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
     }
 }
 
@@ -56,13 +67,8 @@ var JSLoader = {
         }
     },
     OnReady : function(){
-        if(typeof MD5 === 'function'){
-            JSLoader.loaded = true;
-            EventDispatcher.DispatchEvent('onload.scripts');
-        }
-        else{
-            JSLoader.OnReady();
-        }
+        JSLoader.loaded = true;
+        EventDispatcher.DispatchEvent('onload.scripts');
     },
     Load : function(scripts, pathToJs){
         for(var i in scripts){

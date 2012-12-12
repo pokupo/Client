@@ -132,7 +132,7 @@ function Widget(){
     };
     this.BaseLoad  = {
         Roots : function(callback){
-            if(Parameters.cache.roots){
+            if(Parameters.cache.roots.length == 0){
                 XDMTransport.LoadData(self.settings.dataForSection + '&shopId=' + Parameters.shopId, function(data){
                     Parameters.cache.roots = data;
                     var roots = JSON.parse(data);
@@ -181,7 +181,7 @@ function Widget(){
             }
         },
         Content : function(categoryId, startContent, countGoodsPerPage, orderByContent, filterName, callback){
-            var queryHash = MD5(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
+            var queryHash = EventDispatcher.hashCode(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
             
             if(!Parameters.cache.content[queryHash]){
                 XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + filterName, function(data){
