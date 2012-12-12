@@ -4,35 +4,54 @@ var JSSettings = {
     pathToTmpl : "tmpl/",
     pathToData : "services/DataProxy.php?query=",
     pathToCore: "index.html",
-    scripts : ['easyXDM.min.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'giz.js', 'select.js'],
-    inputParameters : {},
-    hashParameters : {}
+    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
+    inputParameters : {}
 }
 
 var EventDispatcher = {
-    eventListeners : [],
+    events : [],
+    
     AddEventListener : function (event, callback) {
-        this.eventListeners[event] = this.eventListeners[event] || [];
-        if (this.eventListeners[event]) {
-            EventDispatcher.RemoveEventListener(event, callback);
-            this.eventListeners[event].push(callback);
+        this.events[event] = this.events[event] || [];
+        if (this.events[event]) {
+            this.RemoveEventListener(event, callback);
+            this.events[event].push(callback);
         }
     },
-    RemoveEventListener : function(event, func){
-        for(var i = 0, len = this.eventListeners[event].length; i < len; i+=1){
-            if (this.eventListeners[event][i] == func){
-                this.eventListeners[event].splice(i, 1);
+
+    RemoveEventListener : function (event, callback) {
+        if (this.events[event]) {
+            var listeners = this.events[event];
+            var callbackHash = EventDispatcher.hashCode(callback.toString());
+            for (var i = listeners.length - 1; i >= 0; --i) {
+                if (EventDispatcher.hashCode(listeners[i].toString()) === callbackHash) {
+                    listeners.splice(i, 1);
+                    return true;
+                }
             }
         }
+        return false;
     },
-    DispatchEvent : function(event, data){
-        if (this.eventListeners[event]) {
-            var listeners = this.eventListeners[event], len = listeners.length;
+
+    DispatchEvent: function (event, data) {
+        if (this.events[event]) {
+            var listeners = this.events[event], len = listeners.length;
             while (len--) {
-                listeners[len](data);
+                listeners[len](data);   //callback with self
             }
         }
-    }	
+    },
+    
+    hashCode : function(str){
+        var hash = 0, i, ch;
+        if (str.length == 0) return hash;
+        for (i = 0; i < str.length; i++) {
+            ch = str.charCodeAt(i);
+            hash = ((hash<<5)-hash)+ch;
+            hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
+    }
 }
 
 var JSLoader = { 
@@ -65,28 +84,12 @@ var JSCore = {
     shopId : null,
     Init : function(){
         JSLoader.Init(JSSettings.scripts, JSSettings.host + JSSettings.pathToJS);
-        JSCore.ParserPath();
         JSCore.SetInputParameters();
         JSCore.shopId = JSSettings.inputParameters['shopId'];
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
     },
-    Extend : function (Child, Parent) {
-        var F = function() { }
-        F.prototype = Parent.prototype
-        Child.prototype = new F()
-        Child.prototype.constructor = Child
-        Child.superclass = Parent.prototype
-    },
-    ParserPath : function(){
-        var hash = window.location.hash;
-        hash = hash.replace(/(^#\/)/g, '')
-        var parameters = hash.split('&');
-        for(var i = 0; i <= parameters.length-1; i++){
-            var parameter = parameters[i].split('='); 
-            JSSettings.hashParameters[parameter[0]] = parameter[1]; 
-        }
-    },
+    
     ParserInputParameters : function(scriptName){
         var obj = {};
         
@@ -95,15 +98,15 @@ var JSCore = {
         }).attr('src');
         
         if(attr){
-           var string = attr.split('?');
-           if(string.length > 1){
-              var parameters = string[1].split('&');
+            var string = attr.split('?');
+            if(string.length > 1){
+                var parameters = string[1].split('&');
 
-               for(var i = 0; i <= parameters.length-1; i++){
-                   var parameter = parameters[i].split('=');
-                   obj[parameter[0]] = parameter[1];
-               }
-           }
+                for(var i = 0; i <= parameters.length-1; i++){
+                    var parameter = parameters[i].split('=');
+                    obj[parameter[0]] = parameter[1];
+                }
+            }
         }
         
         return obj;
@@ -134,4 +137,6 @@ var XDMTransport = {
         socket.postMessage(data);
     }
 }
-JSCore.Init();
+$().ready(function(){
+   JSCore.Init();
+})

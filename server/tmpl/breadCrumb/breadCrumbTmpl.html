@@ -1,0 +1,28 @@
+<script type="text/html" id="breadCrumbTmpl">
+    <div class="top_title_2">
+        <table>
+            <tr>
+                <td class="first"></td>
+                <td class="text">
+                    <a href="#" data-bind="click: ToHomepage"><img title="" alt="" src="images/br_fon_5.png" /></a>
+                </td>
+                <!-- ko foreach: crumbs -->
+                <td class="second"></td>
+                <td class="text" data-bind="css: cssItem"></td>
+                <!-- /ko -->
+                <td class="second"></td>
+                <td class="text" data-bind="text: lastItem"></td>
+                <td class="last"></td>
+            </tr>
+        </table>
+    </div>
+    <!-- ko if: isCategory -->
+    <div class="bottom_title" data-bind="text: lastItem"></div>
+    <!-- /ko -->
+</script>
+
+<script type="text/html" id="breadCrumbSelectListTmpl">
+    <select data-bind="foreach: listCrumbs">
+        <option value="" data-bind="value: id, text: title"></option>
+    </select>
+</script>
