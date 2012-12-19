@@ -105,7 +105,7 @@ function Widget(){
     };
     this.CreateContainer = function(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
-            $('#main').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
+            $('body').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
     };
     this.LoadingIndicator = function(container){
         var widthCatalog = $("#" + container).children().width();
