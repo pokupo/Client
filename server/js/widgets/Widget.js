@@ -1,9 +1,9 @@
 Parameters = {
-    pathToImages : "http://dev.pokupo.ru/images",
-    routIconAuction : "http://dev.pokupo.ru/images/ico_30.png",
-    sortingBlockContainer : '.sorting_block',
-    containerIdForTmpl : "container_tmpl",
-    loading : "/loading50.gif",
+    pathToImages : Config.Base.pathToImages,
+    routIconAuction : Config.Base.routIconAuction,
+    sortingBlockContainer : Config.Base.sortingBlockContainer,
+    containerIdForTmpl : Config.Base.containerIdForTmpl,
+    loading : Config.Base.loading,
     listSort : {
         name : 'названию', 
         rating : 'рейтингу', 
@@ -23,10 +23,45 @@ Parameters = {
         block : {},
         contentBlock : {},
         content : {},
+        searchContent : {},
         roots: [],
         infoCategory : {},
         typeView : '',
-        pageId: 1
+        pageId: 1,
+        searchPageId : 1
+    },
+    filter : {
+        filterName : '',
+        idCategories : [],
+        keyWords : '',
+        typeSearch : 'any',
+        exceptWords : '',
+        startCost : '',
+        endCost : '',
+        typeSeller : '',
+        orderBy : 'name',
+        page : 1
+    },
+    catalog : {
+        section : 0,
+        category : 0,
+        page : 1
+    }
+}
+
+var Route = {
+    route : '',
+    params : {},
+    SetHash : function(route, data){
+        this.route = route;
+        var params = [];
+        for(var key in data){
+            if(data[key])
+               params.push(key + '=' + data[key]);
+        }
+        var href = '/' + route + '/' + params.join("&");
+
+        window.location.hash = href;
     }
 }
 
@@ -40,6 +75,7 @@ function Widget(){
         dataForContent : "getContent",
         dataBlocksForCatalog : "getBlock",
         dataCategoryInfo : 'getCategoryInfo',
+        dataSearchContent : 'getSearchContent',
         hashParameters : {
     }
     };
@@ -70,19 +106,19 @@ function Widget(){
                 Parameters.lastItem = data.id;
                 title = data.name_category;
                 if(data.type_category == "section" && Parameters.cache.catalogs[data.id]){
-                    var href = "/catalog=" + Parameters.activeCatalog;
+                    var href = "/catalog/section=" + Parameters.activeCatalog;
                 }
                 else if(data.type_category == "section" && !Parameters.cache.catalogs[data.id]){
                     Parameters.activeSection = data.id;
-                    var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection
+                    var href = "/catalog/section=" + Parameters.activeSection
                 }
                 else{
                     Parameters.activeItem = data.id;
                     Parameters.typeCategory = 'category';
                     if(Parameters.activeSection != 0)
-                        var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                        var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
                     else
-                        var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem;
+                        var href = "/catalog/category=" + Parameters.activeItem;
                 }
             }
             else{
@@ -100,6 +136,7 @@ function Widget(){
 
             window.location.hash = href;
             document.title = title;
+            Route.route = 'catalog';
             EventDispatcher.DispatchEvent('widget.changeHash');
         });
     };
@@ -195,6 +232,21 @@ function Widget(){
                     callback(Parameters.cache.content[queryHash]);
             }
         },
+        SearchContent : function(query, callback){
+            var queryHash = EventDispatcher.hashCode(query);
+            if(!Parameters.cache.searchContent[queryHash]){
+                XDMTransport.LoadData(self.settings.dataSearchContent + query, function(data){
+                    
+                    Parameters.cache.searchContent[queryHash] = JSON.parse(data);
+                    if(callback)
+                        callback(Parameters.cache.searchContent[queryHash]);
+                })
+            }
+            else{
+                if(callback)
+                    callback(Parameters.cache.searchContent[queryHash]);
+            }
+        },
         Info : function(id, callback){
             if(!Parameters.cache.infoCategory[id]){
                 XDMTransport.LoadData(self.settings.dataCategoryInfo + "&categoryId=" + id, function(data){
@@ -233,11 +285,23 @@ function Widget(){
     }
     this.ParserPath = function(){
         var hash = window.location.hash;
-        hash = hash.replace(/(^#\/)/g, '')
-        var parameters = hash.split('&');
-        for(var i = 0; i <= parameters.length-1; i++){
-            var parameter = parameters[i].split('='); 
-            this.settings.hashParameters[parameter[0]] = parameter[1];
+        hash = hash.split("/");
+        
+        if(hash[1])
+           Route.route = hash[1];
+        else
+           Route.route = 'catalog';
+       
+        Route.params = {};
+            
+        if(hash[2]){
+            var parameters = hash[2].split('&');
+            for(var i = 0; i <= parameters.length-1; i++){
+                var parameter = parameters[i].split('='); 
+                this.settings.hashParameters[parameter[0]] = parameter[1];
+
+                Route.params[parameter[0]] = parameter[1];
+            }
         }
     };
     this.SetParametersFromHash = function(){

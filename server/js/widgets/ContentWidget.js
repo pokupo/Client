@@ -2,40 +2,18 @@ var ContentWidget = function(conteiner){
     var self = this;
     self.settingsContent = {
         conteinerIdForContent : "",
-        tmplForBlock : "content/blockTmpl.html",
-        tmplForContent : "content/contentTmpl.html",
+        tmplForBlock : Config.Content.tmplForBlock,
+        tmplForContent : Config.Content.tmplForContent,
         inputParameters : {},
         styleCatalog : {},
         inputParameters : {},
-        countGoodsInBlock : 6,
-        orderByContent : 'name',
+        countGoodsInBlock : Config.Content.countGoodsInBlock,
+        orderByContent : Config.Content.orderBy,
         filterName : '',
-        listPerPage : [],
+        listPerPage : Config.Content.listPerPage,
         slider : [],
-        paging : {
-            currentPage : 1,
-            itemsPerPage : 20,
-            numDisplayEntries : 3,
-            numEdgeEntries : 3,
-            prevText : ' ',
-            nextText : ' ',
-            ellipseText : '...',
-            prevShowAlways :false,
-            nextShowAlways :false,
-            cssCurrent : 'curent',
-            cssItem : 'item_li',
-            cssPrev : 'first',
-            cssNext : 'last',
-            startContent : 0
-        },
-        styleContent : {
-            'position' : 'absolute', 
-            'top' : '50px', 
-            'left' : '5%', 
-            'width' : '100%', 
-            'height' : '600px', 
-            'background' : '#ddd'
-        }
+        paging : Config.Paging,
+        styleContent : Config.Content.style
     };
     self.SetInputParameters = function(){
         self.settingsContent.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
@@ -61,7 +39,16 @@ var ContentWidget = function(conteiner){
         self.settingsContent.conteinerIdForContent = conteiner;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.Route();
         self.SetPosition();
+    };
+    self.Route = function(){
+        if(Route.route == 'catalog'){
+            for(var key in Route.params){
+                Parameters.catalog[key] = Route.params[key];
+            }
+            self.SelectTypeContent();
+        }
     };
     self.SelectTypeContent = function(){
         if(Parameters.typeCategory == 'category'){     
@@ -76,15 +63,6 @@ var ContentWidget = function(conteiner){
         }
     };
     self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.SelectTypeContent();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.SelectTypeContent();
-            });
-        }
-        
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
             if(Parameters.lastItem == 0){
                 self.BaseLoad.Roots(function(data){
@@ -253,6 +231,7 @@ var ContentWidget = function(conteiner){
     };
     self.Render = {
         List : function(data){
+            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
             delete data;
         },
@@ -424,9 +403,9 @@ var ListContentViewModel = function(settings){
             settings.paging.currentPage = 1;
             settings.paging.startContent = 0;
             if(Parameters.activeSection != 0)
-                var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
             else
-                var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem;
+                var href = "/catalog/category=" + Parameters.activeItem;
             window.location.hash = href;
             EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
             {
@@ -624,9 +603,9 @@ var Page = function(opt){
         opt.settings.paging.currentPage = self.pageId;
         
         if(Parameters.activeSection != 0)
-            var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem + "&page=" + self.pageId;
+            var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem + "&page=" + self.pageId;
         else
-            var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem + "&page=" + self.pageId;
+            var href = "/catalog/category=" + Parameters.activeItem + "&page=" + self.pageId;
         window.location.hash = href;
         
         EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 

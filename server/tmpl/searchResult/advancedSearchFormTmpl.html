@@ -1,0 +1,290 @@
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tmpl/searchResult/ui.dynatree.css" type="text/css" media="screen, projection" />
+<style>
+    ul.dynatree-container{
+        height: 152px;
+        width: 360px;
+        border: 1px solid #ccc;
+    }
+</style>
+<script type="text/html" id="advancedSearchFormTmpl">
+    <div class="big_search">
+        <div class="content">
+            <form action="" data-bind="submit: SubmitAdvancedSearchForm">
+                <table style="float: left; width: 100%;">
+                    <tr>
+                        <td><div class="left_block">
+                                <div class="form_item form_item_title">
+                                    <label>Ключевые слова:</label>
+                                    <input class="form_text" type="text" name="keyWords" data-bind="value: keyWords" />
+                                </div></div>
+                            <div class="center_block">
+                                <div class="form_item form_item_region">
+                                    <label>Искать:</label>
+                                    <select name="typeSearch" class="form_select" data-bind="css: cssTypeSearch, options: typesSearch, optionsText: 'text', optionsValue: 'key'"></select>
+                                </div></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="left_block">
+                                <label>Рубрики:</label>
+                                <div id="tree_categories_for_advanced_search"></div>
+                            </div>
+                            <div class="center_block">
+                                <div class="form_item form_item_price">
+                                    <label>Ценовой диапазон (руб.):</label>
+                                    <input class="form_text form_text_1" type="text" name="startCost" data-bind="value: startCost" />
+                                    <input class="form_text form_text_2" type="text" name="endCost" data-bind="value: endCost" />
+                                    <span>—</span>
+                                </div>
+                                <div class="form_item form_item_slovo">
+                                    <label>Исключить слова:</label>
+                                    <input class="form_text" type="text" name="exceptWords" data-bind="value: exceptWords" />
+                                </div>
+                                <div class="form_item form_item_city">
+                                    <label>Тип продавца:</label>
+                                    <select name="typeSeller" class="form_select" data-bind="css: cssTypeSeller, options: typesSellers, optionsText: 'text', optionsValue: 'key'"></select>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form_item form_item_name">
+                                <input type="submit" class="" value="Поиск" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="searchResultTileTmpl">
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td data-bind="template: { name: 'searchResultFiletrTmpl', data: filters }"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="category_block_1">
+                    <!-- ko foreach: content -->
+                    <div class="row">
+                        <div class="row_center">
+                            <table>
+                                <tr data-bind="foreach: str">
+                                    <td class="tab_row_1" data-bind="css: {auction: idAuction() > 0}">
+                                        <div class="row_content">
+                                            <div class="photo">
+                                                <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/>
+                                                <!-- ko if: discount > 0 -->
+                                                <div class="save">
+                                                    <span class="text_1">скидка</span>
+                                                    <span class="text_2" data-bind="text: discount"></span>
+                                                </div>
+                                                <!-- /ko -->
+                                            </div>
+                                            <div class="title">
+                                                <a href="#" data-bind="text:chortName, click: ClickGoods"></a> 
+                                                <!-- ko if: idAuction() > 0 -->
+                                                <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                                                <!-- /ko -->
+                                            </div>
+                                            <div class="category">Магазин: <a href="#" data-bind="text: shopName, click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                            <div class="price">
+                                                <!-- ko if: discount > 0 -->
+                                                <span data-bind="text: sellGoods"></span><br />
+                                                <!-- /ko -->
+                                                <!--ko text: sellCost --><!--/ko-->
+                                            </div>
+                                            <div class="bay"><a href="#" data-bind="click: ClickBuy">Купить</a></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: paging().length > 1 -->
+                    <div class="pager">
+                        <ul >
+                            <!-- ko foreach: paging -->
+                            <li data-bind="css: cssLink">
+                                <!-- ko ifnot: current -->
+                                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                                <!-- /ko -->
+                                <!-- ko text: current ? title : '' --><!-- /ko -->
+                            </li>
+                            <!-- /ko-->
+                        </ul>
+                    </div>
+                    <!-- /ko -->
+                </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="searchResultTableTmpl">
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td data-bind="template: { name: 'searchResultFiletrTmpl', data: filters }"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="category_block_2">
+                    <!-- ko foreach: content -->
+                    <div class="row" data-bind="css: {auction: idAuction() > 0}">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td style="width: 212px;">
+                                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
+                                    </td>
+                                    <td style="vertical-align: top;">
+                                        <div class="title">
+                                            <a href="#" data-bind="text: chortName, click: ClickGoods"></a>
+                                            <!-- ko if: idAuction() > 0 -->
+                                            <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                                            <!-- /ko -->
+                                        </div>
+                                        <div class="category">Магазин: <a href="#" data-bind="text: shopName, click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                        <div class="body" data-bind="html: description"></div>
+                                        <div class="price" data-bind="text: sellCost"></div>
+                                        <div class="bay"><a href="#" data-bind="click: ClickBuy">Купить</a></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: paging().length > 1 -->
+                    <div class="pager">
+                        <ul >
+                            <!-- ko foreach: paging -->
+                            <li data-bind="css: cssLink">
+                                <!-- ko ifnot: current -->
+                                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                                <!-- /ko -->
+                                <!-- ko text: current ? title : '' --><!-- /ko -->
+                            </li>
+                            <!-- /ko-->
+                        </ul>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="searchResultListTmpl">
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td data-bind="template: { name: 'searchResultFiletrTmpl', data: filters }"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="category_block_3">
+                    <div class="rows rows_1">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td class="row_1">Изображение</td>
+                                    <td class="row_2">Название</td>
+                                    <td class="row_3">Магазин</td>
+                                    <td class="row_4">Цена</td>
+                                    <td class="row_5">Купить</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ko foreach: content -->
+                    <div class="rows"  data-bind="css: {auction: idAuction() > 0}">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td class="row_1"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></td>
+                                    <td class="row_2">
+                                        <a href="#" data-bind="text: chortName, click: ClickGoods"></a>
+                                        <!-- ko if: idAuction() > 0 -->
+                                        <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                                        <!-- /ko -->
+                                    </td>
+                                    <td class="row_3"><a href="#" data-bind="text: shopName, click: ClickShop"></a></td>
+                                    <td class="row_4" data-bind="text: sellCost"></td>
+                                    <td class="row_5"><a href="#" data-bind="click: ClickBuy">Купить</a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                    <!-- ko if: paging().length > 1 -->
+                    <div class="pager">
+                        <ul >
+                            <!-- ko foreach: paging -->
+                            <li data-bind="css: cssLink">
+                                <!-- ko ifnot: current -->
+                                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                                <!-- /ko -->
+                                <!-- ko text: current ? title : '' --><!-- /ko -->
+                            </li>
+                            <!-- /ko-->
+                        </ul>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="searchResultErrorTmpl">
+    <h2>По вашему запросу товаров не найдено</h2>
+    <p>Попробуйте изменить параметры поиска и попробуйте еще раз.</p>
+</script>
+
+<script type="text/html" id="searchResultFiletrTmpl">
+    <div class="salespeople_serch">
+        <div class="content">
+            <table style="width: 100%;">
+                <tr>
+                    <td>
+<!--                        <form class="serch_form" action="" data-bind="submit: FilterNameGoods">
+                            <input class="form_text" type="text" name="text" value="" placeholder="Поиск товара"  data-bind="value: filterName"/>
+                            <input class="form_submit" type="submit" value=""/>
+                        </form>-->
+                    </td>
+                    <td>
+                        <div class="sorting_block">
+                            <span class="count">
+                                Количество:
+                                <!-- ko foreach: {data: listPerPage, as: 'count'} -->
+                                <a href="#" class="" data-bind="css: {'active': count == $parent.itemsPerPage}, text: count, click: $parent.SelectCount"></a> • 
+                                <!-- /ko-->
+                            </span>
+                            <span class="sort">
+                                <select class="form_select">
+                                    <option value="rating">рейтингу</option>
+                                    <option value="name">названию</option>
+                                    <option value="cost">цене</option>
+                                </select>
+                                <span>Сортировать по:</span>
+                            </span>
+                        </div>
+                    </td>
+                    <td style="width: 50px;">
+                        <div class="block_type" style="margin-top: 0px;">
+                            <a class="link_1" href="#" data-bind="css: {'active' : typeView == 'tile'}, click: selectTypeView.ClickTile"></a>
+                            <a class="link_2" href="#" data-bind="css: {'active' : typeView == 'table'}, click: selectTypeView.ClickTable"></a>
+                            <a class="link_3" href="#" data-bind="css: {'active' : typeView == 'list'}, click: selectTypeView.ClickList"></a>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</script>
+

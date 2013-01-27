@@ -4,7 +4,22 @@ var JSSettings = {
     pathToTmpl : "tmpl/",
     pathToData : "services/DataProxy.php?query=",
     pathToCore: "index.html",
-    scripts : ['easyXDM.min.js', 'widgets/Widget.js', 'knockout-2.2.0.js', 'jquery.livequery.js', 'DD_roundies_0.0.2a-min.js', 'select.js', 'jquery.jcarousel.min.js', 'widgets/Slider.js', 'widgets/Carousel.js'],
+    scripts : [
+        'jquery-ui.custom.js',
+        'easyXDM.min.js',
+        'knockout-2.2.0.js',
+        'jquery.livequery.js',
+        'DD_roundies_0.0.2a-min.js',
+        'select.js',
+        'jquery.jcarousel.min.js',
+        'jquery.cookie.js',
+        'jquery.dynatree.min.js',
+        
+        'widgets/Config.js',
+        'widgets/Widget.js',
+        'widgets/Slider.js',
+        'widgets/Carousel.js'
+    ],
     inputParameters : {}
 }
 
@@ -137,6 +152,7 @@ var XDMTransport = {
         socket.postMessage(data);
     }
 }
+
 $().ready(function(){
    JSCore.Init();
 })
