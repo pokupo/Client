@@ -4,7 +4,7 @@ var SearchWidget = function(conteiner){
         containerIdForSearch : conteiner, 
         tmplForSearch : Config.Search.tmpl,
         inputParameters : {},
-        styleSearch : Config.Search.style
+        style : Config.Search.style
     };
     self.InitWidget = function(){
         self.RegisterEvents();
@@ -105,15 +105,13 @@ var SearchWidget = function(conteiner){
         delete data;
     };
     self.SetPosition = function(){
-        if(self.settingsSearch.inputParameters['position'] == 'absolute'){
+        if(self.settingsSearch.inputParameters.position == 'absolute'){
             for(var key in self.settingsSearch.inputParameters){
-                if(self.settingsSearch.styleSearch[key])
-                    self.settingsSearch.styleSearch[key] = self.settingsSearch.inputParameters[key];
+                if(self.settingsSearch.style[key])
+                    self.settingsSearch.style[key] = self.settingsSearch.inputParameters[key];
             }
             $().ready(function(){
-                for(var i=0; i<=conteiner.length-1; i++){
-                    $("#" + conteiner[i]).css(self.settingsSearch.styleSearch);
-                }
+                $("#" + self.settingsSearch.containerIdForSearch).css(self.settingsSearch.style);
             });
         }
     };

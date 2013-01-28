@@ -197,15 +197,14 @@ var SearchResultWidget = function(conteiner){
         }
     };
     self.SetPosition = function(){
+
         if(self.settingsSearchResult.inputParameters['position'] == 'absolute'){
             for(var key in self.settingsSearchResult.inputParameters){
                 if(self.settingsSearchResult.styleSearchResult[key])
                     self.settingsSearchResult.styleSearchResult[key] = self.settingsSearchResult.inputParameters[key];
             }
             $().ready(function(){
-                for(var i=0; i<=conteiner.length-1; i++){
-                    $("#" + conteiner[i]).css(self.settingsSearchResult.styleSearchResult);
-                }
+                 $("#" + self.settingsSearchResult.containerIdForAdvancedSearch).css(self.settingsSearchResult.styleSearchResult);
             });
         }
     };
