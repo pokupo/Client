@@ -165,7 +165,6 @@ var SearchViewModel = function(){
 
             Parameters.filter.idSelectCategories = [selected];
             Parameters.filter.filterName = filterName;
-            console.log(self.idCategories);
             if(self.idCategories.length == 0)
                 self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;

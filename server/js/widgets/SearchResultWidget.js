@@ -42,6 +42,7 @@ var SearchResultWidget = function(conteiner){
                        categories[i] = parseInt(ids[i]); 
                     }
                     Parameters.filter[key] = categories;
+                    Parameters.filter.idCategories = categories;
                 }
                 else
                     Parameters.filter[key] = Route.params[key];
@@ -239,6 +240,10 @@ var AdvancedSearchFormViewModel = function(params){
     self.FillSelectList(params.listTypeSeller, self.typesSellers);
     
     self.AddCategories = function(data){
+        if(self.idCategories.length == 1){
+            self.FindSelectedSection(data, self.idCategories[0]);
+        }
+        
         self.categories = self.AddChildren(data).children;
         EventDispatcher.DispatchEvent('searchResultWidget.fill.categories', self);
     };
@@ -479,6 +484,7 @@ var ListSearchResultViewModel = function(settings){
         
         for(var key in Parameters.filter){
             if(Parameters.filter[key]){
+                if(key != 'idSelectCategories')
                 str = str + '&' + key + '=' + Parameters.filter[key];
             }
         }
