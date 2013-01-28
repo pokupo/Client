@@ -163,9 +163,13 @@ var SearchViewModel = function(){
             else 
                 self.idCategories.push(selected);
 
+            Parameters.filter.idSelectCategories = [selected];
             Parameters.filter.filterName = filterName;
+            console.log(self.idCategories);
+            if(self.idCategories.length == 0)
+                self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;
-            Parameters.filter.keyWords = '';
+            Parameters.filter.keyWords = filterName;
             Parameters.filter.typeSearch = 'any';
             Parameters.filter.startCost = '';
             Parameters.filter.endCost = '';

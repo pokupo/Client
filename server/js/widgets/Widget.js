@@ -33,6 +33,7 @@ Parameters = {
     filter : {
         filterName : '',
         idCategories : [],
+        idSelectCategories : [],
         keyWords : '',
         typeSearch : 'any',
         exceptWords : '',
@@ -56,7 +57,7 @@ var Route = {
         this.route = route;
         var params = [];
         for(var key in data){
-            if(data[key])
+            if(data[key] && key != 'idCategories')
                params.push(key + '=' + data[key]);
         }
         var href = '/' + route + '/' + params.join("&");

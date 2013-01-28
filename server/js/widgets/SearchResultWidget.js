@@ -15,7 +15,6 @@ var SearchResultWidget = function(conteiner){
     self.InitWidget = function(){
         self.RegisterEvents();
         self.SetInputParameters();
-        self.Route();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -36,7 +35,7 @@ var SearchResultWidget = function(conteiner){
     self.Route = function(){
         if(Route.route == 'search'){
             for(var key in Route.params){
-                if(key == 'idCategories'){
+                if(key == 'idSelectCategories'){
                     var categories = [];
                     var ids = Route.params[key].split(",");
                     for(var i = 0; i <= ids.length-1; i++){
@@ -66,6 +65,10 @@ var SearchResultWidget = function(conteiner){
             });
         }
         
+        EventDispatcher.AddEventListener('searchResultWidget.onload.tmpl', function(){
+            self.Route();
+        });
+        
         EventDispatcher.AddEventListener('searchWidget.submit.form', function (data){
             Route.SetHash('search', Parameters.filter);
             self.BaseLoad.Roots(function(){
@@ -73,7 +76,7 @@ var SearchResultWidget = function(conteiner){
             })
         });
         
-        EventDispatcher.AddEventListener('searchResultWidget.onload.roots', function (){        
+        EventDispatcher.AddEventListener('searchResultWidget.onload.roots', function (){  
             self.InsertContainer.AdvancedSearchForm();
             self.Fill.AdvancedSearchForm();
             
@@ -87,9 +90,11 @@ var SearchResultWidget = function(conteiner){
 
             for(var key in Parameters.filter){
                 if(Parameters.filter[key]){
+                    if(key != 'idSelectCategories')
                     str = str + '&' + key + '=' + Parameters.filter[key];
                 }
             }
+
             self.BaseLoad.SearchContent(str, function(data){
                 EventDispatcher.DispatchEvent('searchResultWidget.onload.searchResult', data);
             })
@@ -163,7 +168,7 @@ var SearchResultWidget = function(conteiner){
                         return node.data.key;
                     });
                     
-                    data.idCategories = selKeys;
+                    Parameters.filter.idSelectCategories = selKeys;
                 }
             });
             
@@ -242,8 +247,7 @@ var AdvancedSearchFormViewModel = function(params){
         var active = false;
         for(var j = 0; j <= data.length-1; j++){
             var node = {};
-            
-            if($.inArray(data[j].id, self.idCategories) >=0 || select == true){
+            if($.inArray(data[j].id, Parameters.filter.idSelectCategories) >=0 || select == true){
                 node.select = true;
                 active = true;
             }
@@ -274,7 +278,9 @@ var AdvancedSearchFormViewModel = function(params){
         self.typeSeller = $(selectedTypeSeller[selectedTypeSeller.length-1]).val();
 
         Parameters.filter.filterName = self.filterName;
-        Parameters.filter.idCategories = self.FilterCategories(self.idCategories).join(",");
+        Parameters.filter.idCategories = self.FilterCategories(Parameters.filter.idSelectCategories).join(",");
+        if(!Parameters.filter.idCategories)
+            Parameters.filter.idCategories = Parameters.filter.idSelectCategories[0];
         Parameters.filter.keyWords = self.keyWords;
         Parameters.filter.typeSearch = self.typeSearch;
         Parameters.filter.startCost = self.startCost;
@@ -296,6 +302,26 @@ var AdvancedSearchFormViewModel = function(params){
             }
         }
         return test;
+    };
+    self.FindSelectedSection = function(data, selected){
+        for(var i = 0; i <= data.length - 1; i++){
+            if(data[i].id == selected && data[i].children){
+                self.FindChildrenCategory(data[i].children);
+                break;
+            }
+            else if(data[i].children)
+                self.FindSelectedSection(data[i].children, selected)
+        }
+    }
+    self.FindChildrenCategory = function(data){
+        for(var i = 0; i <= data.length - 1; i++){
+            if(data[i].type_category == 'category'){
+                self.idCategories.push(data[i].id);
+            }
+            if(data[i].children){
+                self.FindChildrenCategory(data[i].children)
+            }
+        }
     }
 }
 
