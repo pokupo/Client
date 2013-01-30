@@ -158,41 +158,45 @@ var SearchResultWidget = function(conteiner){
     };
     self.Render = {
         AdvancedSearchForm : function(data){
-            ko.applyBindings(data, $("#" + self.settingsSearchResult.containerIdForAdvancedSearch)[0]);
-            
-            $("#" + self.settingsSearchResult.idTreeCategoriesForAdvancedSearchForm).dynatree({
-                checkbox: true,
-                selectMode: 3,
-                children: data.categories,
-                onSelect: function(select, node) {
-                    var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-                        return node.data.key;
-                    });
-                    
-                    Parameters.filter.idSelectCategories = selKeys;
-                }
-            });
-            
-            $('.' + data.cssTypeSearch).sSelect({
-                defaultText: self.settingsSearchResult.listTypeSearch[data.typeSearch]
-            }).change(function(){
-                var id = $('.' + data.cssTypeSearch).getSetSSValue();
-                $('.' + data.cssTypeSearch + ' option').removeAttr('selected');
-                $('.' + data.cssTypeSearch + ' option[value=' + id + ']').attr('selected', true);
-            });
-            
-            $('.' + data.cssTypeSeller).sSelect({
-                defaultText: self.settingsSearchResult.listTypeSeller[data.typeSeller]
-            }).change(function(){
-                var id = $('.' + data.cssTypeSeller).getSetSSValue();
-                $('.' + data.cssTypeSeller + ' option').removeAttr('selected');
-                $('.' + data.cssTypeSeller + ' option[value=' + id + ']').attr('selected', true);
-            });
+            if($("#" + self.settingsSearchResult.containerIdForAdvancedSearch).length){
+                ko.applyBindings(data, $("#" + self.settingsSearchResult.containerIdForAdvancedSearch)[0]);
+
+                $("#" + self.settingsSearchResult.idTreeCategoriesForAdvancedSearchForm).dynatree({
+                    checkbox: true,
+                    selectMode: 3,
+                    children: data.categories,
+                    onSelect: function(select, node) {
+                        var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
+                            return node.data.key;
+                        });
+
+                        Parameters.filter.idSelectCategories = selKeys;
+                    }
+                });
+
+                $('.' + data.cssTypeSearch).sSelect({
+                    defaultText: self.settingsSearchResult.listTypeSearch[data.typeSearch]
+                }).change(function(){
+                    var id = $('.' + data.cssTypeSearch).getSetSSValue();
+                    $('.' + data.cssTypeSearch + ' option').removeAttr('selected');
+                    $('.' + data.cssTypeSearch + ' option[value=' + id + ']').attr('selected', true);
+                });
+
+                $('.' + data.cssTypeSeller).sSelect({
+                    defaultText: self.settingsSearchResult.listTypeSeller[data.typeSeller]
+                }).change(function(){
+                    var id = $('.' + data.cssTypeSeller).getSetSSValue();
+                    $('.' + data.cssTypeSeller + ' option').removeAttr('selected');
+                    $('.' + data.cssTypeSeller + ' option[value=' + id + ']').attr('selected', true);
+                });
+            }
         },
         SearchResult : function(data){
-            $("#catalog").hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-            ko.applyBindings(data, $("#" + self.settingsSearchResult.containerIdForSearchResult)[0]);
+            if($("#" + self.settingsSearchResult.containerIdForSearchResult).length > 0){
+                $("#catalog").hide();
+                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+                ko.applyBindings(data, $("#" + self.settingsSearchResult.containerIdForSearchResult)[0]);
+            }
             delete data;
         }
     };

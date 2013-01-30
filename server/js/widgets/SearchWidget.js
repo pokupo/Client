@@ -90,18 +90,20 @@ var SearchWidget = function(conteiner){
         search.AddListCategory(JSON.parse(Parameters.cache.childrenCategory[data.id]), data);
     };
     self.Render = function(data){
-        $("#" + self.settingsSearch.containerIdForSearch).html("");
-        $("#" + self.settingsSearch.containerIdForSearch).append($('script#searchTmpl').html()).show();
-        ko.applyBindings(data, $("#" + self.settingsSearch.containerIdForSearch)[0]);
-        
-        $('.' + data.cssSelectList).sSelect({
-            defaultText: data.selectedCategory
-        }).change(function(){
-            var id = $('.' + data.cssSelectList).getSetSSValue();
-            $('.' + data.cssSelectList + ' option').removeAttr('selected');
-            $('.' + data.cssSelectList + ' option[value=' + id + ']').attr('selected', true);
-        });
-        $('.' + data.cssSelectList).getSetSSValue(data.id);
+        if($("#" + self.settingsSearch.containerIdForSearch).length > 0){
+            $("#" + self.settingsSearch.containerIdForSearch).html("");
+            $("#" + self.settingsSearch.containerIdForSearch).append($('script#searchTmpl').html()).show();
+            ko.applyBindings(data, $("#" + self.settingsSearch.containerIdForSearch)[0]);
+
+            $('.' + data.cssSelectList).sSelect({
+                defaultText: data.selectedCategory
+            }).change(function(){
+                var id = $('.' + data.cssSelectList).getSetSSValue();
+                $('.' + data.cssSelectList + ' option').removeAttr('selected');
+                $('.' + data.cssSelectList + ' option[value=' + id + ']').attr('selected', true);
+            });
+            $('.' + data.cssSelectList).getSetSSValue(data.id);
+        }
         delete data;
     };
     self.SetPosition = function(){

@@ -231,13 +231,17 @@ var ContentWidget = function(conteiner){
     };
     self.Render = {
         List : function(data){
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-            ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
+            if($("#" + self.settingsContent.conteinerIdForContent).length > 0){
+                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+                ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
+            }
             delete data;
         },
         Block : function(data){
-            ko.applyBindings(data, $('#' + data.cssBlock)[0]);
-            $('#' + data.cssBlock).show();
+            if($('#' + data.cssBlock).length > 0){
+                ko.applyBindings(data, $('#' + data.cssBlock)[0]);
+                $('#' + data.cssBlock).show();
+            }
             delete data;
         }
     };

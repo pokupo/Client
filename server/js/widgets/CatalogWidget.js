@@ -124,9 +124,11 @@ var CatalogWidget = function(conteiner){
     };
     self.Render = {
         Catalog : function(data){
-            $("#" + self.settingsCatalog.containerIdForCatalog).empty();
-            $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
-            ko.applyBindings(data, $('#' + self.settingsCatalog.containerIdForCatalog )[0]);
+            if($("#" + self.settingsCatalog.containerIdForCatalog).length > 0){
+                $("#" + self.settingsCatalog.containerIdForCatalog).empty();
+                $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
+                ko.applyBindings(data, $('#' + self.settingsCatalog.containerIdForCatalog )[0]);
+            }
         }
     }
     self.SetPosition = function(){
