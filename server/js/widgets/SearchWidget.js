@@ -78,7 +78,8 @@ var SearchWidget = function(conteiner){
         });
         
         EventDispatcher.AddEventListener('widget.changeHash', function (data){
-            $("#" + self.settingsSearch.containerIdForSearch).hide();
+            ReadyWidgets.Indicator('SearchWidget', false);
+            //$("#" + self.settingsSearch.containerIdForSearch).hide();
             self.BaseLoad.Section(Parameters.lastItem, function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             }); 
@@ -104,6 +105,7 @@ var SearchWidget = function(conteiner){
             });
             $('.' + data.cssSelectList).getSetSSValue(data.id);
         }
+        ReadyWidgets.Indicator('SearchWidget', true);
         delete data;
     };
     self.SetPosition = function(){
@@ -128,7 +130,7 @@ var SearchCategoryItem = function(data){
 
 var SearchViewModel = function(){
     var self = this;
-    self.text = Parameters.filter.filterName;
+    self.text = '';
     self.selectedCategory = "";
     self.cssSelectList = 'searchSelectList';
     self.categories =  ko.observableArray();
@@ -168,7 +170,7 @@ var SearchViewModel = function(){
             if(self.idCategories.length == 0)
                 self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;
-            Parameters.filter.keyWords = filterName;
+            Parameters.filter.keyWords = '';
             Parameters.filter.typeSearch = 'any';
             Parameters.filter.startCost = '';
             Parameters.filter.endCost = '';
@@ -176,12 +178,12 @@ var SearchViewModel = function(){
             Parameters.filter.typeSeller = '';
 
             Route.SetHash('search', Parameters.filter);
-        
-            $("#catalog").hide();
+
             $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumbs', selected);
             EventDispatcher.DispatchEvent('searchWidget.submit.form');
+            $(data.text).val('');
         }
         else{
             alert('Введите название товара для его поиска.');
@@ -212,8 +214,9 @@ var SearchViewModel = function(){
 var TestSearch = {
     Init : function(){
         if(typeof Widget == 'function' && JSCore !== undefined){
+            ReadyWidgets.Indicator('SearchWidget', false);
             SearchWidget.prototype = new Widget();
-            var search = new SearchWidget('search_block');
+            var search = new SearchWidget(Config.Conteiners.search);
             search.Init();
         }
         else{

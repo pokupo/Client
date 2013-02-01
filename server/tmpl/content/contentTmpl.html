@@ -1,4 +1,7 @@
 <script type="text/html" id="contentTileTmpl">
+    <div class="top_content_region">
+        <h1 data-bind="text: titleBlock"></h1>
+    </div>
     <table style="width: 100%; float: left;">
         <tr>
             <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
@@ -65,6 +68,9 @@
 </script>
 
 <script type="text/html" id="contentTableTmpl">
+    <div class="top_content_region">
+        <h1 data-bind="text: titleBlock"></h1>
+    </div>
     <table style="width: 100%; float: left;">
         <tr>
             <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
@@ -118,6 +124,9 @@
 </script>
 
 <script type="text/html" id="contentListTmpl">
+    <div class="top_content_region">
+        <h1 data-bind="text: titleBlock"></h1>
+    </div>
     <table style="width: 100%; float: left;">
         <tr>
             <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
@@ -172,6 +181,28 @@
                         </ul>
                     </div>
                     <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="contentNoResultsTmpl">
+    <div class="top_content_region">
+        <h1 data-bind="text: titleBlock"></h1>
+    </div>
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="category_block_3">
+                    <div class="rows rows_1">
+                        <div class="row_content">
+                              <p data-bind="text:message"></p>
+                        </div>
+                    </div>
                 </div>
             </td>
         </tr>

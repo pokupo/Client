@@ -57,12 +57,67 @@ var Route = {
         this.route = route;
         var params = [];
         for(var key in data){
-            if(data[key] && key != 'idCategories')
-               params.push(key + '=' + data[key]);
+            if(data[key] && key != 'idCategories'){
+                if(key != 'page')
+                    params.push(key + '=' + data[key]);
+                else if(data[key] != 1)
+                    params.push(key + '=' + data[key]);
+            }
         }
         var href = '/' + route + '/' + params.join("&");
 
         window.location.hash = href;
+    }
+}
+
+var ReadyWidgets = {
+    readyCount : 0,
+    countAll : 0,
+    widgets : {},
+    Indicator : function(widget, isReady){
+        this.widgets[widget] = isReady;
+
+        this.countAll = 0;
+        this.readyCount = 0;
+        
+        for(var key in this.widgets){
+            this.RegisterReady(key);
+        }
+
+        this.ShowLoading();
+    },
+    RegisterReady : function(key){
+        this.countAll++;
+        if(this.widgets[key] == true){
+            this.readyCount = this.readyCount + 1;
+        }
+    },
+    ShowLoading : function(){
+        if(this.countAll != this.readyCount){
+            this.HideContent();
+            if($('#loadingContainer').length == 0)
+                $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+        }
+        else{
+            this.ShowContent();
+            $('#loadingContainer').remove();
+        }
+    },
+    HideContent : function(){
+        for(var key in Config.Conteiners){
+            if($.isArray(Config.Conteiners[key])){
+                for(var i in Config.Conteiners[key]){
+                    $("#" + Config.Conteiners[key][i]).children().hide();
+                }
+            }
+            else
+                $("#" + Config.Conteiners[key]).children().hide();
+        }
+    },
+    ShowContent : function(){
+        for(var key in Config.Conteiners){
+            $("#" + Config.Conteiners[key]).children().show();
+        }
     }
 }
 
@@ -145,20 +200,6 @@ function Widget(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
             $('body').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
     };
-    this.LoadingIndicator = function(container){
-        var widthCatalog = $("#" + container).children().width();
-        var heightCatalog = $("#" + container).children().height();
-        if(!heightCatalog)
-            heightCatalog = 400;
-        $("#" + container).children().hide();
-        $("#" + container).html('<div id="loading' + container + 'Container"><img src="' + Parameters.pathToImages + Parameters.loading+ '"/></div>')
-        $("#loading" + container + "Container").css({
-            "width" : widthCatalog,
-            "height" : heightCatalog, 
-            "text-align" : "center",
-            "padding-top" : heightCatalog/2-$("#loading" + container + "Container img").height()/2
-        });
-    }
     this.RegistrCustomBindings = function(){
         ko.bindingHandlers.UpdateId = {
             update: function(element, valueAccessor) {
@@ -237,7 +278,6 @@ function Widget(){
             var queryHash = EventDispatcher.hashCode(query);
             if(!Parameters.cache.searchContent[queryHash]){
                 XDMTransport.LoadData(self.settings.dataSearchContent + query, function(data){
-                    
                     Parameters.cache.searchContent[queryHash] = JSON.parse(data);
                     if(callback)
                         callback(Parameters.cache.searchContent[queryHash]);

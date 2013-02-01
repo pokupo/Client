@@ -42,6 +42,7 @@ var CatalogWidget = function(conteiner){
                 }
             }
             else{
+                ReadyWidgets.Indicator('CatalogWidget', true);
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             }
         });
@@ -56,7 +57,10 @@ var CatalogWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('widget.changeHash', function (data){
             if(Parameters.typeCategory != "category")
-               self.LoadingIndicator(self.settingsCatalog.containerIdForCatalog);
+                ReadyWidgets.Indicator('CatalogWidget', false);
+            else
+                ReadyWidgets.Indicator('CatalogWidget', true);
+
             self.Update();
         });
         
@@ -97,6 +101,7 @@ var CatalogWidget = function(conteiner){
             }
             else{
                 $("#" + self.settingsCatalog.containerIdForCatalog).empty();
+                ReadyWidgets.Indicator('CatalogWidget', true);
             }
         })
     };
@@ -120,6 +125,7 @@ var CatalogWidget = function(conteiner){
             for(var i = 0; i <= data.length - 1; i++){
                 catalog.AddItem(data[i]);
             }
+            EventDispatcher.DispatchEvent('catalogWidget.fill.section', catalog);
         }
     };
     self.Render = {
@@ -129,6 +135,7 @@ var CatalogWidget = function(conteiner){
                 $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
                 ko.applyBindings(data, $('#' + self.settingsCatalog.containerIdForCatalog )[0]);
             }
+            ReadyWidgets.Indicator('CatalogWidget', true);
         }
     }
     self.SetPosition = function(){
@@ -163,7 +170,6 @@ var Catalog = function(){
             }
         }
         self.children.push(section);
-        EventDispatcher.DispatchEvent('catalogWidget.fill.section', self);
     }
 }
 
@@ -227,6 +233,7 @@ var CatalogItem = function(data) {
         return text;
     }, this);
     self.ClickItem = function() {
+        ReadyWidgets.readyCount = 0;
         EventDispatcher.DispatchEvent('widget.click.item', data)
     }
 }
@@ -234,8 +241,9 @@ var CatalogItem = function(data) {
 var TestCatalog = {
     Init : function(){
         if(typeof Widget == 'function' && JSCore !== undefined){
+            ReadyWidgets.Indicator('CatalogWidget', false);
             CatalogWidget.prototype = new Widget();
-            var catalog = new CatalogWidget('catalog');
+            var catalog = new CatalogWidget(Config.Conteiners.catalog);
             catalog.Init();
         }
         else{

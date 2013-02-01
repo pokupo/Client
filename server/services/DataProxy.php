@@ -121,23 +121,30 @@ class DataProxy implements IProxy {
     private function GetSearchContent(){
         $str = Settings::HostApi . Settings::GoodsPathApi . $this->shopId .'/search/'.$this->start.'/'.$this->count.'/'.$this->orderBy.'/'.$this->filterName.'?';
         
-        if($this->idCategories)
+        if($this->idCategories){
             $params[] = 'idCategories='.$this->idCategories;
-        if($this->keyWords)
-            $params[] = 'keyWords='.$this->keyWords;
-        if($this->typeSearch)
+        }
+        if($this->keyWords){
+            $params[] = 'keyWords='.implode('%20', explode(' ', $this->keyWords));
+        }
+        if($this->typeSearch){
             $params[] = 'typeSearch='.$this->typeSearch;
-        if($this->startCost)
+        }
+        if($this->startCost){
             $params[] = 'startCost='.$this->startCost;
-        if($this->endCost)
+        }
+        if($this->endCost){
             $params[] = 'endCost='.$this->endCost;
-        if($this->exceptWords)
-            $params[] = 'exceptWords='.$this->exceptWords;
-        if($this->typeSeller)
+        }
+        if($this->exceptWords){
+            $params[] = 'exceptWords='.implode('%20', explode(' ', $this->exceptWords));
+        }
+        if($this->typeSeller){
             $params[] = 'typeSeller='.$this->typeSeller;
+        }
         
-        $str = $str . join('&', $params);
-        
+        $str = $str . implode('&', $params);
+
         $category = $this->GetData($str);
         $this->responseData = $category;
     }
