@@ -49,6 +49,9 @@ var ContentWidget = function(conteiner){
             }
             self.SelectTypeContent();
         }
+        else{
+            ReadyWidgets.Indicator('ContentWidget', true);
+        }
     };
     self.SelectTypeContent = function(){
         if(Parameters.typeCategory == 'category'){     
@@ -141,6 +144,7 @@ var ContentWidget = function(conteiner){
             $(Parameters.sortingBlockContainer + ' .sort select').sSelect({
                 defaultText: Parameters.listSort[data.filters.orderBy]
             }).change(function(){
+                ReadyWidgets.Indicator('ContentWidget', false);
                 data.filters.orderBy = $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue();
                 EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
                 {
@@ -152,7 +156,8 @@ var ContentWidget = function(conteiner){
         });
         
         EventDispatcher.AddEventListener('widget.changeHash', function (data){
-            self.LoadingIndicator(self.settingsContent.conteinerIdForContent);
+            self.settingsContent.filterName = '';
+            ReadyWidgets.Indicator('ContentWidget', false);
             self.SelectTypeContent();
         });
     
@@ -167,13 +172,15 @@ var ContentWidget = function(conteiner){
                 EventDispatcher.DispatchEvent('onload.content.tmpl')
             }
         });
+        
         EventDispatcher.AddEventListener('contentWidget.click.goods', function(data){
 
         });
     };
     self.BustBlock = function(data){
         $("#" + self.settingsContent.conteinerIdForContent).html('');
-        
+        if(data.err)
+            ReadyWidgets.Indicator('ContentWidget', true);
         for(var i = 0; i <= data.length - 1; i++){
             Parameters.cache.contentBlock[data[i].id] = {
                 sort : i, 
@@ -216,6 +223,9 @@ var ContentWidget = function(conteiner){
             if(type == 'tile'){
                 $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentTileTmpl').html());
             }
+            if(type == 'no_results'){
+                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentNoResultsTmpl').html());
+            }
         }
     };
     self.Fill = {
@@ -224,9 +234,24 @@ var ContentWidget = function(conteiner){
             block.AddContent();
         },
         Content : function(data){
-            var content = new ListContentViewModel(self.settingsContent);
-            content.AddCategoryInfo(data.categoryId);
-            content.AddContent(data.content);
+            if(data.content[0].count_goods  != 0){
+                var content = new ListContentViewModel(self.settingsContent);
+                content.AddCategoryInfo(data.categoryId);
+                content.AddContent(data.content);
+            }
+            else{
+                var content = new ListContentViewModel(self.settingsContent);
+                content.AddCategoryInfo(data.categoryId);
+                if(content.filters.filterName != ''){
+                    content.SetType('no_results');
+                    content.SetMessage(Config.Content.message.filter);
+                }
+                else{
+                    content.SetType('no_results');
+                    content.SetMessage(Config.Content.message.noGoods);
+                }
+                EventDispatcher.DispatchEvent('contentWidget.fill.listContent', content);
+            }
         }
     };
     self.Render = {
@@ -236,6 +261,7 @@ var ContentWidget = function(conteiner){
                 ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
             }
             delete data;
+            ReadyWidgets.Indicator('ContentWidget', true);
         },
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
@@ -243,6 +269,14 @@ var ContentWidget = function(conteiner){
                 $('#' + data.cssBlock).show();
             }
             delete data;
+            ReadyWidgets.Indicator('ContentWidget', true);
+        },
+        NoResults : function(data){
+            if($("#" + self.settingsContent.conteinerIdForContent).length > 0){
+                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+                ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
+            }
+            ReadyWidgets.Indicator('ContentWidget', true);
         }
     };
     self.SetPosition = function(){
@@ -308,6 +342,7 @@ var BlockViewModel = function(data, countGoodsInContent){
         }
     };
     self.ClickCategory = function(){
+        ReadyWidgets.Indicator('ContentWidget', false);
         EventDispatcher.DispatchEvent('widget.click.item', data.block);
     };
 }
@@ -382,6 +417,7 @@ var ListContentViewModel = function(settings){
     self.titleBlock    = '';
     self.typeView      = 'tile';
     self.countGoods    = 0;
+    self.message = '';
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
@@ -393,6 +429,7 @@ var ListContentViewModel = function(settings){
         listPerPage : settings.listPerPage,
         countOptionList : ko.observable(settings.listPerPage.length-1),
         FilterNameGoods : function(data){
+            ReadyWidgets.Indicator('ContentWidget', false);
             self.filters.filterName = $(data.text).val();
             EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
             {
@@ -402,6 +439,7 @@ var ListContentViewModel = function(settings){
             )
         },
         SelectCount : function(count){
+            ReadyWidgets.Indicator('ContentWidget', false);
             self.filters.itemsPerPage = count;
             settings.paging.itemsPerPage = count;
             settings.paging.currentPage = 1;
@@ -441,6 +479,12 @@ var ListContentViewModel = function(settings){
                 EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
             }
         }
+    };
+    self.SetType = function(type){
+        self.typeView = type;
+    };
+    self.SetMessage = function(message){
+       self.message = message; 
     };
     self.AddCategoryInfo = function(categoryId){
         var data = JSON.parse(Parameters.cache.infoCategory[categoryId]);
@@ -603,6 +647,7 @@ var Page = function(opt){
         return opt.settings.paging.cssItem;
     }, this);
     self.ClickLinkPage = function(){
+        ReadyWidgets.Indicator('ContentWidget', false);
         var start = (self.pageId-1) * opt.settings.paging.itemsPerPage;
         opt.settings.paging.currentPage = self.pageId;
         
@@ -624,8 +669,9 @@ var Page = function(opt){
 var TestContent = {
     Init : function(){
         if(typeof Widget == 'function' && JSCore !== undefined){
+            ReadyWidgets.Indicator('ContentWidget', false);
             ContentWidget.prototype = new Widget();
-            var content = new ContentWidget('content');
+            var content = new ContentWidget(Config.Conteiners.content);
             content.Init();
         }
         else{

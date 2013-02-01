@@ -6,6 +6,13 @@ var Config = {
         containerIdForTmpl : "container_tmpl",
         loading : "/loading50.gif"
     },
+    Conteiners : {
+        catalog : 'catalog',
+        search  : 'search_block',
+        breadCrumbs : ['breadCrumb_1','breadCrumb_2'],
+        content : 'content',
+        searchResult : ['advanced_search', 'content']
+    },
     Catalog : {
         tmpl : "catalog/catalogTmpl.html",
         style : {
@@ -29,6 +36,10 @@ var Config = {
         }
     },
     Content : {
+        message : {
+            noGoods : 'В этом разделе товаров не найдено...',
+            filter : 'Товаров по ключу %%filterName%% не найдено'
+        },
         tmplForBlock : "content/blockTmpl.html",
         tmplForContent : "content/contentTmpl.html",
         countGoodsInBlock : 6,
