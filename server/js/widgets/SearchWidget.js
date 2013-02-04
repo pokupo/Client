@@ -79,7 +79,6 @@ var SearchWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('widget.changeHash', function (data){
             ReadyWidgets.Indicator('SearchWidget', false);
-            //$("#" + self.settingsSearch.containerIdForSearch).hide();
             self.BaseLoad.Section(Parameters.lastItem, function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             }); 
@@ -88,7 +87,8 @@ var SearchWidget = function(conteiner){
     self.Fill = function(data){
         var search = new SearchViewModel();
         search.selectedCategory = data.name_category;
-        search.AddListCategory(JSON.parse(Parameters.cache.childrenCategory[data.id]), data);
+        if(Parameters.cache.childrenCategory[data.id])
+            search.AddListCategory(JSON.parse(Parameters.cache.childrenCategory[data.id]), data);
     };
     self.Render = function(data){
         if($("#" + self.settingsSearch.containerIdForSearch).length > 0){
@@ -213,7 +213,7 @@ var SearchViewModel = function(){
 
 var TestSearch = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined){
+        if(typeof Widget == 'function' && JSCore !== undefined && typeof CatalogWidget == 'function'){
             ReadyWidgets.Indicator('SearchWidget', false);
             SearchWidget.prototype = new Widget();
             var search = new SearchWidget(Config.Conteiners.search);

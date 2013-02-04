@@ -250,7 +250,7 @@ var SelectListBreadCrumbItemViewModel = function(){
 
 var TestBreadCrumb = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined){
+        if(typeof Widget == 'function' && JSCore !== undefined && typeof CatalogWidget == 'function'){
             ReadyWidgets.Indicator('BreadCrumbWidget', false);
             BreadCrumbWidget.prototype = new Widget();
             var breadCrumb = new BreadCrumbWidget(Config.Conteiners.breadCrumbs);

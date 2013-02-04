@@ -144,13 +144,18 @@ var XDMTransport = {
         XDMTransport.Load(JSSettings.pathToData + data, callback);
     },
     Load : function(data, callback){
-        var socket = new  easyXDM.Socket({
-            remote: XDMTransport.remote,
-            onMessage: function(msg) {
-                if(callback)callback(msg);
-            }
-        });
-        socket.postMessage(data);
+        if(easyXDM !== undefined){
+            var socket = new  easyXDM.Socket({
+                remote: XDMTransport.remote,
+                onMessage: function(msg) {
+                    if(callback)callback(msg);
+                }
+            });
+            socket.postMessage(data);
+        }
+        else{
+            window.setTimeout(XDMTransport.Load(data, callback), 100);
+        }
     }
 }
 

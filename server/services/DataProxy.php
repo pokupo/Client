@@ -125,7 +125,7 @@ class DataProxy implements IProxy {
             $params[] = 'idCategories='.$this->idCategories;
         }
         if($this->keyWords){
-            $params[] = 'keyWords='.implode('%20', explode(' ', $this->keyWords));
+            $params[] = 'keyWords='.$this->keyWords;
         }
         if($this->typeSearch){
             $params[] = 'typeSearch='.$this->typeSearch;
@@ -137,7 +137,7 @@ class DataProxy implements IProxy {
             $params[] = 'endCost='.$this->endCost;
         }
         if($this->exceptWords){
-            $params[] = 'exceptWords='.implode('%20', explode(' ', $this->exceptWords));
+            $params[] = 'exceptWords='.$this->exceptWords;
         }
         if($this->typeSeller){
             $params[] = 'typeSeller='.$this->typeSeller;

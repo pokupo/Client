@@ -96,7 +96,7 @@ var SearchResultWidget = function(conteiner){
             for(var key in Parameters.filter){
                 if(Parameters.filter[key]){
                     if(key != 'idSelectCategories')
-                    str = str + '&' + key + '=' + Parameters.filter[key];
+                    str = str + '&' + key + '=' + encodeURIComponent(Parameters.filter[key]);
                 }
             }
 
@@ -639,7 +639,7 @@ var PageSearchResult = function(opt){
 
 var TestSearchResult = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined){
+        if(typeof Widget == 'function' && JSCore !== undefined && typeof CatalogWidget == 'function'){
             ReadyWidgets.Indicator('SearchResultWidget', false);
             SearchResultWidget.prototype = new Widget();
             var searchResult = new SearchResultWidget(Config.Conteiners.searchResult);

@@ -38,7 +38,7 @@ var Config = {
     Content : {
         message : {
             noGoods : 'В этом разделе товаров не найдено...',
-            filter : 'Товаров по ключу %%filterName%% не найдено'
+            filter : 'Товаров по ключу "%%filterName%%" не найдено'
         },
         tmplForBlock : "content/blockTmpl.html",
         tmplForContent : "content/contentTmpl.html",
