@@ -240,7 +240,7 @@ var CatalogItem = function(data) {
 
 var TestCatalog = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined){
+        if(typeof Widget == 'function' && JSCore !== undefined && typeof CatalogWidget == 'function'){
             ReadyWidgets.Indicator('CatalogWidget', false);
             CatalogWidget.prototype = new Widget();
             var catalog = new CatalogWidget(Config.Conteiners.catalog);

@@ -244,7 +244,7 @@ var ContentWidget = function(conteiner){
                 content.AddCategoryInfo(data.categoryId);
                 if(content.filters.filterName != ''){
                     content.SetType('no_results');
-                    content.SetMessage(Config.Content.message.filter);
+                    content.SetMessage(Config.Content.message.filter.replace(/%%filterName%%/g, content.filters.filterName));
                 }
                 else{
                     content.SetType('no_results');
@@ -429,8 +429,15 @@ var ListContentViewModel = function(settings){
         listPerPage : settings.listPerPage,
         countOptionList : ko.observable(settings.listPerPage.length-1),
         FilterNameGoods : function(data){
-            ReadyWidgets.Indicator('ContentWidget', false);
             self.filters.filterName = $(data.text).val();
+            settings.paging.currentPage = 1;
+            settings.paging.startContent = 0;
+            if(Parameters.activeSection != 0)
+                var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+            else
+                var href = "/catalog/category=" + Parameters.activeItem;
+            window.location.hash = href;
+            ReadyWidgets.Indicator('ContentWidget', false);
             EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
             {
                 'id' : self.id, 
@@ -668,7 +675,7 @@ var Page = function(opt){
 /* End Content*/
 var TestContent = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined){
+        if(typeof Widget == 'function' && JSCore !== undefined  && typeof CatalogWidget == 'function'){
             ReadyWidgets.Indicator('ContentWidget', false);
             ContentWidget.prototype = new Widget();
             var content = new ContentWidget(Config.Conteiners.content);

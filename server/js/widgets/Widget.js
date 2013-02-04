@@ -59,7 +59,7 @@ var Route = {
         for(var key in data){
             if(data[key] && key != 'idCategories'){
                 if(key != 'page')
-                    params.push(key + '=' + data[key]);
+                    params.push(key + '=' + encodeURIComponent(data[key]));
                 else if(data[key] != 1)
                     params.push(key + '=' + data[key]);
             }
@@ -263,7 +263,7 @@ function Widget(){
             var queryHash = EventDispatcher.hashCode(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
             
             if(!Parameters.cache.content[queryHash]){
-                XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + filterName, function(data){
+                XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + encodeURIComponent(filterName), function(data){
                     Parameters.cache.content[queryHash] = {"categoryId" : categoryId , "content" : JSON.parse(data)};
                     if(callback)
                         callback(Parameters.cache.content[queryHash]);
