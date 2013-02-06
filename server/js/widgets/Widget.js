@@ -59,7 +59,7 @@ var Route = {
         for(var key in data){
             if(data[key] && key != 'idCategories'){
                 if(key != 'page')
-                    params.push(key + '=' + encodeURIComponent(data[key]));
+                    params.push(key + '=' + decodeURIComponent(data[key]));
                 else if(data[key] != 1)
                     params.push(key + '=' + data[key]);
             }

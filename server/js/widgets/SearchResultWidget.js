@@ -37,12 +37,18 @@ var SearchResultWidget = function(conteiner){
             for(var key in Route.params){
                 if(key == 'idSelectCategories'){
                     var categories = [];
-                    var ids = Route.params[key].split(",");
-                    for(var i = 0; i <= ids.length-1; i++){
-                       categories[i] = parseInt(ids[i]); 
+                    var ids = decodeURIComponent(Route.params[key]).split(",");
+                    if(Route.params[key]){
+                        var j = 0;
+                        for(var i in ids){
+                            var id = parseInt(ids[i]);
+                            if(id && !isNaN(id))
+                               categories[j++] = id; 
+                        }
+
+                        Parameters.filter[key] = categories;
+                        Parameters.filter.idCategories = categories;
                     }
-                    Parameters.filter[key] = categories;
-                    Parameters.filter.idCategories = categories;
                 }
                 else
                     Parameters.filter[key] = decodeURIComponent(Route.params[key]);
@@ -96,10 +102,9 @@ var SearchResultWidget = function(conteiner){
             for(var key in Parameters.filter){
                 if(Parameters.filter[key]){
                     if(key != 'idSelectCategories')
-                    str = str + '&' + key + '=' + encodeURIComponent(Parameters.filter[key]);
+                         str = str + '&' + key + '=' + encodeURIComponent(Parameters.filter[key]);
                 }
             }
-
             self.BaseLoad.SearchContent(str, function(data){
                 EventDispatcher.DispatchEvent('searchResultWidget.onload.searchResult', data);
             })
@@ -295,10 +300,11 @@ var AdvancedSearchFormViewModel = function(params){
         var selectedTypeSeller = $(data.typeSeller).find('option:selected');
         self.typeSeller = $(selectedTypeSeller[selectedTypeSeller.length-1]).val();
 
-        self.idCategories = []
+        Parameters.filter.idCategories = self.idCategories = [];
         self.FindSelectedSection(self.cachData, Parameters.filter.idSelectCategories);
         
-        Parameters.filter.idCategories = self.idCategories.join(",");
+        if(self.idCategories.length > 0)
+           Parameters.filter.idCategories = self.idCategories.join(",");
         Parameters.filter.keyWords = self.keyWords;
         Parameters.filter.typeSearch = self.typeSearch;
         Parameters.filter.startCost = self.startCost;
@@ -330,13 +336,18 @@ var AdvancedSearchFormViewModel = function(params){
                 }
                 else if(data[i].children)
                     self.FindSelectedSection(data[i].children, selected)
+                else if(data[i].id == selected[j]){
+                    if($.inArray(data[i].id, self.idCategories) < 0)
+                        self.idCategories.push(data[i].id);
+                }
             }
         }
     }
     self.FindChildrenCategory = function(data){
         for(var i = 0; i <= data.length - 1; i++){
             if(data[i].type_category == 'category'){
-                self.idCategories.push(data[i].id);
+                if($.inArray(data[i].id, self.idCategories) < 0)
+                   self.idCategories.push(data[i].id);
             }
             if(data[i].children){
                 self.FindChildrenCategory(data[i].children)
