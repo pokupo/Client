@@ -77,6 +77,7 @@ var CatalogWidget = function(conteiner){
                                 id : path[path.length-1].id,
                                 name_category : 'Вверх',
                                 type_category : 'section',
+                                back : 'return',
                                 children : JSON.parse(Parameters.cache.childrenCategory[Parameters.lastItem])
                             }
                             self.Fill.Tree(parent);
@@ -180,8 +181,12 @@ var Section = function(data){
     self.type_category = data.type_category;
     self.listClass = 'catalogCategories_' + data.id;
     self.tabClass = ko.computed(function() {
-        if(Parameters.lastItem == data.id)
-            return 'listCategories_' + data.id + ' return active';
+        if(Parameters.lastItem == data.id){
+            if(data.back)
+                return 'listCategories_' + data.id + ' return active'
+            else
+                return 'listCategories_' + data.id + ' active'
+        }
         else
             return 'listCategories_' + data.id;
     }, this);
