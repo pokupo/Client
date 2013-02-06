@@ -675,7 +675,7 @@ var Page = function(opt){
 /* End Content*/
 var TestContent = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined  && typeof CatalogWidget == 'function'){
+        if(typeof Widget == 'function' && JSCore !== undefined  && ReadyWidgets !== undefined){
             ReadyWidgets.Indicator('ContentWidget', false);
             ContentWidget.prototype = new Widget();
             var content = new ContentWidget(Config.Conteiners.content);
