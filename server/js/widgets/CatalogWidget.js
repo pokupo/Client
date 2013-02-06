@@ -181,7 +181,7 @@ var Section = function(data){
     self.listClass = 'catalogCategories_' + data.id;
     self.tabClass = ko.computed(function() {
         if(Parameters.lastItem == data.id)
-            return 'listCategories_' + data.id + ' active';
+            return 'listCategories_' + data.id + ' return active';
         else
             return 'listCategories_' + data.id;
     }, this);

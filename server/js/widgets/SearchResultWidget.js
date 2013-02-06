@@ -45,7 +45,7 @@ var SearchResultWidget = function(conteiner){
                     Parameters.filter.idCategories = categories;
                 }
                 else
-                    Parameters.filter[key] = Route.params[key];
+                    Parameters.filter[key] = decodeURIComponent(Route.params[key]);
             }
             EventDispatcher.DispatchEvent('searchWidget.submit.form');
         }
@@ -225,12 +225,12 @@ var SearchResultWidget = function(conteiner){
 
 var AdvancedSearchFormViewModel = function(params){
     var self = this;
-    self.keyWords = Parameters.filter.keyWords.replace('%20', ' ');
+    self.keyWords = Parameters.filter.keyWords;
     self.idCategories = Parameters.filter.idCategories;
     self.typeSearch = Parameters.filter.typeSearch;
     self.startCost = Parameters.filter.startCost;
     self.endCost = Parameters.filter.endCost;
-    self.exceptWords = Parameters.filter.exceptWords.replace('%20', ' ');
+    self.exceptWords = Parameters.filter.exceptWords;
     self.typeSeller = Parameters.filter.typeSeller;
     
     self.categories = [];

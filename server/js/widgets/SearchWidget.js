@@ -157,8 +157,8 @@ var SearchViewModel = function(){
     };
     self.SubmitSearchForm = function(data){
         self.idCategories = [];
-        var filterName = $(data.text).val();
-        if(filterName){
+        var keyWords = $(data.text).val();
+        if(keyWords){
             var selected = parseInt($(data.category).find('option:selected').val());
             if(self.typeCategories[selected] != 'category')
                 self.FindSelectedSection(self.cachData, selected);
@@ -166,11 +166,11 @@ var SearchViewModel = function(){
                 self.idCategories.push(selected);
 
             Parameters.filter.idSelectCategories = [selected];
-            Parameters.filter.filterName = filterName;
+            Parameters.filter.keyWords = keyWords;
             if(self.idCategories.length == 0)
                 self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;
-            Parameters.filter.keyWords = '';
+            Parameters.filter.filterName = '';
             Parameters.filter.typeSearch = 'any';
             Parameters.filter.startCost = '';
             Parameters.filter.endCost = '';
