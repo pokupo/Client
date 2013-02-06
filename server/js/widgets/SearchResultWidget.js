@@ -639,7 +639,7 @@ var PageSearchResult = function(opt){
 
 var TestSearchResult = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined && typeof CatalogWidget == 'function'){
+        if(typeof Widget == 'function' && JSCore !== undefined && ReadyWidgets !== undefined){
             ReadyWidgets.Indicator('SearchResultWidget', false);
             SearchResultWidget.prototype = new Widget();
             var searchResult = new SearchResultWidget(Config.Conteiners.searchResult);

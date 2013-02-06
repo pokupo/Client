@@ -213,7 +213,7 @@ var SearchViewModel = function(){
 
 var TestSearch = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined && typeof CatalogWidget == 'function'){
+        if(typeof Widget == 'function' && JSCore !== undefined && ReadyWidgets !== undefined){
             ReadyWidgets.Indicator('SearchWidget', false);
             SearchWidget.prototype = new Widget();
             var search = new SearchWidget(Config.Conteiners.search);
