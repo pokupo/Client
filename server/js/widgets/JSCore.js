@@ -15,7 +15,7 @@ var JSSettings = {
         'jquery.jcarousel.min.js',
         'jquery.cookie.js',
         'jquery.dynatree.min.js',
-        
+        'widgets/Paging.js',
         'widgets/Config.js',
         'widgets/Widget.js',
         'widgets/Slider.js',

@@ -534,7 +534,7 @@ var ListContentViewModel = function(settings){
                     self.content.push(new BlockContentViewModel(data[i], i));
                 }
             }
-            self.AddPages(settings);
+            self.AddPages();
             data.unshift(last);
             EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
         }
@@ -542,136 +542,30 @@ var ListContentViewModel = function(settings){
     self.GetQueryHash = function(categoryId){
         return EventDispatcher.hashCode(categoryId + settings.paging.startContent + settings.paging.itemsPerPage + settings.orderByContent + settings.filterName);
     };
-    self.NumPages = function(){
-        return Math.ceil(self.countGoods/settings.paging.itemsPerPage)
-    };
-    self.GetInterval = function(){
-        var ne_half = Math.ceil(settings.paging.numDisplayEntries/2);
-        var np = self.NumPages();
-        var upper_limit = np-settings.paging.numDisplayEntries;
-        var start = settings.paging.currentPage>ne_half?Math.max(Math.min(settings.paging.currentPage-ne_half, upper_limit), 0):0;
-        var end = settings.paging.currentPage>ne_half?Math.min(settings.paging.currentPage+ne_half, np):Math.min(settings.paging.numDisplayEntries, np);
-        return [start + 1,end + 1]; 
-    };
-    self.AppendItem = function(page_id, appendopts){
-        var np = self.NumPages();
-        page_id = page_id<1 ? 1 : (page_id<np ? page_id : np);
-            
-        appendopts = jQuery.extend({
-            text : page_id, 
-            classes : ""
-        }, appendopts||{});
-            
-        if(page_id == settings.paging.currentPage){
-            self.paging.push(new Page({
-                current : true, 
-                pageId : page_id,
-                title : appendopts.text, 
-                cssLink : settings.paging.cssCurrent,
-                settings : settings
-            }));
-        }
-        else
-        {
-            self.paging.push( new Page({
-                current : false, 
-                pageId : page_id,
-                title : appendopts.text, 
-                cssLink : appendopts.classes,
-                settings : settings
-            }));
-        }
-    };
-    self.AddPages = function(settings){
-        self.paging = ko.observableArray();
-        var interval = self.GetInterval();
-        var np = self.NumPages();
-        if(settings.paging.prevText && (settings.paging.currentPage > 1 || settings.paging.prevShowAlways)){
-            self.AppendItem(settings.paging.currentPage-1, {
-                text : settings.paging.prevText,
-                classes : settings.paging.cssPrev
-            })
-        }
-        // Generate starting points
-        if (interval[0] > 0 && settings.paging.numEdgeEntries > 0)
-        {
-            var end = Math.min(settings.paging.numEdgeEntries, interval[0]);
-            for(var i=1; i<end; i++) {
-                self.AppendItem(i)
-            }
-            if(settings.paging.numEdgeEntries < interval[0] && settings.paging.ellipseText)
+    self.AddPages = function(){
+        var ClickLinkPage = function(){
+            ReadyWidgets.Indicator('ContentWidget', false);
+            var start = (this.pageId-1) * settings.paging.itemsPerPage;
+            settings.paging.currentPage = this.pageId;
+
+            if(Parameters.activeSection != 0)
+                var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem + "&page=" + this.pageId;
+            else
+                var href = "/catalog/category=" + Parameters.activeItem + "&page=" + this.pageId;
+            window.location.hash = href;
+
+            EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
             {
-                self.paging.push(new Page({
-                    current : true, 
-                    pageId : 0,
-                    title : settings.paging.ellipseText, 
-                    cssLink : settings.paging.cssItem,
-                    settings : settings
-                }));
+                'id' : Parameters.lastItem, 
+                'start' : start
             }
+            )
         }
-        // Generate interval links
-        for(var i=interval[0]; i<interval[1]; i++) {
-            self.AppendItem(i)
-        }
-        // Generate ending points
-        if (interval[1] < np && settings.paging.numEdgeEntries > 0)
-        {
-            if(np-settings.paging.numEdgeEntries > interval[1]&& settings.paging.ellipseText)
-            {
-                self.paging.push(new Page({
-                    current : true, 
-                    pageId : 0,
-                    title : settings.paging.ellipseText, 
-                    cssLink : settings.paging.cssItem,
-                    settings : settings
-                }));
-            }
-            var begin = Math.max(np-settings.paging.numEdgeEntries, interval[1])+1;
-            
-            for(var i=begin; i<=np; i++) {
-                self.AppendItem(i)
-            }		
-        }
-        // Generate "Next"-Link
-        if(settings.paging.nextText && (settings.paging.currentPage < np || settings.paging.nextShowAlways)){
-            self.AppendItem(settings.paging.currentPage+1, {
-                text : settings.paging.nextText,
-                classes : settings.paging.cssNext
-            })
-        }
+        
+        self.paging = Paging.GetPaging(self.countGoods, settings, ClickLinkPage);
     }
 }
 
-var Page = function(opt){
-    var self = this;
-    self.pageId = opt.pageId;
-    self.title = opt.title;
-    self.current = opt.current;
-    self.cssLink = ko.computed(function(){
-        if(opt.cssLink)
-            return opt.cssLink;
-        return opt.settings.paging.cssItem;
-    }, this);
-    self.ClickLinkPage = function(){
-        ReadyWidgets.Indicator('ContentWidget', false);
-        var start = (self.pageId-1) * opt.settings.paging.itemsPerPage;
-        opt.settings.paging.currentPage = self.pageId;
-        
-        if(Parameters.activeSection != 0)
-            var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem + "&page=" + self.pageId;
-        else
-            var href = "/catalog/category=" + Parameters.activeItem + "&page=" + self.pageId;
-        window.location.hash = href;
-        
-        EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-        {
-            'id' : Parameters.lastItem, 
-            'start' : start
-        }
-        )
-    }
-}
 /* End Content*/
 var TestContent = {
     Init : function(){
