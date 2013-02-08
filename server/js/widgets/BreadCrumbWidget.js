@@ -238,7 +238,6 @@ var SelectListBreadCrumbItemViewModel = function(){
     self.AddSelectList = function(data, id){
         if(data){
             for(var i = 0; i <= data.length - 1; i++){
-                //if(!Parameters.cache.crumbsTitle[data[i].id])
                     self.listCrumbs.push(new SelectListBreadCrumbItem(data[i]));
             }
             self.parentId = id;
