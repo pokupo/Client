@@ -79,6 +79,24 @@ var SearchResultWidget = function(conteiner){
             self.Route();
         });
         
+        EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
+            if($("#" + self.settingsSearchResult.containerIdForAdvancedSearch).text() == ""){
+                ReadyWidgets.Indicator('SearchResultWidget', false);
+                self.BaseLoad.Roots(function(){
+                    EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
+                })
+            }
+            else{
+                $("#" + self.settingsSearchResult.containerIdForAdvancedSearch).html("");
+            }
+        });
+        
+        EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
+            self.InsertContainer.AdvancedSearchForm();
+            self.Fill.AdvancedSearchForm();
+            ReadyWidgets.Indicator('SearchResultWidget', true);
+        });
+        
         EventDispatcher.AddEventListener('searchWidget.submit.form', function (data){
             ReadyWidgets.Indicator('SearchResultWidget', false);
             

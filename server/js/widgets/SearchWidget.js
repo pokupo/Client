@@ -138,6 +138,9 @@ var SearchViewModel = function(){
     self.typeCategories = [];
     self.cachData = {};
     
+    self.ClickAdvancedSearch = function(){
+        EventDispatcher.DispatchEvent('searchResultWidget.show.form');
+    };
     self.AddListCategory = function(data, parent){
         self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
         self.typeCategories[parent.id] = parent.type_category;
