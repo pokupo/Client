@@ -69,8 +69,8 @@ var Config = {
         tmpl: "searchResult/advancedSearchFormTmpl.html",
         listPerPage : [10, 20, 50],
         listTypeSearch : {
-            all : 'Все слова',
-            any: 'Любое из слов'
+            any : 'Любое из слов',
+            all : 'Все слова'
         },
         listTypeSeller : {
             '' : "Все продавцы",

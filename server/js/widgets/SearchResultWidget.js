@@ -93,6 +93,7 @@ var SearchResultWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
             self.InsertContainer.AdvancedSearchForm();
+            Parameters.SetDefaultFilterParameters();
             self.Fill.AdvancedSearchForm();
             ReadyWidgets.Indicator('SearchResultWidget', true);
         });

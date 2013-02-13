@@ -30,23 +30,24 @@ Parameters = {
         pageId: 1,
         searchPageId : 1
     },
-    filter : {
-        filterName : '',
-        idCategories : [],
-        idSelectCategories : [],
-        keyWords : '',
-        typeSearch : 'any',
-        exceptWords : '',
-        startCost : '',
-        endCost : '',
-        typeSeller : '',
-        orderBy : 'name',
-        page : 1
-    },
+    filter : {},
     catalog : {
         section : 0,
         category : 0,
         page : 1
+    },
+    SetDefaultFilterParameters : function(){
+        this.filter.filterName = '';
+        this.filter.idCategories = [];
+        this.filter.idSelectCategories = [];
+        this.filter.keyWords = '';
+        this.filter.typeSearch = 'any';
+        this.filter.exceptWords = '';
+        this.filter.startCost = '';
+        this.filter.endCost = '';
+        this.filter.typeSeller = '';
+        this.filter.orderBy = 'name';
+        this.filter.page = 1;
     }
 }
 
@@ -67,6 +68,12 @@ var Route = {
         var href = '/' + route + '/' + params.join("&");
 
         window.location.hash = href;
+    },
+    SetMainParameters : function(opt){
+        this.SetMoreParameters(null);
+    },
+    SetMoreParameters : function(opt){
+        
     }
 }
 

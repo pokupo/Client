@@ -9,15 +9,7 @@ var SearchWidget = function(conteiner){
     self.InitWidget = function(){
         self.RegisterEvents();
         self.SetInputParameters();
-        self.Route();
         self.SetPosition();
-    };
-    self.Route = function(){
-        if(Route.route == 'search'){
-            Parameters.filter.filterName = Route.params['filterName'];
-            if(Route.params['idCategories'] && Route.params['idCategories'].split(",").length == 1)
-                Parameters.filter.idCategories = parseInt(Route.params['idCategories']);
-        }
     };
     self.SetInputParameters = function(){
         self.settingsSearch.inputParameters = JSCore.ParserInputParameters(/SearchWidget.js/);
@@ -168,17 +160,12 @@ var SearchViewModel = function(){
             else 
                 self.idCategories.push(selected);
 
+            Parameters.SetDefaultFilterParameters();
             Parameters.filter.idSelectCategories = [selected];
             Parameters.filter.keyWords = keyWords;
             if(self.idCategories.length == 0)
                 self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;
-            Parameters.filter.filterName = '';
-            Parameters.filter.typeSearch = 'any';
-            Parameters.filter.startCost = '';
-            Parameters.filter.endCost = '';
-            Parameters.filter.exceptWords = '';
-            Parameters.filter.typeSeller = '';
 
             Route.SetHash('search', Parameters.filter);
 
