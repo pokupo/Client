@@ -1,9 +1,15 @@
 var JSSettings = {
-    host : "http://dev.pokupo.ru/",
-    pathToJS : "server/js/",
-    pathToTmpl : "server/tmpl/",
-    pathToData : "server/services/DataProxy.php?query=",
-    pathToCore: "server/index.html",
+//    host : "http://dev.pokupo.ru/",
+//    pathToJS : "server/js/",
+//    pathToTmpl : "server/tmpl/",
+//    pathToData : "server/services/DataProxy.php?query=",
+//    pathToCore: "server/index.html",
+
+    host : "http://pokupo-server.asmsoft.ru/",    
+    pathToJS : "js/",
+    pathToTmpl : "tmpl/",
+    pathToData : "services/DataProxy.php?query=",
+    pathToCore: "index.html",
 
     scripts : [
         'jquery-ui.custom.js',
@@ -15,6 +21,7 @@ var JSSettings = {
         'jquery.jcarousel.min.js',
         'jquery.cookie.js',
         'jquery.dynatree.min.js',
+        'widgets/Routing.js',
         'widgets/Paging.js',
         'widgets/Config.js',
         'widgets/Widget.js',

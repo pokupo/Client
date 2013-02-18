@@ -73,9 +73,8 @@ var ContentWidget = function(conteiner){
         EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){ 
             var start = (Route.GetCurrentPage()-1) * self.settingsContent.paging.itemsPerPage;
             var orderBy = Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : self.settingsContent.orderByContent;
-            var query = 'categoryId=' + Route.params.category + '&start=' + start + '&count=' + self.settingsContent.paging.itemsPerPage + '&orderBy=' + orderBy + '&filterName=' + encodeURIComponent(Route.GetMoreParameter('filterName'));
-
-            self.BaseLoad.Content(query, Route.params.category, function(data){ self.Fill.Content(data) })
+            var query = start + '/' + self.settingsContent.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Route.GetMoreParameter('filterName'));
+            self.BaseLoad.Content(Route.params.category, query, function(data){ self.Fill.Content(data) })
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
@@ -127,10 +126,6 @@ var ContentWidget = function(conteiner){
                 EventDispatcher.DispatchEvent('onload.content.tmpl')
             }
         });
-        
-        EventDispatcher.AddEventListener('contentWidget.click.goods', function(data){
-
-        });
     };
     self.BustBlock = function(data){
         $("#" + self.settingsContent.conteinerIdForContent).html('');
@@ -143,14 +138,14 @@ var ContentWidget = function(conteiner){
             };
             self.InsertContainer.Block(i, data[i].type_view);
             
-            var query = 'categoryId=' + data[i].id + '&start=' + 0 + '&count=' + self.settingsContent.countGoodsInBlock + '&orderBy=name&filterName=';
-            var queryHash = EventDispatcher.hashCode(query);
+            var query = '0/' + self.settingsContent.countGoodsInBlock + '/name/';
+            var queryHash = data[i].id + EventDispatcher.hashCode(query);
             
             EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
                 self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
             });
 
-            self.BaseLoad.Content(query, data[i].id, function(data){
+            self.BaseLoad.Content(data[i].id, query, function(data){
                 EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
             })
         }
@@ -264,8 +259,8 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.contentBlock  = ko.observableArray();
     
     self.AddContent = function(){
-        var query = 'categoryId=' + self.id + '&start=' + 0 + '&count=' + countGoodsInContent + '&orderBy=name&filterName=';
-        var queryHash = EventDispatcher.hashCode(query);
+        var query = '0/' + countGoodsInContent + '/name/';
+        var queryHash = self.id + EventDispatcher.hashCode(query);
         var content = Parameters.cache.content[queryHash].content;
         if(content && content.length > 1){
             var last = content.shift()
@@ -345,8 +340,7 @@ var BlockContentViewModel = function(data, i){
     self.cssBlock = 'views-row views-row-' + (i+1);
     
     self.ClickGoods = function(){
-        alert(self.id);
-        EventDispatcher.DispatchEvent('contentWidget.click.goods', self);
+        Route.SetHash('goods', self.chortName, {category : Route.GetActiveCategory(),id : self.id});
     }
     self.ClickShop = function(){
         alert(self.shopId);
@@ -479,9 +473,8 @@ var ListContentViewModel = function(settings){
     self.GetQueryHash = function(){
         var start = (Route.GetCurrentPage()-1) * settings.paging.itemsPerPage;
         var orderBy = Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : settings.orderByContent;
-        var query = 'categoryId=' + Route.params.category + '&start=' + start + '&count=' + settings.paging.itemsPerPage + '&orderBy=' + orderBy + '&filterName=' + encodeURIComponent(Route.GetMoreParameter('filterName'));
-
-        return EventDispatcher.hashCode(query);
+        var query = start + '/' + settings.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Route.GetMoreParameter('filterName'));
+        return Route.GetActiveCategory() + EventDispatcher.hashCode(query);
     };
     self.AddPages = function(){
         var ClickLinkPage = function(){

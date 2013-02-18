@@ -1,5 +1,8 @@
 var Config = {
     Base : {
+        hostApi : "http://dev.pokupo.ru/app_dev.php",
+        catalogPathApi : "/api/catalog/",
+        goodsPathApi : "/api/goods/",
         pathToImages : "http://dev.pokupo.ru/images",
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png",
         sortingBlockContainer : '.sorting_block',
@@ -11,7 +14,19 @@ var Config = {
         search  : 'search_block',
         breadCrumbs : ['breadCrumb_1','breadCrumb_2'],
         content : 'content',
-        searchResult : ['advanced_search', 'content']
+        searchResult : ['advanced_search', 'content'],
+        goods : 'content'
+    },
+    Goods : {
+        tmpl : "goods/goodsTmpl.html",
+        style : {
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
     },
     Catalog : {
         tmpl : "catalog/catalogTmpl.html",

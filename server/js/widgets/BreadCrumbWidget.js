@@ -10,13 +10,7 @@ var BreadCrumbWidget = function(){
     self.InitWidget = function(){
         self.RegisterEvents();
         self.SetInputParameters();
-        self.Route();
         self.SetPosition();
-    };
-    self.Route = function(){
-        if(Route.params['idCategories'] && Route.params['idCategories'].split(",").length == 1){
-            Route.GetActiveCategory() = parseInt(Route.params['idCategories']);
-        }  
     };
     self.SetInputParameters = function(){
         self.settingsBreadCrumb.inputParameters = JSCore.ParserInputParameters(/BreadCrumbWidget.js/);

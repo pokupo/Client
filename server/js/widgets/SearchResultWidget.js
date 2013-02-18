@@ -98,16 +98,15 @@ var SearchResultWidget = function(conteiner){
         EventDispatcher.AddEventListener('searchResultWidget.submit.form', function (data){
             var paging = self.settingsSearchResult.paging;
             var start = (Route.GetCurrentPage()-1) * paging.itemsPerPage;
-            var str = '&shopId='+Parameters.shopId+'&start='+start+'&count='+paging.itemsPerPage;
-
-            for(var key in Parameters.filter){
-                if(Parameters.filter[key]){
-                    if(key != 'idSelectCategories')
-                         str = str + '&' + key + '=' + encodeURIComponent(Parameters.filter[key]);
-                }
+            var query = start + '/' + paging.itemsPerPage + '/' + Parameters.filter.orderBy + '/' + (Parameters.filter.filterName ? Parameters.filter.filterName : '') + '?';
+            var keys = ['keyWords', 'typeSearch', 'idCategories', 'startCost', 'endCost', 'exceptWords', 'typeSeller'];
+            
+            for(var i = 0; i <= keys.length-1; i++){
+                if(Parameters.filter[keys[i]])
+                     query = query + '&' + keys[i] + '=' + encodeURIComponent(Parameters.filter[keys[i]]);
             }
-
-            self.BaseLoad.SearchContent(str, function(data){
+            
+            self.BaseLoad.SearchContent(Parameters.shopId, query, function(data){
                 EventDispatcher.DispatchEvent('searchResultWidget.onload.searchResult', data);
             })
         });
@@ -407,8 +406,7 @@ var BlockSearchResultViewModel = function(data, i){
     self.cssBlock = 'views-row views-row-' + (i+1);
     
     self.ClickGoods = function(){
-        alert(self.id);
-        EventDispatcher.DispatchEvent('contentWidget.click.goods', self);
+        Route.SetHash('goods', self.chortName, {category : Route.GetActiveCategory(), id : self.id});
     }
     self.ClickShop = function(){
         alert(self.shopId);
@@ -522,16 +520,14 @@ var ListSearchResultViewModel = function(settings){
         EventDispatcher.DispatchEvent('searchResultWidget.fill.searchResult', self);
     };
     self.GetQueryHash = function(){
-        var start = (Route.GetCurrentPage()-1) * settings.paging.itemsPerPage;
-        var str = '&shopId='+Parameters.shopId+'&start='+start+'&count='+settings.paging.itemsPerPage;       
-        
-        for(var key in Parameters.filter){
-            if(Parameters.filter[key]){
-                if(key != 'idSelectCategories')
-                str = str + '&' + key + '=' + encodeURIComponent(Parameters.filter[key]);
-            }
+        var start = (Route.GetCurrentPage()-1) * settings.paging.itemsPerPage;       
+        var query = start + '/' + settings.paging.itemsPerPage + '/' + Parameters.filter.orderBy + '/' + (Parameters.filter.filterName ? Parameters.filter.filterName : '') + '?';
+        var keys = ['keyWords', 'typeSearch', 'idCategories', 'startCost', 'endCost', 'exceptWords', 'typeSeller'];
+        for(var i = 0; i <= keys.length-1; i++){
+            if(Parameters.filter[keys[i]])
+                 query = query + '&' + query + '=' + encodeURIComponent(Parameters.filter[keys[i]]);
         }
-        return EventDispatcher.hashCode(str);
+        return Parameters.shopId + EventDispatcher.hashCode(query);
     };
     self.AddPages = function(){
         var ClickLinkPage = function(){
