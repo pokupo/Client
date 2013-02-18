@@ -3,16 +3,9 @@ var CatalogWidget = function(conteiner){
     self.settingsCatalog = {
         isFirst : true,
         containerIdForCatalog : "", //"catalog",
-        tmplForCatalog : "catalog/catalogTmpl.html",
+        tmplForCatalog : Config.Catalog.tmpl,
         inputParameters : {},
-        styleCatalog : {
-            'position' : 'absolute', 
-            'top' : '100px', 
-            'left' : '5%', 
-            'width' : '20%', 
-            'height' : '200px', 
-            'background' : '#ddd'
-        }
+        styleCatalog : Config.Catalog.style
     };
     self.InitWidget = function(){
         self.settingsCatalog.containerIdForCatalog = conteiner;
@@ -39,7 +32,7 @@ var CatalogWidget = function(conteiner){
         }
         
         EventDispatcher.AddEventListener('catalogWidget.onload.tmpl', function (data){
-            if(Parameters.typeCategory != 'category'){
+            if(Parameters.typeCategory != 'category' && Route.route == 'catalog'){
                 if(Parameters.lastItem == 0)
                     self.BaseLoad.Roots(function(data){
                         EventDispatcher.DispatchEvent('catalogWidget.onload.sectionCatalog', data)
@@ -49,6 +42,7 @@ var CatalogWidget = function(conteiner){
                 }
             }
             else{
+                ReadyWidgets.Indicator('CatalogWidget', true);
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             }
         });
@@ -63,14 +57,17 @@ var CatalogWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('widget.changeHash', function (data){
             if(Parameters.typeCategory != "category")
-               self.LoadingIndicator(self.settingsCatalog.containerIdForCatalog);
+                ReadyWidgets.Indicator('CatalogWidget', false);
+            else
+                ReadyWidgets.Indicator('CatalogWidget', true);
+
             self.Update();
         });
         
         EventDispatcher.AddEventListener('catalogWidget.update.catalog', function(){
             if(Parameters.typeCategory == 'section' && !Parameters.cache.catalogs[Parameters.lastItem]){
                 $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
-                
+                $("#catalog").show();
                 self.BaseLoad.Section(Parameters.lastItem, function(data){
                     
                     self.BaseLoad.Path(Parameters.lastItem, function(path){
@@ -80,6 +77,7 @@ var CatalogWidget = function(conteiner){
                                 id : path[path.length-1].id,
                                 name_category : 'Вверх',
                                 type_category : 'section',
+                                back : 'return',
                                 children : JSON.parse(Parameters.cache.childrenCategory[Parameters.lastItem])
                             }
                             self.Fill.Tree(parent);
@@ -94,6 +92,7 @@ var CatalogWidget = function(conteiner){
             }
             else if(Parameters.typeCategory == 'homepage' || Parameters.cache.catalogs[Parameters.lastItem]){
                 $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
+                $("#catalog").show();
                 self.BaseLoad.Roots(function(data){
                     if(self.settingsCatalog.isFirst || Parameters.typeCategory == 'homepage' || Parameters.cache.catalogs[Parameters.lastItem]){
                         self.settingsCatalog.isFirst = false;
@@ -102,8 +101,8 @@ var CatalogWidget = function(conteiner){
                 })
             }
             else{
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 $("#" + self.settingsCatalog.containerIdForCatalog).empty();
+                ReadyWidgets.Indicator('CatalogWidget', true);
             }
         })
     };
@@ -127,13 +126,17 @@ var CatalogWidget = function(conteiner){
             for(var i = 0; i <= data.length - 1; i++){
                 catalog.AddItem(data[i]);
             }
+            EventDispatcher.DispatchEvent('catalogWidget.fill.section', catalog);
         }
     };
     self.Render = {
         Catalog : function(data){
-            $("#" + self.settingsCatalog.containerIdForCatalog).empty();
-            $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
-            ko.applyBindings(data, $('#catalog')[0]);
+            if($("#" + self.settingsCatalog.containerIdForCatalog).length > 0){
+                $("#" + self.settingsCatalog.containerIdForCatalog).empty();
+                $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
+                ko.applyBindings(data, $('#' + self.settingsCatalog.containerIdForCatalog )[0]);
+            }
+            ReadyWidgets.Indicator('CatalogWidget', true);
         }
     }
     self.SetPosition = function(){
@@ -143,7 +146,7 @@ var CatalogWidget = function(conteiner){
                     self.settingsCatalog.styleCatalog[key] = self.settingsCatalog.inputParameters[key];
             }
             $().ready(function(){
-                $('#catalog').css(self.settingsCatalog.styleCatalog);
+                $('#' + self.settingsCatalog.containerIdForCatalog).css(self.settingsCatalog.styleCatalog);
             });
         }
     }
@@ -168,7 +171,6 @@ var Catalog = function(){
             }
         }
         self.children.push(section);
-        EventDispatcher.DispatchEvent('catalogWidget.fill.section', self);
     }
 }
 
@@ -179,8 +181,12 @@ var Section = function(data){
     self.type_category = data.type_category;
     self.listClass = 'catalogCategories_' + data.id;
     self.tabClass = ko.computed(function() {
-        if(Parameters.lastItem == data.id)
-            return 'listCategories_' + data.id + ' active';
+        if(Parameters.lastItem == data.id){
+            if(data.back)
+                return 'listCategories_' + data.id + ' return active'
+            else
+                return 'listCategories_' + data.id + ' active'
+        }
         else
             return 'listCategories_' + data.id;
     }, this);
@@ -205,7 +211,8 @@ var Section = function(data){
             Parameters.lastItem = data.id;
             Parameters.typeCategory = "section";
 
-            var href = "/catalog=" + Parameters.activeCatalog;
+            var href = "/catalog/section=" + Parameters.activeCatalog;
+            
             document.title = data.name_category;
             window.location.hash = href;
             EventDispatcher.DispatchEvent('widget.click.item', data);
@@ -231,15 +238,17 @@ var CatalogItem = function(data) {
         return text;
     }, this);
     self.ClickItem = function() {
+        ReadyWidgets.readyCount = 0;
         EventDispatcher.DispatchEvent('widget.click.item', data)
     }
 }
 
 var TestCatalog = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined){
+        if(typeof Widget == 'function' && JSCore !== undefined && ReadyWidgets !== undefined){
+            ReadyWidgets.Indicator('CatalogWidget', false);
             CatalogWidget.prototype = new Widget();
-            var catalog = new CatalogWidget('catalog');
+            var catalog = new CatalogWidget(Config.Conteiners.catalog);
             catalog.Init();
         }
         else{

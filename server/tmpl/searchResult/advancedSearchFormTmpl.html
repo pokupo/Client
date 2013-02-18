@@ -1,10 +1,66 @@
-<script type="text/html" id="contentTileTmpl">
+<script type="text/html" id="advancedSearchFormTmpl">
     <div class="top_content_region">
-        <h1 data-bind="text: titleBlock"></h1>
+        <h1>Расширенный поиск</h1>
     </div>
+    <div class="big_search" id="advancedSearch">
+        <div class="content">
+            <form action="" data-bind="submit: SubmitAdvancedSearchForm">
+                <table style="float: left; width: 100%;">
+                    <tr>
+                        <td><div class="left_block">
+                                <div class="form_item form_item_title">
+                                    <label>Ключевые слова:</label>
+                                    <input class="form_text" type="text" name="keyWords" data-bind="value: keyWords" />
+                                </div></div>
+                            <div class="center_block">
+                                <div class="form_item form_item_region" id="typeSearch">
+                                    <label>Искать:</label>
+                                    <select name="typeSearch" class="form_select" data-bind="css: cssTypeSearch, options: typesSearch, optionsText: 'text', optionsValue: 'key'"></select>
+                                </div></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="left_block">
+                                <label>Рубрики:</label>
+                                <div id="tree_categories_for_advanced_search"></div>
+                            </div>
+                            <div class="center_block">
+                                <div class="form_item form_item_price">
+                                    <label>Ценовой диапазон (руб.):</label>
+                                    <input class="form_text form_text_1" type="text" name="startCost" data-bind="value: startCost" />
+                                    <input class="form_text form_text_2" type="text" name="endCost" data-bind="value: endCost" />
+                                    <span>—</span>
+                                </div>
+                                <div class="form_item form_item_slovo">
+                                    <label>Исключить слова:</label>
+                                    <input class="form_text" type="text" name="exceptWords" data-bind="value: exceptWords" />
+                                </div>
+                                <div class="form_item form_item_city" id="typeSeller">
+                                    <label>Тип продавца:</label>
+                                    <select name="typeSeller" class="form_select" data-bind="css: cssTypeSeller, options: typesSellers, optionsText: 'text', optionsValue: 'key'"></select>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="form_item form_item_name">
+                                <input type="submit" class="" value="Поиск" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="searchResultTileTmpl">
+    <p>Найдено <span data-bind="text: countGoods"></span> товаров</p>
     <table style="width: 100%; float: left;">
         <tr>
-            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+            <td data-bind="template: { name: 'searchResultFiletrTmpl', data: filters }"></td>
         </tr>
         <tr>
             <td>
@@ -67,13 +123,11 @@
     </table>
 </script>
 
-<script type="text/html" id="contentTableTmpl">
-    <div class="top_content_region">
-        <h1 data-bind="text: titleBlock"></h1>
-    </div>
+<script type="text/html" id="searchResultTableTmpl">
+    <p>Найдено <span data-bind="text: countGoods"></span> товаров</p>
     <table style="width: 100%; float: left;">
         <tr>
-            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+            <td data-bind="template: { name: 'searchResultFiletrTmpl', data: filters }"></td>
         </tr>
         <tr>
             <td>
@@ -123,13 +177,11 @@
     </table>
 </script>
 
-<script type="text/html" id="contentListTmpl">
-    <div class="top_content_region">
-        <h1 data-bind="text: titleBlock"></h1>
-    </div>
+<script type="text/html" id="searchResultListTmpl">
+    <p>Найдено <span data-bind="text: countGoods"></span> товаров</p>
     <table style="width: 100%; float: left;">
         <tr>
-            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+            <td data-bind="template: { name: 'searchResultFiletrTmpl', data: filters }"></td>
         </tr>
         <tr>
             <td>
@@ -187,20 +239,20 @@
     </table>
 </script>
 
-<script type="text/html" id="contentNoResultsTmpl">
+<script type="text/html" id="searchResultErrorTmpl">
     <div class="top_content_region">
-        <h1 data-bind="text: titleBlock"></h1>
+        <h1>По вашему запросу товаров не найдено</h1>
     </div>
     <table style="width: 100%; float: left;">
         <tr>
-            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
+            <td data-bind="template: { name: 'searchResultFiletrTmpl', data: filters }"></td>
         </tr>
         <tr>
             <td>
                 <div class="category_block_3">
                     <div class="rows rows_1">
                         <div class="row_content">
-                              <p data-bind="text:message"></p>
+                            <p>Попробуйте изменить параметры поиска и попробуйте еще раз.</p>
                         </div>
                     </div>
                 </div>
@@ -209,7 +261,7 @@
     </table>
 </script>
 
-<script type="text/html" id="contentFiletrTmpl">
+<script type="text/html" id="searchResultFiletrTmpl">
     <div class="salespeople_serch">
         <div class="content">
             <table style="width: 100%;">
@@ -250,3 +302,4 @@
         </div>
     </div>
 </script>
+

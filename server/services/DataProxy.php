@@ -17,6 +17,14 @@ class DataProxy implements IProxy {
     private $count;
     private $orderBy;
     private $filterName;
+    
+    private $idCategories;
+    private $keyWords;
+    private $typeSearch;
+    private $startCost;
+    private $endCost;
+    private $exceptWords;
+    private $typeSeller; 
 
     public function DataProxy($host, $path, $params) {
         $this->host = $host;
@@ -34,6 +42,13 @@ class DataProxy implements IProxy {
         $this->count = $params['count'];
         $this->orderBy = $params['orderBy'];
         $this->filterName = $params['filterName'];
+        $this->idCategories = $params['idCategories'];
+        $this->keyWords = $params['keyWords'];
+        $this->typeSearch = $params['typeSearch'];
+        $this->startCost = $params['startCost'];
+        $this->endCost = $params['endCost'];
+        $this->exceptWords = $params['exceptWords'];
+        $this->typeSeller = $params['typeSeller'];
     }
 
     private function Route() {
@@ -56,6 +71,9 @@ class DataProxy implements IProxy {
             case 'getContent':
                 $this->GetContent();
                 break;
+            case 'getSearchContent':
+                $this->GetSearchContent();
+                break;
             default :
                 throw new Exception("Wrong url");
         }
@@ -71,7 +89,7 @@ class DataProxy implements IProxy {
     }
 
     private function GetSection() {
-        $sections = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->shopId . '/root/noblock/active');
+        $sections = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->shopId . '/root/noblock/active/5/');
         $this->responseData = $sections;
     }
     
@@ -97,6 +115,37 @@ class DataProxy implements IProxy {
 
     private function GetCategoriesForRoot() {
         $category = $this->GetData(Settings::HostApi . Settings::CatalogPathApi . $this->parentId . '/children/noblock/active');
+        $this->responseData = $category;
+    }
+    
+    private function GetSearchContent(){
+        $str = Settings::HostApi . Settings::GoodsPathApi . $this->shopId .'/search/'.$this->start.'/'.$this->count.'/'.$this->orderBy.'/'.$this->filterName.'?';
+        
+        if($this->idCategories){
+            $params[] = 'idCategories='.$this->idCategories;
+        }
+        if($this->keyWords){
+            $params[] = 'keyWords='.implode('%20', explode(' ', $this->keyWords));
+        }
+        if($this->typeSearch){
+            $params[] = 'typeSearch='.$this->typeSearch;
+        }
+        if($this->startCost){
+            $params[] = 'startCost='.$this->startCost;
+        }
+        if($this->endCost){
+            $params[] = 'endCost='.$this->endCost;
+        }
+        if($this->exceptWords){
+            $params[] = 'exceptWords='.implode('%20', explode(' ', $this->exceptWords));
+        }
+        if($this->typeSeller){
+            $params[] = 'typeSeller='.$this->typeSeller;
+        }
+        
+        $str = $str . implode('&', $params);
+
+        $category = $this->GetData($str);
         $this->responseData = $category;
     }
 }

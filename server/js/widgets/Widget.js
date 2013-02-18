@@ -1,9 +1,9 @@
 Parameters = {
-    pathToImages : "http://dev.pokupo.ru/images",
-    routIconAuction : "http://dev.pokupo.ru/images/ico_30.png",
-    sortingBlockContainer : '.sorting_block',
-    containerIdForTmpl : "container_tmpl",
-    loading : "/loading50.gif",
+    pathToImages : Config.Base.pathToImages,
+    routIconAuction : Config.Base.routIconAuction,
+    sortingBlockContainer : Config.Base.sortingBlockContainer,
+    containerIdForTmpl : Config.Base.containerIdForTmpl,
+    loading : Config.Base.loading,
     listSort : {
         name : 'названию', 
         rating : 'рейтингу', 
@@ -23,10 +23,108 @@ Parameters = {
         block : {},
         contentBlock : {},
         content : {},
+        searchContent : {},
         roots: [],
         infoCategory : {},
         typeView : '',
-        pageId: 1
+        pageId: 1,
+        searchPageId : 1
+    },
+    filter : {},
+    catalog : {
+        section : 0,
+        category : 0,
+        page : 1
+    },
+    SetDefaultFilterParameters : function(){
+        this.filter.filterName = '';
+        this.filter.idCategories = [];
+        this.filter.idSelectCategories = [];
+        this.filter.keyWords = '';
+        this.filter.typeSearch = 'any';
+        this.filter.exceptWords = '';
+        this.filter.startCost = '';
+        this.filter.endCost = '';
+        this.filter.typeSeller = '';
+        this.filter.orderBy = 'name';
+        this.filter.page = 1;
+    }
+}
+
+var Route = {
+    route : '',
+    params : {},
+    SetHash : function(route, data){
+        this.route = route;
+        var params = [];
+        for(var key in data){
+            if(data[key] && key != 'idCategories'){
+                if(key != 'page')
+                    params.push(key + '=' + decodeURIComponent(data[key]));
+                else if(data[key] != 1)
+                    params.push(key + '=' + data[key]);
+            }
+        }
+        var href = '/' + route + '/' + params.join("&");
+
+        window.location.hash = href;
+    },
+    SetMainParameters : function(opt){
+        this.SetMoreParameters(null);
+    },
+    SetMoreParameters : function(opt){
+        
+    }
+}
+
+var ReadyWidgets = {
+    readyCount : 0,
+    countAll : 0,
+    widgets : {},
+    Indicator : function(widget, isReady){
+        this.widgets[widget] = isReady;
+
+        this.countAll = 0;
+        this.readyCount = 0;
+        
+        for(var key in this.widgets){
+            this.RegisterReady(key);
+        }
+
+        this.ShowLoading();
+    },
+    RegisterReady : function(key){
+        this.countAll++;
+        if(this.widgets[key] == true){
+            this.readyCount = this.readyCount + 1;
+        }
+    },
+    ShowLoading : function(){
+        if(this.countAll != this.readyCount){
+            this.HideContent();
+            if($('#loadingContainer').length == 0)
+                $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+        }
+        else{
+            this.ShowContent();
+            $('#loadingContainer').remove();
+        }
+    },
+    HideContent : function(){
+        for(var key in Config.Conteiners){
+            if($.isArray(Config.Conteiners[key])){
+                for(var i in Config.Conteiners[key]){
+                    $("#" + Config.Conteiners[key][i]).children().hide();
+                }
+            }
+            else
+                $("#" + Config.Conteiners[key]).children().hide();
+        }
+    },
+    ShowContent : function(){
+        for(var key in Config.Conteiners){
+            $("#" + Config.Conteiners[key]).children().show();
+        }
     }
 }
 
@@ -40,6 +138,7 @@ function Widget(){
         dataForContent : "getContent",
         dataBlocksForCatalog : "getBlock",
         dataCategoryInfo : 'getCategoryInfo',
+        dataSearchContent : 'getSearchContent',
         hashParameters : {
     }
     };
@@ -70,19 +169,19 @@ function Widget(){
                 Parameters.lastItem = data.id;
                 title = data.name_category;
                 if(data.type_category == "section" && Parameters.cache.catalogs[data.id]){
-                    var href = "/catalog=" + Parameters.activeCatalog;
+                    var href = "/catalog/section=" + Parameters.activeCatalog;
                 }
                 else if(data.type_category == "section" && !Parameters.cache.catalogs[data.id]){
                     Parameters.activeSection = data.id;
-                    var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection
+                    var href = "/catalog/section=" + Parameters.activeSection
                 }
                 else{
                     Parameters.activeItem = data.id;
                     Parameters.typeCategory = 'category';
                     if(Parameters.activeSection != 0)
-                        var href = "/catalog=" + Parameters.activeCatalog + "&section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
+                        var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
                     else
-                        var href = "/catalog=" + Parameters.activeCatalog + "&category=" + Parameters.activeItem;
+                        var href = "/catalog/category=" + Parameters.activeItem;
                 }
             }
             else{
@@ -100,6 +199,7 @@ function Widget(){
 
             window.location.hash = href;
             document.title = title;
+            Route.route = 'catalog';
             EventDispatcher.DispatchEvent('widget.changeHash');
         });
     };
@@ -107,20 +207,6 @@ function Widget(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
             $('body').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
     };
-    this.LoadingIndicator = function(container){
-        var widthCatalog = $("#" + container).children().width();
-        var heightCatalog = $("#" + container).children().height();
-        if(!heightCatalog)
-            heightCatalog = 400;
-        $("#" + container).children().hide();
-        $("#" + container).html('<div id="loading' + container + 'Container"><img src="' + Parameters.pathToImages + Parameters.loading+ '"/></div>')
-        $("#loading" + container + "Container").css({
-            "width" : widthCatalog,
-            "height" : heightCatalog, 
-            "text-align" : "center",
-            "padding-top" : heightCatalog/2-$("#loading" + container + "Container img").height()/2
-        });
-    }
     this.RegistrCustomBindings = function(){
         ko.bindingHandlers.UpdateId = {
             update: function(element, valueAccessor) {
@@ -184,7 +270,7 @@ function Widget(){
             var queryHash = EventDispatcher.hashCode(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
             
             if(!Parameters.cache.content[queryHash]){
-                XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + filterName, function(data){
+                XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + encodeURIComponent(filterName), function(data){
                     Parameters.cache.content[queryHash] = {"categoryId" : categoryId , "content" : JSON.parse(data)};
                     if(callback)
                         callback(Parameters.cache.content[queryHash]);
@@ -193,6 +279,20 @@ function Widget(){
             else{
                 if(callback)
                     callback(Parameters.cache.content[queryHash]);
+            }
+        },
+        SearchContent : function(query, callback){
+            var queryHash = EventDispatcher.hashCode(query);
+            if(!Parameters.cache.searchContent[queryHash]){
+                XDMTransport.LoadData(self.settings.dataSearchContent + query, function(data){
+                    Parameters.cache.searchContent[queryHash] = JSON.parse(data);
+                    if(callback)
+                        callback(Parameters.cache.searchContent[queryHash]);
+                })
+            }
+            else{
+                if(callback)
+                    callback(Parameters.cache.searchContent[queryHash]);
             }
         },
         Info : function(id, callback){
@@ -233,11 +333,23 @@ function Widget(){
     }
     this.ParserPath = function(){
         var hash = window.location.hash;
-        hash = hash.replace(/(^#\/)/g, '')
-        var parameters = hash.split('&');
-        for(var i = 0; i <= parameters.length-1; i++){
-            var parameter = parameters[i].split('='); 
-            this.settings.hashParameters[parameter[0]] = parameter[1];
+        hash = hash.split("/");
+        
+        if(hash[1])
+           Route.route = hash[1];
+        else
+           Route.route = 'catalog';
+       
+        Route.params = {};
+            
+        if(hash[2]){
+            var parameters = hash[2].split('&');
+            for(var i = 0; i <= parameters.length-1; i++){
+                var parameter = parameters[i].split('='); 
+                this.settings.hashParameters[parameter[0]] = parameter[1];
+
+                Route.params[parameter[0]] = parameter[1];
+            }
         }
     };
     this.SetParametersFromHash = function(){
