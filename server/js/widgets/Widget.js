@@ -54,9 +54,11 @@ Parameters = {
 var Route = {
     route : '',
     params : {},
-    SetHash : function(route, data){
+    more : {},
+    SetHash : function(route, title, data){
         this.route = route;
         var params = [];
+        this.more = {};
         for(var key in data){
             if(data[key] && key != 'idCategories'){
                 if(key != 'page')
@@ -68,12 +70,123 @@ var Route = {
         var href = '/' + route + '/' + params.join("&");
 
         window.location.hash = href;
+        document.title = title;
+        
+        this.ParserHash();
+        EventDispatcher.DispatchEvent('widget.change.route');
     },
-    SetMainParameters : function(opt){
-        this.SetMoreParameters(null);
+    ParserHash: function(){
+        var hash = window.location.hash;
+        hash = hash.split("/");
+        
+        if(hash[1])
+           Route.route = hash[1];
+        else
+           Route.route = 'catalog';
+       
+        Route.params = {};
+            
+        if(hash[2]){
+            var parameters = hash[2].split('&');
+            for(var i = 0; i <= parameters.length-1; i++){
+                var parameter = parameters[i].split('='); 
+                Route.params[parameter[0]] = parameter[1];
+            }
+        }
+    },
+    GetActiveCategory : function(){
+        if(Route.route == 'catalog'){
+            if(Route.params.category)
+                return Route.params.category;
+            if(Route.params.section)
+                return Route.params.section;
+        }
+        if(Route.route == 'search'){
+            if(Route.params.idCategories && Route.params.idCategories.split(",").length == 1)
+                return parseInt(Route.params.idCategories);
+        }
+        
+        return this.GetDefaultSection();
+    },
+    GetDefaultSection : function(){
+        if(Config.Base.defaultSection == null){
+            for(var key in Parameters.cache.catalogs){
+                return Parameters.cache.catalogs[key];
+                break;
+            }
+        }
+        return Config.Base.defaultSection;
+    },
+    IsCategory : function(){
+        if(Route.route == 'catalog'){
+            if(Route.params.category)
+                return true;
+        }
+        return false;
+    },
+    GetCategory : function(){
+        if(Route.route == 'catalog'){
+            if(Route.params.category)
+                return Route.params.category;
+        }
+        return 0;
+    },
+    IsSection : function(){
+        if(Route.route == 'catalog'){
+            if(!Route.params.category)
+                return true;
+        }
+        return false;
+    },
+    GetSection : function(){
+        if(Route.route == 'catalog'){
+            if(Route.params.section)
+                return Route.params.section;
+        }
+        return 0;
+    },
+    GetPath : function(data){
+        if(data[data.length-1].type_category == 'category'){
+           return {section : data[data.length-2].id, category : data[data.length-1].id};
+        }
+        return {section : data[data.length-1].id};
+    },
+    UpdateHash : function(opt){
+        for(var key in opt){
+            this.params[key] = opt[key];
+        }
+        
+        var params = [];
+        for(var key in this.params){
+            if(key != 'page')
+                params.push(key + '=' + decodeURIComponent(this.params[key]));
+            else if(this.params[key] != 1)
+                params.push(key + '=' + this.params[key]);
+        }
+        var href = '/' + this.route + '/' + params.join("&");
+        
+        window.location.hash = href;
+        
+        this.ParserHash();
+        EventDispatcher.DispatchEvent('widget.change.route');
+    },
+    UpdateMoreParameters : function(opt){
+        for(var key in opt){
+            this.more[key] = opt[key];
+        }
     },
     SetMoreParameters : function(opt){
-        
+        this.more = opt;
+    },
+    GetMoreParameter : function(name){
+        if(this.more[name])
+            return this.more[name];
+        return '';
+    },
+    GetCurrentPage : function(){
+        if(this.params.page)
+            return parseInt(this.params.page);
+        return 1;
     }
 }
 
@@ -142,79 +255,31 @@ function Widget(){
         hashParameters : {
     }
     };
-    this.Init = function(){
-        if ( JSCore !== undefined && JSCore.isReady){
+    this.Init = function(widget){
+        if ( JSCore !== undefined && JSCore.isReady && ReadyWidgets !== undefined){
+            ReadyWidgets.Indicator(widget.widgetName, false);
             this.SelfInit();
-            this.InitWidget();
+            this.BaseLoad.Roots(function(){
+                widget.InitWidget();
+            });
         }else{
             window.setTimeout(this.Init, 100);
         }
     };
     this.SelfInit = function(){
         if(!this.isReady){
-            this.ParserPath();
-            this.SetParametersFromHash();
+            Route.ParserHash();
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId']
             this.isReady = true;
         }
     };
-    this.Events = function(){
-        EventDispatcher.AddEventListener('widget.click.item', function (data){
-            var title = 'Домашняя';
-            if(data){
-                Parameters.activeSection = 0;
-                Parameters.activeItem = 0;
-                Parameters.typeCategory = data.type_category;
-                Parameters.lastItem = data.id;
-                title = data.name_category;
-                if(data.type_category == "section" && Parameters.cache.catalogs[data.id]){
-                    var href = "/catalog/section=" + Parameters.activeCatalog;
-                }
-                else if(data.type_category == "section" && !Parameters.cache.catalogs[data.id]){
-                    Parameters.activeSection = data.id;
-                    var href = "/catalog/section=" + Parameters.activeSection
-                }
-                else{
-                    Parameters.activeItem = data.id;
-                    Parameters.typeCategory = 'category';
-                    if(Parameters.activeSection != 0)
-                        var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
-                    else
-                        var href = "/catalog/category=" + Parameters.activeItem;
-                }
-            }
-            else{
-                var def = 0;
-                for(var key in Parameters.cache.catalogs){
-                    def = Parameters.cache.catalogs[key];
-                    break;
-                }
-                Parameters.activeSection = def;
-                Parameters.activeItem = def;
-                Parameters.lastItem = def;
-                Parameters.typeCategory = "homepage";
-                href = '';
-            }
-
-            window.location.hash = href;
-            document.title = title;
-            Route.route = 'catalog';
-            EventDispatcher.DispatchEvent('widget.changeHash');
-        });
+    this.Events = function(){       
+        
     };
     this.CreateContainer = function(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
             $('body').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
-    };
-    this.RegistrCustomBindings = function(){
-        ko.bindingHandlers.UpdateId = {
-            update: function(element, valueAccessor) {
-                var id = $(element).attr('id');
-                var value = valueAccessor();
-                $(element).attr('id', id + '_' + value);
-            }
-        }
     };
     this.BaseLoad  = {
         Roots : function(callback){
@@ -266,11 +331,11 @@ function Widget(){
                     callback(JSON.parse(Parameters.cache.block[parentId]))
             }
         },
-        Content : function(categoryId, startContent, countGoodsPerPage, orderByContent, filterName, callback){
-            var queryHash = EventDispatcher.hashCode(categoryId + startContent + countGoodsPerPage + orderByContent + filterName);
+        Content : function(query, categoryId, callback){
+            var queryHash = EventDispatcher.hashCode(query);
             
             if(!Parameters.cache.content[queryHash]){
-                XDMTransport.LoadData(self.settings.dataForContent + "&categoryId=" + categoryId + "&start=" + startContent + "&count=" + countGoodsPerPage + "&orderBy=" + orderByContent + "&filterName=" + encodeURIComponent(filterName), function(data){
+                XDMTransport.LoadData(self.settings.dataForContent + "&" + query, function(data){
                     Parameters.cache.content[queryHash] = {"categoryId" : categoryId , "content" : JSON.parse(data)};
                     if(callback)
                         callback(Parameters.cache.content[queryHash]);
@@ -329,47 +394,6 @@ function Widget(){
                         callback(JSON.parse(Parameters.cache.path[categoryId])['path']);
                 }
             }
-        }
-    }
-    this.ParserPath = function(){
-        var hash = window.location.hash;
-        hash = hash.split("/");
-        
-        if(hash[1])
-           Route.route = hash[1];
-        else
-           Route.route = 'catalog';
-       
-        Route.params = {};
-            
-        if(hash[2]){
-            var parameters = hash[2].split('&');
-            for(var i = 0; i <= parameters.length-1; i++){
-                var parameter = parameters[i].split('='); 
-                this.settings.hashParameters[parameter[0]] = parameter[1];
-
-                Route.params[parameter[0]] = parameter[1];
-            }
-        }
-    };
-    this.SetParametersFromHash = function(){
-        if(this.settings.hashParameters['catalog']){
-            Parameters.activeCatalog = this.settings.hashParameters['catalog'];
-            Parameters.lastItem = Parameters.activeCatalog;
-            Parameters.typeCategory = 'section';
-        }
-        if(this.settings.hashParameters['section']){
-            Parameters.activeSection = this.settings.hashParameters['section'];
-            Parameters.lastItem = Parameters.activeSection;
-            Parameters.typeCategory = 'section';
-        }
-        if(this.settings.hashParameters['category']){
-            Parameters.activeItem = this.settings.hashParameters['category'];
-            Parameters.lastItem = Parameters.activeItem;
-            Parameters.typeCategory = 'category';
-        }
-        if(this.settings.hashParameters['page']){
-            Parameters.cache.pageId = this.settings.hashParameters['page'];
         }
     };
 }

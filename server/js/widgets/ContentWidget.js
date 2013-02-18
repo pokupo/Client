@@ -1,5 +1,6 @@
 var ContentWidget = function(conteiner){
     var self = this;
+    self.widgetName = 'ContentWidget';
     self.settingsContent = {
         conteinerIdForContent : "",
         tmplForBlock : Config.Content.tmplForBlock,
@@ -28,12 +29,6 @@ var ContentWidget = function(conteiner){
             if(content.list)
                 self.settingsContent.listPerPage = content.list;
         }
-        if(Parameters.cache.pageId > 1){
-            self.settingsContent.paging.currentPage = Parameters.cache.pageId;
-            self.settingsContent.paging.startContent = (Parameters.cache.pageId-1)*self.settingsContent.paging.itemsPerPage + 1;
-            Parameters.cache.pageId = 1;
-        }
-        
     };
     self.InitWidget = function(){
         self.settingsContent.conteinerIdForContent = conteiner;
@@ -44,9 +39,6 @@ var ContentWidget = function(conteiner){
     };
     self.Route = function(){
         if(Route.route == 'catalog'){
-            for(var key in Route.params){
-                Parameters.catalog[key] = Route.params[key];
-            }
             self.SelectTypeContent();
         }
         else{
@@ -54,7 +46,7 @@ var ContentWidget = function(conteiner){
         }
     };
     self.SelectTypeContent = function(){
-        if(Parameters.typeCategory == 'category'){     
+        if(Route.IsCategory()){  
             self.BaseLoad.Tmpl(self.settingsContent.tmplForContent, function(){
                 EventDispatcher.DispatchEvent('onload.content.tmpl')
             });
@@ -67,57 +59,23 @@ var ContentWidget = function(conteiner){
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
-            if(Parameters.lastItem == 0){
-                self.BaseLoad.Roots(function(data){
-                    EventDispatcher.DispatchEvent('contentWidget.onload.roots', data)
-                })
-            }
-            else{
-                self.BaseLoad.Blocks(Parameters.lastItem, function(data){
-                    self.BustBlock(data)
-                });
-            }
-        });
-        
-        EventDispatcher.AddEventListener('contentWidget.onload.roots', function (data){
-            var def = 0;
-            for(var key in Parameters.cache.catalogs){
-                def = Parameters.cache.catalogs[key];
-                break;
-            }
-            Parameters.activeSection = def;
-            Parameters.activeItem = def;
-            Parameters.lastItem = def;
-            self.BaseLoad.Blocks(Parameters.lastItem, function(data){
+            self.BaseLoad.Blocks(Route.GetActiveCategory(), function(data){
                 self.BustBlock(data)
             });
         });
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
-            self.BaseLoad.Info(Parameters.activeItem, function(data){
-                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', {'id':data.id})
+            self.BaseLoad.Info(Route.GetActiveCategory(), function(data){
+                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
             })
         });
         
-        EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(params){
-            if(params.count)
-                self.settingsContent.paging.itemsPerPage = params.count;
-            if(params.orderBy)
-                self.settingsContent.orderByContent = params.orderBy;
-            if(params.filterName || params.filterName == "")
-                self.settingsContent.filterName = params.filterName;
-            if(params.start)
-                self.settingsContent.paging.startContent = params.start;
-            self.BaseLoad.Content(
-                params.id,                              // id категори
-                self.settingsContent.paging.startContent,      // Начальная позиция в списке для получения части списка с этой позиции
-                self.settingsContent.paging.itemsPerPage,      // Количество товаров в списке
-                self.settingsContent.orderByContent,    // Сортировка
-                self.settingsContent.filterName,        // Выборка только тех товаров в названиях которых встречается эта ключевая фраза,
-                function(data){
-                    self.Fill.Content(data);
-                }
-             )
+        EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){ 
+            var start = (Route.GetCurrentPage()-1) * self.settingsContent.paging.itemsPerPage;
+            var orderBy = Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : self.settingsContent.orderByContent;
+            var query = 'categoryId=' + Route.params.category + '&start=' + start + '&count=' + self.settingsContent.paging.itemsPerPage + '&orderBy=' + orderBy + '&filterName=' + encodeURIComponent(Route.GetMoreParameter('filterName'));
+
+            self.BaseLoad.Content(query, Route.params.category, function(data){ self.Fill.Content(data) })
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
@@ -146,23 +104,20 @@ var ContentWidget = function(conteiner){
             }).change(function(){
                 ReadyWidgets.Indicator('ContentWidget', false);
                 data.filters.orderBy = $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue();
-                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-                {
-                    'id' : data.id, 
-                    'orderBy' : $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue()
-                }
-                )
+                
+                Route.UpdateMoreParameters({orderBy : data.filters.orderBy});
+                Route.UpdateHash({page : 1});
             });
         });
         
-        EventDispatcher.AddEventListener('widget.changeHash', function (data){
-            self.settingsContent.filterName = '';
-            ReadyWidgets.Indicator('ContentWidget', false);
-            self.SelectTypeContent();
+        EventDispatcher.AddEventListener('widget.change.route', function (data){
+            if(Route.route == 'catalog'){
+                ReadyWidgets.Indicator('ContentWidget', false);
+                self.SelectTypeContent();
+            }
         });
     
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
-            Parameters.activeItem = data.id;
             if($('script#contentTileTmpl').length < 0){
                 self.BaseLoad.Tmpl(self.settingsContent.tmplForContent, function(){
                     EventDispatcher.DispatchEvent('onload.content.tmpl')
@@ -188,13 +143,14 @@ var ContentWidget = function(conteiner){
             };
             self.InsertContainer.Block(i, data[i].type_view);
             
-            var queryHash = EventDispatcher.hashCode(data[i].id  + 0 + self.settingsContent.countGoodsInBlock + "name" + "");
+            var query = 'categoryId=' + data[i].id + '&start=' + 0 + '&count=' + self.settingsContent.countGoodsInBlock + '&orderBy=name&filterName=';
+            var queryHash = EventDispatcher.hashCode(query);
             
             EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
                 self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
             });
-           
-            self.BaseLoad.Content(data[i].id, 0, self.settingsContent.countGoodsInBlock, 'name', '',function(data){
+
+            self.BaseLoad.Content(query, data[i].id, function(data){
                 EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
             })
         }
@@ -308,7 +264,8 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.contentBlock  = ko.observableArray();
     
     self.AddContent = function(){
-        var queryHash = EventDispatcher.hashCode(self.id  + 0 + countGoodsInContent + "name" + "");
+        var query = 'categoryId=' + self.id + '&start=' + 0 + '&count=' + countGoodsInContent + '&orderBy=name&filterName=';
+        var queryHash = EventDispatcher.hashCode(query);
         var content = Parameters.cache.content[queryHash].content;
         if(content && content.length > 1){
             var last = content.shift()
@@ -343,7 +300,8 @@ var BlockViewModel = function(data, countGoodsInContent){
     };
     self.ClickCategory = function(){
         ReadyWidgets.Indicator('ContentWidget', false);
-        EventDispatcher.DispatchEvent('widget.click.item', data.block);
+        Route.UpdateHash({category:data.block.id});
+        Route.SetHash('catalog', self.titleBlock, Route.params);
     };
 }
 var BlockContentViewModel = function(data, i){
@@ -423,66 +381,45 @@ var ListContentViewModel = function(settings){
     self.paging = ko.observableArray();
     self.filters = {
         typeView : self.typeView,
-        orderBy : settings.orderByContent,
-        filterName : settings.filterName,
+        orderBy : Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : settings.orderByContent,
+        filterName : Route.GetMoreParameter('filterName') ? Route.GetMoreParameter('filterName') : settings.filterName,
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : settings.listPerPage,
         countOptionList : ko.observable(settings.listPerPage.length-1),
         FilterNameGoods : function(data){
-            self.filters.filterName = $(data.text).val();
-            settings.paging.currentPage = 1;
-            settings.paging.startContent = 0;
-            if(Parameters.activeSection != 0)
-                var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
-            else
-                var href = "/catalog/category=" + Parameters.activeItem;
-            window.location.hash = href;
+            self.filters.filterName = settings.filterName = $(data.text).val();
+
             ReadyWidgets.Indicator('ContentWidget', false);
-            EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-            {
-                'id' : self.id, 
-                'filterName' : self.filters.filterName
-            }
-            )
+            
+            Route.UpdateMoreParameters({filterName : self.filters.filterName});
+            Route.UpdateHash({page : 1});
         },
         SelectCount : function(count){
             ReadyWidgets.Indicator('ContentWidget', false);
-            self.filters.itemsPerPage = count;
-            settings.paging.itemsPerPage = count;
-            settings.paging.currentPage = 1;
-            settings.paging.startContent = 0;
-            if(Parameters.activeSection != 0)
-                var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem;
-            else
-                var href = "/catalog/category=" + Parameters.activeItem;
-            window.location.hash = href;
-            EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-            {
-                'id' : self.id, 
-                'count' : count
-            }
-            ) 
+            self.filters.itemsPerPage = settings.paging.itemsPerPage = count;
+
+            Route.UpdateHash({page : 1}); 
         },
         selectTypeView : {
             ClickTile : function(){
                 self.typeView = 'tile';
                 self.filters.typeView = 'tile';
                 Parameters.cache.typeView = 'tile';
-                self.AddContent(Parameters.cache.content[self.GetQueryHash(self.id)].content);
+                self.AddContent(Parameters.cache.content[self.GetQueryHash()].content);
                 EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
             },
             ClickTable : function(){
                 self.typeView = 'table';
                 self.filters.typeView = 'table';
                 Parameters.cache.typeView = 'table';
-                self.AddContent(Parameters.cache.content[self.GetQueryHash(self.id)].content);
+                self.AddContent(Parameters.cache.content[self.GetQueryHash()].content);
                 EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
             },
             ClickList : function(){
                 self.typeView = 'list';
                 self.filters.typeView = 'list';
                 Parameters.cache.typeView = 'list';
-                self.AddContent(Parameters.cache.content[self.GetQueryHash(self.id)].content);
+                self.AddContent(Parameters.cache.content[self.GetQueryHash()].content);
                 EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
             }
         }
@@ -539,27 +476,18 @@ var ListContentViewModel = function(settings){
             EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
         }
     };
-    self.GetQueryHash = function(categoryId){
-        return EventDispatcher.hashCode(categoryId + settings.paging.startContent + settings.paging.itemsPerPage + settings.orderByContent + settings.filterName);
+    self.GetQueryHash = function(){
+        var start = (Route.GetCurrentPage()-1) * settings.paging.itemsPerPage;
+        var orderBy = Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : settings.orderByContent;
+        var query = 'categoryId=' + Route.params.category + '&start=' + start + '&count=' + settings.paging.itemsPerPage + '&orderBy=' + orderBy + '&filterName=' + encodeURIComponent(Route.GetMoreParameter('filterName'));
+
+        return EventDispatcher.hashCode(query);
     };
     self.AddPages = function(){
         var ClickLinkPage = function(){
             ReadyWidgets.Indicator('ContentWidget', false);
-            var start = (this.pageId-1) * settings.paging.itemsPerPage;
-            settings.paging.currentPage = this.pageId;
 
-            if(Parameters.activeSection != 0)
-                var href = "/catalog/section=" + Parameters.activeSection + "&category=" + Parameters.activeItem + "&page=" + this.pageId;
-            else
-                var href = "/catalog/category=" + Parameters.activeItem + "&page=" + this.pageId;
-            window.location.hash = href;
-
-            EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo', 
-            {
-                'id' : Parameters.lastItem, 
-                'start' : start
-            }
-            )
+            Route.UpdateHash({page : this.pageId});
         }
         
         self.paging = Paging.GetPaging(self.countGoods, settings, ClickLinkPage);
@@ -569,11 +497,11 @@ var ListContentViewModel = function(settings){
 /* End Content*/
 var TestContent = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined  && ReadyWidgets !== undefined){
+        if(typeof Widget == 'function'){
             ReadyWidgets.Indicator('ContentWidget', false);
             ContentWidget.prototype = new Widget();
             var content = new ContentWidget(Config.Conteiners.content);
-            content.Init();
+            content.Init(content);
         }
         else{
             window.setTimeout(TestContent.Init, 100);

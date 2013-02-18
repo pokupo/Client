@@ -1,5 +1,6 @@
 var SearchResultWidget = function(conteiner){
     var self = this;
+    self.widgetName = 'SearchResultWidget';
     self.settingsSearchResult = {
         containerIdForSearchResult : conteiner[1],
         containerIdForAdvancedSearch : conteiner[0],
@@ -26,11 +27,6 @@ var SearchResultWidget = function(conteiner){
             if(content.list)
                 self.settingsSearchResult.listPerPage = content.list;
         }
-        if(Parameters.cache.searchPageId > 1){
-            self.settingsSearchResult.paging.currentPage = Parameters.cache.searchPageId;
-            self.settingsSearchResult.paging.startContent = (Parameters.cache.searchPageId-1)*self.settingsSearchResult.paging.itemsPerPage + 1;
-            Parameters.cache.searchPageId = 1;
-        }
     };
     self.Route = function(){
         if(Route.route == 'search'){
@@ -53,7 +49,7 @@ var SearchResultWidget = function(conteiner){
                 else
                     Parameters.filter[key] = decodeURIComponent(Route.params[key]);
             }
-            EventDispatcher.DispatchEvent('searchWidget.submit.form');
+            EventDispatcher.DispatchEvent('widget.change.route')
         }
         else{
             ReadyWidgets.Indicator('SearchResultWidget', true);  
@@ -93,30 +89,16 @@ var SearchResultWidget = function(conteiner){
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
             self.InsertContainer.AdvancedSearchForm();
-            Parameters.SetDefaultFilterParameters();
+            if(Route.route != 'search')
+                Parameters.SetDefaultFilterParameters();
             self.Fill.AdvancedSearchForm();
             ReadyWidgets.Indicator('SearchResultWidget', true);
         });
         
-        EventDispatcher.AddEventListener('searchWidget.submit.form', function (data){
-            ReadyWidgets.Indicator('SearchResultWidget', false);
-            
-            Route.SetHash('search', Parameters.filter);
-            self.BaseLoad.Roots(function(){
-                EventDispatcher.DispatchEvent('searchResultWidget.onload.roots')
-            })
-        });
-        
-        EventDispatcher.AddEventListener('searchResultWidget.onload.roots', function (){  
-            self.InsertContainer.AdvancedSearchForm();
-            self.Fill.AdvancedSearchForm();
-            
-            EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
-        });
-        
         EventDispatcher.AddEventListener('searchResultWidget.submit.form', function (data){
             var paging = self.settingsSearchResult.paging;
-            var str = '&shopId='+Parameters.shopId+'&start='+paging.startContent+'&count='+paging.itemsPerPage;
+            var start = (Route.GetCurrentPage()-1) * paging.itemsPerPage;
+            var str = '&shopId='+Parameters.shopId+'&start='+start+'&count='+paging.itemsPerPage;
 
             for(var key in Parameters.filter){
                 if(Parameters.filter[key]){
@@ -124,6 +106,7 @@ var SearchResultWidget = function(conteiner){
                          str = str + '&' + key + '=' + encodeURIComponent(Parameters.filter[key]);
                 }
             }
+
             self.BaseLoad.SearchContent(str, function(data){
                 EventDispatcher.DispatchEvent('searchResultWidget.onload.searchResult', data);
             })
@@ -149,9 +132,18 @@ var SearchResultWidget = function(conteiner){
             self.Render.AdvancedSearchForm(data);
         });
         
-        EventDispatcher.AddEventListener('widget.changeHash', function (data){
-            ReadyWidgets.Indicator('SearchResultWidget', true);
-            $("#" + self.settingsSearchResult.containerIdForAdvancedSearch).html("");
+        EventDispatcher.AddEventListener('widget.change.route', function (data){
+            if(Route.route == 'search'){
+                ReadyWidgets.Indicator('SearchResultWidget', false);
+                self.InsertContainer.AdvancedSearchForm();
+                self.Fill.AdvancedSearchForm();
+
+                EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
+            }
+            else{
+                ReadyWidgets.Indicator('SearchResultWidget', true);
+                $("#" + self.settingsSearchResult.containerIdForAdvancedSearch).html("");
+            }
         });
     };
     self.InsertContainer = {
@@ -331,12 +323,8 @@ var AdvancedSearchFormViewModel = function(params){
         Parameters.filter.exceptWords = self.exceptWords;
         Parameters.filter.typeSeller = self.typeSeller;
         Parameters.filter.page = 1;
-        params.paging.startContent = 0;
-        params.paging.currentPage = 1;
         
-        Route.SetHash('search', Parameters.filter);
-        
-        EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
+        Route.SetHash('search', 'Расширенный поиск', Parameters.filter);
     };
     self.FilterCategories = function(data){
         var test = [];
@@ -462,20 +450,14 @@ var ListSearchResultViewModel = function(settings){
         FilterNameGoods : function(data){
             ReadyWidgets.Indicator('SearchResultWidget', false);
             Parameters.filter.filterName = $(data.text).val();
-            
-            Route.SetHash('search', Parameters.filter);
-            EventDispatcher.DispatchEvent('searchResultWidget.submit.form')
+
+            Route.UpdateHash({page : 1, filterName : $(data.text).val()});
         },
         SelectCount : function(count){
             ReadyWidgets.Indicator('SearchResultWidget', false);
-            self.filters.itemsPerPage = count;
-            settings.paging.itemsPerPage = count;
-            settings.paging.currentPage = 1;
-            settings.paging.startContent = 0;
-            
-            Route.SetHash('search', Parameters.filter);
+            self.filters.itemsPerPage = settings.paging.itemsPerPage = count;
 
-            EventDispatcher.DispatchEvent('searchResultWidget.submit.form')
+            Route.UpdateHash({page : 1});
         },
         selectTypeView : {
             ClickTile : function(){
@@ -540,7 +522,8 @@ var ListSearchResultViewModel = function(settings){
         EventDispatcher.DispatchEvent('searchResultWidget.fill.searchResult', self);
     };
     self.GetQueryHash = function(){
-        var str = '&shopId='+Parameters.shopId+'&start='+settings.paging.startContent+'&count='+settings.paging.itemsPerPage;       
+        var start = (Route.GetCurrentPage()-1) * settings.paging.itemsPerPage;
+        var str = '&shopId='+Parameters.shopId+'&start='+start+'&count='+settings.paging.itemsPerPage;       
         
         for(var key in Parameters.filter){
             if(Parameters.filter[key]){
@@ -553,14 +536,8 @@ var ListSearchResultViewModel = function(settings){
     self.AddPages = function(){
         var ClickLinkPage = function(){
             ReadyWidgets.Indicator('SearchResultWidget', false);
-            var start = (this.pageId-1) * settings.paging.itemsPerPage;
-            Parameters.filter.page = this.pageId;
-            settings.paging.currentPage = this.pageId;
-            settings.paging.startContent = start;
 
-            Route.SetHash('search', Parameters.filter);
-
-            EventDispatcher.DispatchEvent('searchResultWidget.submit.form')
+            Route.UpdateHash({page : this.pageId});
         }
         self.paging = Paging.GetPaging(self.countGoods, settings, ClickLinkPage);
     }
@@ -568,11 +545,11 @@ var ListSearchResultViewModel = function(settings){
 
 var TestSearchResult = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined && ReadyWidgets !== undefined){
+        if(typeof Widget == 'function'){
             ReadyWidgets.Indicator('SearchResultWidget', false);
             SearchResultWidget.prototype = new Widget();
             var searchResult = new SearchResultWidget(Config.Conteiners.searchResult);
-            searchResult.Init();
+            searchResult.Init(searchResult);
         }
         else{
             window.setTimeout(TestSearchResult.Init, 100);

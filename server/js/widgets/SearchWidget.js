@@ -1,5 +1,6 @@
 var SearchWidget = function(conteiner){
     var self = this;
+    self.widgetName = 'SearchWidget';
     self.settingsSearch = {
         containerIdForSearch : conteiner, 
         tmplForSearch : Config.Search.tmpl,
@@ -29,34 +30,13 @@ var SearchWidget = function(conteiner){
         }
         
         EventDispatcher.AddEventListener('searchWidget.onload.tmpl', function (data){
-            if(Parameters.lastItem == 0){
-                self.BaseLoad.Roots(function(data){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.roots', data)
-                })
-            }
-            else{
-                self.BaseLoad.Section(Parameters.lastItem, function(data){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
-                });
-            }
-        });
-        
-        EventDispatcher.AddEventListener('searchWidget.onload.roots', function (data){
-            var def = 0;
-            for(var key in Parameters.cache.catalogs){
-                def = Parameters.cache.catalogs[key];
-                break;
-            }
-            Parameters.activeSection = def;
-            Parameters.activeItem = def;
-            Parameters.lastItem = def;
-            self.BaseLoad.Section(Parameters.lastItem, function(data){
+            self.BaseLoad.Section(Route.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             });
         });
         
         EventDispatcher.AddEventListener('searchWidget.onload.section', function (data){
-            self.BaseLoad.Info(Parameters.lastItem, function(data){
+            self.BaseLoad.Info(Route.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.categoryInfo', data)
             })
         });
@@ -69,9 +49,9 @@ var SearchWidget = function(conteiner){
             self.Render(data);
         });
         
-        EventDispatcher.AddEventListener('widget.changeHash', function (data){
+        EventDispatcher.AddEventListener('widget.change.route', function (data){
             ReadyWidgets.Indicator('SearchWidget', false);
-            self.BaseLoad.Section(Parameters.lastItem, function(data){
+            self.BaseLoad.Section(Route.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             }); 
         });
@@ -167,12 +147,9 @@ var SearchViewModel = function(){
                 self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;
 
-            Route.SetHash('search', Parameters.filter);
-
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+            Route.SetHash('search','Расширенный поиск', Parameters.filter);
             
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumbs', selected);
-            EventDispatcher.DispatchEvent('searchWidget.submit.form');
             $(data.text).val('');
         }
         else{
@@ -203,11 +180,11 @@ var SearchViewModel = function(){
 
 var TestSearch = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined && ReadyWidgets !== undefined){
+        if(typeof Widget == 'function'){
             ReadyWidgets.Indicator('SearchWidget', false);
             SearchWidget.prototype = new Widget();
             var search = new SearchWidget(Config.Conteiners.search);
-            search.Init();
+            search.Init(search);
         }
         else{
             window.setTimeout(TestSearch.Init, 100);
