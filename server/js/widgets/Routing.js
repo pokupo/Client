@@ -1,11 +1,13 @@
 var Route = {
     route : '',
+    title : Config.Base.title,
     params : {},
     more : {},
-    SetHash : function(route, title, data){
+    SetHash : function(route, title, data, ret){
         this.route = route;
         this.more = {};
         var params = [];
+        this.title = title;
         
         for(var key in data){
             if(data[key] && key != 'idCategories'){
@@ -18,12 +20,12 @@ var Route = {
         var href = '/' + route + '/' + params.join("&");
 
         window.location.hash = href;
-        document.title = title;
+        document.title = this.title;
         
         this.ParserHash();
         EventDispatcher.DispatchEvent('widget.change.route');
     },
-    ParserHash: function(){
+    ParserHash: function(init){
         var hash = window.location.hash;
         hash = hash.split("/");
         
@@ -41,6 +43,17 @@ var Route = {
                 this.params[parameter[0]] = parameter[1];
             }
         }
+        if(init)
+            this.InitHistory();
+        else 
+            this.AddHistory()
+    },
+    InitHistory : function(){
+        if(Parameters.cache.history.length == 0)
+            this.AddHistory();
+    },
+    AddHistory : function(){
+        Parameters.cache.history.push({route:this.route, title:this.title, data:this.params});
     },
     GetActiveCategory : function(){
         if(this.route == 'catalog' || this.route == 'goods'){
@@ -114,6 +127,8 @@ var Route = {
         var href = '/' + this.route + '/' + params.join("&");
         
         window.location.hash = href;
+        
+        Parameters.cache.history.push({route:this.route, title:document.title, data:this.params});
         
         this.ParserHash();
         EventDispatcher.DispatchEvent('widget.change.route');

@@ -9,15 +9,11 @@ Parameters = {
         rating : 'рейтингу', 
         cost : 'цене'
     },
-    activeSection : 0,
-    activeItem : 0,
-    activeCatalog : 0,
-    lastItem : 0,
-    typeCategory : "",
     shopId : 0,
     cache : {
         catalogs : [],
         crumbsTitle : [],
+        history : [],
         path : {},
         childrenCategory : {},
         block : {},
@@ -27,9 +23,13 @@ Parameters = {
         roots: [],
         infoCategory : {},
         goodsInfo : {},
+        relatedGoods : {},
+        cart : 0,
         typeView : '',
         pageId: 1,
-        searchPageId : 1
+        searchPageId : 1,
+        scripts : {},
+        tmpl : {}
     },
     filter : {},
     catalog : {
@@ -134,18 +134,34 @@ function Widget(){
     };
     this.SelfInit = function(){
         if(!this.isReady){
-            Route.ParserHash();
+            this.isReady = true;
+            this.RegistrCustomBindings();
+            Route.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId']
-            this.isReady = true;
         }
     };
     this.Events = function(){       
-        
+        EventDispatcher.AddEventListener('widget.onload.script', function(data){
+            window[data.options.widget].prototype = new Widget();
+            var embed = new window[data.options.widget]();
+            embed.Init(embed);
+            embed.SetParameters(data);
+        });
     };
     this.CreateContainer = function(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
             $('body').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
+    };
+    this.RegistrCustomBindings = function(){
+        ko.bindingHandlers.embedWidget = {
+            init: function(element, valueAccessor) {
+                var options = valueAccessor() || {};
+                self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
+                    EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
+                })
+            }
+        }
     };
     this.BaseLoad  = {
         Roots : function(callback){
@@ -239,11 +255,16 @@ function Widget(){
             }
         },
         Tmpl : function(tmpl, callback){
-            self.CreateContainer();
-            XDMTransport.LoadTmpl(tmpl,function(data){
-                $("#" + Parameters.containerIdForTmpl).append(data);
-                if(callback)callback(data);
-            })
+            if(!Parameters.cache.tmpl[EventDispatcher.hashCode(tmpl)]){
+                self.CreateContainer();
+                XDMTransport.LoadTmpl(tmpl,function(data){
+                    $("#" + Parameters.containerIdForTmpl).append(data);
+                    if(callback)callback();
+                })
+            }
+            else{
+                if(callback)callback();
+            }
         },
         Path : function(categoryId, callback){
             if(categoryId){
@@ -267,11 +288,34 @@ function Widget(){
                     if(callback)
                         callback(JSON.parse(data));
                 })
-                
             }
             else{
                 if(callback)
                     callback(JSON.parse(Parameters.cache.goodsInfo[id]));
+            }
+        },
+        Script : function(script, callback){
+            if(!Parameters.cache.scripts[EventDispatcher.hashCode(script)]){
+                if(!$.isArray(script))
+                    script = [script];
+                JSLoader.Load(script, callback);
+            }
+            else{
+                if(callback)callback();
+            }
+        },
+        RelatedGoods : function(id, query, callback){
+            var queryHash = id + EventDispatcher.hashCode(query);
+            if(!Parameters.cache.relatedGoods[queryHash]){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.goodsPathApi+ id +'/link/' + query + '/'), function(data){
+                    Parameters.cache.relatedGoods[queryHash] = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                })
+            }
+            else{
+                if(callback)
+                    callback(JSON.parse(Parameters.cache.relatedGoods[queryHash]));
             }
         }
     };

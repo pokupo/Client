@@ -68,7 +68,7 @@ var CatalogWidget = function(conteiner){
                             var parent = []
                             parent[0] = {
                                 id : path[path.length-1].id,
-                                name_category : 'Вверх',
+                                name_category : path[path.length-1].name_category,
                                 type_category : 'section',
                                 back : 'return',
                                 children : JSON.parse(Parameters.cache.childrenCategory[Route.GetActiveCategory()])
@@ -148,7 +148,11 @@ var Catalog = function(){
 var Section = function(data){
     var self = this;
     self.id = data.id;
-    self.title = data.name_category;
+    self.title = ko.computed(function() {
+        if(data.back)
+            return 'Вверх';
+        return data.name_category;
+    }, this);
     self.type_category = data.type_category;
     self.listClass = 'catalogCategories_' + data.id;
     self.tabClass = ko.computed(function() {
@@ -172,6 +176,8 @@ var Section = function(data){
     
     self.ClickSection = function() {
         var params;
+        var path = JSON.parse(Parameters.cache.path[self.id]).path;
+        
         if(Parameters.cache.catalogs[self.id]){
             var tabTag = $('.listCategories_' + self.id)[0].tagName;
             $(tabTag + '[class^=listCategories]').removeClass('active');
@@ -183,11 +189,9 @@ var Section = function(data){
             params = {section : data.id};
         }
         else{
-            var path = JSON.parse(Parameters.cache.path[self.id]).path;
-            
             params = {section : path[path.length-2].id};
         }
-        Route.SetHash('catalog', self.title, params);
+        Route.SetHash('catalog', path[path.length-2].name_category, params);
     }
 }
 

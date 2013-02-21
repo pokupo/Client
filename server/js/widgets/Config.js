@@ -7,7 +7,8 @@ var Config = {
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png",
         sortingBlockContainer : '.sorting_block',
         containerIdForTmpl : "container_tmpl",
-        loading : "/loading50.gif"
+        loading : "/loading50.gif",
+        title : 'Pokupo'
     },
     Conteiners : {
         catalog : 'catalog',
@@ -19,6 +20,22 @@ var Config = {
     },
     Goods : {
         tmpl : "goods/goodsTmpl.html",
+        showBlocks : ['main', 'description'],
+        moreBlocks : {
+            description : 'Описание',
+            shipping : 'Условия доставки',
+            opinion : 'Отзывы покупателей'
+        },
+        message : {
+            maxIsReached : "Достигнут максисум"
+        },
+        share : {
+            element: 'share',  // id блока в котором будут размещены ссылки на соц сети
+            elementStyle: {
+                'quickServices': ['vkontakte', 'odnoklassniki', 'facebook', 'twitter', 'gplus']
+            }
+        },
+        galleryId : "jcarousel",
         style : {
             'position' : 'absolute', 
             'top' : '0px', 
@@ -92,6 +109,22 @@ var Config = {
             person : 'Частное лицо',
             company : 'Компания'
         },
+        style : {
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    RelatedGoods : {
+        tmpl: "relatedGoods/relatedGoodsTmpl.html",
+        countGoodsInBlock : 6,
+        countGoodsTileInStr : 5,
+        orderBy : 'rating',
+        start : 0,
+        typeView : 'slider',
         style : {
             'position' : 'absolute', 
             'top' : '0px', 

@@ -1,8 +1,8 @@
-var SearchWidget = function(conteiner){
+var SearchWidget = function(){
     var self = this;
     self.widgetName = 'SearchWidget';
     self.settingsSearch = {
-        containerIdForSearch : conteiner, 
+        containerIdForSearch : Config.Conteiners.search, 
         tmplForSearch : Config.Search.tmpl,
         inputParameters : {},
         style : Config.Search.style
@@ -183,7 +183,7 @@ var TestSearch = {
         if(typeof Widget == 'function'){
             ReadyWidgets.Indicator('SearchWidget', false);
             SearchWidget.prototype = new Widget();
-            var search = new SearchWidget(Config.Conteiners.search);
+            var search = new SearchWidget();
             search.Init(search);
         }
         else{

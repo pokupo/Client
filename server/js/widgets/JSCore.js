@@ -1,15 +1,9 @@
 var JSSettings = {
-//    host : "http://dev.pokupo.ru/",
-//    pathToJS : "server/js/",
-//    pathToTmpl : "server/tmpl/",
-//    pathToData : "server/services/DataProxy.php?query=",
-//    pathToCore: "server/index.html",
-
-    host : "http://pokupo-server.asmsoft.ru/",    
-    pathToJS : "js/",
-    pathToTmpl : "tmpl/",
-    pathToData : "services/DataProxy.php?query=",
-    pathToCore: "index.html",
+    host : "http://dev.pokupo.ru/",
+    pathToJS : "server/js/",
+    pathToTmpl : "server/tmpl/",
+    pathToData : "server/services/DataProxy.php?query=",
+    pathToCore: "server/index.html",
 
     scripts : [
         'jquery-ui.custom.js',
@@ -21,9 +15,10 @@ var JSSettings = {
         'jquery.jcarousel.min.js',
         'jquery.cookie.js',
         'jquery.dynatree.min.js',
+        'widgets/Config.js',
         'widgets/Routing.js',
         'widgets/Paging.js',
-        'widgets/Config.js',
+        'widgets/ContentViewModel.js',
         'widgets/Widget.js',
         'widgets/Slider.js',
         'widgets/Carousel.js'
@@ -80,8 +75,10 @@ var EventDispatcher = {
 var JSLoader = { 
     loaded : false,
     loadedCount : 0,
-    Init : function(sripts, pathToJs){
-        JSLoader.Load(sripts, pathToJs);
+    pathToJs : null,
+    Init : function(scripts, pathToJs){
+        this.pathToJs = pathToJs;
+        JSLoader.Load(scripts, function(){JSLoader.RegisterLoaded(scripts);});
     },
     RegisterLoaded: function(scripts){
         JSLoader.loadedCount = JSLoader.loadedCount + 1;
@@ -93,10 +90,11 @@ var JSLoader = {
         JSLoader.loaded = true;
         EventDispatcher.DispatchEvent('onload.scripts');
     },
-    Load : function(scripts, pathToJs){
+    Load : function(scripts, callback){
         for(var i in scripts){
-            $.getScript(pathToJs + scripts[i], function(){
-                JSLoader.RegisterLoaded(scripts);
+            $.getScript(this.pathToJs + scripts[i], function(){
+                if(callback)
+                    callback();
             });
         }
     }

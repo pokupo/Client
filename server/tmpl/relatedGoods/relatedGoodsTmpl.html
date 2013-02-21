@@ -1,0 +1,149 @@
+<script type="text/html" id="relatedGoodsSliderTmpl">
+    <div class="content">
+        <div class="block_title">Вместе с этим товаром покупают</div>
+        <div id="block-views-slider-block_1" data-bind="css: cssBlockContainer">
+            <div class="content">
+                <div class="view-slider">
+                    <div class="view-content">
+                        <!-- ko foreach: content -->
+                        <div data-bind="css: cssBlock">
+                            <a href="#" data-bind="attr: {href: imageHref}">
+                                <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, click: ClickGoods}"/>
+                            </a>
+                        </div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="relatedGoodsCaruselTmpl">
+    <div class="content">
+        <div class="block_title">Вместе с этим товаром покупают</div>
+        <div class="cont">
+            <ul id="jcarousel_2" data-bind="css: cssBlockContainer">
+                <!-- ko foreach: content -->
+                <li data-bind="css: {auction: idAuction() > 0}">
+                    <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
+                    <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods"></a></div>
+                    <div class="category"><a href="#" data-bind="text: shopName, click: ClickShop"></a></div>
+                    <span class="price">
+                        <!-- ko if: discount > 0 -->
+                        <span data-bind="text: sellGoods"></span><br />
+                        <!-- /ko -->
+                        <!--ko text: sellCost --><!--/ko-->
+                    </span> 
+                    <a href="#" class="bay" data-bind="click: ClickBuy">Купить</a>
+                </li>
+                <!-- /ko -->
+            </ul>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="relatedGoodsTileTmpl">
+    <div class="content">
+        <div class="block_title">Вместе с этим товаром покупают</div>
+        <table>
+            <tbody data-bind="foreach: content"> 
+                <tr class="col_2" data-bind="foreach: str">
+                    <td class="row_1" style="width: 220px" data-bind="css: {auction: idAuction() > 0}">
+                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
+                        <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods"></a></div>
+                        <div class="category">Магазин: <a href="#" data-bind="text: shopName , click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                        <span class="price" data-bind="text: sellCost"></span>
+                        <a href="#" class="bay" data-bind="click: ClickBuy">Купить</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</script>
+
+<script type="text/html" id="relatedGoodsTableTmpl">
+<div class="content">
+    <div class="block_title">Вместе с этим товаром покупают</div>
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td>
+                <div class="category_block_2">
+                    <!-- ko foreach: content -->
+                    <div class="row" data-bind="css: {auction: idAuction() > 0}">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td style="width: 212px;">
+                                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
+                                    </td>
+                                    <td style="vertical-align: top;">
+                                        <div class="title">
+                                            <a href="#" data-bind="text: chortName, click: ClickGoods"></a>
+                                            <!-- ko if: idAuction() > 0 -->
+                                            <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                                            <!-- /ko -->
+                                        </div>
+                                        <div class="category">Магазин: <a href="#" data-bind="text: shopName, click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                        <div class="body" data-bind="html: description"></div>
+                                        <div class="price" data-bind="text: sellCost"></div>
+                                        <div class="bay"><a href="#" data-bind="click: ClickBuy">Купить</a></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</script>
+
+<script type="text/html" id="relatedGoodsListTmpl">
+<div class="content">
+    <div class="block_title">Вместе с этим товаром покупают</div>
+    <table style="width: 100%; float: left;">
+        <tr>
+            <td>
+                <div class="category_block_3">
+                    <div class="rows rows_1">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td class="row_1">Изображение</td>
+                                    <td class="row_2">Название</td>
+                                    <td class="row_3">Магазин</td>
+                                    <td class="row_4">Цена</td>
+                                    <td class="row_5">Купить</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- ko foreach: content -->
+                    <div class="rows"  data-bind="css: {auction: idAuction() > 0}">
+                        <div class="row_content">
+                            <table>
+                                <tr>
+                                    <td class="row_1"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></td>
+                                    <td class="row_2">
+                                        <a href="#" data-bind="text: chortName, click: ClickGoods"></a>
+                                        <!-- ko if: idAuction() > 0 -->
+                                        <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                                        <!-- /ko -->
+                                    </td>
+                                    <td class="row_3"><a href="#" data-bind="text: shopName, click: ClickShop"></a></td>
+                                    <td class="row_4" data-bind="text: sellCost"></td>
+                                    <td class="row_5"><a href="#" data-bind="click: ClickBuy">Купить</a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- /ko -->
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</script>

@@ -103,7 +103,7 @@ var BreadCrumbWidget = function(){
                     ko.applyBindings(data, $("#" + self.settingsBreadCrumb.containerIdForBreadCrumb[i] + ' .' + data.cssSelectList + ' select')[0]);
                 }
             }
-            
+
             if($('.' + data.cssSelectList + ' select').length > 0){
                 $('.' + data.cssSelectList + ' select').sSelect({
                     defaultText: Parameters.cache.crumbsTitle[data.parentId]
@@ -156,13 +156,21 @@ var BreadCrumbItem = function(data){
 
 var BreadCrumbViewModel = function(){
     var self = this;
-    self.lastItem = "";
+    self.lastItem = ko.observableArray();;
     self.title = "";
-    self.isCategory = false;
     self.crumbs = ko.observableArray();
     self.ToHomepage = function(){
-        ReadyWidgets.Indicator('BreadCrumbWidget', false);
         Route.SetHash('catalog', 'Домашняя', {});
+    };
+    self.showReturn = ko.computed(function(){
+        if(Parameters.cache.history.length > 1)
+            return true
+        return false;
+    }, this);
+    self.Return = function(){
+        Parameters.cache.history.pop();
+        var link = Parameters.cache.history.pop();
+        Route.SetHash(link.route, link.title, link.data, true);
     };
     self.AddCrumbs = function(data){
         Parameters.cache.crumbsTitle = [];
@@ -177,21 +185,13 @@ var BreadCrumbViewModel = function(){
                 Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category; 
                 self.crumbs.push(breadCrumb);
             }
+            
             var last = self.crumbs().pop();
+            self.lastItem.push(last.title);
             
-            self.lastItem = last.title;
-            
-            if(Route.route == 'search')
-                self.title = 'Расширенный поиск';
-            else
-                self.title = last.title;
-            
-            if(last.typeCategory == 'category' || last.typeCategory == 'block' || Route.route == 'search'){
-                self.isCategory = true;
-            }
-            else{
-                self.isCategory = false;
-            }
+            if(Route.route == 'goods')
+                self.lastItem.push('Карточка товара');
+
             EventDispatcher.DispatchEvent('breadCrumbWidget.fill.item', self);
         }
     };
