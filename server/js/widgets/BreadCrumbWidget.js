@@ -2,7 +2,7 @@ var BreadCrumbWidget = function(){
     var self = this;
     self.widgetName = 'BreadCrumbWidget';
     self.settingsBreadCrumb = {
-        containerIdForBreadCrumb : Config.Conteiners.breadCrumbs, 
+        containerIdForBreadCrumb : Config.Containers.breadCrumbs, 
         tmplForBreadCrumb : Config.BreadCrumbs.tmpl,
         inputParameters : {},
         styleBreadCrumb : Config.BreadCrumbs.style

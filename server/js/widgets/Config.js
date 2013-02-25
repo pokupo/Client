@@ -8,9 +8,12 @@ var Config = {
         sortingBlockContainer : '.sorting_block',
         containerIdForTmpl : "container_tmpl",
         loading : "/loading50.gif",
-        title : 'Pokupo'
+        title : 'Pokupo',
+        cookie : {
+           previously_viewed : 'previously_viewed'  // id просмотренных товаров
+        }
     },
-    Conteiners : {
+    Containers : {
         catalog : 'catalog',
         search  : 'search_block',
         breadCrumbs : ['breadCrumb_1','breadCrumb_2'],
@@ -19,7 +22,8 @@ var Config = {
         goods : 'content'
     },
     Goods : {
-        tmpl : "goods/goodsTmpl.html",
+        tmplId : "goodsTmpl",
+        tmplPath : "goods/",
         showBlocks : ['main', 'description'],
         moreBlocks : {
             description : 'Описание',
@@ -119,7 +123,8 @@ var Config = {
         }
     },
     RelatedGoods : {
-        tmpl: "relatedGoods/relatedGoodsTmpl.html",
+        tmplId : "relatedGoodsTmpl",
+        tmplPath : "relatedGoods/",
         countGoodsInBlock : 6,
         countGoodsTileInStr : 5,
         orderBy : 'rating',
@@ -133,6 +138,21 @@ var Config = {
             'height' : '50px', 
             'background' : '#ddd'
         }
+    },
+    InfoSeller : {
+        tmplId : "infoSellerTmpl",
+        tmplPath : "infoSeller/",
+        style : {
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    Cart : {
+        cartId : 'cart'
     },
     Paging : {
         currentPage : 1,

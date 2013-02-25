@@ -1,0 +1,104 @@
+<script type="text/html" id="alternativeGoodsTmpl">
+<div id="goodsWidgetContainer">
+    <div class="title">
+        <h1 data-bind="text: blocks.main.chortName"></h1>
+    </div>
+    <div class="seller" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : 'alternativeInfoSellerTmpl'}}"></div>
+    <div class="description">
+        <div class="images">
+            <img title="" id="goodsToCart" alt="" src="" data-bind="attr: {src: blocks.main.routeImages, title: blocks.main.chortName }"/>
+            <!-- ko if: showGallery -->
+            <div class="carucel">
+                <ul id="jcarousel" data-bind="css: cssBlockGallery">
+                    <!-- ko foreach: blocks.gallery -->
+                    <li>
+                        <div class="photo">
+                            <a href="" rel="lightbox[plants]" title="" data-bind="attr: {src: image, title: title }">
+                                <img title="" alt="" src="" data-bind="attr: {src: thumb, title: title }"/>
+                            </a>
+                        </div>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- ko with: blocks.main -->
+        <div class="mainInfo">
+            <div class="container_info">
+                <div class="field_info">
+                    <div class="label">Цена:</div>
+                    <div class="data">
+                        <!--ko text: sellEndCost --><!--/ko--> руб.
+                        
+                        <!-- ko if: (sellCost && sellEndCost != sellCost ) -->
+                        <span><!--ko text: sellCost --><!--/ko--> руб.</span>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div class="field_info">
+                    <div class="label">В наличии:</div>
+                    <div class="data">
+                        <!--ko text: inStock --><!--/ko-->
+                    </div>
+                </div>
+                <div class="field_info">
+                    <div class="label">Ваш статус:</div>
+                    <div class="data">
+                        <!-- ko if: nameGroupUser -->
+                        <!-- ko text: nameGroupUser --><!-- /ko -->
+                        <!-- /ko -->
+                        <!-- ko ifnot: nameGroupUser -->
+                        <a href="#" data-bind="click: Login">Авторизация покупателя/Регистрация покупателя"</a>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div class="field_info">
+                    <div class="label">Ваша скидка:</div>
+                    <div class="data">
+                        <!--ko text: discount --><!--/ko-->
+                    </div>
+                </div>
+                <div class="field_info">
+                    <div class="label">Итоговая цена:</div>
+                    <div class="data">
+                        <!--ko text: sellEndCost --><!--/ko--> руб.
+                    </div>
+                </div>
+                <div class="field_info">
+                    <!-- ko if: idAuction -->
+                        <a href="#" class="add_rate" data-bind="click: BidOnAuction">Сделать ставку</a> 
+                        <span>Внимание! Этот товар можно приобрести на аукционе</span>
+                        <span>Текущая цена:</span> <!-- ko text: auctionPrice --><!-- /ko --> руб 
+                    <!-- /ko -->
+                </div>
+            </div>
+            <div class="container_actions">
+                <!-- ko if: showSelectionCount --> 
+                <div class="count">
+                    <a href="#" class="minus" data-bind="click: ClickMinus"> - </a>
+                    <span data-bind="text: ordered"></span>
+                    <a href="#" class="plus" data-bind="click: ClickPlus"> + </a>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: showAddToCart --> 
+                <button type="button" data-bind="click: AddToCart">В корзину</button> 
+                <!-- /ko -->
+                <!-- ko if: showBuy --> 
+                <button type="button" data-bind="click: Buy">Купить</button>
+                <!-- /ko -->
+                <!-- ko if: cart() > 0 --> 
+                <button type="button" data-bind="click: ToCart">Перейти в корзину</button>
+                <!-- /ko -->
+                <!-- ko if: count == 0 -->
+                <button type="button" data-bind="click: ReportAvailability">Сообщить о наличии</button>
+                <!-- /ko -->
+            </div>
+        </div>
+        <!-- /ko -->
+        <div class="clear"></div>
+    </div>
+    <div class="more"></div>
+    <div class="related_goods" data-bind="embedWidget :{ widget : 'RelatedGoodsWidget', params : {id : id, typeView: 'list', count: 6, countTile : 6, tmpl : 'alternativeRelatedGoodsTmpl'}}">
+</div>
+</script>

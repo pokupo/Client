@@ -3,15 +3,20 @@ var GoodsWidget = function(){
     self.widgetName = 'GoodsWidget';
     self.goods = null;
     self.settingsGoods = {
-        containerIdForGoods : Config.Conteiners.goods, 
-        tmplForGoods : Config.Goods.tmpl,
+        containerIdForGoods : Config.Containers.goods, 
+        tmplPath : Config.Goods.tmplPath,
+        tmplId : Config.Goods.tmplId,
+        tmplRoute : Config.Goods.tmplPath + Config.Goods.tmplId + '.html',
         inputParameters : {},
         styleGoods : Config.Goods.style
     };
     self.InitWidget = function(){
-        self.RegisterEvents();
         self.SetInputParameters();
+        self.RegisterEvents();
         self.SetPosition();
+    };
+    self.GetTmplRoute = function(){
+        return self.settingsGoods.tmplPath + self.settingsGoods.tmplId + '.html';
     };
     self.SetInputParameters = function(){
         self.settingsGoods.inputParameters = JSCore.ParserInputParameters(/GoodsWidget.js/);
@@ -31,6 +36,9 @@ var GoodsWidget = function(){
                 }
             }
         }
+        if(input.tmpl){
+            self.settingsGoods.tmplId = input.tmpl;
+        }
     };
     self.Route = function(){
         if(Route.route == 'goods'){
@@ -42,13 +50,13 @@ var GoodsWidget = function(){
     };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settingsGoods.tmplForGoods, function(){
+            self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
                  self.Route();
             });
         }
         else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settingsGoods.tmplForGoods, function(){
+            EventDispatcher.AddEventListener('onload.scripts', function (data){
+                self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
                      self.Route();
                 });
             });
@@ -72,7 +80,7 @@ var GoodsWidget = function(){
     self.InsertContainer = {
         Content : function(){
             $("#" + self.settingsGoods.containerIdForGoods).html('');
-            $("#" + self.settingsGoods.containerIdForGoods).append($('script#goodsTmpl').html());
+            $("#" + self.settingsGoods.containerIdForGoods).append($('script#' + self.settingsGoods.tmplId).html());
         }
     };
     self.Fill = {
@@ -84,7 +92,7 @@ var GoodsWidget = function(){
                 else
                     self.Fill.Block(key, data[key]);
             }
-            self.goods.SetListMoreBlock();
+            self.goods.SetListMoreBlock(); 
             self.Render.Goods(self.goods);
         },
         Main : function(data){
@@ -99,13 +107,13 @@ var GoodsWidget = function(){
             self.goods.AddBlock('gallery', gallery);
         },
         Seller : function(data){
-            
+            self.goods.sellerInfo['seller'] = data;
         },
         Shop : function(data){
-            
+            self.goods.sellerInfo['shop'] = data;
         },
         Operator : function(data){
-            
+            self.goods.sellerInfo['operator'] = data;
         },
         Block : function(key, data){
             var block = new MoreBlockViewModel(key);
@@ -117,8 +125,8 @@ var GoodsWidget = function(){
         Goods: function(data){
             if($("#" + self.settingsGoods.containerIdForGoods).length > 0){
                 self.InsertContainer.Content();
-                if(Config.Conteiners.catalog)
-                   $("#" + Config.Conteiners.catalog).hide();
+                if(Config.Containers.catalog)
+                   $("#" + Config.Containers.catalog).hide();
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settingsGoods.containerIdForGoods)[0]);
                 
@@ -127,9 +135,34 @@ var GoodsWidget = function(){
                 if(data.showGallery)
                     new InitCarousel(Config.Goods.galleryId);
             }
+            self.AddGoodsInCookie(data);
             delete data;
             ReadyWidgets.Indicator('GoodsWidget', true);
         }
+    };
+    self.AddGoodsInCookie = function(data){
+        var viewed = $.cookie(Config.Base.cookie.previously_viewed);
+        
+        if(!viewed){
+            $.cookie(Config.Base.cookie.previously_viewed, data.id);
+        }
+        else{
+            var viewedArray = viewed.split(",")
+            var pos = $.inArray(data.id, viewedArray);
+            if(pos >= 0){
+                viewedArray.splice(pos, 1);
+                viewedArray.unshift(data.id);
+            }
+            else{
+                viewedArray.unshift(data.id);
+            }
+            if(viewedArray.length > 20)
+                viewedArray.splice(20, 1)
+
+            $.cookie(Config.Base.cookie.previously_viewed, viewedArray.join(","));
+        }
+            
+        var viewed = $.cookie(Config.Base.cookie.previously_viewed);
     };
     self.SetPosition = function(){
         if(self.settingsGoods.inputParameters['position'] == 'absolute'){
@@ -148,6 +181,7 @@ var GoodsViewModel  = function(){
     var self = this;
     self.id = Route.params.id;
     self.blocks = {};
+    self.sellerInfo = {};
     self.showGallery = ko.computed(function(){
         if($.inArray('gallery', Config.Goods.showBlocks) > 0 && self.blocks.gallery)
             return true;
@@ -250,8 +284,10 @@ var GoodsMainBlockViewModel = function(data){
     }, this);
     self.AddToCart = function(){
         Parameters.cache.cart = self.ordered();
-        self.cart(self.cart() + self.ordered());
-        alert('add ' + self.ordered() + ' goods');
+        self.cart(self.cart() + self.ordered()); 
+        
+        if(typeof AnimateAddToCart == 'function')
+            new AnimateAddToCart();
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) > 0 && self.count != 0)
@@ -284,10 +320,6 @@ var GalleryBlockViewModel = function(data){
     self.title = data.name_photo;
     self.thumb = Parameters.pathToImages + data.route_photo;
     self.image = Parameters.pathToImages + '/big' + data.route_photo
-}
-
-var ShippingBlockViewModel = function(data){
-    
 }
 
 var MoreBlockViewModel = function(key){

@@ -1,9 +1,9 @@
-var SearchResultWidget = function(conteiner){
+var SearchResultWidget = function(container){
     var self = this;
     self.widgetName = 'SearchResultWidget';
     self.settingsSearchResult = {
-        containerIdForSearchResult : conteiner[1],
-        containerIdForAdvancedSearch : conteiner[0],
+        containerIdForSearchResult : container[1],
+        containerIdForAdvancedSearch : container[0],
         tmplForAdvancedSearchForm : Config.SearchResult.tmpl,
         idTreeCategoriesForAdvancedSearchForm : 'tree_categories_for_advanced_search',
         inputParameters : {},
@@ -481,7 +481,7 @@ var TestSearchResult = {
         if(typeof Widget == 'function'){
             ReadyWidgets.Indicator('SearchResultWidget', false);
             SearchResultWidget.prototype = new Widget();
-            var searchResult = new SearchResultWidget(Config.Conteiners.searchResult);
+            var searchResult = new SearchResultWidget(Config.Containers.searchResult);
             searchResult.Init(searchResult);
         }
         else{

@@ -20,7 +20,7 @@
                                 <tbody>
                                     <tr>
                                         <td>
-                                            
+                                             <div class="node_user_info" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo}}">
                                         </td>
                                     </tr>
                                     <tr>
@@ -164,7 +164,7 @@
 
 <script type="text/html" id="goodsGalleryBlockTmpl">
     <div class="node_photo">
-        <div class="big_photo"><img title="" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName }"/></div>
+        <div class="big_photo"><img title="" id="goodsToCart" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName }"/></div>
         <!-- ko if: $parent.showGallery -->
         <div class="carucel">
             <ul id="jcarousel" data-bind="css: $parent.cssBlockGallery">

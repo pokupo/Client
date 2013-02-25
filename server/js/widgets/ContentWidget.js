@@ -1,8 +1,8 @@
-var ContentWidget = function(conteiner){
+var ContentWidget = function(container){
     var self = this;
     self.widgetName = 'ContentWidget';
     self.settingsContent = {
-        conteinerIdForContent : "",
+        containerIdForContent : "",
         tmplForBlock : Config.Content.tmplForBlock,
         tmplForContent : Config.Content.tmplForContent,
         inputParameters : {},
@@ -31,7 +31,7 @@ var ContentWidget = function(conteiner){
         }
     };
     self.InitWidget = function(){
-        self.settingsContent.conteinerIdForContent = conteiner;
+        self.settingsContent.containerIdForContent = container;
         self.SetInputParameters();
         self.RegisterEvents();
         self.Route();
@@ -128,7 +128,7 @@ var ContentWidget = function(conteiner){
         });
     };
     self.BustBlock = function(data){
-        $("#" + self.settingsContent.conteinerIdForContent).html('');
+        $("#" + self.settingsContent.containerIdForContent).html('');
         if(data.err)
             ReadyWidgets.Indicator('ContentWidget', true);
         for(var i = 0; i <= data.length - 1; i++){
@@ -153,29 +153,29 @@ var ContentWidget = function(conteiner){
     self.InsertContainer = {
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockSliderTmpl').html());
+                $("#" + self.settingsContent.containerIdForContent).append($('script#blockSliderTmpl').html());
             }
             if(type == 'carousel'){
-                $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockCaruselTmpl').html());
+                $("#" + self.settingsContent.containerIdForContent).append($('script#blockCaruselTmpl').html());
             }
             if(type == 'tile'){
-                $("#" + self.settingsContent.conteinerIdForContent).append($('script#blockTileTmpl').html());
+                $("#" + self.settingsContent.containerIdForContent).append($('script#blockTileTmpl').html());
             }
-            $("#" + self.settingsContent.conteinerIdForContent + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
+            $("#" + self.settingsContent.containerIdForContent + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
         },
         List : function(type){
-            $("#" + self.settingsContent.conteinerIdForContent).html('');
+            $("#" + self.settingsContent.containerIdForContent).html('');
             if(type == 'table'){ 
-                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentTableTmpl').html());
+                $("#" + self.settingsContent.containerIdForContent).append($('script#contentTableTmpl').html());
             }
             if(type == 'list'){
-                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentListTmpl').html());
+                $("#" + self.settingsContent.containerIdForContent).append($('script#contentListTmpl').html());
             }
             if(type == 'tile'){
-                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentTileTmpl').html());
+                $("#" + self.settingsContent.containerIdForContent).append($('script#contentTileTmpl').html());
             }
             if(type == 'no_results'){
-                $("#" + self.settingsContent.conteinerIdForContent).append($('script#contentNoResultsTmpl').html());
+                $("#" + self.settingsContent.containerIdForContent).append($('script#contentNoResultsTmpl').html());
             }
         }
     };
@@ -207,9 +207,9 @@ var ContentWidget = function(conteiner){
     };
     self.Render = {
         List : function(data){
-            if($("#" + self.settingsContent.conteinerIdForContent).length > 0){
+            if($("#" + self.settingsContent.containerIdForContent).length > 0){
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-                ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
+                ko.applyBindings(data, $("#" + self.settingsContent.containerIdForContent)[0]);
             }
             delete data;
             ReadyWidgets.Indicator('ContentWidget', true);
@@ -223,9 +223,9 @@ var ContentWidget = function(conteiner){
             ReadyWidgets.Indicator('ContentWidget', true);
         },
         NoResults : function(data){
-            if($("#" + self.settingsContent.conteinerIdForContent).length > 0){
+            if($("#" + self.settingsContent.containerIdForContent).length > 0){
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-                ko.applyBindings(data, $("#" + self.settingsContent.conteinerIdForContent)[0]);
+                ko.applyBindings(data, $("#" + self.settingsContent.containerIdForContent)[0]);
             }
             ReadyWidgets.Indicator('ContentWidget', true);
         }
@@ -237,7 +237,7 @@ var ContentWidget = function(conteiner){
                     self.settingsContent.styleContent[key] = self.settingsContent.inputParameters[key];
             }
             $().ready(function(){
-                $("#" + conteiner).css(self.settingsContent.styleContent);
+                $("#" + container).css(self.settingsContent.styleContent);
             });
         }
     }
@@ -253,7 +253,7 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.countGoods    = data.block.count_goods;
     
     self.cssBlock      = 'block_sort_' + data.sort;
-    self.cssBlockContainer  = 'sliderConteiner_' + self.id ;
+    self.cssBlockContainer  = 'sliderContainer_' + self.id ;
     self.imageHref     = '#';
     
     self.contentBlock  = ko.observableArray();
@@ -431,7 +431,7 @@ var TestContent = {
         if(typeof Widget == 'function'){
             ReadyWidgets.Indicator('ContentWidget', false);
             ContentWidget.prototype = new Widget();
-            var content = new ContentWidget(Config.Conteiners.content);
+            var content = new ContentWidget(Config.Containers.content);
             content.Init(content);
         }
         else{

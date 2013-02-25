@@ -2,7 +2,7 @@ var SearchWidget = function(){
     var self = this;
     self.widgetName = 'SearchWidget';
     self.settingsSearch = {
-        containerIdForSearch : Config.Conteiners.search, 
+        containerIdForSearch : Config.Containers.search, 
         tmplForSearch : Config.Search.tmpl,
         inputParameters : {},
         style : Config.Search.style

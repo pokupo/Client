@@ -86,19 +86,19 @@ var ReadyWidgets = {
         }
     },
     HideContent : function(){
-        for(var key in Config.Conteiners){
-            if($.isArray(Config.Conteiners[key])){
-                for(var i in Config.Conteiners[key]){
-                    $("#" + Config.Conteiners[key][i]).children().hide();
+        for(var key in Config.Containers){
+            if($.isArray(Config.Containers[key])){
+                for(var i in Config.Containers[key]){
+                    $("#" + Config.Containers[key][i]).children().hide();
                 }
             }
             else
-                $("#" + Config.Conteiners[key]).children().hide();
+                $("#" + Config.Containers[key]).children().hide();
         }
     },
     ShowContent : function(){
-        for(var key in Config.Conteiners){
-            $("#" + Config.Conteiners[key]).children().show();
+        for(var key in Config.Containers){
+            $("#" + Config.Containers[key]).children().show();
         }
     }
 }
@@ -122,7 +122,7 @@ function Widget(){
     }
     };
     this.Init = function(widget){
-        if ( JSCore !== undefined && JSCore.isReady && ReadyWidgets !== undefined){
+        if ( JSCore !== undefined && JSCore.isReady && ReadyWidgets !== undefined && Config !== undefined && Route !== undefined && ko !== undefined){
             ReadyWidgets.Indicator(widget.widgetName, false);
             this.SelfInit();
             this.BaseLoad.Roots(function(){
@@ -145,8 +145,8 @@ function Widget(){
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
-            embed.Init(embed);
             embed.SetParameters(data);
+            embed.Init(embed); 
         });
     };
     this.CreateContainer = function(){

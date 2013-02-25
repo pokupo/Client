@@ -2,9 +2,10 @@ window.RelatedGoodsWidget = function(){
     var self = this;
     self.widgetName = 'RelatedGoodsWidget';
     self.settings = {
-        tmplForRelatedGoods : Config.RelatedGoods.tmpl, 
+        tmplPath : Config.RelatedGoods.tmplPath,
+        tmplId : Config.RelatedGoods.tmplId,
         inputParameters : {},
-        conteiner : null,
+        container : null,
         style : Config.RelatedGoods.style,
         relatedGoods : {
             id : 0,
@@ -19,24 +20,28 @@ window.RelatedGoodsWidget = function(){
         self.RegisterEvents();
         self.SetPosition();
     };
-    self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/RelatedGoodsWidget.js/);
+    self.GetTmplRoute = function(){
+        return self.settings.tmplPath + self.settings.tmplId + '.html';
     };
     self.SetParameters = function(data){
-        self.settings.conteiner = data.element;
+        self.settings.container = data.element;
+        
         for(var key in data.options.params){
-            self.settings.relatedGoods[key] = data.options.params[key];
+            if(key == 'tmpl' && data.options.params['tmpl'])
+                self.settings.tmplId = data.options.params['tmpl'];
+            else
+                self.settings.relatedGoods[key] = data.options.params[key];
         }
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplForRelatedGoods, function(){
+            self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
                 EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl')
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplForRelatedGoods, function(){
+                self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
                     EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl')
                 });
             });
@@ -55,15 +60,15 @@ window.RelatedGoodsWidget = function(){
     };
     self.InsertContainer = function(type){
             if(type == 'slider')
-                $(self.settings.conteiner).append($('script#relatedGoodsSliderTmpl').html());
+                $(self.settings.container).append($('script#relatedGoodsSliderTmpl').html());
             if(type == 'carousel')
-                $(self.settings.conteiner).append($('script#relatedGoodsCaruselTmpl').html());
+                $(self.settings.container).append($('script#relatedGoodsCaruselTmpl').html());
             if(type == 'tile')
-                $(self.settings.conteiner).append($('script#relatedGoodsTileTmpl').html());
+                $(self.settings.container).append($('script#relatedGoodsTileTmpl').html());
             if(type == 'table') 
-                $(self.settings.conteiner).append($('script#relatedGoodsTableTmpl').html());
+                $(self.settings.container).append($('script#relatedGoodsTableTmpl').html());
             if(type == 'list')
-                $(self.settings.conteiner).append($('script#relatedGoodsListTmpl').html());
+                $(self.settings.container).append($('script#relatedGoodsListTmpl').html());
     };
     self.BustBlock = function(data){
         if(data.err)
@@ -78,7 +83,7 @@ window.RelatedGoodsWidget = function(){
         related.AddContent();
     };
     self.Render = function(data){
-        ko.applyBindings(data, $(self.settings.conteiner).children()[0]);
+        ko.applyBindings(data, $(self.settings.container).children()[0]);
         
         if(self.settings.relatedGoods.typeView == 'slider')
                 new InitSlider(data.cssBlockContainer);
@@ -94,7 +99,7 @@ window.RelatedGoodsWidget = function(){
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                self.settings.conteiner.css(self.settings.style);
+                self.settings.container.css(self.settings.style);
             });
         }
     }
@@ -106,7 +111,7 @@ var RelatedGoodsViewModel = function(settings, data){
     self.countGoods    = settings.count;
     self.countTile     = settings.countTile;
     self.content       = ko.observableArray();
-    self.cssBlockContainer  = 'relatedGoodsConteiner_';
+    self.cssBlockContainer  = 'relatedGoodsContainer_';
     
     self.AddContent = function(){
         if(data && data.length > 1){

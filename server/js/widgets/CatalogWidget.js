@@ -1,4 +1,4 @@
-var CatalogWidget = function(conteiner){
+var CatalogWidget = function(){
     var self = this;
     self.widgetName = 'CatalogWidget';
     self.settingsCatalog = {
@@ -9,7 +9,7 @@ var CatalogWidget = function(conteiner){
         styleCatalog : Config.Catalog.style
     };
     self.InitWidget = function(){
-        self.settingsCatalog.containerIdForCatalog = conteiner;
+        self.settingsCatalog.containerIdForCatalog = Config.Containers.catalog;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();
@@ -223,7 +223,7 @@ var TestCatalog = {
     Init : function(){
         if(typeof Widget == 'function'){
             CatalogWidget.prototype = new Widget();
-            var catalog = new CatalogWidget(Config.Conteiners.catalog);
+            var catalog = new CatalogWidget();
             catalog.Init(catalog);
         }
         else{

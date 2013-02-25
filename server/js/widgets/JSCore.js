@@ -21,7 +21,8 @@ var JSSettings = {
         'widgets/ContentViewModel.js',
         'widgets/Widget.js',
         'widgets/Slider.js',
-        'widgets/Carousel.js'
+        'widgets/Carousel.js',
+        'widgets/AnimateAddToCart.js'
     ],
     inputParameters : {}
 }

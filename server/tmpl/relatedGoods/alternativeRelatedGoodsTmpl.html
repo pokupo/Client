@@ -1,0 +1,28 @@
+<script type="text/html" id="relatedGoodsListTmpl">
+<div>
+    <h3>Вместе с этим товаром покупают</h3>
+    <table class="relatedGoodsList">
+        <tr>
+            <th>Изображение</th>
+            <th>Название</th>
+            <th>Магазин</th>
+            <th>Цена</th>
+            <th>Купить</th>
+        </tr>
+        <!-- ko foreach: content -->
+        <tr data-bind="css: {auction: idAuction() > 0}">
+            <td><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></td>
+            <td>
+                <a href="#" data-bind="text: chortName, click: ClickGoods"></a>
+                <!-- ko if: idAuction() > 0 -->
+                <a href="#" data-bind="click: ClickAuction"><img title="" alt="" src="" data-bind="attr: {src: routIconAuction}"/></a>
+                <!-- /ko -->
+            </td>
+            <td><a href="#" data-bind="text: shopName, click: ClickShop"></a></td>
+            <td data-bind="text: sellCost"></td>
+            <td><a href="#" data-bind="click: ClickBuy">Купить</a></td>
+        </tr>
+        <!-- /ko -->
+    </table>
+</div>
+</script>
