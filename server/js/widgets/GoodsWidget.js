@@ -2,11 +2,11 @@ var GoodsWidget = function(){
     var self = this;
     self.widgetName = 'GoodsWidget';
     self.goods = null;
-    self.settingsGoods = {
-        containerIdForGoods : Config.Containers.goods, 
-        tmplPath : Config.Goods.tmplPath,
-        tmplId : Config.Goods.tmplId,
-        tmplRoute : Config.Goods.tmplPath + Config.Goods.tmplId + '.html',
+    self.settings = {
+        containerId : Config.Containers.goods, 
+        tmplPath : Config.Goods.tmpl.path,
+        tmplId : Config.Goods.tmpl.tmplId,
+        showBlocks : Config.Goods.showBlocks,
         inputParameters : {},
         styleGoods : Config.Goods.style
     };
@@ -15,55 +15,52 @@ var GoodsWidget = function(){
         self.RegisterEvents();
         self.SetPosition();
     };
-    self.GetTmplRoute = function(){
-        return self.settingsGoods.tmplPath + self.settingsGoods.tmplId + '.html';
-    };
     self.SetInputParameters = function(){
-        self.settingsGoods.inputParameters = JSCore.ParserInputParameters(/GoodsWidget.js/);
-        var input = JSON.parse(self.settingsGoods.inputParameters['params']);
-        self.settingsGoods.inputParameters = input;
+        self.settings.inputParameters = JSCore.ParserInputParameters(/GoodsWidget.js/);
+        var input = JSON.parse(self.settings.inputParameters['params']);
+        self.settings.inputParameters = input;
         if(input.show){
             for(var i = 0; i <= input.show.length-1; i++){
-                if($.inArray(input.show[i], Config.Goods.showBlocks) < 0)
-                    Config.Goods.showBlocks.push(input.show[i]);
+                if($.inArray(input.show[i], self.settings.showBlocks) < 0)
+                    self.settings.showBlocks.push(input.show[i]);
             }
         }
         if(input.hide){
             for(var i = 0; i <= input.hide.length-1; i++){
-                var test = $.inArray(input.hide[i], Config.Goods.showBlocks);
+                var test = $.inArray(input.hide[i], self.settings.showBlocks);
                 if(test > 0){
-                    Config.Goods.showBlocks.splice(test, 1);
+                    self.settings.showBlocks.splice(test, 1);
                 }
             }
         }
         if(input.tmpl){
-            self.settingsGoods.tmplId = input.tmpl;
+            self.settings.tmplId = input.tmpl;
         }
     };
-    self.Route = function(){
-        if(Route.route == 'goods'){
+    self.CheckRoute = function(){
+        if(Routing.route == 'goods'){
             self.Update();
         }
         else{
-            ReadyWidgets.Indicator('GoodsWidget', true);
+            self.WidgetLoader(true);
         }
     };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
-                 self.Route();
+            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
+                 self.CheckRoute();
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
-                     self.Route();
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
+                     self.CheckRoute();
                 });
             });
         }
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Route.route == 'goods'){
+            if(Routing.route == 'goods'){
                 self.Update();
             }
         });
@@ -73,14 +70,14 @@ var GoodsWidget = function(){
         });
     };
     self.Update = function(){
-        self.BaseLoad.GoodsInfo(Route.params.id, self.settingsGoods.inputParameters['infoBlock'], function(data){
+        self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
             EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)
         })
     };
     self.InsertContainer = {
         Content : function(){
-            $("#" + self.settingsGoods.containerIdForGoods).html('');
-            $("#" + self.settingsGoods.containerIdForGoods).append($('script#' + self.settingsGoods.tmplId).html());
+            $("#" + self.settings.containerId).html('');
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
         }
     };
     self.Fill = {
@@ -123,12 +120,12 @@ var GoodsWidget = function(){
     };
     self.Render = {
         Goods: function(data){
-            if($("#" + self.settingsGoods.containerIdForGoods).length > 0){
+            if($("#" + self.settings.containerId).length > 0){
                 self.InsertContainer.Content();
                 if(Config.Containers.catalog)
                    $("#" + Config.Containers.catalog).hide();
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-                ko.applyBindings(data, $("#" + self.settingsGoods.containerIdForGoods)[0]);
+                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                 
                 if(Ya != undefined)
                     new Ya.share(Config.Goods.share);
@@ -137,7 +134,7 @@ var GoodsWidget = function(){
             }
             self.AddGoodsInCookie(data);
             delete data;
-            ReadyWidgets.Indicator('GoodsWidget', true);
+            self.WidgetLoader(true);
         }
     };
     self.AddGoodsInCookie = function(data){
@@ -165,13 +162,13 @@ var GoodsWidget = function(){
         var viewed = $.cookie(Config.Base.cookie.previously_viewed);
     };
     self.SetPosition = function(){
-        if(self.settingsGoods.inputParameters['position'] == 'absolute'){
-            for(var key in self.settingsGoods.inputParameters){
-                if(self.settingsGoods.styleGoods[key])
-                    self.settingsGoods.styleGoods[key] = self.settingsGoods.inputParameters[key];
+        if(self.settings.inputParameters['position'] == 'absolute'){
+            for(var key in self.settings.inputParameters){
+                if(self.settings.styleGoods[key])
+                    self.settings.styleGoods[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                $('#' + self.settingsGoods.containerIdForGoods).css(self.settingsGoods.styleGoods);
+                $('#' + self.settings.containerId).css(self.settings.styleGoods);
             });
         }
     }
@@ -179,7 +176,7 @@ var GoodsWidget = function(){
 
 var GoodsViewModel  = function(){
     var self = this;
-    self.id = Route.params.id;
+    self.id = Routing.params.id;
     self.blocks = {};
     self.sellerInfo = {};
     self.showGallery = ko.computed(function(){
@@ -286,7 +283,7 @@ var GoodsMainBlockViewModel = function(data){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
         
-        if(typeof AnimateAddToCart == 'function')
+        if(typeof AnimateAddToCart == 'function' && self.ordered() > 0)
             new AnimateAddToCart();
     };
     self.showBuy = ko.computed(function(){

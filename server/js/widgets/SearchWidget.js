@@ -1,9 +1,10 @@
 var SearchWidget = function(){
     var self = this;
     self.widgetName = 'SearchWidget';
-    self.settingsSearch = {
-        containerIdForSearch : Config.Containers.search, 
-        tmplForSearch : Config.Search.tmpl,
+    self.settings = {
+        containerId : Config.Containers.search, 
+        tmplPath : Config.Search.tmpl.path,
+        tmplId : Config.Search.tmpl.tmplId,
         inputParameters : {},
         style : Config.Search.style
     };
@@ -13,30 +14,30 @@ var SearchWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settingsSearch.inputParameters = JSCore.ParserInputParameters(/SearchWidget.js/);
+        self.settings.inputParameters = JSCore.ParserInputParameters(/SearchWidget.js/);
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settingsSearch.tmplForSearch, function(){
+            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                 EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settingsSearch.tmplForSearch, function(){
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                     EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
                 });
             });
         }
         
         EventDispatcher.AddEventListener('searchWidget.onload.tmpl', function (data){
-            self.BaseLoad.Section(Route.GetActiveCategory(), function(data){
+            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             });
         });
         
         EventDispatcher.AddEventListener('searchWidget.onload.section', function (data){
-            self.BaseLoad.Info(Route.GetActiveCategory(), function(data){
+            self.BaseLoad.Info(Routing.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.categoryInfo', data)
             })
         });
@@ -50,8 +51,8 @@ var SearchWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            ReadyWidgets.Indicator('SearchWidget', false);
-            self.BaseLoad.Section(Route.GetActiveCategory(), function(data){
+            self.WidgetLoader(false);
+            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             }); 
         });
@@ -63,10 +64,10 @@ var SearchWidget = function(){
             search.AddListCategory(JSON.parse(Parameters.cache.childrenCategory[data.id]), data);
     };
     self.Render = function(data){
-        if($("#" + self.settingsSearch.containerIdForSearch).length > 0){
-            $("#" + self.settingsSearch.containerIdForSearch).html("");
-            $("#" + self.settingsSearch.containerIdForSearch).append($('script#searchTmpl').html()).show();
-            ko.applyBindings(data, $("#" + self.settingsSearch.containerIdForSearch)[0]);
+        if($("#" + self.settings.containerId).length > 0){
+            $("#" + self.settings.containerId).html("");
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html()).show();
+            ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
             $('.' + data.cssSelectList).sSelect({
                 defaultText: data.selectedCategory
@@ -77,17 +78,17 @@ var SearchWidget = function(){
             });
             $('.' + data.cssSelectList).getSetSSValue(data.id);
         }
-        ReadyWidgets.Indicator('SearchWidget', true);
+        self.WidgetLoader(true);
         delete data;
     };
     self.SetPosition = function(){
-        if(self.settingsSearch.inputParameters.position == 'absolute'){
-            for(var key in self.settingsSearch.inputParameters){
-                if(self.settingsSearch.style[key])
-                    self.settingsSearch.style[key] = self.settingsSearch.inputParameters[key];
+        if(self.settings.inputParameters.position == 'absolute'){
+            for(var key in self.settings.inputParameters){
+                if(self.settings.style[key])
+                    self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                $("#" + self.settingsSearch.containerIdForSearch).css(self.settingsSearch.style);
+                $("#" + self.settings.containerId).css(self.settings.style);
             });
         }
     };
@@ -147,7 +148,7 @@ var SearchViewModel = function(){
                 self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;
 
-            Route.SetHash('search','Расширенный поиск', Parameters.filter);
+            Routing.SetHash('search','Расширенный поиск', Parameters.filter);
             
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumbs', selected);
             $(data.text).val('');
@@ -181,7 +182,6 @@ var SearchViewModel = function(){
 var TestSearch = {
     Init : function(){
         if(typeof Widget == 'function'){
-            ReadyWidgets.Indicator('SearchWidget', false);
             SearchWidget.prototype = new Widget();
             var search = new SearchWidget();
             search.Init(search);

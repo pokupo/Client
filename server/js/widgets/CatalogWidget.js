@@ -1,69 +1,68 @@
 var CatalogWidget = function(){
     var self = this;
     self.widgetName = 'CatalogWidget';
-    self.settingsCatalog = {
-        isFirst : true,
-        containerIdForCatalog : "", //"catalog",
-        tmplForCatalog : Config.Catalog.tmpl,
+    self.settings = {
+        containerId : Config.Containers.catalog,
+        tmplPath : Config.Catalog.tmpl.path,
+        tmplId : Config.Catalog.tmpl.tmplId,
         inputParameters : {},
         styleCatalog : Config.Catalog.style
     };
     self.InitWidget = function(){
-        self.settingsCatalog.containerIdForCatalog = Config.Containers.catalog;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settingsCatalog.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
+        self.settings.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
     };
     self.RegisterEvents = function(){
 
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settingsCatalog.tmplForCatalog, function(){
+            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                 EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settingsCatalog.tmplForCatalog, function(){
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                     EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
                 });
             });
         }
         
         EventDispatcher.AddEventListener('catalogWidget.onload.tmpl', function (data){
-            if(Route.IsSection()){
+            if(Routing.IsSection()){
                 self.Update();
             }
             else{
-                ReadyWidgets.Indicator('CatalogWidget', true);
+                self.WidgetLoader(true);
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             }
         });
         
         EventDispatcher.AddEventListener('catalogWidget.fill.section', function(data){
-            self.Render.Catalog(data);
+            self.Render.Tree(data);
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Route.route == 'catalog'){
-                if(Route.IsSection())
-                    ReadyWidgets.Indicator('CatalogWidget', false);
+            if(Routing.route == 'catalog'){
+                if(Routing.IsSection())
+                    self.WidgetLoader(false);
                 else
-                    ReadyWidgets.Indicator('CatalogWidget', true);
+                    self.WidgetLoader(true);
 
                 self.Update();
             }
         });
     };
     self.Update = function(){
-        if(Route.IsSection() && !Parameters.cache.catalogs[Route.GetActiveCategory()]){
+        if(Routing.IsSection() && !Parameters.cache.catalogs[Routing.GetActiveCategory()]){
                 $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
-                $("#" + self.settingsCatalog.containerIdForCatalog).show();
-                self.BaseLoad.Section(Route.GetActiveCategory(), function(data){
+                $("#" + self.settings.containerId).show();
+                self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
                     
-                    self.BaseLoad.Path(Route.GetActiveCategory(), function(path){
+                    self.BaseLoad.Path(Routing.GetActiveCategory(), function(path){
                         if(path[path.length-1]){
                             var parent = []
                             parent[0] = {
@@ -71,7 +70,7 @@ var CatalogWidget = function(){
                                 name_category : path[path.length-1].name_category,
                                 type_category : 'section',
                                 back : 'return',
-                                children : JSON.parse(Parameters.cache.childrenCategory[Route.GetActiveCategory()])
+                                children : JSON.parse(Parameters.cache.childrenCategory[Routing.GetActiveCategory()])
                             }
                             self.Fill.Tree(parent);
                         }
@@ -81,19 +80,19 @@ var CatalogWidget = function(){
                     });
                 })
             }
-            else if(Route.IsSection() || Parameters.cache.catalogs[Route.GetActiveCategory()]){
+            else if(Routing.IsSection() || Parameters.cache.catalogs[Routing.GetActiveCategory()]){
                 $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
-                $("#" + self.settingsCatalog.containerIdForCatalog).show();
+                $("#" + self.settings.containerId).show();
                 self.Fill.Tree(JSON.parse(Parameters.cache.roots));
             }
             else{
-                $("#" + self.settingsCatalog.containerIdForCatalog).empty();
-                ReadyWidgets.Indicator('CatalogWidget', true);
+                $("#" + self.settings.containerId).empty();
+                self.WidgetLoader(true);
             }
     }
     self.Fill = {
         Tree : function(data){
-            var catalog = new Catalog();
+            var catalog = new CatalogViewModel();
             for(var i = 0; i <= data.length - 1; i++){
                 catalog.AddItem(data[i]);
             }
@@ -101,40 +100,40 @@ var CatalogWidget = function(){
         }
     };
     self.Render = {
-        Catalog : function(data){
-            if($("#" + self.settingsCatalog.containerIdForCatalog).length > 0){
-                $("#" + self.settingsCatalog.containerIdForCatalog).empty();
-                $("#" + self.settingsCatalog.containerIdForCatalog).append($('script#catalogTmpl').html());
-                ko.applyBindings(data, $('#' + self.settingsCatalog.containerIdForCatalog )[0]);
+        Tree : function(data){
+            if($("#" + self.settings.containerId).length > 0){
+                $("#" + self.settings.containerId).empty();
+                $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
+                ko.applyBindings(data, $('#' + self.settings.containerId )[0]);
             }
-            ReadyWidgets.Indicator('CatalogWidget', true);
+            self.WidgetLoader(true);
         }
     }
     self.SetPosition = function(){
-        if(self.settingsCatalog.inputParameters['position'] == 'absolute'){
-            for(var key in self.settingsCatalog.inputParameters){
-                if(self.settingsCatalog.styleCatalog[key])
-                    self.settingsCatalog.styleCatalog[key] = self.settingsCatalog.inputParameters[key];
+        if(self.settings.inputParameters['position'] == 'absolute'){
+            for(var key in self.settings.inputParameters){
+                if(self.settings.styleCatalog[key])
+                    self.settings.styleCatalog[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                $('#' + self.settingsCatalog.containerIdForCatalog).css(self.settingsCatalog.styleCatalog);
+                $('#' + self.settings.containerId).css(self.settings.styleCatalog);
             });
         }
     }
 }
 
-var Catalog = function(){
+var CatalogViewModel = function(){
     var self = this;
-    self.isActive = Route.GetActiveCategory();
+    self.isActive = Routing.GetActiveCategory();
     self.children = ko.observableArray();
     self.AddItem = function(data){
-        var section = new Section(data);
+        var section = new SectionViewModel(data);
         if(data.children){
             for(var i = 0; i <= data.children.length-1; i++){
-                var item1 = new CatalogItem(data.children[i], data.id);
+                var item1 = new ItemViewModel(data.children[i], data.id);
                 if(data.children[i].children){
                     for(var j = 0; j <= data.children[i].children.length-1; j++){
-                        var item2 = new CatalogItem(data.children[i].children[j], data.children[i].id);
+                        var item2 = new ItemViewModel(data.children[i].children[j], data.children[i].id);
                         item1.children.push(item2);
                     }
                 }
@@ -145,7 +144,7 @@ var Catalog = function(){
     }
 }
 
-var Section = function(data){
+var SectionViewModel = function(data){
     var self = this;
     self.id = data.id;
     self.title = ko.computed(function() {
@@ -156,7 +155,7 @@ var Section = function(data){
     self.type_category = data.type_category;
     self.listClass = 'catalogCategories_' + data.id;
     self.tabClass = ko.computed(function() {
-        if(Route.GetActiveCategory() == data.id){
+        if(Routing.GetActiveCategory() == data.id){
             if(data.back)
                 return 'listCategories_' + data.id + ' return active'
             else
@@ -175,9 +174,6 @@ var Section = function(data){
     }, this);
     
     self.ClickSection = function() {
-        var params;
-        var path = JSON.parse(Parameters.cache.path[self.id]).path;
-        
         if(Parameters.cache.catalogs[self.id]){
             var tabTag = $('.listCategories_' + self.id)[0].tagName;
             $(tabTag + '[class^=listCategories]').removeClass('active');
@@ -187,15 +183,18 @@ var Section = function(data){
             $('.catalogCategories_' + data.id).show();
 
             params = {section : data.id};
+            Routing.SetHash('catalog', data.name_category, params);
         }
         else{
+            var path = JSON.parse(Parameters.cache.path[self.id]).path;
             params = {section : path[path.length-2].id};
+            Routing.SetHash('catalog', path[path.length-2].name_category, params);
         }
-        Route.SetHash('catalog', path[path.length-2].name_category, params);
+        
     }
 }
 
-var CatalogItem = function(data, parent) {
+var ItemViewModel = function(data, parent) {
     var self = this;
     self.id = data.id;
     self.title = data.name_category;
@@ -215,7 +214,7 @@ var CatalogItem = function(data, parent) {
         else
            params = {section : data.id};
 
-        Route.SetHash('catalog', self.title, params);
+        Routing.SetHash('catalog', self.title, params);
     }
 }
 

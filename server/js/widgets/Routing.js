@@ -1,4 +1,4 @@
-var Route = {
+var Routing = {
     route : '',
     title : '',
     params : {},

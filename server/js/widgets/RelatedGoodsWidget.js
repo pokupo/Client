@@ -2,11 +2,14 @@ window.RelatedGoodsWidget = function(){
     var self = this;
     self.widgetName = 'RelatedGoodsWidget';
     self.settings = {
-        tmplPath : Config.RelatedGoods.tmplPath,
-        tmplId : Config.RelatedGoods.tmplId,
+        tmplPath : Config.RelatedGoods.tmpl.path,
+        contentTableTmpl : Config.RelatedGoods.tmpl.contentTableTmpl,
+        contentListTmpl : Config.RelatedGoods.tmpl.contentListTmpl,
+        contentTileTmpl : Config.RelatedGoods.tmpl.contentTileTmpl,
+        contentSliderTmpl : Config.RelatedGoods.tmpl.contentSliderTmpl,
+        contentCaruselTmpl : Config.RelatedGoods.tmpl.contentCaruselTmpl,
         inputParameters : {},
         container : null,
-        style : Config.RelatedGoods.style,
         relatedGoods : {
             id : 0,
             count : Config.RelatedGoods.countGoodsInBlock,
@@ -18,10 +21,6 @@ window.RelatedGoodsWidget = function(){
     };
     self.InitWidget = function(){
         self.RegisterEvents();
-        self.SetPosition();
-    };
-    self.GetTmplRoute = function(){
-        return self.settings.tmplPath + self.settings.tmplId + '.html';
     };
     self.SetParameters = function(data){
         self.settings.container = data.element;
@@ -35,13 +34,13 @@ window.RelatedGoodsWidget = function(){
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
+            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                 EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl')
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                     EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl')
                 });
             });
@@ -60,19 +59,19 @@ window.RelatedGoodsWidget = function(){
     };
     self.InsertContainer = function(type){
             if(type == 'slider')
-                $(self.settings.container).append($('script#relatedGoodsSliderTmpl').html());
+                $(self.settings.container).append($('script#' + self.settings.contentSliderTmpl).html());
             if(type == 'carousel')
-                $(self.settings.container).append($('script#relatedGoodsCaruselTmpl').html());
+                $(self.settings.container).append($('script#' + self.settings.contentCaruselTmpl).html());
             if(type == 'tile')
-                $(self.settings.container).append($('script#relatedGoodsTileTmpl').html());
+                $(self.settings.container).append($('script#' + self.settings.contentTileTmpl).html());
             if(type == 'table') 
-                $(self.settings.container).append($('script#relatedGoodsTableTmpl').html());
+                $(self.settings.container).append($('script#' + self.settings.contentTableTmpl).html());
             if(type == 'list')
-                $(self.settings.container).append($('script#relatedGoodsListTmpl').html());
+                $(self.settings.container).append($('script#' + self.settings.contentListTmpl).html());
     };
     self.BustBlock = function(data){
         if(data.err)
-            ReadyWidgets.Indicator('RelatedGoodsWidget', true);
+            self.WidgetLoader(true);
         else{
             self.InsertContainer(self.settings.relatedGoods.typeView);
             self.Fill(self.settings.relatedGoods, data)
@@ -90,19 +89,8 @@ window.RelatedGoodsWidget = function(){
         if(self.settings.relatedGoods.typeView == 'carousel')
                 new InitCarousel(data.cssBlockContainer);
             
-        ReadyWidgets.Indicator('RelatedGoodsWidget', true);
+        self.WidgetLoader(true);
     };
-    self.SetPosition = function(){
-        if(self.settings.inputParameters['position'] == 'absolute'){
-            for(var key in self.settings.inputParameters){
-                if(self.settings.style[key])
-                    self.settings.style[key] = self.settings.inputParameters[key];
-            }
-            $().ready(function(){
-                self.settings.container.css(self.settings.style);
-            });
-        }
-    }
 }
 
 var RelatedGoodsViewModel = function(settings, data){
@@ -141,7 +129,7 @@ var RelatedGoodsViewModel = function(settings, data){
                     self.content.push(new ContentViewModel(data[i], i));
                 }
             }
-            self.cssBlockContainer  = self.cssBlockContainer + EventDispatcher.hashCode(data.toString());
+            self.cssBlockContainer  = self.cssBlockContainer + EventDispatcher.HashCode(data.toString());
             EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block', self);
         }
     }

@@ -39,7 +39,7 @@ var ContentViewModel = function(data, i){
     self.cssBlock = 'views-row views-row-' + (i+1);
     
     self.ClickGoods = function(){
-        Route.SetHash('goods', self.chortName, {category : Route.GetActiveCategory(),id : self.id});
+        Routing.SetHash('goods', self.chortName, {category : Routing.GetActiveCategory(),id : self.id});
     }
     self.ClickShop = function(){
         alert(self.shopId);

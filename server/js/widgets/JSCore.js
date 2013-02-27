@@ -4,7 +4,7 @@ var JSSettings = {
     pathToTmpl : "server/tmpl/",
     pathToData : "server/services/DataProxy.php?query=",
     pathToCore: "server/index.html",
-
+    
     scripts : [
         'jquery-ui.custom.js',
         'easyXDM.min.js',
@@ -41,9 +41,9 @@ var EventDispatcher = {
     RemoveEventListener : function (event, callback) {
         if (this.events[event]) {
             var listeners = this.events[event];
-            var callbackHash = EventDispatcher.hashCode(callback.toString());
+            var callbackHash = EventDispatcher.HashCode(callback.toString());
             for (var i = listeners.length - 1; i >= 0; --i) {
-                if (EventDispatcher.hashCode(listeners[i].toString()) === callbackHash) {
+                if (EventDispatcher.HashCode(listeners[i].toString()) === callbackHash) {
                     listeners.splice(i, 1);
                     return true;
                 }
@@ -61,7 +61,7 @@ var EventDispatcher = {
         }
     },
     
-    hashCode : function(str){
+    HashCode : function(str){
         var hash = 0, i, ch;
         if (str.length == 0) return hash;
         for (i = 0; i < str.length; i++) {

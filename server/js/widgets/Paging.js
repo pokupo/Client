@@ -32,7 +32,7 @@ var Paging = {
     GetInterval : function(){
         var ne_half = Math.ceil(this.paging.numDisplayEntries/2);
         var upper_limit = this.np-this.paging.numDisplayEntries;
-        var start = Route.GetCurrentPage()>ne_half?Math.max(Math.min(Route.GetCurrentPage()-ne_half, upper_limit), 0):0;
+        var start = Routing.GetCurrentPage()>ne_half?Math.max(Math.min(Routing.GetCurrentPage()-ne_half, upper_limit), 0):0;
         var end = Math.min(start + 3, this.np);
         return [start + 1,end + 1]; 
     },
@@ -44,7 +44,7 @@ var Paging = {
             classes : ""
         }, opt||{});
          
-        if(id == Route.GetCurrentPage()){
+        if(id == Routing.GetCurrentPage()){
             this.result.push(new Page({
                 current : true, 
                 id : id,
@@ -68,8 +68,8 @@ var Paging = {
     AddPages : function(){
         this.result = ko.observableArray();
         var interval = this.GetInterval();
-        if(this.paging.prevText && (Route.GetCurrentPage() > 1 || this.paging.prevShowAlways)){
-            this.AppendItem(Route.GetCurrentPage()-1, {
+        if(this.paging.prevText && (Routing.GetCurrentPage() > 1 || this.paging.prevShowAlways)){
+            this.AppendItem(Routing.GetCurrentPage()-1, {
                 text : this.paging.prevText,
                 classes : this.paging.cssPrev
             })
@@ -116,8 +116,8 @@ var Paging = {
             }		
         }
         // Generate "Next"-Link
-        if(this.paging.nextText && (Route.GetCurrentPage() < this.np || this.paging.nextShowAlways)){
-            this.AppendItem(Route.GetCurrentPage()+1, {
+        if(this.paging.nextText && (Routing.GetCurrentPage() < this.np || this.paging.nextShowAlways)){
+            this.AppendItem(Routing.GetCurrentPage()+1, {
                 text : this.paging.nextText,
                 classes : this.paging.cssNext
             })

@@ -2,7 +2,6 @@ Parameters = {
     pathToImages : Config.Base.pathToImages,
     routIconAuction : Config.Base.routIconAuction,
     sortingBlockContainer : Config.Base.sortingBlockContainer,
-    containerIdForTmpl : Config.Base.containerIdForTmpl,
     loading : Config.Base.loading,
     listSort : {
         name : 'названию', 
@@ -52,7 +51,7 @@ Parameters = {
     }
 }
 
-var ReadyWidgets = {
+var Loader = {
     readyCount : 0,
     countAll : 0,
     widgets : {},
@@ -110,20 +109,11 @@ function Widget(){
         hostApi : Config.Base.hostApi,
         catalogPathApi : Config.Base.catalogPathApi,
         goodsPathApi : Config.Base.goodsPathApi,
-        
-        dataForCatalog : "getCatalogData",
-        dataForSection : "getSectionData",
-        dataPathForItem : "getPath",
-        dataForContent : "getContent",
-        dataBlocksForCatalog : "getBlock",
-        dataCategoryInfo : 'getCategoryInfo',
-        dataSearchContent : 'getSearchContent',
-        hashParameters : {
-    }
+        containerIdForTmpl : Config.Base.containerIdForTmpl,
     };
     this.Init = function(widget){
-        if ( JSCore !== undefined && JSCore.isReady && ReadyWidgets !== undefined && Config !== undefined && Route !== undefined && ko !== undefined){
-            ReadyWidgets.Indicator(widget.widgetName, false);
+        if ( JSCore !== undefined && JSCore.isReady && Loader !== undefined && Config !== undefined && Routing !== undefined && ko !== undefined){
+            Loader.Indicator(widget.widgetName, false);
             this.SelfInit();
             this.BaseLoad.Roots(function(){
                 widget.InitWidget();
@@ -136,7 +126,7 @@ function Widget(){
         if(!this.isReady){
             this.isReady = true;
             this.RegistrCustomBindings();
-            Route.ParserHash(true);
+            Routing.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId']
         }
@@ -151,7 +141,7 @@ function Widget(){
     };
     this.CreateContainer = function(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
-            $('body').append("<div id='" + Parameters.containerIdForTmpl + "'></div>");
+            $('body').append("<div id='" + self.settings.containerIdForTmpl + "'></div>");
     };
     this.RegistrCustomBindings = function(){
         ko.bindingHandlers.embedWidget = {
@@ -162,6 +152,9 @@ function Widget(){
                 })
             }
         }
+    };
+    this.WidgetLoader = function(test){
+        Loader.Indicator(this.widgetName, test);
     };
     this.BaseLoad  = {
         Roots : function(callback){
@@ -214,7 +207,7 @@ function Widget(){
             }
         },
         Content : function(categoryId, query, callback){
-            var queryHash = categoryId + EventDispatcher.hashCode(query);
+            var queryHash = categoryId + EventDispatcher.HashCode(query);
             if(!Parameters.cache.content[queryHash]){
                 XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + categoryId + '/goods/' + query), function(data){
                     Parameters.cache.content[queryHash] = {"categoryId" : categoryId , "content" : JSON.parse(data)};
@@ -228,7 +221,7 @@ function Widget(){
             }
         },
         SearchContent : function(shopId, query, callback){
-            var queryHash = shopId + EventDispatcher.hashCode(query);
+            var queryHash = shopId + EventDispatcher.HashCode(query);
             if(!Parameters.cache.searchContent[queryHash]){
                 XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.goodsPathApi + shopId + '/search/' + query), function(data){
                     Parameters.cache.searchContent[queryHash] = JSON.parse(data);
@@ -255,10 +248,10 @@ function Widget(){
             }
         },
         Tmpl : function(tmpl, callback){
-            if(!Parameters.cache.tmpl[EventDispatcher.hashCode(tmpl)]){
+            if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl)]){
                 self.CreateContainer();
                 XDMTransport.LoadTmpl(tmpl,function(data){
-                    $("#" + Parameters.containerIdForTmpl).append(data);
+                    $("#" + self.settings.containerIdForTmpl).append(data);
                     if(callback)callback();
                 })
             }
@@ -295,7 +288,7 @@ function Widget(){
             }
         },
         Script : function(script, callback){
-            if(!Parameters.cache.scripts[EventDispatcher.hashCode(script)]){
+            if(!Parameters.cache.scripts[EventDispatcher.HashCode(script)]){
                 if(!$.isArray(script))
                     script = [script];
                 JSLoader.Load(script, callback);
@@ -305,7 +298,7 @@ function Widget(){
             }
         },
         RelatedGoods : function(id, query, callback){
-            var queryHash = id + EventDispatcher.hashCode(query);
+            var queryHash = id + EventDispatcher.HashCode(query);
             if(!Parameters.cache.relatedGoods[queryHash]){
                 XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.goodsPathApi+ id +'/link/' + query + '/'), function(data){
                     Parameters.cache.relatedGoods[queryHash] = data;

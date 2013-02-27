@@ -1,13 +1,19 @@
-var ContentWidget = function(container){
+var ContentWidget = function(){
     var self = this;
     self.widgetName = 'ContentWidget';
-    self.settingsContent = {
-        containerIdForContent : "",
-        tmplForBlock : Config.Content.tmplForBlock,
-        tmplForContent : Config.Content.tmplForContent,
+    self.settings = {
+        containerId : Config.Containers.content,
+        tmplForBlock : Config.Content.tmpl.pathBlock,
+        tmplForContent : Config.Content.tmpl.pathList,
+        blockSliderTmpl : Config.Content.tmpl.blockSliderTmpl,
+        blockCaruselTmpl : Config.Content.tmpl.blockCaruselTmpl,
+        blockTileTmpl : Config.Content.tmpl.blockTileTmpl,
+        contentTableTmpl : Config.Content.tmpl.contentTableTmpl,
+        contentListTmpl : Config.Content.tmpl.contentListTmpl,
+        contentTileTmpl : Config.Content.tmpl.contentTileTmpl,
+        noResultsTmpl : Config.Content.tmpl.noResultsTmpl,
         inputParameters : {},
         styleCatalog : {},
-        inputParameters : {},
         countGoodsInBlock : Config.Content.countGoodsInBlock,
         orderByContent : Config.Content.orderBy,
         filterName : '',
@@ -17,64 +23,63 @@ var ContentWidget = function(container){
         styleContent : Config.Content.style
     };
     self.SetInputParameters = function(){
-        self.settingsContent.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
+        self.settings.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
         
-        if(self.settingsContent.inputParameters.block){
-            self.settingsContent.countGoodsInBlock = JSON.parse(self.settingsContent.inputParameters.block).count;
+        if(self.settings.inputParameters.block){
+            self.settings.countGoodsInBlock = JSON.parse(self.settings.inputParameters.block).count;
         }
-        if(self.settingsContent.inputParameters.content){
-            var content = JSON.parse(self.settingsContent.inputParameters.content)
+        if(self.settings.inputParameters.content){
+            var content = JSON.parse(self.settings.inputParameters.content)
             if(content.defaultCount)
-                self.settingsContent.paging.itemsPerPage = content.defaultCount;
+                self.settings.paging.itemsPerPage = content.defaultCount;
             if(content.list)
-                self.settingsContent.listPerPage = content.list;
+                self.settings.listPerPage = content.list;
         }
     };
     self.InitWidget = function(){
-        self.settingsContent.containerIdForContent = container;
         self.SetInputParameters();
         self.RegisterEvents();
-        self.Route();
+        self.CheckRouting();
         self.SetPosition();
     };
-    self.Route = function(){
-        if(Route.route == 'catalog'){
+    self.CheckRouting = function(){
+        if(Routing.route == 'catalog'){
             self.SelectTypeContent();
         }
         else{
-            ReadyWidgets.Indicator('ContentWidget', true);
+            self.WidgetLoader(true);
         }
     };
     self.SelectTypeContent = function(){
-        if(Route.IsCategory()){  
-            self.BaseLoad.Tmpl(self.settingsContent.tmplForContent, function(){
+        if(Routing.IsCategory()){  
+            self.BaseLoad.Tmpl(self.settings.tmplForContent, function(){
                 EventDispatcher.DispatchEvent('onload.content.tmpl')
             });
         }
         else{
-            self.BaseLoad.Tmpl(self.settingsContent.tmplForBlock, function(){
+            self.BaseLoad.Tmpl(self.settings.tmplForBlock, function(){
                 EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
             });
         }
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
-            self.BaseLoad.Blocks(Route.GetActiveCategory(), function(data){
+            self.BaseLoad.Blocks(Routing.GetActiveCategory(), function(data){
                 self.BustBlock(data)
             });
         });
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
-            self.BaseLoad.Info(Route.GetActiveCategory(), function(data){
+            self.BaseLoad.Info(Routing.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
             })
         });
         
         EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){ 
-            var start = (Route.GetCurrentPage()-1) * self.settingsContent.paging.itemsPerPage;
-            var orderBy = Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : self.settingsContent.orderByContent;
-            var query = start + '/' + self.settingsContent.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Route.GetMoreParameter('filterName'));
-            self.BaseLoad.Content(Route.params.category, query, function(data){ self.Fill.Content(data) })
+            var start = (Routing.GetCurrentPage()-1) * self.settings.paging.itemsPerPage;
+            var orderBy = Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : self.settings.orderByContent;
+            var query = start + '/' + self.settings.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Routing.GetMoreParameter('filterName'));
+            self.BaseLoad.Content(Routing.params.category, query, function(data){ self.Fill.Content(data) })
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
@@ -101,24 +106,24 @@ var ContentWidget = function(container){
             $(Parameters.sortingBlockContainer + ' .sort select').sSelect({
                 defaultText: Parameters.listSort[data.filters.orderBy]
             }).change(function(){
-                ReadyWidgets.Indicator('ContentWidget', false);
+                self.WidgetLoader(false);
                 data.filters.orderBy = $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue();
                 
-                Route.UpdateMoreParameters({orderBy : data.filters.orderBy});
-                Route.UpdateHash({page : 1});
+                Routing.UpdateMoreParameters({orderBy : data.filters.orderBy});
+                Routing.UpdateHash({page : 1});
             });
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            if(Route.route == 'catalog'){
-                ReadyWidgets.Indicator('ContentWidget', false);
+            if(Routing.route == 'catalog'){
+                self.WidgetLoader(false);
                 self.SelectTypeContent();
             }
         });
     
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
             if($('script#contentTileTmpl').length < 0){
-                self.BaseLoad.Tmpl(self.settingsContent.tmplForContent, function(){
+                self.BaseLoad.Tmpl(self.settings.tmplForContent, function(){
                     EventDispatcher.DispatchEvent('onload.content.tmpl')
                 });
             }
@@ -128,9 +133,9 @@ var ContentWidget = function(container){
         });
     };
     self.BustBlock = function(data){
-        $("#" + self.settingsContent.containerIdForContent).html('');
+        $("#" + self.settings.containerId).html('');
         if(data.err)
-            ReadyWidgets.Indicator('ContentWidget', true);
+            self.WidgetLoader(true);
         for(var i = 0; i <= data.length - 1; i++){
             Parameters.cache.contentBlock[data[i].id] = {
                 sort : i, 
@@ -138,8 +143,8 @@ var ContentWidget = function(container){
             };
             self.InsertContainer.Block(i, data[i].type_view);
             
-            var query = '0/' + self.settingsContent.countGoodsInBlock + '/name/';
-            var queryHash = data[i].id + EventDispatcher.hashCode(query);
+            var query = '0/' + self.settings.countGoodsInBlock + '/name/';
+            var queryHash = data[i].id + EventDispatcher.HashCode(query);
             
             EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
                 self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
@@ -153,45 +158,45 @@ var ContentWidget = function(container){
     self.InsertContainer = {
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settingsContent.containerIdForContent).append($('script#blockSliderTmpl').html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.blockSliderTmpl).html());
             }
             if(type == 'carousel'){
-                $("#" + self.settingsContent.containerIdForContent).append($('script#blockCaruselTmpl').html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.blockCaruselTmpl).html());
             }
             if(type == 'tile'){
-                $("#" + self.settingsContent.containerIdForContent).append($('script#blockTileTmpl').html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.blockTileTmpl).html());
             }
-            $("#" + self.settingsContent.containerIdForContent + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
+            $("#" + self.settings.containerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
         },
         List : function(type){
-            $("#" + self.settingsContent.containerIdForContent).html('');
+            $("#" + self.settings.containerId).html('');
             if(type == 'table'){ 
-                $("#" + self.settingsContent.containerIdForContent).append($('script#contentTableTmpl').html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.contentTableTmpl).html());
             }
             if(type == 'list'){
-                $("#" + self.settingsContent.containerIdForContent).append($('script#contentListTmpl').html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.contentListTmpl).html());
             }
             if(type == 'tile'){
-                $("#" + self.settingsContent.containerIdForContent).append($('script#contentTileTmpl').html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.contentTileTmpl).html());
             }
             if(type == 'no_results'){
-                $("#" + self.settingsContent.containerIdForContent).append($('script#contentNoResultsTmpl').html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.noResultsTmpl).html());
             }
         }
     };
     self.Fill = {
         Block : function(data){
-            var block = new BlockViewModel(data, self.settingsContent.countGoodsInBlock);
+            var block = new BlockViewModel(data, self.settings.countGoodsInBlock);
             block.AddContent();
         },
         Content : function(data){
             if(data.content[0].count_goods  != 0){
-                var content = new ListContentViewModel(self.settingsContent);
+                var content = new ListContentViewModel(self.settings);
                 content.AddCategoryInfo(data.categoryId);
                 content.AddContent(data.content);
             }
             else{
-                var content = new ListContentViewModel(self.settingsContent);
+                var content = new ListContentViewModel(self.settings);
                 content.AddCategoryInfo(data.categoryId);
                 if(content.filters.filterName != ''){
                     content.SetType('no_results');
@@ -207,12 +212,12 @@ var ContentWidget = function(container){
     };
     self.Render = {
         List : function(data){
-            if($("#" + self.settingsContent.containerIdForContent).length > 0){
+            if($("#" + self.settings.containerId).length > 0){
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-                ko.applyBindings(data, $("#" + self.settingsContent.containerIdForContent)[0]);
+                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
             delete data;
-            ReadyWidgets.Indicator('ContentWidget', true);
+            self.WidgetLoader(true);
         },
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
@@ -220,24 +225,24 @@ var ContentWidget = function(container){
                 $('#' + data.cssBlock).show();
             }
             delete data;
-            ReadyWidgets.Indicator('ContentWidget', true);
+            self.WidgetLoader(true);
         },
         NoResults : function(data){
-            if($("#" + self.settingsContent.containerIdForContent).length > 0){
+            if($("#" + self.settings.containerId).length > 0){
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-                ko.applyBindings(data, $("#" + self.settingsContent.containerIdForContent)[0]);
+                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            ReadyWidgets.Indicator('ContentWidget', true);
+            self.WidgetLoader(true);
         }
     };
     self.SetPosition = function(){
-        if(self.settingsContent.inputParameters['position'] == 'absolute'){
-            for(var key in self.settingsContent.inputParameters){
-                if(self.settingsContent.styleContent[key])
-                    self.settingsContent.styleContent[key] = self.settingsContent.inputParameters[key];
+        if(self.settings.inputParameters['position'] == 'absolute'){
+            for(var key in self.settings.inputParameters){
+                if(self.settings.styleContent[key])
+                    self.settings.styleContent[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                $("#" + container).css(self.settingsContent.styleContent);
+                $("#" + self.settings.containerId).css(self.settings.styleContent);
             });
         }
     }
@@ -260,7 +265,7 @@ var BlockViewModel = function(data, countGoodsInContent){
     
     self.AddContent = function(){
         var query = '0/' + countGoodsInContent + '/name/';
-        var queryHash = self.id + EventDispatcher.hashCode(query);
+        var queryHash = self.id + EventDispatcher.HashCode(query);
         var content = Parameters.cache.content[queryHash].content;
         if(content && content.length > 1){
             var last = content.shift()
@@ -294,9 +299,9 @@ var BlockViewModel = function(data, countGoodsInContent){
         }
     };
     self.ClickCategory = function(){
-        ReadyWidgets.Indicator('ContentWidget', false);
-        Route.UpdateHash({category:data.block.id});
-        Route.SetHash('catalog', self.titleBlock, Route.params);
+        Loader.Indicator('ContentWidget', false);
+        Routing.UpdateHash({category:data.block.id});
+        Routing.SetHash('catalog', self.titleBlock, Routing.params);
     };
 }
 
@@ -313,24 +318,24 @@ var ListContentViewModel = function(settings){
     self.paging = ko.observableArray();
     self.filters = {
         typeView : self.typeView,
-        orderBy : Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : settings.orderByContent,
-        filterName : Route.GetMoreParameter('filterName') ? Route.GetMoreParameter('filterName') : settings.filterName,
+        orderBy : Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderByContent,
+        filterName : Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName,
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : settings.listPerPage,
         countOptionList : ko.observable(settings.listPerPage.length-1),
         FilterNameGoods : function(data){
             self.filters.filterName = settings.filterName = $(data.text).val();
 
-            ReadyWidgets.Indicator('ContentWidget', false);
+            Loader.Indicator('ContentWidget', false);
             
-            Route.UpdateMoreParameters({filterName : self.filters.filterName});
-            Route.UpdateHash({page : 1});
+            Routing.UpdateMoreParameters({filterName : self.filters.filterName});
+            Routing.UpdateHash({page : 1});
         },
         SelectCount : function(count){
-            ReadyWidgets.Indicator('ContentWidget', false);
+            Loader.Indicator('ContentWidget', false);
             self.filters.itemsPerPage = settings.paging.itemsPerPage = count;
 
-            Route.UpdateHash({page : 1}); 
+            Routing.UpdateHash({page : 1}); 
         },
         selectTypeView : {
             ClickTile : function(){
@@ -409,16 +414,16 @@ var ListContentViewModel = function(settings){
         }
     };
     self.GetQueryHash = function(){
-        var start = (Route.GetCurrentPage()-1) * settings.paging.itemsPerPage;
-        var orderBy = Route.GetMoreParameter('orderBy') ? Route.GetMoreParameter('orderBy') : settings.orderByContent;
-        var query = start + '/' + settings.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Route.GetMoreParameter('filterName'));
-        return Route.GetActiveCategory() + EventDispatcher.hashCode(query);
+        var start = (Routing.GetCurrentPage()-1) * settings.paging.itemsPerPage;
+        var orderBy = Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderByContent;
+        var query = start + '/' + settings.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Routing.GetMoreParameter('filterName'));
+        return Routing.GetActiveCategory() + EventDispatcher.HashCode(query);
     };
     self.AddPages = function(){
         var ClickLinkPage = function(){
-            ReadyWidgets.Indicator('ContentWidget', false);
+            Loader.Indicator('ContentWidget', false);
 
-            Route.UpdateHash({page : this.pageId});
+            Routing.UpdateHash({page : this.pageId});
         }
         
         self.paging = Paging.GetPaging(self.countGoods, settings, ClickLinkPage);
@@ -429,9 +434,8 @@ var ListContentViewModel = function(settings){
 var TestContent = {
     Init : function(){
         if(typeof Widget == 'function'){
-            ReadyWidgets.Indicator('ContentWidget', false);
             ContentWidget.prototype = new Widget();
-            var content = new ContentWidget(Config.Containers.content);
+            var content = new ContentWidget();
             content.Init(content);
         }
         else{

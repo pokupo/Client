@@ -2,8 +2,8 @@ window.InfoSellerWidget = function(){
     var self = this;
     self.widgetName = 'InfoSellerWidget';
     self.settings = {
-        tmplPath : Config.InfoSeller.tmplPath,
-        tmplId : Config.InfoSeller.tmplId,
+        tmplPath : Config.InfoSeller.tmpl.path,
+        tmplId : Config.InfoSeller.tmpl.tmplId,
         inputParameters : {},
         container : null,
         style : Config.InfoSeller.style,
@@ -22,18 +22,15 @@ window.InfoSellerWidget = function(){
                 self.settings.infoSeller[key] = data.options.params[key];
         }
     };
-    self.GetTmplRoute = function(){
-        return self.settings.tmplPath + self.settings.tmplId + '.html';
-    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
+            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                 EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl')
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.GetTmplRoute(), function(){
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                     EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl')
                 });
             });
@@ -44,7 +41,7 @@ window.InfoSellerWidget = function(){
                 self.Fill(self.settings.infoSeller['data'])
             else{
                 window.console && console.log('No data on the Seller');
-                ReadyWidgets.Indicator('InfoSellerWidget', true);
+                self.WidgetLoader(true);
             }
         });
         
@@ -60,7 +57,7 @@ window.InfoSellerWidget = function(){
         $(self.settings.container).append($('script#' + self.settings.tmplId).html());
         ko.applyBindings(data, $(self.settings.container).children()[0]);
             
-        ReadyWidgets.Indicator('InfoSellerWidget', true);
+        self.WidgetLoader(true);
     }
 }
 
