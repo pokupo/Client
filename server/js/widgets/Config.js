@@ -54,7 +54,7 @@ var Config = {
     Catalog : {
         tmpl : {
             path : "catalog/catalogTmpl.html", // путь к шаблонам
-            tmplId : "catalogTmpl", // id шаблона виджета каталога по умолчанию
+            tmplId : "catalogTmpl" // id шаблона виджета каталога по умолчанию
         },
         style : { // стиль блока
             'position' : 'absolute', 
@@ -69,7 +69,7 @@ var Config = {
         tmpl: {
             path : "breadCrumb/breadCrumbTmpl.html", // путь к шаблонам
             tmplId : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию
-            tmplSelectListId : "breadCrumbSelectListTmpl", // id шаблона выпадающего списка
+            tmplSelectListId : "breadCrumbSelectListTmpl" // id шаблона выпадающего списка
         },
         style : { // стиль блока
             'position' : 'absolute', 
@@ -111,7 +111,7 @@ var Config = {
     Search : {
         tmpl : {
             path : "search/searchTmpl.html", // путь к шаблонам
-            tmplId : "searchTmpl", // id шаблона формы поиска по умолчанию
+            tmplId : "searchTmpl" // id шаблона формы поиска по умолчанию
         },
         style : {// стиль блока
             'position' : 'absolute', 
@@ -158,7 +158,7 @@ var Config = {
             contentListTmpl : "relatedGoodsListTmpl", // id шаблона списка
             contentTileTmpl : "relatedGoodsTileTmpl", // id шаблона плитки
             contentSliderTmpl : "relatedGoodsSliderTmpl", // id шаблона слайдера
-            contentCaruselTmpl : "relatedGoodsCaruselTmpl", // id шаблона карусели
+            contentCaruselTmpl : "relatedGoodsCaruselTmpl" // id шаблона карусели
         },
         countGoodsInBlock : 6, // максимальное кол-во товаров в блоке
         countGoodsTileInStr : 5, // кол-во плиток в строке 
@@ -191,6 +191,6 @@ var Config = {
         cssNext : 'last',
         startContent : 0
     }
-}
+};
 
 

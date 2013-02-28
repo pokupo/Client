@@ -27,7 +27,7 @@ window.RelatedGoodsWidget = function(){
         
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl'])
-                self.settings.tmplId = data.options.params['tmpl'];
+                self.settings.tmplPath = 'relatedGoods/' + data.options.params['tmpl'] + '.html';
             else
                 self.settings.relatedGoods[key] = data.options.params[key];
         }
@@ -49,7 +49,7 @@ window.RelatedGoodsWidget = function(){
         EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl', function (data){
             var query = self.settings.relatedGoods.start + '/' + self.settings.relatedGoods.count + '/' + self.settings.relatedGoods.orderBy;
             self.BaseLoad.RelatedGoods(self.settings.relatedGoods.id, query, function(data){
-                self.BustBlock(data);
+                self.CheckData(data);
             })
         });
         
@@ -69,7 +69,7 @@ window.RelatedGoodsWidget = function(){
             if(type == 'list')
                 $(self.settings.container).append($('script#' + self.settings.contentListTmpl).html());
     };
-    self.BustBlock = function(data){
+    self.CheckData = function(data){
         if(data.err)
             self.WidgetLoader(true);
         else{

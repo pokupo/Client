@@ -17,7 +17,7 @@ window.InfoSellerWidget = function(){
 
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl'])
-                self.settings.tmplId = data.options.params['tmpl'];
+                self.settings.tmplPath = 'infoSeller/' + data.options.params['tmpl'] + '.html';
             else
                 self.settings.infoSeller[key] = data.options.params[key];
         }

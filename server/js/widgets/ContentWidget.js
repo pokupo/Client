@@ -65,7 +65,7 @@ var ContentWidget = function(){
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
             self.BaseLoad.Blocks(Routing.GetActiveCategory(), function(data){
-                self.BustBlock(data)
+                self.CheckData(data)
             });
         });
         
@@ -132,7 +132,7 @@ var ContentWidget = function(){
             }
         });
     };
-    self.BustBlock = function(data){
+    self.CheckData = function(data){
         $("#" + self.settings.containerId).html('');
         if(data.err)
             self.WidgetLoader(true);

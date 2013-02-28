@@ -34,7 +34,7 @@ var GoodsWidget = function(){
             }
         }
         if(input.tmpl){
-            self.settings.tmplId = input.tmpl;
+            self.settings.tmplPath = 'goods/' + input.tmpl + '.html';
         }
     };
     self.CheckRoute = function(){
@@ -327,9 +327,6 @@ var MoreBlockViewModel = function(key){
         for(var key in data){
             self.params.push(data[key]);
         }
-    }
-    self.ClickLink = function(){
-        
     }
 }
 

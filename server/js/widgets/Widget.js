@@ -49,7 +49,7 @@ Parameters = {
         this.filter.orderBy = 'name';
         this.filter.page = 1;
     }
-}
+};
 
 var Loader = {
     readyCount : 0,
@@ -100,7 +100,7 @@ var Loader = {
             $("#" + Config.Containers[key]).children().show();
         }
     }
-}
+};
 
 function Widget(){
     var self = this;
@@ -109,7 +109,7 @@ function Widget(){
         hostApi : Config.Base.hostApi,
         catalogPathApi : Config.Base.catalogPathApi,
         goodsPathApi : Config.Base.goodsPathApi,
-        containerIdForTmpl : Config.Base.containerIdForTmpl,
+        containerIdForTmpl : Config.Base.containerIdForTmpl
     };
     this.Init = function(widget){
         if ( JSCore !== undefined && JSCore.isReady && Loader !== undefined && Config !== undefined && Routing !== undefined && ko !== undefined){
@@ -128,7 +128,7 @@ function Widget(){
             this.RegistrCustomBindings();
             Routing.ParserHash(true);
             this.Events();
-            Parameters.shopId = JSSettings.inputParameters['shopId']
+            Parameters.shopId = JSSettings.inputParameters['shopId'];
         }
     };
     this.Events = function(){       
@@ -149,9 +149,9 @@ function Widget(){
                 var options = valueAccessor() || {};
                 self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
                     EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
-                })
+                });
             }
-        }
+        };
     };
     this.WidgetLoader = function(test){
         Loader.Indicator(this.widgetName, test);
@@ -167,7 +167,7 @@ function Widget(){
                     }
                     if(callback)
                         callback(roots);
-                })
+                });
             }
             else{
                 if(callback)
@@ -182,15 +182,15 @@ function Widget(){
                         callback({
                             'data' : JSON.parse(data), 
                             'parentId' : parentId
-                        })
-                })
+                        });
+                });
             }
             else{
                 if(callback)
                     callback({
                         'data' : JSON.parse(Parameters.cache.childrenCategory[parentId]), 
                         'parentId' : parentId
-                    })
+                    });
             }
         },
         Blocks : function(parentId, callback){
@@ -198,12 +198,12 @@ function Widget(){
                 XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/block/active'), function(data){
                     Parameters.cache.block[parentId] = data;
                     if(callback)
-                        callback(JSON.parse(data))
-                })
+                        callback(JSON.parse(data));
+                });
             }
             else{
                 if(callback)
-                    callback(JSON.parse(Parameters.cache.block[parentId]))
+                    callback(JSON.parse(Parameters.cache.block[parentId]));
             }
         },
         Content : function(categoryId, query, callback){
@@ -213,7 +213,7 @@ function Widget(){
                     Parameters.cache.content[queryHash] = {"categoryId" : categoryId , "content" : JSON.parse(data)};
                     if(callback)
                         callback(Parameters.cache.content[queryHash]);
-                })
+                });
             }
             else{
                 if(callback)
@@ -227,7 +227,7 @@ function Widget(){
                     Parameters.cache.searchContent[queryHash] = JSON.parse(data);
                     if(callback)
                         callback(Parameters.cache.searchContent[queryHash]);
-                })
+                });
             }
             else{
                 if(callback)
@@ -240,11 +240,11 @@ function Widget(){
                     Parameters.cache.infoCategory[id] = data;
                     if(callback)
                         callback(JSON.parse(data));
-                })
+                });
             }
             else{
                 if(callback)
-                    callback(JSON.parse(Parameters.cache.infoCategory[id]))
+                    callback(JSON.parse(Parameters.cache.infoCategory[id]));
             }
         },
         Tmpl : function(tmpl, callback){
@@ -253,7 +253,7 @@ function Widget(){
                 XDMTransport.LoadTmpl(tmpl,function(data){
                     $("#" + self.settings.containerIdForTmpl).append(data);
                     if(callback)callback();
-                })
+                });
             }
             else{
                 if(callback)callback();
@@ -266,7 +266,7 @@ function Widget(){
                         Parameters.cache.path[categoryId] = data;
                         if(callback)
                             callback(JSON.parse(data)['path']);
-                    })
+                    });
                 }
                 else{
                     if(callback)
@@ -280,7 +280,7 @@ function Widget(){
                     Parameters.cache.goodsInfo[id] = data;
                     if(callback)
                         callback(JSON.parse(data));
-                })
+                });
             }
             else{
                 if(callback)
@@ -304,7 +304,7 @@ function Widget(){
                     Parameters.cache.relatedGoods[queryHash] = data;
                     if(callback)
                         callback(JSON.parse(data));
-                })
+                });
             }
             else{
                 if(callback)
@@ -312,4 +312,4 @@ function Widget(){
             }
         }
     };
-}
+};

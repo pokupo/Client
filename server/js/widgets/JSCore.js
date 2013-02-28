@@ -4,7 +4,7 @@ var JSSettings = {
     pathToTmpl : "server/tmpl/",
     pathToData : "server/services/DataProxy.php?query=",
     pathToCore: "server/index.html",
-    
+
     scripts : [
         'jquery-ui.custom.js',
         'easyXDM.min.js',
