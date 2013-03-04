@@ -2,24 +2,36 @@ window.RelatedGoodsWidget = function(){
     var self = this;
     self.widgetName = 'RelatedGoodsWidget';
     self.settings = {
-        tmplPath : Config.RelatedGoods.tmpl.path,
-        contentTableTmpl : Config.RelatedGoods.tmpl.contentTableTmpl,
-        contentListTmpl : Config.RelatedGoods.tmpl.contentListTmpl,
-        contentTileTmpl : Config.RelatedGoods.tmpl.contentTileTmpl,
-        contentSliderTmpl : Config.RelatedGoods.tmpl.contentSliderTmpl,
-        contentCaruselTmpl : Config.RelatedGoods.tmpl.contentCaruselTmpl,
+        tmplPath : null,
+        contentTableTmpl : null,
+        contentListTmpl : null,
+        contentTileTmpl : null,
+        contentSliderTmpl : null,
+        contentCaruselTmpl : null,
         inputParameters : {},
         container : null,
         relatedGoods : {
             id : 0,
-            count : Config.RelatedGoods.countGoodsInBlock,
-            countTile : Config.RelatedGoods.countGoodsTileInStr,
-            typeView : Config.RelatedGoods.typeView,
-            orderBy : Config.RelatedGoods.orderBy,
-            start : Config.RelatedGoods.start
+            count : null,
+            countTile : null,
+            typeView : null,
+            orderBy : null,
+            start : null
         }
     };
     self.InitWidget = function(){
+        self.settings.tmplPath = Config.RelatedGoods.tmpl.path;
+        self.settings.contentTableTmpl = Config.RelatedGoods.tmpl.contentTableTmpl;
+        self.settings.contentListTmpl = Config.RelatedGoods.tmpl.contentListTmpl;
+        self.settings.contentTileTmpl = Config.RelatedGoods.tmpl.contentTileTmpl;
+        self.settings.contentSliderTmpl = Config.RelatedGoods.tmpl.contentSliderTmpl;
+        self.settings.contentCaruselTmpl = Config.RelatedGoods.tmpl.contentCaruselTmpl;
+        self.settings.relatedGoods.count = Config.RelatedGoods.countGoodsInBlock;
+        self.settings.relatedGoods.countTile = Config.RelatedGoods.countGoodsTileInStr;
+        self.settings.relatedGoods.typeView = Config.RelatedGoods.typeView;
+        self.settings.relatedGoods.orderBy = Config.RelatedGoods.orderBy;
+        self.settings.relatedGoods.start = Config.RelatedGoods.start;
+
         self.RegisterEvents();
     };
     self.SetParameters = function(data){

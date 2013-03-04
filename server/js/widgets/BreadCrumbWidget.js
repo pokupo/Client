@@ -2,14 +2,19 @@ var BreadCrumbWidget = function(){
     var self = this;
     self.widgetName = 'BreadCrumbWidget';
     self.settings = {
-        containerId : Config.Containers.breadCrumbs, 
-        tmplPath : Config.BreadCrumbs.tmpl.path,
-        tmplId : Config.BreadCrumbs.tmpl.tmplId,
-        tmplSelectListId : Config.BreadCrumbs.tmpl.tmplSelectListId,
+        containerId : null, 
+        tmplPath : null,
+        tmplId : null,
+        tmplSelectListId : null,
         inputParameters : {},
-        styleBreadCrumb : Config.BreadCrumbs.style
+        styleBreadCrumb : null
     };
     self.InitWidget = function(){
+        self.settings.containerId = Config.Containers.breadCrumbs; 
+        self.settings.tmplPath = Config.BreadCrumbs.tmpl.path;
+        self.settings.tmplId = Config.BreadCrumbs.tmpl.tmplId;
+        self.settings.tmplSelectListId = Config.BreadCrumbs.tmpl.tmplSelectListId;
+        self.settings.styleBreadCrumb = Config.BreadCrumbs.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();

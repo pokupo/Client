@@ -3,14 +3,19 @@ var GoodsWidget = function(){
     self.widgetName = 'GoodsWidget';
     self.goods = null;
     self.settings = {
-        containerId : Config.Containers.goods, 
-        tmplPath : Config.Goods.tmpl.path,
-        tmplId : Config.Goods.tmpl.tmplId,
-        showBlocks : Config.Goods.showBlocks,
+        containerId : null, 
+        tmplPath : null,
+        tmplId : null,
+        showBlocks : null,
         inputParameters : {},
-        styleGoods : Config.Goods.style
+        styleGoods : null
     };
     self.InitWidget = function(){
+        self.settings.containerId = Config.Containers.goods; 
+        self.settings.tmplPath = Config.Goods.tmpl.path;
+        self.settings.tmplId = Config.Goods.tmpl.tmplId;
+        self.settings.showBlocks = Config.Goods.showBlocks;
+        self.settings.styleGoods = Config.Goods.style;
         self.SetInputParameters();
         self.RegisterEvents();
         self.SetPosition();
@@ -129,7 +134,7 @@ var GoodsWidget = function(){
                 
                 if(Ya != undefined)
                     new Ya.share(Config.Goods.share);
-                if(data.showGallery)
+                if(data.ShowGallery())
                     new InitCarousel(Config.Goods.galleryId);
             }
             self.AddGoodsInCookie(data);
@@ -179,13 +184,13 @@ var GoodsViewModel  = function(){
     self.id = Routing.params.id;
     self.blocks = {};
     self.sellerInfo = {};
-    self.showGallery = ko.computed(function(){
-        if($.inArray('gallery', Config.Goods.showBlocks) > 0 && self.blocks.gallery)
-            return true;
-        return false;
-    }, this);
     self.cssBlockGallery = Config.Goods.galleryId;
     self.moreBlock = [];
+    self.ShowGallery = function(){
+        if($.inArray('gallery', Config.Goods.showBlocks) >= 0 && self.blocks.gallery)
+            return true;
+        return false;
+    };
     self.AddBlock = function(name, data){
         this.blocks[name] = data;
     }

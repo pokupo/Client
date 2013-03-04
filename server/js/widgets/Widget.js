@@ -106,25 +106,31 @@ function Widget(){
     var self = this;
     this.isReady = false;
     this.settings = {
-        hostApi : Config.Base.hostApi,
-        catalogPathApi : Config.Base.catalogPathApi,
-        goodsPathApi : Config.Base.goodsPathApi,
-        containerIdForTmpl : Config.Base.containerIdForTmpl
+        hostApi : null,
+        catalogPathApi : null,
+        goodsPathApi : null,
+        containerIdForTmpl : null
     };
     this.Init = function(widget){
-        if ( JSCore !== undefined && JSCore.isReady && Loader !== undefined && Config !== undefined && Routing !== undefined && ko !== undefined){
+        if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
             Loader.Indicator(widget.widgetName, false);
             this.SelfInit();
             this.BaseLoad.Roots(function(){
                 widget.InitWidget();
             });
         }else{
-            window.setTimeout(this.Init, 100);
+            window.setTimeout(this.Init(), 100);
         }
     };
     this.SelfInit = function(){
         if(!this.isReady){
             this.isReady = true;
+            self.settings = {
+                hostApi : Config.Base.hostApi,
+                catalogPathApi : Config.Base.catalogPathApi,
+                goodsPathApi : Config.Base.goodsPathApi,
+                containerIdForTmpl : Config.Base.containerIdForTmpl
+            };
             this.RegistrCustomBindings();
             Routing.ParserHash(true);
             this.Events();

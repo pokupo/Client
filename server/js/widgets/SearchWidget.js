@@ -2,13 +2,17 @@ var SearchWidget = function(){
     var self = this;
     self.widgetName = 'SearchWidget';
     self.settings = {
-        containerId : Config.Containers.search, 
-        tmplPath : Config.Search.tmpl.path,
-        tmplId : Config.Search.tmpl.tmplId,
+        containerId : null, 
+        tmplPath : null,
+        tmplId : null,
         inputParameters : {},
-        style : Config.Search.style
+        style : null
     };
     self.InitWidget = function(){
+        self.settings.containerId = Config.Containers.search; 
+        self.settings.tmplPath = Config.Search.tmpl.path;
+        self.settings.tmplId = Config.Search.tmpl.tmplId;
+        self.settings.style = Config.Search.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();

@@ -165,7 +165,7 @@
 <script type="text/html" id="goodsGalleryBlockTmpl">
     <div class="node_photo">
         <div class="big_photo"><img title="" id="goodsToCart" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName }"/></div>
-        <!-- ko if: $parent.showGallery -->
+        <!-- ko if: $parent.ShowGallery() -->
         <div class="carucel">
             <ul id="jcarousel" data-bind="css: $parent.cssBlockGallery">
                 <!-- ko foreach: gallery -->

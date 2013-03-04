@@ -2,25 +2,25 @@ var ContentWidget = function(){
     var self = this;
     self.widgetName = 'ContentWidget';
     self.settings = {
-        containerId : Config.Containers.content,
-        tmplForBlock : Config.Content.tmpl.pathBlock,
-        tmplForContent : Config.Content.tmpl.pathList,
-        blockSliderTmpl : Config.Content.tmpl.blockSliderTmpl,
-        blockCaruselTmpl : Config.Content.tmpl.blockCaruselTmpl,
-        blockTileTmpl : Config.Content.tmpl.blockTileTmpl,
-        contentTableTmpl : Config.Content.tmpl.contentTableTmpl,
-        contentListTmpl : Config.Content.tmpl.contentListTmpl,
-        contentTileTmpl : Config.Content.tmpl.contentTileTmpl,
-        noResultsTmpl : Config.Content.tmpl.noResultsTmpl,
+        containerId : null,
+        tmplForBlock : null,
+        tmplForContent : null,
+        blockSliderTmpl : null,
+        blockCaruselTmpl : null,
+        blockTileTmpl : null,
+        contentTableTmpl : null,
+        contentListTmpl : null,
+        contentTileTmpl : null,
+        noResultsTmpl : null,
         inputParameters : {},
         styleCatalog : {},
-        countGoodsInBlock : Config.Content.countGoodsInBlock,
-        orderByContent : Config.Content.orderBy,
+        countGoodsInBlock : null,
+        orderByContent : null,
         filterName : '',
-        listPerPage : Config.Content.listPerPage,
+        listPerPage : null,
         slider : [],
-        paging : Config.Paging,
-        styleContent : Config.Content.style
+        paging : null,
+        styleContent : null
     };
     self.SetInputParameters = function(){
         self.settings.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
@@ -37,6 +37,21 @@ var ContentWidget = function(){
         }
     };
     self.InitWidget = function(){
+        self.settings.containerId = Config.Containers.content;
+        self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
+        self.settings.tmplForContent = Config.Content.tmpl.pathList;
+        self.settings.blockSliderTmpl = Config.Content.tmpl.blockSliderTmpl;
+        self.settings.blockCaruselTmpl = Config.Content.tmpl.blockCaruselTmpl;
+        self.settings.blockTileTmpl = Config.Content.tmpl.blockTileTmpl;
+        self.settings.contentTableTmpl = Config.Content.tmpl.contentTableTmpl;
+        self.settings.contentListTmpl = Config.Content.tmpl.contentListTmpl;
+        self.settings.contentTileTmpl = Config.Content.tmpl.contentTileTmpl;
+        self.settings.noResultsTmpl = Config.Content.tmpl.noResultsTmpl;
+        self.settings.countGoodsInBlock = Config.Content.countGoodsInBlock;
+        self.settings.orderByContent = Config.Content.orderBy;
+        self.settings.listPerPage = Config.Content.listPerPage;
+        self.settings.paging = Config.Paging;
+        self.settings.styleContent = Config.Content.style;
         self.SetInputParameters();
         self.RegisterEvents();
         self.CheckRouting();
@@ -321,7 +336,7 @@ var ListContentViewModel = function(settings){
         orderBy : Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderByContent,
         filterName : Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName,
         itemsPerPage : settings.paging.itemsPerPage,
-        listPerPage : settings.listPerPage,
+        listPerPage : ko.observableArray(),
         countOptionList : ko.observable(settings.listPerPage.length-1),
         FilterNameGoods : function(data){
             self.filters.filterName = settings.filterName = $(data.text).val();
@@ -330,6 +345,19 @@ var ListContentViewModel = function(settings){
             
             Routing.UpdateMoreParameters({filterName : self.filters.filterName});
             Routing.UpdateHash({page : 1});
+        },
+        ViewSelectCount : function(){
+            self.filters.listPerPage = ko.observableArray();
+            for(var key in settings.listPerPage){
+                if(settings.listPerPage[key] < self.countGoods)
+                   self.filters.listPerPage.push(settings.listPerPage[key])
+               else{
+                   self.filters.listPerPage.push(settings.listPerPage[key]);
+                   break;
+                }
+            }
+            if(self.filters.listPerPage().length == 1)
+                self.filters.listPerPage = ko.observableArray();
         },
         SelectCount : function(count){
             Loader.Indicator('ContentWidget', false);
@@ -410,6 +438,8 @@ var ListContentViewModel = function(settings){
             }
             self.AddPages();
             data.unshift(last);
+            
+            self.filters.ViewSelectCount();
             EventDispatcher.DispatchEvent('contentWidget.fill.listContent', self);
         }
     };

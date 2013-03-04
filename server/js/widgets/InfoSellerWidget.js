@@ -2,14 +2,17 @@ window.InfoSellerWidget = function(){
     var self = this;
     self.widgetName = 'InfoSellerWidget';
     self.settings = {
-        tmplPath : Config.InfoSeller.tmpl.path,
-        tmplId : Config.InfoSeller.tmpl.tmplId,
+        tmplPath : null,
+        tmplId : null,
         inputParameters : {},
         container : null,
-        style : Config.InfoSeller.style,
+        style : null,
         infoSeller : {}
     };
     self.InitWidget = function(){
+        self.settings.tmplPath = Config.InfoSeller.tmpl.path;
+        self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
+        self.settings.style = Config.InfoSeller.style;
         self.RegisterEvents();
     };
     self.SetParameters = function(data){

@@ -2,13 +2,17 @@ var CatalogWidget = function(){
     var self = this;
     self.widgetName = 'CatalogWidget';
     self.settings = {
-        containerId : Config.Containers.catalog,
-        tmplPath : Config.Catalog.tmpl.path,
-        tmplId : Config.Catalog.tmpl.tmplId,
+        containerId : null,
+        tmplPath : null,
+        tmplId : null,
         inputParameters : {},
-        styleCatalog : Config.Catalog.style
+        styleCatalog : null
     };
     self.InitWidget = function(){
+        self.settings.containerId = Config.Containers.catalog;
+        self.settings.tmplPath = Config.Catalog.tmpl.path;
+        self.settings.tmplId = Config.Catalog.tmpl.tmplId;
+        self.settings.styleCatalog = Config.Catalog.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();

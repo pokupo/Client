@@ -150,7 +150,7 @@ var XDMTransport = {
         XDMTransport.Load(JSSettings.pathToData + data, callback);
     },
     Load : function(data, callback){
-        if(easyXDM !== undefined){
+        if(typeof easyXDM !== 'undefined'){
             var socket = new  easyXDM.Socket({
                 remote: XDMTransport.remote,
                 onMessage: function(msg) {
@@ -160,7 +160,7 @@ var XDMTransport = {
             socket.postMessage(data);
         }
         else{
-            window.setTimeout(XDMTransport.Load(data, callback), 100);
+            window.setTimeout(XDMTransport.Load(data, callback), 1000);
         }
     }
 }
