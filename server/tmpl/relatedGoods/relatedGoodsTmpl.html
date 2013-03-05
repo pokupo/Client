@@ -1,5 +1,6 @@
 <script type="text/html" id="relatedGoodsSliderTmpl">
     <div class="content">
+        <!-- ko if: countGoods > 0 -->
         <div class="block_title">Вместе с этим товаром покупают</div>
         <div id="block-views-slider-block_1" data-bind="css: cssBlockContainer">
             <div class="content">
@@ -16,11 +17,13 @@
                 </div>
             </div>
         </div>
+        <!-- /ko -->
     </div>
 </script>
 
 <script type="text/html" id="relatedGoodsCaruselTmpl">
     <div class="content">
+    <!-- ko if: countGoods > 0 -->
         <div class="block_title">Вместе с этим товаром покупают</div>
         <div class="cont">
             <ul id="jcarousel_2" data-bind="css: cssBlockContainer">
@@ -40,11 +43,13 @@
                 <!-- /ko -->
             </ul>
         </div>
+    <!-- /ko -->
     </div>
 </script>
 
 <script type="text/html" id="relatedGoodsTileTmpl">
     <div class="content">
+    <!-- ko if: countGoods > 0 -->
         <div class="block_title">Вместе с этим товаром покупают</div>
         <table>
             <tbody data-bind="foreach: content"> 
@@ -59,11 +64,13 @@
                 </tr>
             </tbody>
         </table>
+    <!-- /ko -->
     </div>
 </script>
 
 <script type="text/html" id="relatedGoodsTableTmpl">
 <div class="content">
+<!-- ko if: countGoods > 0 -->
     <div class="block_title">Вместе с этим товаром покупают</div>
     <table style="width: 100%; float: left;">
         <tr>
@@ -98,11 +105,13 @@
             </td>
         </tr>
     </table>
+<!-- /ko -->
 </div>
 </script>
 
 <script type="text/html" id="relatedGoodsListTmpl">
 <div class="content">
+<!-- ko if: countGoods > 0 -->
     <div class="block_title">Вместе с этим товаром покупают</div>
     <table style="width: 100%; float: left;">
         <tr>
@@ -145,5 +154,6 @@
             </td>
         </tr>
     </table>
+<!-- /ko -->
 </div>
 </script>

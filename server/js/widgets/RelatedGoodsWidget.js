@@ -82,7 +82,8 @@ window.RelatedGoodsWidget = function(){
                 $(self.settings.container).append($('script#' + self.settings.contentListTmpl).html());
     };
     self.CheckData = function(data){
-        if(data.err)
+        
+        if(data.err )
             self.WidgetLoader(true);
         else{
             self.InsertContainer(self.settings.relatedGoods.typeView);
@@ -114,7 +115,7 @@ var RelatedGoodsViewModel = function(settings, data){
     self.cssBlockContainer  = 'relatedGoodsContainer_';
     
     self.AddContent = function(){
-        if(data && data.length > 1){
+        if(data && data.length >= 1){
             var first = data.shift()
             self.countGoods  = first.count_goods;
         
@@ -142,8 +143,8 @@ var RelatedGoodsViewModel = function(settings, data){
                 }
             }
             self.cssBlockContainer  = self.cssBlockContainer + EventDispatcher.HashCode(data.toString());
-            EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block', self);
         }
+        EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block', self);
     }
 }
 
