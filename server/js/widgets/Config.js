@@ -164,7 +164,7 @@ var Config = {
         countGoodsTileInStr : 5, // кол-во плиток в строке 
         orderBy : 'rating', // сортировка
         start : 0, // начальная позиция в запросе
-        typeView : 'slider' // тип отображения по умолчанию
+        typeView : 'carousel' // тип отображения по умолчанию
     },
     InfoSeller : {
         tmpl: {
