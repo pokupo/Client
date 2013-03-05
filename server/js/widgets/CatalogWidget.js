@@ -230,7 +230,7 @@ var TestCatalog = {
             catalog.Init(catalog);
         }
         else{
-            window.setTimeout(TestCatalog.Init, 100);
+            setTimeout(function(){TestCatalog.Init()}, 100);
         }
     }
 }

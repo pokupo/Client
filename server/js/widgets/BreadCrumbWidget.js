@@ -238,7 +238,7 @@ var TestBreadCrumb = {
             breadCrumb.Init(breadCrumb);
         }
         else{
-            window.setTimeout(TestBreadCrumb.Init, 100);
+            setTimeout(function(){TestBreadCrumb.Init()}, 100);
         }
     }
 }

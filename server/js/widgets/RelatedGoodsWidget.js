@@ -31,8 +31,12 @@ window.RelatedGoodsWidget = function(){
         self.settings.relatedGoods.typeView = Config.RelatedGoods.typeView;
         self.settings.relatedGoods.orderBy = Config.RelatedGoods.orderBy;
         self.settings.relatedGoods.start = Config.RelatedGoods.start;
-
+        
         self.RegisterEvents();
+        self.Loader();
+    };
+    self.Loader = function(){
+        Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
         self.settings.container = data.element;
@@ -71,21 +75,18 @@ window.RelatedGoodsWidget = function(){
     };
     self.InsertContainer = function(type){
             if(type == 'slider')
-                $(self.settings.container).append($('script#' + self.settings.contentSliderTmpl).html());
+                $(self.settings.container).empty().append($('script#' + self.settings.contentSliderTmpl).html());
             if(type == 'carousel')
-                $(self.settings.container).append($('script#' + self.settings.contentCaruselTmpl).html());
+                $(self.settings.container).empty().append($('script#' + self.settings.contentCaruselTmpl).html());
             if(type == 'tile')
-                $(self.settings.container).append($('script#' + self.settings.contentTileTmpl).html());
+                $(self.settings.container).empty().append($('script#' + self.settings.contentTileTmpl).html());
             if(type == 'table') 
-                $(self.settings.container).append($('script#' + self.settings.contentTableTmpl).html());
+                $(self.settings.container).empty().append($('script#' + self.settings.contentTableTmpl).html());
             if(type == 'list')
-                $(self.settings.container).append($('script#' + self.settings.contentListTmpl).html());
+                $(self.settings.container).empty().append($('script#' + self.settings.contentListTmpl).html());
     };
-    self.CheckData = function(data){
-        
-        if(data.err )
-            self.WidgetLoader(true);
-        else{
+    self.CheckData = function(data){ 
+        if(!data.err ){
             self.InsertContainer(self.settings.relatedGoods.typeView);
             self.Fill(self.settings.relatedGoods, data)
         }
@@ -101,8 +102,6 @@ window.RelatedGoodsWidget = function(){
                 new InitSlider(data.cssBlockContainer);
         if(self.settings.relatedGoods.typeView == 'carousel')
                 new InitCarousel(data.cssBlockContainer);
-            
-        self.WidgetLoader(true);
     };
 }
 

@@ -469,7 +469,7 @@ var TestContent = {
             content.Init(content);
         }
         else{
-            window.setTimeout(TestContent.Init, 100);
+            setTimeout(function(){TestContent.Init()}, 100);
         }
     }
 }

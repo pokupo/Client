@@ -160,7 +160,7 @@ var XDMTransport = {
             socket.postMessage(data);
         }
         else{
-            window.setTimeout(XDMTransport.Load(data, callback), 1000);
+            setTimeout(function(){XDMTransport.Load(data, callback)}, 1000);
         }
     }
 }

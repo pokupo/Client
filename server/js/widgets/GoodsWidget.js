@@ -75,13 +75,14 @@ var GoodsWidget = function(){
         });
     };
     self.Update = function(){
+        self.WidgetLoader(false);
+        $("#" + self.settings.containerId).html('');
         self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
             EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)
         })
     };
     self.InsertContainer = {
         Content : function(){
-            $("#" + self.settings.containerId).html('');
             $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
         }
     };
@@ -139,6 +140,7 @@ var GoodsWidget = function(){
             }
             self.AddGoodsInCookie(data);
             delete data;
+
             self.WidgetLoader(true);
         }
     };
@@ -343,7 +345,7 @@ var TestGoodsCrumb = {
             goods.Init(goods);
         }
         else{
-            window.setTimeout(TestGoodsCrumb.Init, 100);
+            setTimeout(function(){TestGoodsCrumb.Init()}, 100);
         }
     }
 }

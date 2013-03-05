@@ -191,7 +191,7 @@ var TestSearch = {
             search.Init(search);
         }
         else{
-            window.setTimeout(TestSearch.Init, 100);
+            setTimeout(function(){TestSearch.Init()}, 100);
         }
     }
 }

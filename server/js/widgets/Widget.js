@@ -1,8 +1,8 @@
 Parameters = {
-    pathToImages : Config.Base.pathToImages,
-    routIconAuction : Config.Base.routIconAuction,
-    sortingBlockContainer : Config.Base.sortingBlockContainer,
-    loading : Config.Base.loading,
+    pathToImages : null,
+    routIconAuction : null,
+    sortingBlockContainer : null,
+    loading : null,
     listSort : {
         name : 'названию', 
         rating : 'рейтингу', 
@@ -84,6 +84,9 @@ var Loader = {
             $('#loadingContainer').remove();
         }
     },
+    InsertContainer : function(container){
+        $(container).append('<div style="width: 100%;text-align: center;padding: 15px 0;"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+    },
     HideContent : function(){
         for(var key in Config.Containers){
             if($.isArray(Config.Containers[key])){
@@ -111,15 +114,16 @@ function Widget(){
         goodsPathApi : null,
         containerIdForTmpl : null
     };
-    this.Init = function(widget){
+    this.Init = function(widget, noindicate){
         if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
-            Loader.Indicator(widget.widgetName, false);
+            if(!noindicate)
+                Loader.Indicator(widget.widgetName, false);
             this.SelfInit();
             this.BaseLoad.Roots(function(){
                 widget.InitWidget();
             });
         }else{
-            window.setTimeout(this.Init(), 100);
+            setTimeout(function(){self.Init(widget, noindicate)}, 100);
         }
     };
     this.SelfInit = function(){
@@ -131,6 +135,11 @@ function Widget(){
                 goodsPathApi : Config.Base.goodsPathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
+            Parameters.pathToImages = Config.Base.pathToImages;
+            Parameters.routIconAuction = Config.Base.routIconAuction;
+            Parameters.sortingBlockContainer = Config.Base.sortingBlockContainer;
+            Parameters.loading = Config.Base.loading;
+            
             this.RegistrCustomBindings();
             Routing.ParserHash(true);
             this.Events();
@@ -142,7 +151,7 @@ function Widget(){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
             embed.SetParameters(data);
-            embed.Init(embed); 
+            embed.Init(embed, true); 
         });
     };
     this.CreateContainer = function(){

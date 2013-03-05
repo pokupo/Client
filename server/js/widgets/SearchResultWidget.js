@@ -521,7 +521,7 @@ var TestSearchResult = {
             searchResult.Init(searchResult);
         }
         else{
-            window.setTimeout(TestSearchResult.Init, 100);
+            setTimeout(function(){TestSearchResult.Init()}, 100);
         }
     }
 }

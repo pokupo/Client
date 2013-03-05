@@ -14,6 +14,10 @@ window.InfoSellerWidget = function(){
         self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
         self.settings.style = Config.InfoSeller.style;
         self.RegisterEvents();
+        self.Loader();
+    };
+    self.Loader = function(){
+        Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
         self.settings.container = data.element;
@@ -57,10 +61,8 @@ window.InfoSellerWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){
-        $(self.settings.container).append($('script#' + self.settings.tmplId).html());
+        $(self.settings.container).empty().append($('script#' + self.settings.tmplId).html());
         ko.applyBindings(data, $(self.settings.container).children()[0]);
-            
-        self.WidgetLoader(true);
     }
 }
 
