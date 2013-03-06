@@ -25,24 +25,22 @@
     <div class="content">
     <!-- ko if: countGoods > 0 -->
         <div class="block_title">Вместе с этим товаром покупают</div>
-        <div class="cont">
-            <ul id="jcarousel_2" data-bind="css: cssBlockContainer">
-                <!-- ko foreach: content -->
-                <li data-bind="css: {auction: idAuction() > 0}">
-                    <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
-                    <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods"></a></div>
-                    <div class="category"><a href="#" data-bind="text: shopName, click: ClickShop"></a></div>
-                    <span class="price">
-                        <!-- ko if: discount > 0 -->
-                        <span data-bind="text: sellGoods"></span><br />
-                        <!-- /ko -->
-                        <!--ko text: sellCost --><!--/ko-->
-                    </span> 
-                    <a href="#" class="bay" data-bind="click: ClickBuy">Купить</a>
-                </li>
-                <!-- /ko -->
-            </ul>
-        </div>
+        <ul id="jcarousel_2" data-bind="css: cssBlockContainer">
+            <!-- ko foreach: content -->
+            <li data-bind="css: {auction: idAuction() > 0}">
+                <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
+                <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods"></a></div>
+                <div class="category"><a href="#" data-bind="text: shopName, click: ClickShop"></a></div>
+                <span class="price">
+                    <!-- ko if: discount > 0 -->
+                    <span data-bind="text: sellGoods"></span><br />
+                    <!-- /ko -->
+                    <!--ko text: sellCost --><!--/ko-->
+                </span> 
+                <a href="#" class="bay" data-bind="click: ClickBuy">Купить</a>
+            </li>
+            <!-- /ko -->
+        </ul>
     <!-- /ko -->
     </div>
 </script>

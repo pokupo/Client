@@ -253,7 +253,7 @@ var GoodsMainBlockViewModel = function(data){
     }, this);
     self.routeImages = Parameters.pathToImages + data.route_image;
     self.idAuction = data.id_auction;
-    self.auctionPrice = data.auction_price;
+    self.auctionPrice = data.last_cost;
     self.nameGroupUser = ko.computed(function(){
         if(data.name_group_user)
             return data.name_group_user;
@@ -289,9 +289,8 @@ var GoodsMainBlockViewModel = function(data){
     self.AddToCart = function(){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
-        
-        if(typeof AnimateAddToCart == 'function' && self.ordered() > 0)
-            new AnimateAddToCart();
+      
+        new AnimateAddToCart();
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) > 0 && self.count != 0)

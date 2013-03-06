@@ -22,8 +22,7 @@ var JSSettings = {
         'widgets/Widget.js',
         'widgets/Slider.js',
         'widgets/Carousel.js',
-        'widgets/AnimateAddToCart.js'
-    ],
+        'widgets/AnimateAddToCart.js'],
     inputParameters : {}
 }
 
