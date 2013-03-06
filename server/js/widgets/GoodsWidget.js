@@ -276,11 +276,11 @@ var GoodsMainBlockViewModel = function(data){
         }
         else
             alert(Config.Goods.message.maxIsReached);
-    }
+    };
     self.ClickMinus = function(){
         if(self.ordered() > 0)
             self.ordered(self.ordered() - 1);
-    }
+    };
     self.showAddToCart = ko.computed(function(){
         if($.inArray('addToCart', Config.Goods.showBlocks) > 0 && self.count != 0)
             return true;
@@ -290,7 +290,8 @@ var GoodsMainBlockViewModel = function(data){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
       
-        new AnimateAddToCart();
+        if(typeof AnimateAddToCart !== 'undefined' && self.ordered() > 0)
+           new AnimateAddToCart();
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) > 0 && self.count != 0)
