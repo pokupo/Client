@@ -116,9 +116,9 @@ function Widget(){
     };
     this.Init = function(widget, noindicate){
         if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
+            this.SelfInit();
             if(!noindicate)
                 Loader.Indicator(widget.widgetName, false);
-            this.SelfInit();
             this.BaseLoad.Roots(function(){
                 widget.InitWidget();
             });
