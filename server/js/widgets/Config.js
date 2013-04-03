@@ -173,7 +173,7 @@ var Config = {
         }
     },
     Cart : {
-        cartId : 'cart' // id карзины товара
+        cartId : 'cart' // id корзины товара
     },
     Paging : {
         currentPage : 1, 
