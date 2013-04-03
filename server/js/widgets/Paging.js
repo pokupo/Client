@@ -30,10 +30,10 @@ var Paging = {
         return Math.ceil(this.countGoods/this.paging.itemsPerPage)
     },
     GetInterval : function(){
-        var ne_half = Math.ceil(this.paging.numDisplayEntries/2),
-            upper_limit = this.np-this.paging.numDisplayEntries,
-            start = this.paging.currentPage>ne_half?Math.max(Math.min(this.paging.currentPage-ne_half, upper_limit), 0):0,
-            end = this.paging.currentPage>ne_half?Math.min(this.paging.currentPage+ne_half, this.np):Math.min(this.paging.numDisplayEntries, this.np);
+        var ne_half = Math.ceil(this.paging.numDisplayEntries/2);
+        var upper_limit = this.np-this.paging.numDisplayEntries;
+        var start = Routing.GetCurrentPage()>ne_half?Math.max(Math.min(Routing.GetCurrentPage()-ne_half, upper_limit), 0):0;
+        var end = Math.min(start + 3, this.np);
         return [start + 1,end + 1]; 
     },
     AppendItem : function(id, opt){
@@ -44,7 +44,7 @@ var Paging = {
             classes : ""
         }, opt||{});
          
-        if(id == this.paging.currentPage){
+        if(id == Routing.GetCurrentPage()){
             this.result.push(new Page({
                 current : true, 
                 id : id,
@@ -68,9 +68,8 @@ var Paging = {
     AddPages : function(){
         this.result = ko.observableArray();
         var interval = this.GetInterval();
-
-        if(this.paging.prevText && (this.paging.currentPage > 1 || this.paging.prevShowAlways)){
-            this.AppendItem(this.paging.currentPage-1, {
+        if(this.paging.prevText && (Routing.GetCurrentPage() > 1 || this.paging.prevShowAlways)){
+            this.AppendItem(Routing.GetCurrentPage()-1, {
                 text : this.paging.prevText,
                 classes : this.paging.cssPrev
             })
@@ -82,6 +81,7 @@ var Paging = {
             for(var i=1; i<end; i++) {
                 this.AppendItem(i)
             }
+
             if(this.paging.numEdgeEntries < interval[0] && this.paging.ellipseText)
             {
                 this.result.push(new Page({
@@ -98,9 +98,9 @@ var Paging = {
             this.AppendItem(i)
         }
         // Generate ending points
-        if (interval[1] < this.np && this.paging.numEdgeEntries > 0)
+        if (interval[1] <= this.np && this.paging.numEdgeEntries > 0)
         {
-            if(this.np-this.paging.numEdgeEntries > interval[1]&& this.paging.ellipseText)
+            if(this.np-this.paging.numEdgeEntries+1 > interval[1]&& this.paging.ellipseText)
             {
                 this.result.push(new Page({
                     current : true, 
@@ -110,15 +110,14 @@ var Paging = {
                     settings : this.settings
                 }));
             }
-            var begin = Math.max(this.np-this.paging.numEdgeEntries, interval[1])+1;
-            
+            var begin = Math.max(this.np-this.paging.numEdgeEntries, interval[1]);
             for(var i=begin; i<=this.np; i++) {
                 this.AppendItem(i)
             }		
         }
         // Generate "Next"-Link
-        if(this.paging.nextText && (this.paging.currentPage < this.np || this.paging.nextShowAlways)){
-            this.AppendItem(this.paging.currentPage+1, {
+        if(this.paging.nextText && (Routing.GetCurrentPage() < this.np || this.paging.nextShowAlways)){
+            this.AppendItem(Routing.GetCurrentPage()+1, {
                 text : this.paging.nextText,
                 classes : this.paging.cssNext
             })

@@ -15,12 +15,14 @@ var JSSettings = {
         'jquery.jcarousel.min.js',
         'jquery.cookie.js',
         'jquery.dynatree.min.js',
-        'widgets/Paging.js',
         'widgets/Config.js',
+        'widgets/Routing.js',
+        'widgets/Paging.js',
+        'widgets/ContentViewModel.js',
         'widgets/Widget.js',
         'widgets/Slider.js',
-        'widgets/Carousel.js'
-    ],
+        'widgets/Carousel.js',
+        'widgets/AnimateAddToCart.js'],
     inputParameters : {}
 }
 
@@ -38,9 +40,9 @@ var EventDispatcher = {
     RemoveEventListener : function (event, callback) {
         if (this.events[event]) {
             var listeners = this.events[event];
-            var callbackHash = EventDispatcher.hashCode(callback.toString());
+            var callbackHash = EventDispatcher.HashCode(callback.toString());
             for (var i = listeners.length - 1; i >= 0; --i) {
-                if (EventDispatcher.hashCode(listeners[i].toString()) === callbackHash) {
+                if (EventDispatcher.HashCode(listeners[i].toString()) === callbackHash) {
                     listeners.splice(i, 1);
                     return true;
                 }
@@ -58,7 +60,7 @@ var EventDispatcher = {
         }
     },
     
-    hashCode : function(str){
+    HashCode : function(str){
         var hash = 0, i, ch;
         if (str.length == 0) return hash;
         for (i = 0; i < str.length; i++) {
@@ -73,8 +75,10 @@ var EventDispatcher = {
 var JSLoader = { 
     loaded : false,
     loadedCount : 0,
-    Init : function(sripts, pathToJs){
-        JSLoader.Load(sripts, pathToJs);
+    pathToJs : null,
+    Init : function(scripts, pathToJs){
+        this.pathToJs = pathToJs;
+        JSLoader.Load(scripts, function(){JSLoader.RegisterLoaded(scripts);});
     },
     RegisterLoaded: function(scripts){
         JSLoader.loadedCount = JSLoader.loadedCount + 1;
@@ -86,10 +90,11 @@ var JSLoader = {
         JSLoader.loaded = true;
         EventDispatcher.DispatchEvent('onload.scripts');
     },
-    Load : function(scripts, pathToJs){
+    Load : function(scripts, callback){
         for(var i in scripts){
-            $.getScript(pathToJs + scripts[i], function(){
-                JSLoader.RegisterLoaded(scripts);
+            $.getScript(this.pathToJs + scripts[i], function(){
+                if(callback)
+                    callback();
             });
         }
     }
@@ -144,7 +149,7 @@ var XDMTransport = {
         XDMTransport.Load(JSSettings.pathToData + data, callback);
     },
     Load : function(data, callback){
-        if(easyXDM !== undefined){
+        if(typeof easyXDM !== 'undefined'){
             var socket = new  easyXDM.Socket({
                 remote: XDMTransport.remote,
                 onMessage: function(msg) {
@@ -154,7 +159,7 @@ var XDMTransport = {
             socket.postMessage(data);
         }
         else{
-            window.setTimeout(XDMTransport.Load(data, callback), 100);
+            setTimeout(function(){XDMTransport.Load(data, callback)}, 1000);
         }
     }
 }

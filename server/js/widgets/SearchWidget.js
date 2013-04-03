@@ -1,62 +1,47 @@
-var SearchWidget = function(conteiner){
+var SearchWidget = function(){
     var self = this;
-    self.settingsSearch = {
-        containerIdForSearch : conteiner, 
-        tmplForSearch : Config.Search.tmpl,
+    self.widgetName = 'SearchWidget';
+    self.settings = {
+        containerId : null, 
+        tmplPath : null,
+        tmplId : null,
         inputParameters : {},
-        style : Config.Search.style
+        style : null
     };
     self.InitWidget = function(){
+        self.settings.containerId = Config.Containers.search; 
+        self.settings.tmplPath = Config.Search.tmpl.path;
+        self.settings.tmplId = Config.Search.tmpl.tmplId;
+        self.settings.style = Config.Search.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settingsSearch.inputParameters = JSCore.ParserInputParameters(/SearchWidget.js/);
+        self.settings.inputParameters = JSCore.ParserInputParameters(/SearchWidget.js/);
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settingsSearch.tmplForSearch, function(){
+            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                 EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settingsSearch.tmplForSearch, function(){
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                     EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
                 });
             });
         }
         
         EventDispatcher.AddEventListener('searchWidget.onload.tmpl', function (data){
-            if(Parameters.lastItem == 0){
-                self.BaseLoad.Roots(function(data){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.roots', data)
-                })
-            }
-            else{
-                self.BaseLoad.Section(Parameters.lastItem, function(data){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
-                });
-            }
-        });
-        
-        EventDispatcher.AddEventListener('searchWidget.onload.roots', function (data){
-            var def = 0;
-            for(var key in Parameters.cache.catalogs){
-                def = Parameters.cache.catalogs[key];
-                break;
-            }
-            Parameters.activeSection = def;
-            Parameters.activeItem = def;
-            Parameters.lastItem = def;
-            self.BaseLoad.Section(Parameters.lastItem, function(data){
+            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             });
         });
         
         EventDispatcher.AddEventListener('searchWidget.onload.section', function (data){
-            self.BaseLoad.Info(Parameters.lastItem, function(data){
+            self.BaseLoad.Info(Routing.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.categoryInfo', data)
             })
         });
@@ -69,9 +54,9 @@ var SearchWidget = function(conteiner){
             self.Render(data);
         });
         
-        EventDispatcher.AddEventListener('widget.changeHash', function (data){
-            ReadyWidgets.Indicator('SearchWidget', false);
-            self.BaseLoad.Section(Parameters.lastItem, function(data){
+        EventDispatcher.AddEventListener('widget.change.route', function (data){
+            self.WidgetLoader(false);
+            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
                 EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
             }); 
         });
@@ -83,10 +68,10 @@ var SearchWidget = function(conteiner){
             search.AddListCategory(JSON.parse(Parameters.cache.childrenCategory[data.id]), data);
     };
     self.Render = function(data){
-        if($("#" + self.settingsSearch.containerIdForSearch).length > 0){
-            $("#" + self.settingsSearch.containerIdForSearch).html("");
-            $("#" + self.settingsSearch.containerIdForSearch).append($('script#searchTmpl').html()).show();
-            ko.applyBindings(data, $("#" + self.settingsSearch.containerIdForSearch)[0]);
+        if($("#" + self.settings.containerId).length > 0){
+            $("#" + self.settings.containerId).html("");
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html()).show();
+            ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
             $('.' + data.cssSelectList).sSelect({
                 defaultText: data.selectedCategory
@@ -97,17 +82,17 @@ var SearchWidget = function(conteiner){
             });
             $('.' + data.cssSelectList).getSetSSValue(data.id);
         }
-        ReadyWidgets.Indicator('SearchWidget', true);
+        self.WidgetLoader(true);
         delete data;
     };
     self.SetPosition = function(){
-        if(self.settingsSearch.inputParameters.position == 'absolute'){
-            for(var key in self.settingsSearch.inputParameters){
-                if(self.settingsSearch.style[key])
-                    self.settingsSearch.style[key] = self.settingsSearch.inputParameters[key];
+        if(self.settings.inputParameters.position == 'absolute'){
+            for(var key in self.settings.inputParameters){
+                if(self.settings.style[key])
+                    self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                $("#" + self.settingsSearch.containerIdForSearch).css(self.settingsSearch.style);
+                $("#" + self.settings.containerId).css(self.settings.style);
             });
         }
     };
@@ -167,12 +152,9 @@ var SearchViewModel = function(){
                 self.idCategories = [selected];
             Parameters.filter.idCategories = self.idCategories;
 
-            Route.SetHash('search', Parameters.filter);
-
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+            Routing.SetHash('search','Расширенный поиск', Parameters.filter);
             
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumbs', selected);
-            EventDispatcher.DispatchEvent('searchWidget.submit.form');
             $(data.text).val('');
         }
         else{
@@ -203,14 +185,13 @@ var SearchViewModel = function(){
 
 var TestSearch = {
     Init : function(){
-        if(typeof Widget == 'function' && JSCore !== undefined && ReadyWidgets !== undefined){
-            ReadyWidgets.Indicator('SearchWidget', false);
+        if(typeof Widget == 'function'){
             SearchWidget.prototype = new Widget();
-            var search = new SearchWidget(Config.Conteiners.search);
-            search.Init();
+            var search = new SearchWidget();
+            search.Init(search);
         }
         else{
-            window.setTimeout(TestSearch.Init, 100);
+            setTimeout(function(){TestSearch.Init()}, 100);
         }
     }
 }

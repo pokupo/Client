@@ -274,12 +274,14 @@
                     </td>
                     <td>
                         <div class="sorting_block">
-                            <span class="count">
-                                Количество:
-                                <!-- ko foreach: {data: listPerPage, as: 'count'} -->
-                                <a href="#" class="" data-bind="css: {'active': count == $parent.itemsPerPage}, text: count, click: $parent.SelectCount"></a> • 
-                                <!-- /ko-->
-                            </span>
+                            <!-- ko if: listPerPage().length > 0 -->
+                                <span class="count">
+                                    Количество:
+                                    <!-- ko foreach: {data: listPerPage, as: 'count'} -->
+                                    <a href="#" class="" data-bind="css: {'active': count == $parent.itemsPerPage}, text: count, click: $parent.SelectCount"></a> • 
+                                    <!-- /ko-->
+                                </span>
+                            <!-- /ko-->
                             <span class="sort">
                                 <select class="form_select">
                                     <option value="rating">рейтингу</option>
