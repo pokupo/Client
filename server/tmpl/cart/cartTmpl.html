@@ -1,0 +1,36 @@
+<script type="text/html" id="cartTmpl">
+    <table class="block_cart">
+        <tbody>
+            <tr class="tr_block_cart">
+                <td class="td_block_cart">
+                    <div class="basket">
+                        <a href="#">
+                            <span class="right_fon">
+                                <span class="ico_1">
+                                    <span class="ico_2" id="cart">
+                                        <!-- ko if: ShowTitle -->
+                                            <span class="title_cart" data-bind="text: title"></span>
+                                        <!-- /ko -->
+                                        <!-- ko if: ShowCount -->
+                                            <span class="count_cart" data-bind="text: count"></span>
+                                            <span class="unit_count_cart">шт.</span>
+                                        <!-- /ko -->
+                                        <!-- ko if: ShowBaseCost -->
+                                            <span class="base_cost_cart">
+                                                <s data-bind="text: baseCost"></s>
+                                            </span> 
+                                        <!-- /ko -->
+                                        <!-- ko if: ShowFinalCost -->
+                                            <span class="end_cost_cart" data-bind="text: finalCost"></span>
+                                            <span class="unit_cost_cart">руб.</span>
+                                        <!-- /ko -->
+                                    </span>
+                                </span>
+                            </span>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</script>

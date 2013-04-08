@@ -26,7 +26,20 @@ class DataProxy implements IProxy {
     }
 
     private function GetData($url) {
-        $this->responseData = file_get_contents($url);
+        $opts = array(
+            'http'=>array(
+              'method'=>"GET",
+              'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
+            )
+          );
+
+        $context = stream_context_create($opts);
+        $this->responseData = file_get_contents($url, false , $context);
+        foreach($http_response_header as $value){
+            if (preg_match('/^Set-Cookie:/i', $value)) {
+                header($value, false);
+            }
+        }
     }
 }
 $proxy = new DataProxy($_GET);

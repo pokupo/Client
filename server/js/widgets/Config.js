@@ -1,8 +1,10 @@
 var Config = {
     Base : {
-        hostApi : "http://dev.pokupo.ru/app_dev.php", // урл API
+        hostApi : "http://dev.pokupo.ru", // урл API
         catalogPathApi : "/api/catalog/", // префикс API каталога 
         goodsPathApi : "/api/goods/", // префикс API товаров
+        userPathApi : "/api/user/", // префикс API пользователя
+        cartPathApi : "/api/cart/", // префикс API корзины
         pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sorting_block', // id раскрывающегося списка сортировки товаров
@@ -19,7 +21,10 @@ var Config = {
         breadCrumbs : ['breadCrumb_1','breadCrumb_2'], // id контейнеров хлебных крошек
         content : 'content', // id контейнера контента
         searchResult : ['advanced_search', 'content'], // id контейнеров расширенной формы и результатов поиска
-        goods : 'content' // id контейнера информации о товаре
+        goods : 'content', // id контейнера информации о товаре
+        userInformation : 'user_information', // id контейнера информации о пользователе
+        authentication : ['content', 'catalog'], //id контейнеров авторизации
+        cart : 'cart_information' // id контейнера корзины
     },
     Goods : {
         tmpl: {
@@ -172,8 +177,106 @@ var Config = {
             path : "infoSeller/infoSellerTmpl.html" // файл шаблона информации о продавце
         }
     },
+    UserInformation : {
+        tmpl : {
+            path : "userInformation/userInformationTmpl.html", // файл шаблонов
+            infoTmplId : "userInformationTmpl", //id шаблона вывода информации о пользователе
+            authTmplId : "authorizationLinkTmpl" //id шаблона с сылками войти/регистрация
+        },
+        showBlocks : ['login'], 
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    Authentication : {
+        tmpl : {
+            path : "authentication/authenticationTmpl.html", // файл шаблонов
+            authFormTmplId : "authenticationFormTmpl", //id шаблона формы авторизации
+            authSidebarTmplId : "authenticationSidebarTmpl", //id шаблона левого блока
+            regFormTmplId : "registrationFromTmpl", //id шаблона формы регистрации
+            regSidebarTmplId : "registrationSidebarTmpl" //id шаблона левого блока
+        },
+        regular : { // регулярные выражения полей
+            username : /^[a-zа-я]+$/,
+            email : /^[-._a-z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+            phone : /^\d+$/,
+            fname : /^[a-zа-я]+$/,
+            sname : /^[a-zа-я]+$/,
+            mnae : /^[a-zа-я]+$/
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            username : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 4 символа',
+                maxLength : 'Максимум 40 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                regular : 'Строка не является адресом электронной почты'
+            },
+            password : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 6 символов',
+                maxLength : 'Максимум 64 символа',
+                equal : 'Пароли не совпадают'
+            },
+            phone : {
+                minLength : 'Минимум 11 символа',
+                maxLength : 'Максимум 15 символов',
+                regular : 'Только цифры'
+            },
+            fname : {
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            sname : {
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            mname : {
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            }
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
     Cart : {
-        cartId : 'cart' // id корзины товара
+        cartId : 'cart', // id корзины товара
+        title : 'Корзина', // заголовок блока
+        showBlocks : {
+            "title" : 'never', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
+            "count" : false, // отображать кол-во товара
+            "baseCost" : false, // отображать сумму без скидок
+            "finalCost" : false // отображать конечную сумму
+        },
+        tmpl : {
+            path : "cart/cartTmpl.html", // файл шаблонов
+            tmplId : "cartTmpl", //id шаблона формы авторизации
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
     },
     Paging : {
         currentPage : 1, 

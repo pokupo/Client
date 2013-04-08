@@ -28,7 +28,8 @@ Parameters = {
         pageId: 1,
         searchPageId : 1,
         scripts : {},
-        tmpl : {}
+        tmpl : {},
+        lastPage : {}
     },
     filter : {},
     catalog : {
@@ -112,6 +113,8 @@ function Widget(){
         hostApi : null,
         catalogPathApi : null,
         goodsPathApi : null,
+        userPathApi : null,
+        cartPathApi : null,
         containerIdForTmpl : null
     };
     this.Init = function(widget, noindicate){
@@ -133,6 +136,8 @@ function Widget(){
                 hostApi : Config.Base.hostApi,
                 catalogPathApi : Config.Base.catalogPathApi,
                 goodsPathApi : Config.Base.goodsPathApi,
+                userPathApi : Config.Base.userPathApi,
+                cartPathApi : Config.Base.cartPathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
@@ -325,6 +330,35 @@ function Widget(){
                 if(callback)
                     callback(JSON.parse(Parameters.cache.relatedGoods[queryHash]));
             }
+        },
+        Login : function(username, password, remember_me, callback){
+            var str = "";
+            if(username && password)
+                str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
+            XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'login/' + str), function(data){
+                Parameters.cache.userInformation = data;
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        Logout : function(callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'logout'), function(data){
+                Parameters.cache.userInformation = null;
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        Registration : function( str, callback){
+             XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'reg/' + Parameters.shopId + '/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        CartInfo : function(seller, callback){
+            XDMTransport.LoadData(self.settings.hostApi + self.settings.cartPathApi + 'calc/' + Parameters.shopId + '/' + seller, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
         }
     };
 };

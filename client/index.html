@@ -16,6 +16,9 @@
         <script src="http://pokupo-server.asmsoft.ru/js/widgets/SearchWidget.js" type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/SearchResultWidget.js?content={"list":[10,20,50],"defaultCount":20}' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/GoodsWidget.js?params={"infoBlock":1111111,"show":["selectionCount","addToCart","buy","gallery","shipping","opinion"]}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/UserInformationWidget.js?params={"show":["icon","raiting"]}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/AuthenticationWidget.js' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/CartWidget.js?params={"show":{"title":"always","count":true,"baseCost":true,"finalCost":true}}' type="text/javascript"></script>
         <script src="//yandex.st/share/share.js" charset="utf-8" type="text/javascript"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/jquery.jcarousel.min.js" type="text/javascript"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/lightbox.js" type="text/javascript"></script>
@@ -36,11 +39,13 @@
                                 <li><a href="#">Сообщество</a></li>
                                 <li class="last active"><a href="faq.html">Помощь</a></li>
                             </ul>
-                            <div class="basket"><a href="#"><span class="right_fon"><span class="ico_1"><span class="ico_2" id="cart">Корзина (2)</span></span></span></a></div>
-                            <ul class="enter_menu">
-                                <li class="first"><a href="#">Войти</a></li>
-                                <li class="last"><a href="#">Зарегистрироваться</a></li>
-                            </ul>
+                            <!-- корзина-->
+                            <div class="basket" id="cart_information"></div>
+                            <!-- -->
+                            
+                            <!-- юзер информер -->
+                            <div class="enter_menu" id="user_information"></div>
+                            <!-- -->
                         </div>
                     </div>
                     <div class="header_bottom">
