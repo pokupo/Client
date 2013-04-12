@@ -23,7 +23,6 @@ var AuthenticationWidget = function(){
         self.settings.regSidebarTmplId = Config.Authentication.tmpl.regSidebarTmplId;
         self.SetInputParameters();
         self.RegisterEvents();
-        self.CheckRoute();
     };
     self.SetInputParameters = function(){
         self.settings.inputParameters = JSCore.ParserInputParameters(/AuthenticationWidget.js/);

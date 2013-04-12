@@ -24,7 +24,8 @@ var Config = {
         goods : 'content', // id контейнера информации о товаре
         userInformation : 'user_information', // id контейнера информации о пользователе
         authentication : ['content', 'catalog'], //id контейнеров авторизации
-        cart : 'cart_information' // id контейнера корзины
+        cart : 'cart_information', // id контейнера корзины
+        cartGoods : 'content' // id контейнера реестра товаров корзины
     },
     Goods : {
         tmpl: {
@@ -268,6 +269,21 @@ var Config = {
         tmpl : {
             path : "cart/cartTmpl.html", // файл шаблонов
             tmplId : "cartTmpl", //id шаблона формы авторизации
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    CartGoods : {
+        title : 'Моя корзина',
+        tmpl : {
+            path : "cartGoods/cartGoodsTmpl.html", // файл шаблонов
+            tmplId : "cartGoodsTmpl", //id шаблона формы авторизации
         },
         style : {// стиль блока
             'position' : 'absolute', 

@@ -128,6 +128,10 @@ var CartViewModel = function(){
         self.baseCost = data.base_cost;
         self.finalCost = data.final_cost;
     };
+    self.ClickCart = function(){
+        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+        Routing.SetHash('cart', Config.CartGoods.title, {});
+    };
 };
 
 var TestCart = {

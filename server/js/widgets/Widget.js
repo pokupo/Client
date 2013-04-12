@@ -359,6 +359,24 @@ function Widget(){
                 if(callback)
                     callback(JSON.parse(data));
             });
+        },
+        CartGoods : function(seller, callback){
+            XDMTransport.LoadData(self.settings.hostApi + self.settings.cartPathApi + 'info/' + Parameters.shopId + '/' + seller, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        AddGoodsToCart : function(idGoods, idSeller, count, callback){
+            var str = '';
+            if(idSeller){
+                str = idSeller + '/';
+                if(count)
+                    str = str + count;
+            }
+            XDMTransport.LoadData(self.settings.hostApi + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
         }
     };
 };

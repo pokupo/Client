@@ -10,8 +10,6 @@ window.InfoSellerWidget = function(){
         infoSeller : {}
     };
     self.InitWidget = function(){
-        self.settings.tmplPath = Config.InfoSeller.tmpl.path;
-        self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
         self.settings.style = Config.InfoSeller.style;
         self.RegisterEvents();
         self.Loader();
@@ -20,17 +18,26 @@ window.InfoSellerWidget = function(){
         Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
+        self.settings.tmplPath = Config.InfoSeller.tmpl.path;
+        self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
         self.settings.container = data.element;
 
         for(var key in data.options.params){
-            if(key == 'tmpl' && data.options.params['tmpl'])
-                self.settings.tmplPath = 'infoSeller/' + data.options.params['tmpl'] + '.html';
+            if(key == 'tmpl' && data.options.params['tmpl']){
+                if(data.options.params['tmpl']['path'])
+                    self.settings.tmplPath = 'infoSeller/' + data.options.params['tmpl']['path'] + '.html';
+                if(data.options.params['tmpl']['id'])
+                    self.settings.tmplId = data.options.params['tmpl']['id'];
+            }
             else
                 self.settings.infoSeller[key] = data.options.params[key];
         }
+        
+        console.log( self.settings);
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
+            console.log(self.settings.tmplPath);
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                 EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl')
             });

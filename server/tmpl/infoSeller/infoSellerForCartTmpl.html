@@ -1,0 +1,35 @@
+<script type="text/html" id="infoSellerForCartTmpl">
+        <tbody>
+            <tr>
+                <td>
+                    <a class="node_title" href="#">Магазин “<!-- ko text: nameShop --><!-- /ko -->”</a>
+                    <div class="node_right">
+                        <div class="user_ava"><img title="" alt="" src="" data-bind="attr: {src : routeLogoShop, title : nameShop}"></div>
+                        <!-- ko foreach: operators -->
+                        <div class="user_name">
+                            <a href="#" data-bind="text: name_operator, click: $parent.ClickOperator.bind($data, {id : id})"></a> <img title="" alt="" src="images/ico_31.png">
+                        </div>
+                        <div class="user_status" data-bind="text: name_group"></div>
+                        <!-- /ko -->
+                        <div class="mass"><a href="#" data-bind="attr: {href: mailtoShop}">Задать вопрос</a></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="node_left">
+                        <div class="row"><b>Поддержка</b></div>
+                        <div class="row">Телефоны: <span data-bind="text: phonesSupportShop"></span></div>
+                        <div class="row">Skype: <span data-bind="text: skypeSupportShop"></span></div>
+                        <div class="row">ICQ: <span data-bind="text: icqSupportShop"></span></div>
+                        <div class="row">Сайт: <a target="_blank" data-bind="text: siteSupportShop, attr: {href : siteSupportShop}"></a></div>
+                    </div>
+                </td>
+                <td>
+                    <div class="">
+                        <div class="row row_rating">Рейтинг: <span data-bind="text: ratingShop"></span></div>
+                        <div class="row">Отзывы/претензии: <span><!-- ko text: positiveOpinion --><!-- /ko -->/<span><!-- ko text: negativeOpinion --><!-- /ko --></span></span></div>
+                        <div class="row">Товаров: <span data-bind="text: allGoods"></span></div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+</script>
