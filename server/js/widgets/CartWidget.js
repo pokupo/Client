@@ -65,6 +65,14 @@ var CartWidget = function(){
                 EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
             });
         });
+        
+        EventDispatcher.AddEventListener('widget.change.route', function (data){
+            EventDispatcher.DispatchEvent('CartWidget.onload.tmpl');
+        });
+        
+        EventDispatcher.AddEventListener('widgets.cart.infoUpdate', function(data){
+             EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
+        });
     };
     self.Fill = function(data){
         var info = new CartViewModel();

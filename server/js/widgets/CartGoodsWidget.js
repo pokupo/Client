@@ -4,7 +4,8 @@ var CartGoodsWidget = function(){
     self.cart = null;
     self.settings = {
         tmplPath : null,
-        tmplId : null,
+        cartTmplId : null,
+        emptyCartTmplId : null,
         inputParameters : {},
         style : null,
         containerId : null,
@@ -12,7 +13,8 @@ var CartGoodsWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cartGoods;
         self.settings.tmplPath = Config.CartGoods.tmpl.path;
-        self.settings.tmplId = Config.CartGoods.tmpl.tmplId;
+        self.settings.cartTmplId = Config.CartGoods.tmpl.cartTmplId;
+        self.settings.emptyCartTmplId = Config.CartGoods.tmpl.emptyCartTmplId;
         self.settings.style = Config.CartGoods.style;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -71,14 +73,34 @@ var CartGoodsWidget = function(){
         });
         
         EventDispatcher.AddEventListener('CartGoods.onload.info', function (data){
-            self.InsertContainer();
-            self.Fill.Content(data);
+            if(!data.err){
+                self.InsertContainer.Content();
+                self.Fill.Content(data);
+            }
+            else{
+                self.InsertContainer.EmptyCart();
+                self.Render.EmptyCart();
+            }
         });
         
-        EventDispatcher.AddEventListener('CartGoods.change.count', function(data){
-            self.BaseLoad.AddGoodsToCart(data.goodsId, data.sellerId, data.count, function(data){
-                console.log(data);
+        EventDispatcher.AddEventListener('CartGoods.change.count', function(goods){
+            self.BaseLoad.AddGoodsToCart(goods.goodsId, goods.sellerId, goods.count, function(data){
+                 EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
+                 goods.sellCost = data.sell_cost;
+                 goods.sellEndCost = data.sell_end_cost;
             });
+        });
+        
+        EventDispatcher.AddEventListener('CartGoods.clear', function(data){
+            var goodsId = data.goodsId ? data.goodsId : false;
+            self.BaseLoad.ClearCart(data.sellerId, goodsId, function(data){
+                 EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
+            });
+        });
+        
+        EventDispatcher.AddEventListener('CartGoods.empty.cart', function(){
+            self.InsertContainer.EmptyCart();
+            self.Render.EmptyCart();
         });
     };
     self.Update = function(){
@@ -88,14 +110,19 @@ var CartGoodsWidget = function(){
             EventDispatcher.DispatchEvent('CartGoods.onload.info', data);
         });
     };
-    self.InsertContainer = function(){
-        $("#" + self.settings.containerId).empty().append($('script#' + self.settings.tmplId).html());
+    self.InsertContainer = {
+        Content : function(){
+            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.cartTmplId).html());
+        },
+        EmptyCart :function(){
+            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.emptyCartTmplId).html());
+        }
     };
     self.Fill =  {
         Content : function(data){
             var content = new CartGoodsViewModel();
             for(var j in data){
-                self.cart = new BlockGoodsForSellerViewModel();
+                self.cart = new BlockGoodsForSellerViewModel(content);
                 for(var key in data[j]){
                     if(typeof self.Fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()] == 'function')
                         self.Fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()](data[j][key]);
@@ -103,7 +130,7 @@ var CartGoodsWidget = function(){
                 content.AddContent(self.cart);
             }
 
-            self.Render(content);
+            self.Render.Content(content);
         },
         Goods : function(data){
             self.cart.AddContent(data);
@@ -121,14 +148,24 @@ var CartGoodsWidget = function(){
             self.cart.finalCost = data;
         }
     };
-    self.Render = function(data){
-        if($("#" + self.settings.containerId).length > 0){
-            if(Config.Containers.catalog)
-                   $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-            ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+    self.Render = {
+        Content : function(data){
+            if($("#" + self.settings.containerId).length > 0){
+                if(Config.Containers.catalog)
+                       $("#" + Config.Containers.catalog).hide();
+                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+            }
+            self.WidgetLoader(true);
+        },
+        EmptyCart : function(){
+            if($("#" + self.settings.containerId).length > 0){
+                if(Config.Containers.catalog)
+                       $("#" + Config.Containers.catalog).hide();
+                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
+            }
+            self.WidgetLoader(true);
         }
-        self.WidgetLoader(true);
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters['position'] == 'absolute'){
@@ -151,8 +188,9 @@ var CartGoodsViewModel = function(){
     };
 };
 
-var BlockGoodsForSellerViewModel = function(){
+var BlockGoodsForSellerViewModel = function(content){
     var self = this;
+
     self.sellerInfo = {};
     self.goods = ko.observableArray();
     self.finalCost = 0;
@@ -160,124 +198,130 @@ var BlockGoodsForSellerViewModel = function(){
         var total = 0;
         if(self.goods().length > 0){
             for(var i = 0; i <= self.goods().length-1; i++){
-                total = total + self.goods()[i].endSum();
+                total = total + parseFloat(self.goods()[i].endSum());
             }
         }
-        return total;
+        return total.toFixed(2);
     }, this);
     self.totalSum = ko.computed(function(){
         var total = 0;
         if(self.goods().length > 0){
             for(var i = 0; i <= self.goods().length-1; i++){
-                total = total + self.goods()[i].sum();
+                total = total + parseFloat(self.goods()[i].sum());
             }
         }
-        return total;
+        
+        return total.toFixed(2);
     }, this);
     self.tatalDiscount = ko.computed(function(){
         return (self.totalSum() - self.tatalForPayment()).toFixed(2);
     }, this);
     self.cssSelectAll = "cartGoodsSelectAll";
-    //self.isChecked = ko.observable(false);
-    self.checkedGoods = ko.observableArray();
-
+    self.isChecked = ko.observable(false);
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
-           self.goods.push(new BlockCartGoodsSellersViewModel(data[i]));
+           self.goods.push(new BlockCartGoodsSellersViewModel(data[i], self, content));
         }
         self.finalCost = data.final_cost;
     };
     self.ClickButchFavorites = function(){
-        console.log(self.checkedGoods());
+        //var checkedGoods = [];
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            if(goods.isSelected())
+                EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:goods.id, count: 0});
+              //checkedGoods.push(goods.id);  
+        });
     };
     self.ClickButchRemove = function(){
+        var checkedGoods = [];
+        var removedGoods = [];
+        var count = self.goods().length-1;
+
+        for(var i = 0; i <= count; i++) {
+            if(self.goods()[i].isSelected()){
+              checkedGoods.push(self.goods()[i].id);
+              removedGoods.push(self.goods()[i]);
+            }
+        };
+        for(var i in removedGoods){
+            self.goods.remove(removedGoods[i]);
+        }
+
+        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
         
+        if(self.goods().length == 0)
+            EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
     };
     self.ClickProceed = function(){
-        console.log('proceed');
+        var last = Parameters.cache.lastPage;
+        Routing.SetHash(last.route, last.title, last.data);
     };
     self.ClickIssueOrder = function(){
         console.log('order');
     };
     self.ClickClearCurt = function(){
-        
+        EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerId});
     };
-    self.ClickSelectAll = function(){
-         if($('#' + self.cssSelectAll).is(':checked')){
-             $('#' + self.cssSelectAll).removeAttr('checked');
-         }
-         else{
-             $('#' + self.cssSelectAll).attr('checked', 'checked');
-         }
-         
-//         ko.utils.arrayForEach(self.goods(), function(goods) {
-//            goods.isSelected(true);
-//         });
+    self.ClickSelectAll = function(block){
+        var check = $('#' + self.cssSelectAll).is(':checked');
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            goods.isSelected(check);
+        });
     }
 };
 
-var BlockCartGoodsSellersViewModel = function(data){
+var BlockCartGoodsSellersViewModel = function(data, block, content){
     var self = this;
-    self.sellerId = 0;
+    self.sellerId = block.sellerInfo.seller.sellerId;
     self.id = data.id;
     self.fullName = data.full_name;
     self.countReserv = data.count_reserv;
     self.count = data.count;
-    self.sellCost = data.sell_cost;
-    self.sellEndCost = data.sell_end_cost;
+    self.sellCost = ko.observable(data.sell_cost);
+    self.sellEndCost = ko.observable(data.sell_end_cost);
     self.routeImages = Parameters.pathToImages + data.route_image;
     self.ordered = ko.observable(self.count);
     self.sum = ko.computed(function(){
-        return self.ordered() * self.sellCost;
+        return (self.ordered() * self.sellCost()).toFixed(2);
     }, this);
     self.endSum = ko.computed(function(){
-        return self.ordered() * self.sellEndCost;
+        return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
     self.isSelected = ko.observable(false);
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
             self.ordered(self.ordered() + 1);
+            EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
         }
         else
             alert(Config.Goods.message.maxIsReached);
     };
     self.ClickMinus = function(){
-        if(self.ordered() > 0)
+        if(self.ordered() > 0){
             self.ordered(self.ordered() - 1);
+             EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
+        }
     };
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
     self.Favorites = function(){
-        alert('favorites');
+        EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, count:self.ordered()});
     };
     self.ClickRemove = function(){
-         EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId:self.id, sellerId:self.sellerId, count:0});
+        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
+//        EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId:self.id, sellerId:self.sellerId, count:0});
+        block.goods.remove(self);
+        if(block.goods().length == 0){
+            content.content.remove(block);
+            if(content.content().length == 0){
+                EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
+            }
+        }
     };
 };
 
-//var BlockInfoSellerCartViewModel = function(data){
-//    var self = this;
-//    self.sellerId = data.id;
-//    self.nameShop = data.name_shop;
-//    self.siteShop = data.site_shop;
-//    self.emailSupport = data.email_support;
-//    self.mailtoShop = 'mailto:' + self.emailSupport;
-//    self.phonesSupport = data.phones_support;
-//    self.siteSupport = data.site_support;
-//    self.skypeSupport = data.skype_support;
-//    self.icqSupport = data.icq_support;
-//    self.ratingShop = data.rating_shop;
-//    self.positiveOpinion = data.positive_opinion;
-//    self.negativeOpinion = data.negative_opinion;
-//    self.routeLogoShop = Parameters.pathToImages + data.route_logo_shop;
-//    self.allGoods = data.all_goods;
-//    
-//    self.ClickOperator = function(data, event){
-//        alert('operator id=' + data.id);
-//    };
-//};
 
 var TestCartGoods = {
     Init : function(){

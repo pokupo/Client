@@ -45,7 +45,7 @@ var ContentViewModel = function(data, i){
         alert(self.shopId);
     }
     self.ClickBuy = function(){
-    //alert()
+         EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id})
     }
     self.ClickAuction = function(){
         

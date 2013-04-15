@@ -11,6 +11,7 @@ var AuthenticationWidget = function(){
         regFormTmplId : null,
         regSidebarTmplId : null,
         inputParameters : {},
+        https : null,
         style : null
     };
     self.InitWidget = function(){
@@ -21,6 +22,7 @@ var AuthenticationWidget = function(){
         self.settings.authSidebarTmplId = Config.Authentication.tmpl.authSidebarTmplId;
         self.settings.regFormTmplId = Config.Authentication.tmpl.regFormTmplId;
         self.settings.regSidebarTmplId = Config.Authentication.tmpl.regSidebarTmplId;
+        self.settings.https = Config.Authentication.https;
         self.SetInputParameters();
         self.RegisterEvents();
     };
@@ -32,6 +34,10 @@ var AuthenticationWidget = function(){
             
             if(input.tmpl){
                 self.settings.tmplPath = 'authentication/' + input.tmpl + '.html';
+            }
+            if(input.https){
+                self.settings.https = input.https;
+                Parameters.cache.https = input.https;
             }
         }
     };

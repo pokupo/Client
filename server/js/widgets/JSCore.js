@@ -1,15 +1,9 @@
 var JSSettings = {
-//    host : "http://dev.pokupo.ru/",
-//    pathToJS : "server/js/",
-//    pathToTmpl : "server/tmpl/",
-//    pathToData : "server/services/DataProxy.php?query=",
-//    pathToCore: "server/index.html",
-
-    host : "http://pokupo-server.asmsoft.ru/",    
-    pathToJS : "js/",
-    pathToTmpl : "tmpl/",
-    pathToData : "services/DataProxy.php?query=",
-    pathToCore: "index.html",
+    host : "http://dev.pokupo.ru/",
+    pathToJS : "server/js/",
+    pathToTmpl : "server/tmpl/",
+    pathToData : "server/services/DataProxy.php?query=",
+    pathToCore: "server/index.html",
 
     scripts : [
         'jquery-ui.custom.js',

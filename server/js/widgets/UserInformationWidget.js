@@ -67,10 +67,13 @@ var UserInformationWidget = function(){
         EventDispatcher.AddEventListener('UserInformationWidget.click.logout', function(){
             self.BaseLoad.Logout(function(data){
                 if(data.result == 'ok'){
-                    self.InsertContainer.AuthBlock();
-                    self.Fill.AuthBlock();
+                    Routing.SetHash('catalog', 'Домашняя', {});
                 }
             });
+        });
+        
+        EventDispatcher.AddEventListener('widget.change.route', function (data){
+            EventDispatcher.DispatchEvent('onload.userInformation.tmpl');
         });
     };
     self.CheckAuthorization = function(data){
@@ -163,8 +166,10 @@ var UserInformationBlockViewModel = function(data){
     self.ratingUser = data.rating_user;
     
     self.ClickLogout = function(){
-        Loader.Indicator('UserInformationWidget', false);
-        EventDispatcher.DispatchEvent('UserInformationWidget.click.logout');
+        if(confirm('Вы действительно хотите выйти?')){
+            Loader.Indicator('UserInformationWidget', false);
+            EventDispatcher.DispatchEvent('UserInformationWidget.click.logout');
+        }
     };
     self.ClickPrivateOffice = function(){
         

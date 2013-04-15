@@ -1,10 +1,12 @@
 var Config = {
     Base : {
         hostApi : "http://dev.pokupo.ru", // урл API
+        httpsHostApi : "https://dev.pokupo.ru",
         catalogPathApi : "/api/catalog/", // префикс API каталога 
         goodsPathApi : "/api/goods/", // префикс API товаров
         userPathApi : "/api/user/", // префикс API пользователя
         cartPathApi : "/api/cart/", // префикс API корзины
+        favPathApi : "/api/fav/", // префикс API избранное
         pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sorting_block', // id раскрывающегося списка сортировки товаров
@@ -195,6 +197,7 @@ var Config = {
         }
     },
     Authentication : {
+        https : "always", // always, never, login
         tmpl : {
             path : "authentication/authenticationTmpl.html", // файл шаблонов
             authFormTmplId : "authenticationFormTmpl", //id шаблона формы авторизации
@@ -283,7 +286,8 @@ var Config = {
         title : 'Моя корзина',
         tmpl : {
             path : "cartGoods/cartGoodsTmpl.html", // файл шаблонов
-            tmplId : "cartGoodsTmpl", //id шаблона формы авторизации
+            cartTmplId : "cartGoodsTmpl", //id шаблона формы авторизации
+            emptyCartTmplId : "emptyCartGoodsTmpl"
         },
         style : {// стиль блока
             'position' : 'absolute', 

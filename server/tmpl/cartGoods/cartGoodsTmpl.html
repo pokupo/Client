@@ -3,7 +3,7 @@
         <div class="content">
             <!-- ko foreach: content -->
 
-            <table data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerForCartTmpl', id: 'infoSellerForCartTmpl'}}}"></table>
+            <table style="width: 1200px;margin: 0 auto;" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerForCartTmpl', id: 'infoSellerForCartTmpl'}}}"></table>
 
             
             <table style="float: left; width: 100%;">
@@ -14,35 +14,8 @@
                    <!-- ko template: { name: 'GoodsBlockTmpl' } --><!-- /ko -->
                 <!-- /ko -->
                 
-                <tr>
-                    <td>
-                        <div class="result">
-                            <div class="result_left">
-                                <span>Действия для выбраного:</span>
-                                <div class="buttons">
-                                    <input class="form_submit_del" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
-                                    <input class="form_submit_fav" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
-                                </div>
-                                <a href="#" data-bind="click: ClickClearCurt">Очистить корзину</a>
-                            </div>
-                            <div class="result_right">
-                                <span class="text_top">
-                                    <span class="text_2"><span><!-- ko text: totalSum --><!-- /ko --> руб.</span> <!-- ko text: tatalForPayment --><!-- /ko --> руб. </span><span class="text_1">Цена:</span>
-                                </span>
-                                <span class="text_center">
-                                    <span class="text_2"><!-- ko text: tatalDiscount --><!-- /ko --> руб.</span><span class="text_1">Скидка на заказ:</span>
-                                </span>
-                                <span class="text_bottom">
-                                    <span class="text_2"><!-- ko text: tatalForPayment --><!-- /ko --> руб.</span><span class="text_1">К оплате:</span>
-                                </span>
-                            </div>
-                            <div class="result_botton">
-                                <input class="form_submit_1" type="submit" value="Оформить заказ" data-bind="click: ClickIssueOrder"/>
-                                <input class="form_submit_2" type="submit" value="Продолжить покупки" data-bind="click: ClickProceed"/>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
+                <!--  ko template: { name: 'FooterBlockTmpl' } --><!-- /ko -->
+                
             </table>
             <!-- /ko -->
         </div>
@@ -58,7 +31,7 @@
                         <tr>
                             <td class="row_1">
                                 <span class="head_1">Товар:
-                                    <div class=""><input class="form_submit_all" type="checkbox" data-bind="click: ClickSelectAll, attr:{id:cssSelectAll}"/></div>
+                                    <div class=""><input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/></div>
                                 </span></td>
                             <td class="row_2"></td>
                             <td class="row_3"></td>
@@ -102,4 +75,44 @@
             </div>
         </td>
     </tr>
+</script>
+
+<script type="text/html" id="FooterBlockTmpl">
+    <tr>
+        <td>
+            <div class="result">
+                <div class="result_left">
+                    <span>Действия для выбраного:</span>
+                    <div class="buttons">
+                        <input class="form_submit_del" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                        <input class="form_submit_fav" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
+                    </div>
+                    <a href="#" data-bind="click: ClickClearCurt">Очистить корзину</a>
+                </div>
+                <div class="result_right">
+                    <span class="text_top">
+                        <span class="text_2"><span><!-- ko text: totalSum --><!-- /ko --> руб.</span> <!-- ko text: tatalForPayment --><!-- /ko --> руб. </span><span class="text_1">Цена:</span>
+                    </span>
+                    <span class="text_center">
+                        <span class="text_2"><!-- ko text: tatalDiscount --><!-- /ko --> руб.</span><span class="text_1">Скидка на заказ:</span>
+                    </span>
+                    <span class="text_bottom">
+                        <span class="text_2"><!-- ko text: tatalForPayment --><!-- /ko --> руб.</span><span class="text_1">К оплате:</span>
+                    </span>
+                </div>
+                <div class="result_botton">
+                    <input class="form_submit_1" type="submit" value="Оформить заказ" data-bind="click: ClickIssueOrder"/>
+                    <input class="form_submit_2" type="submit" value="Продолжить покупки" data-bind="click: ClickProceed"/>
+                </div>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="emptyCartGoodsTmpl">
+    <div class="basket_block">
+        <div class="content">
+            <p>В корзине нет ни одного товара.</p>
+        </div>
+    </div>
 </script>

@@ -32,12 +32,9 @@ window.InfoSellerWidget = function(){
             else
                 self.settings.infoSeller[key] = data.options.params[key];
         }
-        
-        console.log( self.settings);
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            console.log(self.settings.tmplPath);
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
                 EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl')
             });

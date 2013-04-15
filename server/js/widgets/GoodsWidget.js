@@ -95,6 +95,8 @@ var GoodsWidget = function(){
                 else
                     self.Fill.Block(key, data[key]);
             }
+            
+            self.goods.blocks.main.sellerId = data.seller.id
             self.goods.SetListMoreBlock(); 
             self.Render.Goods(self.goods);
         },
@@ -225,6 +227,7 @@ var GoodsListMoreBlockViewModel = function(key, data){
 var GoodsMainBlockViewModel = function(data){
     var self = this;
     self.id = data.id;
+    self.sellerId = 0;
     self.chortName =  data.chort_name;
     self.fullName = data.full_name;
     self.description = data.description;
@@ -290,8 +293,11 @@ var GoodsMainBlockViewModel = function(data){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
       
-        if(typeof AnimateAddToCart !== 'undefined' && self.ordered() > 0)
+        if(typeof AnimateAddToCart !== 'undefined' && self.ordered() > 0){
            new AnimateAddToCart();
+       
+           EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()})
+        }
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) > 0 && self.count != 0)
@@ -311,7 +317,7 @@ var GoodsMainBlockViewModel = function(data){
         alert('bid on auction') ;
     };
     self.Favorites = function(){
-        alert('favorites');
+        EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, count:self.ordered()});
     };
     self.Gift = function(){
         alert('gift');

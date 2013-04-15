@@ -29,7 +29,8 @@ Parameters = {
         searchPageId : 1,
         scripts : {},
         tmpl : {},
-        lastPage : {}
+        lastPage : {},
+        https : null
     },
     filter : {},
     catalog : {
@@ -58,7 +59,7 @@ var Loader = {
     widgets : {},
     Indicator : function(widget, isReady){
         this.widgets[widget] = isReady;
-
+console.log(this.widgets);
         this.countAll = 0;
         this.readyCount = 0;
         
@@ -134,10 +135,12 @@ function Widget(){
             this.isReady = true;
             self.settings = {
                 hostApi : Config.Base.hostApi,
+                httpsHostApi : Config.Base.httpsHostApi,
                 catalogPathApi : Config.Base.catalogPathApi,
                 goodsPathApi : Config.Base.goodsPathApi,
                 userPathApi : Config.Base.userPathApi,
                 cartPathApi : Config.Base.cartPathApi,
+                favPathApi : Config.Base.favPathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
@@ -172,6 +175,44 @@ function Widget(){
                 });
             }
         };
+        
+        EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
+            console.log(Parameters.cache.userInformation.err);
+            if(Parameters.cache.userInformation && !JSON.parse(Parameters.cache.userInformation).err){
+                self.WidgetLoader(false);
+                self.BaseLoad.AddToFavorite(data.goodsId, data.count, function(data){
+                    self.WidgetLoader(true);
+                    if(data.result == 'ok'){
+                        self.WidgetLoader(true);
+                        alert('Выбранные товары добавлены в избранное.');
+                    }
+                    else{
+                        alert('Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.');
+                        self.WidgetLoader(true);
+                    }
+                });
+            }
+            else{
+                alert('Необходимо авторизоваться.')
+                self.WidgetLoader(true);
+            }
+        });
+        
+        EventDispatcher.AddEventListener('widgets.cart.addGoods', function(data){
+            var sellerId = data.sellerId ? data.sellerId : false;
+            var count = data.count ? data.count : false;
+            self.WidgetLoader(false);
+            self.BaseLoad.AddGoodsToCart(data.goodsId, sellerId, count, function(data){
+                if(data.err){
+                    self.WidgetLoader(true);
+                    alert(data.err);
+                }
+                else{
+                    self.WidgetLoader(true);
+                    EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
+                }
+            });
+        });
     };
     this.WidgetLoader = function(test){
         Loader.Indicator(this.widgetName, test);
@@ -332,10 +373,14 @@ function Widget(){
             }
         },
         Login : function(username, password, remember_me, callback){
+            var host = self.settings.hostApi;
+            if(Parameters.cache.https == "always" || Parameters.cache.https == "login")
+                host = self.settings.httpsHostApi;
+            
             var str = "";
             if(username && password)
                 str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
-            XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'login/' + str), function(data){
+            XDMTransport.LoadData(encodeURIComponent(host + self.settings.userPathApi + 'login/' + str), function(data){
                 Parameters.cache.userInformation = data;
                 if(callback)
                     callback(JSON.parse(data));
@@ -355,25 +400,62 @@ function Widget(){
             });
         },
         CartInfo : function(seller, callback){
-            XDMTransport.LoadData(self.settings.hostApi + self.settings.cartPathApi + 'calc/' + Parameters.shopId + '/' + seller, function(data){
+            var host = self.settings.hostApi;
+            if(Parameters.cache.https == "always")
+                host = self.settings.httpsHostApi;
+            XDMTransport.LoadData(host + self.settings.cartPathApi + 'calc/' + Parameters.shopId + '/' + seller, function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });
         },
         CartGoods : function(seller, callback){
-            XDMTransport.LoadData(self.settings.hostApi + self.settings.cartPathApi + 'info/' + Parameters.shopId + '/' + seller, function(data){
+            var host = self.settings.hostApi;
+            if(Parameters.cache.https == "always")
+                host = self.settings.httpsHostApi;
+            XDMTransport.LoadData(host + self.settings.cartPathApi + 'info/' + Parameters.shopId + '/' + seller, function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });
         },
-        AddGoodsToCart : function(idGoods, idSeller, count, callback){
+        AddGoodsToCart : function(idGoods, sellerId, count, callback){
+            var host = self.settings.hostApi;
+            if(Parameters.cache.https == "always")
+                host = self.settings.httpsHostApi;
+            
             var str = '';
-            if(idSeller){
-                str = idSeller + '/';
-                if(count)
-                    str = str + count;
+            if(sellerId){
+                str = sellerId + '/';
+//                if(count)
+//                    str = str + count;
             }
-            XDMTransport.LoadData(self.settings.hostApi + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
+            XDMTransport.LoadData(host + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        AddToFavorite : function(goodId, count, callback){
+            var host = self.settings.hostApi;
+            if(Parameters.cache.https == "always")
+                host = self.settings.httpsHostApi;
+            
+            XDMTransport.LoadData(host + self.settings.favPathApi + 'add/' + Parameters.shopId + '/' + goodId, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        ClearCart : function(sellerId, goodsId, callback){
+            var host = self.settings.hostApi;
+            if(Parameters.cache.https == "always")
+                host = self.settings.httpsHostApi;
+            
+            var str = '';
+            if(sellerId){
+                str = sellerId + '/';
+                if(goodsId){
+                    str = str + '?idGoods=' + goodsId;
+                }
+            }
+            XDMTransport.LoadData(host + self.settings.cartPathApi + 'clear/' + Parameters.shopId + '/' + str, function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });
