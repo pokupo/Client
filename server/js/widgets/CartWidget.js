@@ -25,7 +25,7 @@ var CartWidget = function(){
         self.settings.inputParameters = JSCore.ParserInputParameters(/CartWidget.js/);
         if(self.settings.inputParameters['params']){
             var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters = input;
+            self.settings.inputParameters['params'] = input;
             if(input.show){
                 for(var key in input.show){
                      self.settings.showBlocks[key] = input.show[key];
@@ -91,8 +91,8 @@ var CartWidget = function(){
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                for(var i=0; i<=self.settings.containerId.length-1; i++){
-                    $("#" + self.settings.containerId[i]).css(self.settings.style);
+                if($("#" + self.settings.containerId).length > 0){
+                    $("#" + self.settings.containerId).css(self.settings.style);
                 }
             });
         }
@@ -103,38 +103,39 @@ var CartViewModel = function(){
     var self = this;
     self.title = Config.Cart.title;
     self.ShowTitle = function(){
-        if(Config.showBlock.title == 'never')
+        if(Config.Cart.showBlock.title == 'never')
             return false;
-        if(Config.showBlock.title == 'always')
+        if(Config.Cart.showBlock.title == 'always')
             return true;
-        if(Config.showBlock.title == 'empty'){
+        if(Config.Cart.showBlock.title == 'empty'){
             return true;
         }
     };
     self.count = 0;
     self.ShowCount = function(){
-        console.log(Config.showBlock.count);
-        if(Config.showBlock.count)
+        if(Config.Cart.showBlock.count && self.count > 0)
             return true;
         return false;
     };
     self.baseCost = 0;
     self.ShowBaseCost = function(){
-        if(Config.showBlock.baseCost)
+        if(Config.Cart.showBlock.baseCost && self.baseCost > 0)
             return true;
         return false;
     };
     self.finalCost = 0;
     self.ShowFinalCost = function(){
-        if(Config.showBlock.finalCost)
+        if(Config.Cart.showBlock.finalCost && self.finalCost > 0)
             return true;
         return false;
     };
     
     self.AddContent = function(data){
-        self.count = data.count;
-        self.baseCost = data.base_cost;
-        self.finalCost = data.final_cost;
+        if(!data.err){
+            self.count = data.count;
+            self.baseCost = data.base_cost;
+            self.finalCost = data.final_cost;
+        }
     };
     self.ClickCart = function(){
         Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];

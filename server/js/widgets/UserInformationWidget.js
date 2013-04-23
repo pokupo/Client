@@ -25,7 +25,7 @@ var UserInformationWidget = function(){
         self.settings.inputParameters = JSCore.ParserInputParameters(/UserInformationWidget.js/);
         if(self.settings.inputParameters['params']){
             var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters = input;
+            self.settings.inputParameters['params'] = input;
             if(input.show){
                 for(var i = 0; i <= input.show.length-1; i++){
                     if($.inArray(input.show[i], self.settings.showBlocks) < 0)
@@ -120,13 +120,14 @@ var UserInformationWidget = function(){
     }
     self.SetPosition = function(){
         if(self.settings.inputParameters['position'] == 'absolute'){
+            
             for(var key in self.settings.inputParameters){
                 if(self.settings.style[key])
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                for(var i=0; i<=self.settings.containerId.length-1; i++){
-                    $("#" + self.settings.containerId[i]).css(self.settings.style);
+                if($("#" + self.settings.containerId).length > 0){
+                    $("#" + self.settings.containerId).css(self.settings.style);
                 }
             });
         }
@@ -135,7 +136,6 @@ var UserInformationWidget = function(){
 
 var UserAuthorizationBlockViewModel = function(){
     var self = this;
-    self.test = 'test';
     self.ClickLogin = function(){
         Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
         Routing.SetHash('login', 'Авторизация пользователя', {});

@@ -59,7 +59,6 @@ var Loader = {
     widgets : {},
     Indicator : function(widget, isReady){
         this.widgets[widget] = isReady;
-console.log(this.widgets);
         this.countAll = 0;
         this.readyCount = 0;
         
@@ -177,10 +176,9 @@ function Widget(){
         };
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
-            console.log(Parameters.cache.userInformation.err);
             if(Parameters.cache.userInformation && !JSON.parse(Parameters.cache.userInformation).err){
                 self.WidgetLoader(false);
-                self.BaseLoad.AddToFavorite(data.goodsId, data.count, function(data){
+                self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
                         self.WidgetLoader(true);
@@ -425,20 +423,24 @@ function Widget(){
             var str = '';
             if(sellerId){
                 str = sellerId + '/';
-//                if(count)
-//                    str = str + count;
+                if(count >= 0)
+                    str = str + count;
             }
+            
             XDMTransport.LoadData(host + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });
         },
-        AddToFavorite : function(goodId, count, callback){
+        AddToFavorite : function(goodId, comment, callback){
             var host = self.settings.hostApi;
             if(Parameters.cache.https == "always")
                 host = self.settings.httpsHostApi;
-            
-            XDMTransport.LoadData(host + self.settings.favPathApi + 'add/' + Parameters.shopId + '/' + goodId, function(data){
+            var str = '';
+            if(comment)
+               str = '/' + comment;
+            str = str + '/?idGoods=' + goodId
+            XDMTransport.LoadData(encodeURIComponent(host + self.settings.favPathApi + 'add/' + Parameters.shopId + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });

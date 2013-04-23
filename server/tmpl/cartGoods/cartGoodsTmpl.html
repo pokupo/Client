@@ -1,3 +1,11 @@
+<style>
+    .ui-widget-header{
+        border: none;
+        background: none;
+        color: #222222;
+        font-weight: 100;
+    }
+</style>
 <script type="text/html" id="cartGoodsTmpl">
     <div class="basket_block">
         <div class="content">
@@ -104,6 +112,9 @@
                     <input class="form_submit_1" type="submit" value="Оформить заказ" data-bind="click: ClickIssueOrder"/>
                     <input class="form_submit_2" type="submit" value="Продолжить покупки" data-bind="click: ClickProceed"/>
                 </div>
+            </div>
+            <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
+                <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
             </div>
         </td>
     </tr>

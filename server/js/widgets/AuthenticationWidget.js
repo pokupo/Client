@@ -23,14 +23,16 @@ var AuthenticationWidget = function(){
         self.settings.regFormTmplId = Config.Authentication.tmpl.regFormTmplId;
         self.settings.regSidebarTmplId = Config.Authentication.tmpl.regSidebarTmplId;
         self.settings.https = Config.Authentication.https;
+        self.settings.style = Config.Authentication.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.SetPosition();
     };
     self.SetInputParameters = function(){
         self.settings.inputParameters = JSCore.ParserInputParameters(/AuthenticationWidget.js/);
         if(self.settings.inputParameters['params']){
             var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters = input;
+            self.settings.inputParameters['params'] = input;
             
             if(input.tmpl){
                 self.settings.tmplPath = 'authentication/' + input.tmpl + '.html';
@@ -86,7 +88,10 @@ var AuthenticationWidget = function(){
         
         EventDispatcher.AddEventListener('widget.authentication.ok', function(){
             var last = Parameters.cache.lastPage;
-            Routing.SetHash(last.route, last.title, last.data);
+            if(last.route == 'login' || !last.route)
+                Routing.SetHash('catalog', 'Домашняя', {});
+            else
+                Routing.SetHash(last.route, last.title, last.data);
         });
         
         EventDispatcher.AddEventListener('AuthenticationWidget.registration.error', function(data){
@@ -160,6 +165,19 @@ var AuthenticationWidget = function(){
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
             self.WidgetLoader(true);
+        }
+    };
+    self.SetPosition = function(){
+        if(self.settings.inputParameters['position'] == 'absolute'){
+            for(var key in self.settings.inputParameters){
+                if(self.settings.style[key])
+                    self.settings.style[key] = self.settings.inputParameters[key];
+            }
+            $().ready(function(){
+                for(var i=0; i<=Config.Containers.authentication.length-1; i++){
+                    $("#" + Config.Containers.authentication[i]).css(self.settings.style);
+                }
+            });
         }
     };
 };

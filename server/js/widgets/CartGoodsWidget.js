@@ -24,7 +24,7 @@ var CartGoodsWidget = function(){
         self.settings.inputParameters = JSCore.ParserInputParameters(/CartGoodsWidget.js/);
         if(self.settings.inputParameters['params']){
             var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters = input;
+            self.settings.inputParameters['params'] = input;
             if(input.show){
                 for(var i = 0; i <= input.show.length-1; i++){
                     if($.inArray(input.show[i], self.settings.showBlocks) < 0)
@@ -144,7 +144,7 @@ var CartGoodsWidget = function(){
         Operator : function(data){
             self.cart.sellerInfo['operator'] = data;
         },
-        Аinal_cost : function(data){
+        Final_cost : function(data){
             self.cart.finalCost = data;
         }
     };
@@ -174,7 +174,8 @@ var CartGoodsWidget = function(){
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                $('#' + self.settings.containerId).css(self.settings.style);
+                if($('#' + self.settings.containerId).length > 0)
+                   $('#' + self.settings.containerId).css(self.settings.style);
             });
         }
     };
@@ -225,13 +226,30 @@ var BlockGoodsForSellerViewModel = function(content){
         }
         self.finalCost = data.final_cost;
     };
+    self.comment = ko.observable();
     self.ClickButchFavorites = function(){
-        //var checkedGoods = [];
+        var checkedGoods = [];
         ko.utils.arrayForEach(self.goods(), function(goods) {
-            if(goods.isSelected())
-                EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:goods.id, count: 0});
-              //checkedGoods.push(goods.id);  
+            if(goods.isSelected()){
+                checkedGoods.push(goods.id)
+            }
         });
+        self.AddCommentForm(checkedGoods);
+    };
+    self.AddCommentForm = function(checkedGoods){
+        self.comment(' ');
+        $( "#dialog-form-batch" ).dialog({
+            height: 300,
+            width: 396,
+            modal: true,
+            buttons: {
+                "Сохранить": function() {
+                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:checkedGoods.join(','), comment: self.comment()});
+                     $( this ).dialog( "close" );
+                }
+            }
+        });
+        
     };
     self.ClickButchRemove = function(){
         var checkedGoods = [];
@@ -255,13 +273,26 @@ var BlockGoodsForSellerViewModel = function(content){
     };
     self.ClickProceed = function(){
         var last = Parameters.cache.lastPage;
-        Routing.SetHash(last.route, last.title, last.data);
+        if(last.route != 'cart')
+            Routing.SetHash(last.route, last.title, last.data);
+        else
+            Routing.SetHash('catalog', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
         console.log('order');
     };
     self.ClickClearCurt = function(){
+        var count = self.goods().length-1;
+        var removedGoods = [];
+        
+        for(var i = 0; i <= count; i++) {
+              removedGoods.push(self.goods()[i]);
+        };
+        for(var i in removedGoods){
+            self.goods.remove(removedGoods[i]);
+        }
         EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerId});
+        EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
     };
     self.ClickSelectAll = function(block){
         var check = $('#' + self.cssSelectAll).is(':checked');
@@ -273,7 +304,7 @@ var BlockGoodsForSellerViewModel = function(content){
 
 var BlockCartGoodsSellersViewModel = function(data, block, content){
     var self = this;
-    self.sellerId = block.sellerInfo.seller.sellerId;
+    self.sellerId = block.sellerInfo.seller.id;
     self.id = data.id;
     self.fullName = data.full_name;
     self.countReserv = data.count_reserv;
@@ -289,6 +320,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
     self.isSelected = ko.observable(false);
+    self.comment = ko.observable();
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
             self.ordered(self.ordered() + 1);
@@ -307,11 +339,10 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
     self.Favorites = function(){
-        EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, count:self.ordered()});
+        self.AddCommentForm();
     };
     self.ClickRemove = function(){
         EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
-//        EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId:self.id, sellerId:self.sellerId, count:0});
         block.goods.remove(self);
         if(block.goods().length == 0){
             content.content.remove(block);
@@ -319,6 +350,20 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
                 EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
             }
         }
+    };
+    self.AddCommentForm = function(){
+        block.comment(' ');
+        $( "#dialog-form-batch" ).dialog({
+            height: 300,
+            width: 396,
+            modal: true,
+            buttons: {
+                "Сохранить": function() {
+                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment: block.comment()});
+                     $( this ).dialog( "close" );
+                }
+            }
+        });
     };
 };
 
