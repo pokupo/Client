@@ -106,8 +106,11 @@ var CartGoodsWidget = function(){
     self.Update = function(){
         self.WidgetLoader(false);
         $("#" + self.settings.containerId).html('');
-        self.BaseLoad.CartGoods('', function(data){
-            EventDispatcher.DispatchEvent('CartGoods.onload.info', data);
+        self.BaseLoad.InfoFavorite(function(data){
+            Parameters.cache.favorite = data;
+            self.BaseLoad.CartGoods('', function(data){
+                EventDispatcher.DispatchEvent('CartGoods.onload.info', data);
+            });
         });
     };
     self.InsertContainer = {
@@ -291,8 +294,10 @@ var BlockGoodsForSellerViewModel = function(content){
         for(var i in removedGoods){
             self.goods.remove(removedGoods[i]);
         }
-        EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerId});
-        EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
+        content.content.remove(self);
+        EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerInfo.seller.id});
+        if(content.content().length == 0)
+            EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
     };
     self.ClickSelectAll = function(block){
         var check = $('#' + self.cssSelectAll).is(':checked');
@@ -300,6 +305,18 @@ var BlockGoodsForSellerViewModel = function(content){
             goods.isSelected(check);
         });
     }
+    self.DisabledButton = ko.computed(function(){
+        var countGoods = self.goods().length;
+        var selectedGoods = [];
+        
+        for(var i = 0; i <= countGoods-1; i++) {
+            if(self.goods()[i].isSelected())
+              selectedGoods.push(self.goods()[i].id);
+        };
+        if(selectedGoods.length > 0)
+            return true;
+        return false;
+    }, this);
 };
 
 var BlockCartGoodsSellersViewModel = function(data, block, content){
@@ -338,8 +355,11 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
-    self.Favorites = function(){
+    self.AddFavorites = function(){
         self.AddCommentForm();
+    };
+    self.ClickFavorites = function(){
+        
     };
     self.ClickRemove = function(){
         EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
@@ -359,12 +379,18 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
             modal: true,
             buttons: {
                 "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment: block.comment()});
+                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment: block.comment(), data : self});
                      $( this ).dialog( "close" );
                 }
             }
         });
     };
+    self.IsFavorite = ko.observable();
+
+    if($.inArray(self.id, Parameters.cache.favorite) >=0)
+        self.IsFavorite(true)
+    else
+        self.IsFavorite(false)
 };
 
 

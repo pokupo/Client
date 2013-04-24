@@ -1,6 +1,6 @@
 <script type="text/html" id="goodsTmpl">
     <div class="top_content_region">
-        <h1 data-bind="text: blocks.main.chortName"></h1>
+        <h1 data-bind="text: blocks.main.chortName, attr: {id : blocks.main.cssTitleToCart}"></h1>
     </div>
     <div class="category_block_node_top" data-bind="template: { name: 'goodsMainBlockTmpl' }"></div>
     <div class="category_block_node_menu" data-bind="template: { name: 'goodsMenuBlockTmpl' }"></div>
@@ -150,9 +150,20 @@
                         <td></td>
                         <td>
                             <div class="tovar_info">
-                                <span class="favorits"><a href="#" data-bind="click: blocks.main.Favorites">В избранное</a></span> 
-                                <span class="prize"><a href="#" data-bind="click: blocks.main.Gift">Хочу в подарок!</a></span>
+                            
+                                <span class="favorits">
+                                <!-- ko if: blocks.main.IsFavorite -->
+                                <a href="#" data-bind="click: blocks.main.ClickFavorites">Избранный товар</a>
+                                <!-- /ko -->
+                                <!-- ko ifnot : blocks.main.IsFavorite -->
+                                <a href="#"  data-bind="click: blocks.main.AddFavorites">Отложить в избранное</a>
+                                <!-- /ko -->
+                                </span>
+<!--                                <span class="prize"><a href="#" data-bind="click: blocks.main.Gift">Хочу в подарок!</a></span>-->
                                 <!-- кнопки соц. сетей --><span class="links" id="share"></span><!-- -->	
+                            </div>
+                            <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
+                                <textarea name="comment" rows="10" cols="50" data-bind="value : blocks.main.comment"></textarea>
                             </div>
                         </td>
                     </tr>
@@ -164,7 +175,7 @@
 
 <script type="text/html" id="goodsGalleryBlockTmpl">
     <div class="node_photo">
-        <div class="big_photo"><img title="" id="goodsToCart" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName }"/></div>
+        <div class="big_photo"><img title="" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }"/></div>
         <!-- ko if: $parent.ShowGallery() -->
         <div class="carucel">
             <ul id="jcarousel" data-bind="css: $parent.cssBlockGallery">

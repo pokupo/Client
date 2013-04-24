@@ -18,9 +18,11 @@ Parameters = {
         block : {},
         contentBlock : {},
         content : {},
+        favorite : [],
         searchContent : {},
         roots: [],
         infoCategory : {},
+        infoSeller : {},
         goodsInfo : {},
         relatedGoods : {},
         cart : 0,
@@ -158,7 +160,7 @@ function Widget(){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
             embed.SetParameters(data);
-            embed.Init(embed, true); 
+            embed.Init(embed, true);
         });
     };
     this.CreateContainer = function(){
@@ -176,37 +178,35 @@ function Widget(){
         };
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
+            var inputDate = data;
             if(Parameters.cache.userInformation && !JSON.parse(Parameters.cache.userInformation).err){
-                self.WidgetLoader(false);
                 self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
-                        self.WidgetLoader(true);
+                        inputDate.data.IsFavorite(true);
                         alert('Выбранные товары добавлены в избранное.');
                     }
                     else{
                         alert('Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.');
-                        self.WidgetLoader(true);
                     }
                 });
             }
             else{
                 alert('Необходимо авторизоваться.')
-                self.WidgetLoader(true);
             }
         });
         
         EventDispatcher.AddEventListener('widgets.cart.addGoods', function(data){
             var sellerId = data.sellerId ? data.sellerId : false;
             var count = data.count ? data.count : false;
-            self.WidgetLoader(false);
-            self.BaseLoad.AddGoodsToCart(data.goodsId, sellerId, count, function(data){
+            var goodsId = data.goodsId;
+            self.BaseLoad.AddGoodsToCart(goodsId, sellerId, count, function(data){
                 if(data.err){
-                    self.WidgetLoader(true);
                     alert(data.err);
                 }
                 else{
-                    self.WidgetLoader(true);
+                    if(typeof AnimateAddToCart !== 'undefined')
+                        new AnimateAddToCart(goodsId);
                     EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
                 }
             });
@@ -441,6 +441,15 @@ function Widget(){
                str = '/' + comment;
             str = str + '/?idGoods=' + goodId
             XDMTransport.LoadData(encodeURIComponent(host + self.settings.favPathApi + 'add/' + Parameters.shopId + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        InfoFavorite : function(callback){
+            var host = self.settings.hostApi;
+            if(Parameters.cache.https == "always")
+                host = self.settings.httpsHostApi;
+            XDMTransport.LoadData(host + self.settings.favPathApi + 'info/' + Parameters.shopId + '/no' , function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });

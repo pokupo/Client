@@ -71,7 +71,7 @@ var CartWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widgets.cart.infoUpdate', function(data){
-             EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
+             EventDispatcher.DispatchEvent('CartWidget.onload.tmpl', data);
         });
     };
     self.Fill = function(data){

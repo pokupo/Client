@@ -7,7 +7,8 @@ window.InfoSellerWidget = function(){
         inputParameters : {},
         container : null,
         style : null,
-        infoSeller : {}
+        infoSeller : {},
+        hash : null
     };
     self.InitWidget = function(){
         self.settings.style = Config.InfoSeller.style;
@@ -21,7 +22,7 @@ window.InfoSellerWidget = function(){
         self.settings.tmplPath = Config.InfoSeller.tmpl.path;
         self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
         self.settings.container = data.element;
-
+        self.settings.hash = EventDispatcher.HashCode(JSON.stringify(data.options).toString());
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
                 if(data.options.params['tmpl']['path'])
@@ -36,18 +37,18 @@ window.InfoSellerWidget = function(){
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl')
+                EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
                 self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl')
+                    EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
                 });
             });
         }
         
-        EventDispatcher.AddEventListener('InfoSellerWidget.onload.tmpl', function (data){
+        EventDispatcher.AddEventListener('InfoSellerWidget.onload.tmpl.' + self.settings.hash, function (data){
             if(self.settings.infoSeller['data'])
                 self.Fill(self.settings.infoSeller['data'])
             else{
@@ -56,7 +57,7 @@ window.InfoSellerWidget = function(){
             }
         });
         
-        EventDispatcher.AddEventListener('InfoSellerWidget.fill.block', function (data){
+        EventDispatcher.AddEventListener('InfoSellerWidget.fill.block.' + self.settings.hash, function (data){
             self.Render(data);
         });
     };

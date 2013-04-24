@@ -65,9 +65,23 @@
                             <td class="row_2"><a href="#" data-bind="click: ClickGoods"><img title="" alt="" src="" data-bind="attr: {src: routeImages, title: fullName }"/></a></td>
                             <td class="row_3">
                                 <span><a href="#" data-bind="text: fullName, click: ClickGoods"></a></span>
-                                <a href="#" class="del" data-bind="click: ClickRemove">Удалить из корзины</a><a href="#" class="add" data-bind="click: Favorites">Отложить в избранное</a>
+                                <a href="#" class="del" data-bind="click: ClickRemove">Удалить из корзины</a>
+                                <!-- ko if: IsFavorite -->
+                                <a href="#" class="add" data-bind="click: ClickFavorites">Избранный товар</a>
+                                <!-- /ko -->
+                                <!-- ko ifnot : IsFavorite -->
+                                <a href="#" class="add" data-bind="click: AddFavorites">Отложить в избранное</a>
+                                <!-- /ko -->
                             </td>
-                            <td class="row_4"><span class="end_cost" data-bind="text: sellCost"></span></td>
+                            <td class="row_4">
+                            <span>
+                                <!--ko text: sellEndCost --><!--/ko--> руб.
+                                <!-- ko if: (sellCost && sellEndCost() != sellCost() ) -->
+                                <span><!--ko text: sellCost --><!--/ko--> руб.</span>
+                                <!-- /ko -->
+                            </span>
+                            <!-- <span class="end_cost" data-bind="text: sellCost"></span>-->
+                            </td>
                             <td class="row_5">
                                 <div class="count">
                                     <a href="#" class="minus" data-bind="click: ClickMinus"></a>
@@ -76,7 +90,12 @@
                                 </div>
                                 <div class="reserv">доступно <!-- ko text: countReserv --><!-- /ko --> шт.</div>
                             </td>
-                            <td class="row_6" data-bind="text: sum"></td>
+                            <td class="row_6">
+                                <!--ko text: endSum --><!--/ko--> руб.
+                                <!-- ko if: (sum && endSum() != sum() ) -->
+                                <span><!--ko text: sum --><!--/ko--> руб.</span>
+                                <!-- /ko -->
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -92,8 +111,14 @@
                 <div class="result_left">
                     <span>Действия для выбраного:</span>
                     <div class="buttons">
+                    <!-- ko if: DisabledButton -->
                         <input class="form_submit_del" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
                         <input class="form_submit_fav" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
+                    <!-- /ko -->
+                    <!-- ko ifnot: DisabledButton -->
+                        <input class="form_submit_del" disabled="disabled" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                        <input class="form_submit_fav" disabled="disabled" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
+                    <!-- /ko -->
                     </div>
                     <a href="#" data-bind="click: ClickClearCurt">Очистить корзину</a>
                 </div>

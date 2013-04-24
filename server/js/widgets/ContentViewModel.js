@@ -37,6 +37,8 @@ var ContentViewModel = function(data, i){
     self.routIconAuction = Parameters.routIconAuction;
     self.imageHref = '#' + (i+1);
     self.cssBlock = 'views-row views-row-' + (i+1);
+    self.cssToCart = 'goodsToCart_' + self.id;
+    self.cssTitleToCart = 'goodsTilteToCart_' + self.id;
     
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.chortName, {category : Routing.GetActiveCategory(),id : self.id});

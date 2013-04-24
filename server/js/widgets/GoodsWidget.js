@@ -77,9 +77,12 @@ var GoodsWidget = function(){
     self.Update = function(){
         self.WidgetLoader(false);
         $("#" + self.settings.containerId).html('');
-        self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
-            EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)
-        })
+        self.BaseLoad.InfoFavorite(function(data){
+            Parameters.cache.favorite = data;
+            self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
+                EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)
+            })
+        });
     };
     self.InsertContainer = {
         Content : function(){
@@ -262,8 +265,10 @@ var GoodsMainBlockViewModel = function(data){
             return data.name_group_user;
         return null;
     }, this);
-    self.ordered = ko.observable(0);
+    self.ordered = ko.observable(1);
     self.cart = ko.observable(Parameters.cache.cart);
+    self.cssToCart = 'goodsToCart_' + self.id;
+    self.cssTitleToCart = 'goodsTilteToCart_' + self.id;
     
     self.Login = function(){ 
         alert('login');
@@ -289,15 +294,11 @@ var GoodsMainBlockViewModel = function(data){
             return true;
         return false;
     }, this);
-    self.AddToCart = function(){
+    self.AddToCart = function(cart){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
-      
-        if(typeof AnimateAddToCart !== 'undefined' && self.ordered() > 0){
-           new AnimateAddToCart();
-       
-           EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()})
-        }
+        console.log(cart);
+        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()})
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) > 0 && self.count != 0)
@@ -311,13 +312,39 @@ var GoodsMainBlockViewModel = function(data){
         alert('report');
     };
     self.ToCart = function(){
-        alert('to cart');
+        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+        Routing.SetHash('cart', Config.CartGoods.title, {});
     };
     self.BidOnAuction = function(){
         alert('bid on auction') ;
     };
-    self.Favorites = function(){
-        EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, count:self.ordered()});
+    self.AddFavorites = function(){
+        self.AddCommentForm();
+    };
+    self.comment = ko.observable('');
+    self.AddCommentForm = function(){
+        self.comment(' ');
+        $( "#dialog-form-batch" ).dialog({
+            height: 300,
+            width: 396,
+            modal: true,
+            buttons: {
+                "Сохранить": function() {
+                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, count:self.ordered(), data:self});
+                     $( this ).dialog( "close" );
+                }
+            }
+        });
+    };
+    self.IsFavorite = ko.observable();
+    
+    if($.inArray(self.id, Parameters.cache.favorite) >=0)
+        self.IsFavorite(true)
+    else
+        self.IsFavorite(false)
+    
+    self.ClickFavorites = function(){
+        
     };
     self.Gift = function(){
         alert('gift');
