@@ -267,8 +267,9 @@ var GoodsMainBlockViewModel = function(data){
     }, this);
     self.ordered = ko.observable(1);
     self.cart = ko.observable(Parameters.cache.cart);
-    self.cssToCart = 'goodsToCart_' + self.id;
-    self.cssTitleToCart = 'goodsTilteToCart_' + self.id;
+    self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
+    self.cssToCart = 'goodsToCart_' + self.uniq;
+    self.cssTitleToCart = 'goodsTilteToCart_' + self.uniq;
     
     self.Login = function(){ 
         alert('login');
@@ -298,7 +299,7 @@ var GoodsMainBlockViewModel = function(data){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
         console.log(cart);
-        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()})
+        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered(), hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) > 0 && self.count != 0)

@@ -1,4 +1,5 @@
 var AnimateAddToCart = function(goodsId) {
+    console.log(goodsId);
     if($('#' + Config.Cart.cartId).length){
         var imageElement = document.getElementById('goodsToCart_' + goodsId);
         var imageToFly = $(imageElement);
@@ -52,8 +53,7 @@ var AnimateAddToCart = function(goodsId) {
 
         setTimeout(function() {
             flyTitle.remove()
-        }, 600);
-        
+        }, 600); 
     }
 }
 
