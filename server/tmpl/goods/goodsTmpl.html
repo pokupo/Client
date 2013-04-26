@@ -69,7 +69,7 @@
                                                                                                                 <!-- ko text: nameGroupUser --><!-- /ko -->
                                                                                                                 <!-- /ko -->
                                                                                                                 <!-- ko ifnot: nameGroupUser -->
-                                                                                                                <a href="#" data-bind="click: Login">Авторизация покупателя/Регистрация покупателя"</a>
+                                                                                                                <a href="#" data-bind="click: Login">Войти в кабинет</a>
                                                                                                                 <!-- /ko -->
                                                                                                             </span> 
                                                                                                         </div>
@@ -160,7 +160,7 @@
                                 <!-- /ko -->
                                 </span>
 <!--                                <span class="prize"><a href="#" data-bind="click: blocks.main.Gift">Хочу в подарок!</a></span>-->
-                                <!-- кнопки соц. сетей --><span class="links" id="share"></span><!-- -->	
+                                <!-- кнопки соц. сетей --><span class="links" data-bind="attr: {id: blocks.main.cssShareBlock}"></span><!-- -->	
                             </div>
                             <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
                                 <textarea name="comment" rows="10" cols="50" data-bind="value : blocks.main.comment"></textarea>

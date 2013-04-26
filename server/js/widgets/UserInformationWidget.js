@@ -66,7 +66,7 @@ var UserInformationWidget = function(){
         
         EventDispatcher.AddEventListener('UserInformationWidget.click.logout', function(){
             self.BaseLoad.Logout(function(data){
-                if(data.result == 'ok'){
+                if(data.result == 'ok' || data.result == 'fail'){
                     Routing.SetHash('catalog', 'Домашняя', {});
                 }
             });

@@ -220,7 +220,8 @@ var BlockGoodsForSellerViewModel = function(content){
     self.tatalDiscount = ko.computed(function(){
         return (self.totalSum() - self.tatalForPayment()).toFixed(2);
     }, this);
-    self.cssSelectAll = "cartGoodsSelectAll";
+    self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
+    self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
     self.isChecked = ko.observable(false);
     
     self.AddContent = function(data){
@@ -272,6 +273,8 @@ var BlockGoodsForSellerViewModel = function(content){
         EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
         
         if(self.goods().length == 0)
+            content.content.remove(self);
+        if(content.content().length == 0)
             EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
     };
     self.ClickProceed = function(){
@@ -287,7 +290,6 @@ var BlockGoodsForSellerViewModel = function(content){
     self.ClickClearCurt = function(){
         var count = self.goods().length-1;
         var removedGoods = [];
-        
         for(var i = 0; i <= count; i++) {
               removedGoods.push(self.goods()[i]);
         };
@@ -356,7 +358,10 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
     self.AddFavorites = function(){
-        self.AddCommentForm();
+        if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
+            self.AddCommentForm();
+        else
+            alert('Необходимо авторизоваться.');
     };
     self.ClickFavorites = function(){
         

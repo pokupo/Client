@@ -32,7 +32,8 @@ Parameters = {
         scripts : {},
         tmpl : {},
         lastPage : {},
-        https : null
+        https : null,
+        userInformation : null
     },
     filter : {},
     catalog : {
@@ -372,18 +373,24 @@ function Widget(){
             }
         },
         Login : function(username, password, remember_me, callback){
-            var host = self.settings.hostApi;
-            if(Parameters.cache.https == "always" || Parameters.cache.https == "login")
-                host = self.settings.httpsHostApi;
-            
-            var str = "";
-            if(username && password)
-                str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
-            XDMTransport.LoadData(encodeURIComponent(host + self.settings.userPathApi + 'login/' + str), function(data){
-                Parameters.cache.userInformation = data;
+            if(Parameters.cache.userInformation == null || JSON.parse(Parameters.cache.userInformation).err){
+                var host = self.settings.hostApi;
+                if(Parameters.cache.https == "always" || Parameters.cache.https == "login")
+                    host = self.settings.httpsHostApi;
+
+                var str = "";
+                if(username && password)
+                    str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
+                XDMTransport.LoadData(encodeURIComponent(host + self.settings.userPathApi + 'login/' + str), function(data){
+                    Parameters.cache.userInformation = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                });
+            }
+            else{
                 if(callback)
-                    callback(JSON.parse(data));
-            });
+                    callback(JSON.parse(Parameters.cache.userInformation));
+            }
         },
         Logout : function(callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'logout'), function(data){

@@ -1,5 +1,4 @@
 var AnimateAddToCart = function(goodsId) {
-    console.log(goodsId);
     if($('#' + Config.Cart.cartId).length){
         var imageElement = document.getElementById('goodsToCart_' + goodsId);
         var imageToFly = $(imageElement);

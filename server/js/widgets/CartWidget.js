@@ -102,44 +102,47 @@ var CartWidget = function(){
 var CartViewModel = function(){
     var self = this;
     self.title = Config.Cart.title;
-    self.ShowTitle = function(){
-        if(Config.Cart.showBlock.title == 'never')
+    self.ShowTitle = ko.computed(function(){
+        if(Config.Cart.showBlocks.title == 'never')
             return false;
-        if(Config.Cart.showBlock.title == 'always')
+        if(Config.Cart.showBlocks.title == 'always')
             return true;
-        if(Config.Cart.showBlock.title == 'empty'){
+        if(Config.Cart.showBlocks.title == 'empty'){
             return true;
         }
-    };
-    self.count = 0;
-    self.ShowCount = function(){
-        if(Config.Cart.showBlock.count && self.count > 0)
+        return false;
+    }, this);
+    self.count = ko.observable(0);
+    self.ShowCount = ko.computed(function(){
+        if(Config.Cart.showBlocks.count && self.count() > 0)
             return true;
         return false;
-    };
-    self.baseCost = 0;
-    self.ShowBaseCost = function(){
-        if(Config.Cart.showBlock.baseCost && self.baseCost > 0)
+    },this);
+    self.baseCost = ko.observable(0);
+    self.ShowBaseCost = ko.computed(function(){
+        if(Config.Cart.showBlocks.baseCost && self.baseCost() > 0 && self.baseCost() > self.finalCost())
             return true;
         return false;
-    };
-    self.finalCost = 0;
-    self.ShowFinalCost = function(){
-        if(Config.Cart.showBlock.finalCost && self.finalCost > 0)
+    },this);
+    self.finalCost = ko.observable(0);
+    self.ShowFinalCost = ko.computed(function(){
+        if(Config.Cart.showBlocks.finalCost && self.finalCost() > 0)
             return true;
         return false;
-    };
+    },this);
     
     self.AddContent = function(data){
         if(!data.err){
-            self.count = data.count;
-            self.baseCost = data.base_cost;
-            self.finalCost = data.final_cost;
+            self.count(data.count);
+            self.baseCost(data.base_cost);
+            self.finalCost(data.final_cost);
         }
     };
     self.ClickCart = function(){
-        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
-        Routing.SetHash('cart', Config.CartGoods.title, {});
+        if(self.count() > 0){
+            Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+            Routing.SetHash('cart', Config.CartGoods.title, {});
+        }
     };
 };
 

@@ -137,9 +137,8 @@ var GoodsWidget = function(){
                    $("#" + Config.Containers.catalog).hide();
                 $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+
                 
-                if(Ya != undefined)
-                    new Ya.share(Config.Goods.share);
                 if(data.ShowGallery())
                     new InitCarousel(Config.Goods.galleryId);
             }
@@ -147,6 +146,10 @@ var GoodsWidget = function(){
             delete data;
 
             self.WidgetLoader(true);
+            if(Ya != undefined){
+                Config.Goods.share.element = data.blocks.main.cssShareBlock
+                new Ya.share(Config.Goods.share);
+            }
         }
     };
     self.AddGoodsInCookie = function(data){
@@ -270,9 +273,11 @@ var GoodsMainBlockViewModel = function(data){
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
     self.cssToCart = 'goodsToCart_' + self.uniq;
     self.cssTitleToCart = 'goodsTilteToCart_' + self.uniq;
-    
+    //self.cssShareBlock = ('share_' + self.uniq).replace('-', '');
+    self.cssShareBlock = 'share';
     self.Login = function(){ 
-        alert('login');
+        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+        Routing.SetHash('login', 'Авторизация пользователя', {});
     };
     self.showSelectionCount = ko.computed(function(){
         if($.inArray('selectionCount', Config.Goods.showBlocks) > 0 && self.count != 0)  
@@ -298,7 +303,7 @@ var GoodsMainBlockViewModel = function(data){
     self.AddToCart = function(cart){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
-        console.log(cart);
+ 
         EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered(), hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){
@@ -320,7 +325,10 @@ var GoodsMainBlockViewModel = function(data){
         alert('bid on auction') ;
     };
     self.AddFavorites = function(){
-        self.AddCommentForm();
+        if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
+            self.AddCommentForm();
+        else
+            alert('Необходимо авторизоваться.');
     };
     self.comment = ko.observable('');
     self.AddCommentForm = function(){

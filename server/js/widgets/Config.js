@@ -264,10 +264,10 @@ var Config = {
         cartId : 'cart', // id корзины товара
         title : 'Корзина', // заголовок блока
         showBlocks : {
-            "title" : 'never', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
-            "count" : false, // отображать кол-во товара
-            "baseCost" : false, // отображать сумму без скидок
-            "finalCost" : false // отображать конечную сумму
+            title : 'never', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
+            count : false, // отображать кол-во товара
+            baseCost : false, // отображать сумму без скидок
+            finalCost : false // отображать конечную сумму
         },
         tmpl : {
             path : "cart/cartTmpl.html", // файл шаблонов
