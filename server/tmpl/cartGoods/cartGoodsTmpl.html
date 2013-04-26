@@ -124,10 +124,19 @@
                 </div>
                 <div class="result_right">
                     <span class="text_top">
-                        <span class="text_2"><span><!-- ko text: totalSum --><!-- /ko --> руб.</span> <!-- ko text: tatalForPayment --><!-- /ko --> руб. </span><span class="text_1">Цена:</span>
+                        <span class="text_2">
+                            <!-- ko if: totalSum() != tatalForPayment() -->
+                            <span><!-- ko text: totalSum --><!-- /ko --> руб.</span>
+                            <!-- /ko -->
+                            
+                            <!-- ko text: tatalForPayment --><!-- /ko --> руб. 
+                        </span><span class="text_1">Цена:</span>
                     </span>
                     <span class="text_center">
-                        <span class="text_2"><!-- ko text: tatalDiscount --><!-- /ko --> руб.</span><span class="text_1">Скидка на заказ:</span>
+                        <!-- ko if: tatalDiscount() > 0 -->
+                            <span class="text_2"><!-- ko text: tatalDiscount --><!-- /ko --> руб.</span>
+                            <span class="text_1">Скидка на заказ:</span>
+                        <!-- /ko -->
                     </span>
                     <span class="text_bottom">
                         <span class="text_2"><!-- ko text: tatalForPayment --><!-- /ko --> руб.</span><span class="text_1">К оплате:</span>
