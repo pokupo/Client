@@ -29,7 +29,7 @@
                 <!-- ko foreach: contentBlock -->
                 <li>
                     <div class="photo">
-                        <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/>
+                        <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, id : cssToCart}"/>
                         <!-- ko if: discount > 0 -->
                         <div class="save">
                             <span class="text_1">скидка</span>
@@ -37,7 +37,7 @@
                         </div>
                         <!-- /ko -->
                     </div>
-                    <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods"></a></div>
+                    <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></div>
                     <span class="price">
                         <!-- ko if: discount > 0 -->
                         <span data-bind="text: sellGoods"></span><br />
@@ -62,8 +62,8 @@
             <tbody data-bind="foreach: contentBlock"> 
                 <tr class="col_2" data-bind="foreach: str">
                     <td class="row_1">
-                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName}"/></div>
-                        <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods"></a></div>
+                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, id : cssToCart}"/></div>
+                        <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></div>
                         <div class="category">Магазин: <a href="#" data-bind="text: shopName , click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
                         <span class="price" data-bind="text: sellCost"></span>
                         <a href="#" class="bay" data-bind="click: ClickBuy">Купить</a>

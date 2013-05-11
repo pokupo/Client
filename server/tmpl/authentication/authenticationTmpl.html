@@ -1,0 +1,88 @@
+<script type="text/html" id="authenticationFormTmpl">
+    <div class="user_login_block">
+        <div>
+            <div data-bind="text: error"></div>
+            <form action="" method="post" data-bind="submit: Login">
+                <table style="width: 100%;">
+                    <tbody><tr>
+                            <td>
+                                <div class="form_item form_item_mail">
+                                    <label for="username">Логин:</label>
+                                    <input type="text" id="username" name="username" value="" required="required" data-bind="value: username">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form_item form_item_pass">
+                                    <a href="" data-bind="click: ForgotPassword">Забыли пароль?</a>
+                                    <label for="password">Пароль:</label>
+                                    <input type="password" id="password" name="password" required="required" data-bind="value: password">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form_item form_item_mail">
+                                    <input type="checkbox" id="remember_me" name="remember_me" value="on" data-bind="value: rememberMe">
+                                    <label for="remember_me">Запомнить меня</label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input class="form_submit" type="submit" id="_submit" name="submit" value="Войти">
+            </form>
+            <a href="#" class="z_payment_enter" data-bind="click: ClickZPayment">Войти через Z-Payment</a>
+        </div>
+    </div>
+</script>
+<script type="text/html" id="authenticationSidebarTmpl">
+    <div class="enter_block_1">
+        <div class="block_title">Первый раз у нас?</div>
+        <ul>
+            <li><span>Покупайте и продавайте с удовольствием</span></li>
+            <li><span>Общайтесь с единомышленниками</span></li>
+            <li><span>Будьте уверены в безопасности сделок</span></li>
+        </ul>
+        <a href="#" class="register" data-bind="click: ClickRegistration">Регистрация</a>
+    </div>
+</script>
+
+<script type="text/html" id="registrationFromTmpl">
+    <div class="user_login_block">
+        <div>
+        </div>
+        <div>
+            <form action="" method="POST" class="fos_user_registration_register" data-bind="submit: Register">
+                <div id="fos_user_registration_form">
+                    <div>
+                        <label for="fos_user_registration_form_username" class="required">Логин:</label>
+                        <div class="error_field" data-bind="text: errorUsername"></div>
+                        <input type="text" id="fos_user_registration_form_username" name="username" required="required" maxlength="255" data-bind="value: username"/>
+                    </div>
+                    <div>
+                        <label for="fos_user_registration_form_email" class="required">Электронная почта:</label>
+                        <div class="error_field" data-bind="text: errorEmail"></div>
+                        <input type="email" id="fos_user_registration_form_email" name="email" required="required" data-bind="value: email"/>
+                    </div>
+                    <div>
+                        <label for="fos_user_registration_form_plainPassword_first" class="required">Пароль:</label>
+                        <div class="error_field" data-bind="text: errorFirstPassword"></div>
+                        <input type="password" id="fos_user_registration_form_plainPassword_first" name="firstPassword" required="required" data-bind="value: firstPassword"/>
+                    </div>
+                    <div>
+                        <label for="fos_user_registration_form_plainPassword_second" class="required">Подтвердите пароль:</label>
+                        <div class="error_field" data-bind="text: errorSecondPassword"></div>
+                        <input type="password" id="fos_user_registration_form_plainPassword_second" name="secondPassword" required="required" data-bind="value: secondPassword"/>
+                    </div>
+                    <input type="submit" value="Регистрация">
+                </div>
+            </form>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="registrationSidebarTmpl">
+    <p></p>
+</script>

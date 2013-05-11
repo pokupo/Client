@@ -6,7 +6,7 @@ var JSSettings = {
     pathToCore: "server/index.html",
 
     scripts : [
-        'jquery-ui.custom.js',
+        'jquery-ui-1.10.2.custom.min.js',
         'easyXDM.min.js',
         'knockout-2.2.0.js',
         'jquery.livequery.js',

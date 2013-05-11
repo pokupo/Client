@@ -1,6 +1,7 @@
 var ContentViewModel = function(data, i){
     var self = this;
     self.id = data.id;
+    self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
     self.chortName = data.chort_name;
     self.fullName = data.full_name;
     self.routeImage = Parameters.pathToImages + data.route_image;
@@ -37,6 +38,8 @@ var ContentViewModel = function(data, i){
     self.routIconAuction = Parameters.routIconAuction;
     self.imageHref = '#' + (i+1);
     self.cssBlock = 'views-row views-row-' + (i+1);
+    self.cssToCart = 'goodsToCart_' + self.uniq;
+    self.cssTitleToCart = 'goodsTilteToCart_' + self.uniq;
     
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.chortName, {category : Routing.GetActiveCategory(),id : self.id});
@@ -45,7 +48,7 @@ var ContentViewModel = function(data, i){
         alert(self.shopId);
     }
     self.ClickBuy = function(){
-    //alert()
+         EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, hash : self.uniq})
     }
     self.ClickAuction = function(){
         
