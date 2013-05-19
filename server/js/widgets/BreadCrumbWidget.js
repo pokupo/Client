@@ -201,6 +201,20 @@ var BreadCrumbViewModel = function(){
             
             if(Routing.route == 'goods')
                 self.lastItem.push('Карточка товара');
+            if(Routing.route == 'registration'){
+                self.crumbs = ko.observableArray();
+                self.lastItem = ko.observableArray();
+                
+                self.lastItem.push('Регистрация покупателя');
+                if(Routing.params.step == 1)
+                    self.lastItem.push('Шаг 1 из 4');
+                if(Routing.params.step == 2)
+                    self.lastItem.push('Шаг 2 из 4');
+                if(Routing.params.step == 3)
+                    self.lastItem.push('Шаг 3 из 4');
+                if(Routing.params.step == 4)
+                    self.lastItem.push('Шаг 4 из 4');
+            } 
 
             EventDispatcher.DispatchEvent('breadCrumbWidget.fill.item', self);
         }
