@@ -86,7 +86,6 @@ var RegistrationWidget = function() {
                     test = false;
                 if (!self.Validate.Phone(data, step1))
                     test = false;
-
                 if (test) {
                     var params = [];
                     if (step1.username())
@@ -207,7 +206,7 @@ var RegistrationWidget = function() {
             return test;
         },
         Phone: function(data, step1) {
-            var test = false;
+            var test = true;
             if (data.check_phone) {
                 if (data.check_phone == 'on' || data.check_phone == 'ban')
                     step1.errorPhone(Config.Registration.error.phone.uniq);
@@ -219,7 +218,7 @@ var RegistrationWidget = function() {
         },
         Email: function(data, step1) {
             var test = false;
-            if (data.check_phone) {
+            if (data.check_email) {
                 if (data.check_email == 'on' || data.check_email == 'ban')
                     step1.errorEmail(Config.Registration.error.email.uniq);
                 if (data.check_email == 'yes' || data.check_email == 'off')
@@ -319,7 +318,7 @@ var RegistrationWidget = function() {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            $('input#' + form.cssPhone).mask("7 ?999 999 99 99", {placeholder: "_"});
+            $('input#' + form.cssPhone).mask("?9 999 999 99 99", {placeholder: "_"});
             self.WidgetLoader(true);
         },
         Step2: function(form) {
