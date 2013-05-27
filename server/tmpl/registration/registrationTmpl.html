@@ -325,7 +325,7 @@
                                         <label>Город:
                                             <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
                                         </label>
-                                        <input type="text" name="text" data-bind="value: city, attr: {id: cssCityList}"/>
+                                        <input type="text" name="text" data-bind="value: customCity, attr: {id: cssCityList}"/>
                                         <!-- ko if: errorCity-->
                                             <div class="form_error" data-bind="text: errorCity"></div>
                                         <!-- /ko -->
@@ -338,7 +338,7 @@
                                         <label>Адрес проживания:
                                             <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
                                         </label>
-                                        <input type="text" name="text" value="" data-bind="value: address, attr: {id: cssAddress}"/>
+                                        <input type="text" name="text" value="" data-bind="value: customAddress, attr: {id: cssAddress}"/>
                                         <div class="description">Улица, квартира, дом, номер подъезда, этажа, код домофона</div>
                                         <!-- ko if: errorAddress-->
                                             <div class="form_error" data-bind="text: errorAddress"></div>

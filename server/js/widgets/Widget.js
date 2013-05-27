@@ -529,7 +529,7 @@ function Widget(){
             });
         },
         EditAddress : function(str, callback){
-            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + 'edit/address/?' + str), function(data){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/address/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });

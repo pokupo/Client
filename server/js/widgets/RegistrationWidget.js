@@ -175,16 +175,17 @@ var RegistrationWidget = function() {
         
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
             self.WidgetLoader(false);
-            var str = 'id_country=' + step4.country().id;
+            var str = '?id_country=' + step4.country().id;
             if(step4.region())
                 str = str + '&code_region=' + step4.region().regioncode;
             else
                 str = str + '&name_region=' + step4.customRegion();
             if(step4.city())
-                str = str + '&code_city=' + step4.region().aoguid;
+                str = str + '&code_city=' + step4.city().aoguid;
             else
-                str = str + '&name_city=' + step4.customCity();
-            str = str + '&address=' + step4.address() + '&post_code=' + step4.postIndex();
+                str = str + '&name_city=' + step4.customCity();     
+            str = str + '&address=' + step4.customAddress() + '&post_code=' + step4.postIndex();
+
             self.BaseLoad.EditAddress(str, function(data){
                 if(data == true || (data.result && data.result == 'ok')){
                     Parameters.cache.reg.step4 = step4;
@@ -350,12 +351,18 @@ var RegistrationWidget = function() {
             $('#' + form.cssRegionList).autocomplete({
                 source: function (request, response) {
                     self.BaseLoad.Region(form.country().id + '/' + request.term, function(data){
-                        response($.map(data, function (item) {
-                            return {
-                                value: $.trim(item.formalname + ' ' + item.shortname),
-                                region: item
-                            };
-                        }));
+                        if(!data.err){
+                            response($.map(data, function (item) {
+                                return {
+                                    value: $.trim(item.formalname + ' ' + item.shortname),
+                                    region: item
+                                };
+                            }));
+                        }
+                        else{
+                            $('#' + form.cssRegionList).autocomplete( "close" );
+                            return false;
+                        }
                     });
                 },
                 select: function( event, ui ) {
@@ -372,12 +379,18 @@ var RegistrationWidget = function() {
             $('#' + form.cssCityList).autocomplete({
                 source: function (request, response) {
                     self.BaseLoad.City(form.country().id + '/' + form.region().regioncode + '/' + request.term, function(data){
-                        response($.map(data, function (item) {
-                            return {
-                                value: $.trim(item.shortname + '. ' + item.formalname),
-                                city: item
-                            };
-                        }));
+                        if(!data.err){
+                            response($.map(data, function (item) {
+                                return {
+                                    value: $.trim(item.shortname + '. ' + item.formalname),
+                                    city: item
+                                };
+                            }));
+                        }
+                        else{
+                            $('#' + form.cssCityList).autocomplete( "close" );
+                            return false;
+                        }
                     });
                 },
                 select: function( event, ui ) {
@@ -393,17 +406,23 @@ var RegistrationWidget = function() {
             $('#' + form.cssAddress).autocomplete({
                 source: function (request, response) {
                     self.BaseLoad.Street(form.country().id + '/' + form.region().regioncode + '/' + form.city().aoguid + '/' + request.term, function(data){
-                        response($.map(data, function (item) {
-                            return {
-                                value: $.trim(item.shortname + '. ' + item.formalname),
-                                street: item
-                            };
-                        }));
+                        if(!data.err){
+                            response($.map(data, function (item) {
+                                return {
+                                    value: $.trim(item.shortname + '. ' + item.formalname),
+                                    street: item
+                                };
+                            }));
+                        }
+                        else{
+                            $('#' + form.cssAddress).autocomplete( "close" );
+                            return false;
+                        }
                     });
                 },
                 select: function( event, ui ) {
                     form.address(ui.item.street);
-                    form.customCity(ui.item.value);
+                    form.customAddress(ui.item.value);
                     if(ui.item.street && ui.item.street.postalcode != 0)
                         form.postIndex(ui.item.street.postalcode); 
                     else
@@ -778,6 +797,7 @@ var RegistrationFormStep4ViewModel = function() {
     self.cssCityList = 'city_list';
     self.errorCity = ko.observable(null);
     self.address = ko.observable();
+    self.customAddress = ko.observable();
     self.cssAddress = 'address';
     self.errorAddress = ko.observable(null);
     self.postIndex = ko.observable();
