@@ -157,7 +157,7 @@ var RegistrationWidget = function() {
             var str = '?sname=' + step3.lastName() + 
                       '&fname=' + step3.firstName() + 
                       '&mname=' + step3.firstName() +
-                      '&bday=' + birthDay +
+                      '&bdate=' + birthDay +
                       '&gender=' + step3.gender();
 
             self.BaseLoad.EditProfile(str, function(data){
