@@ -197,9 +197,9 @@ var RegistrationWidget = function() {
         Username: function(data, step1) {
             var test = false;
             if (data.check_username) {
-                if (data.check_username == 'on' || data.check_username == 'ban')
+                if (data.check_username == 'on' || data.check_username == 'ban' || data.check_username == 'off')
                     step1.errorUsername(Config.Registration.error.username.uniq);
-                if (data.check_username == 'yes' || data.check_username == 'off')
+                if (data.check_username == 'yes')
                     test = true;
             }
 
@@ -208,9 +208,9 @@ var RegistrationWidget = function() {
         Phone: function(data, step1) {
             var test = true;
             if (data.check_phone) {
-                if (data.check_phone == 'on' || data.check_phone == 'ban')
+                if (data.check_phone == 'on' || data.check_phone == 'ban' || data.check_phone == 'off')
                     step1.errorPhone(Config.Registration.error.phone.uniq);
-                if (data.check_phone == 'yes' || data.check_phone == 'off')
+                if (data.check_phone == 'yes')
                     test = true;
             }
 
@@ -219,9 +219,9 @@ var RegistrationWidget = function() {
         Email: function(data, step1) {
             var test = false;
             if (data.check_email) {
-                if (data.check_email == 'on' || data.check_email == 'ban')
+                if (data.check_email == 'on' || data.check_email == 'ban' || data.check_email == 'off')
                     step1.errorEmail(Config.Registration.error.email.uniq);
-                if (data.check_email == 'yes' || data.check_email == 'off')
+                if (data.check_email == 'yes')
                     test = true;
             }
 
@@ -294,7 +294,9 @@ var RegistrationWidget = function() {
     };
     self.Fill = {
         Step1: function() {
-            var form = new RegistrationFormStep1ViewModel();
+            var form = Parameters.cache.reg.step1;
+            if($.isEmptyObject(form))
+                var form = new RegistrationFormStep1ViewModel();
             self.Render.Step1(form);
         },
         Step2: function(username) {
@@ -302,7 +304,9 @@ var RegistrationWidget = function() {
             self.Render.Step2(form);
         },
         Step3 : function(){
-            var form = new RegistrationFormStep3ViewModel();
+            var form = Parameters.cache.reg.step3;
+            if($.isEmptyObject(form))
+                var form = new RegistrationFormStep3ViewModel();
             self.Render.Step3(form);
         },
         Step4 : function(){
@@ -318,7 +322,7 @@ var RegistrationWidget = function() {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            $('input#' + form.cssPhone).mask("?9 999 999 99 99", {placeholder: "_"});
+            $('input#' + form.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
             self.WidgetLoader(true);
         },
         Step2: function(form) {
@@ -472,7 +476,9 @@ var RegistrationFormStep1ViewModel = function() {
         }
     };
     self.Back = function() {
-
+        Parameters.cache.history.pop();
+        var link = Parameters.cache.history.pop();
+        Routing.SetHash(link.route, link.title, link.data, true);
     };
     self.ValidationForm = function() {
         var test = true;
@@ -529,7 +535,7 @@ var RegistrationFormStep1ViewModel = function() {
     };
     self.PhoneValidation = function() {
         if (self.phone()) {
-            if (!Config.Registration.regular.phone.test(self.phone())) {
+            if (!Config.Registration.regular.phone.test($.trim(self.phone()))) {
                 self.errorPhone(Config.Registration.error.phone.regular);
                 return false;
             }
@@ -577,11 +583,19 @@ var RegistrationFormStep1ViewModel = function() {
         self.errorIsChecked(null);
         return true;
     };
+    self.RestoreAccess = function(){
+        console.log('restore');
+    };
 };
 
 var RegistrationFormStep2ViewModel = function() {
     var self = this;
     self.username = Parameters.cache.reg.step1.username;
+    self.isEmptyPhone = ko.computed(function(){
+        if(!$.isEmptyObject(Parameters.cache.reg.step1) && Parameters.cache.reg.step1.phone())
+            return true;
+        return false;
+    },this)
 
     self.cssMailToken = 'mail_token_block';
     self.mailToken = ko.observable();

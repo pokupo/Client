@@ -31,7 +31,7 @@
                                         </label>
                                         <input type="text" name="text" value="" maxlength="64" data-bind="value: email"/>
                                         <!-- ko if: errorEmail-->
-                                        <div class="form_error" data-bind="text: errorEmail"></div>
+                                        <div class="form_error" data-bind="html: errorEmail"></div>
                                         <!-- /ko -->
                                     </div>
                                 </td>
@@ -46,7 +46,7 @@
                                         <div class="description">Введите номер сотового телефона, пример: 
                                             <span>7 914 123 45 67</span></div>
                                         <!-- ko if: errorPhone-->
-                                        <div class="form_error" data-bind="text: errorPhone"></div>
+                                        <div class="form_error" data-bind="html: errorPhone"></div>
                                         <!-- /ko -->
                                     </div>
                                 </td>
@@ -145,6 +145,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            <!-- ko if: isEmptyPhone -->
                             <tr>
                                 <td>
                                     <!-- ko ifnot: phoneConfirmLater -->
@@ -172,6 +173,7 @@
                                     </div>
                                 </td>
                             </tr>
+                            <!-- /ko -->
                         </table>
                     </div>
                 </td>
@@ -272,7 +274,6 @@
             <tr>
                 <td>
                     <div class="buttons">
-                        <input class="form_submit_1" type="submit" value="Назад" data-bind="click: Back"/>
                         <input class="form_submit_2" type="submit" value="Указать позже" data-bind="click: SpecifyLater"/>
                         <input class="form_submit_3" type="submit" value="Вперед" data-bind="click: SubmitForm"/>
                     </div>

@@ -223,9 +223,9 @@ var Config = {
             regFormStep4TmplId : "registrationFromStep4Tmpl", //id шаблона формы регистрации шаг 4
         },
         regular : { // регулярные выражения полей
-            username : /^[а-яa-zА-ЯA-Z_\-\.\s]+$/,
+            username : /^[а-яa-zА-ЯA-Z0-9_\-\.\s]+$/,
             email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
-            phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})$/,
+            phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/,
             firstName : /^[a-zа-яА-ЯA-Z]+$/,
             lastName : /^[a-zа-яА-ЯA-Z]+$/,
             middleName : /^[a-zа-яА-ЯA-Z]+$/,
