@@ -300,7 +300,7 @@
                                         <label>Ваша страна:
                                             <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Выберите страну проживания</span></div></div>
                                         </label>
-                                        <select id="country_list" class="form_select" data-bind="options: countryList, optionsText: 'name', value: country, optionsCaption: ' '"></select>
+                                        <select id="country_list" class="form_select" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' '"></select>
                                         <!-- ko if: errorCountry-->
                                             <div class="form_error" data-bind="text: errorCountry"></div>
                                         <!-- /ko -->
@@ -313,9 +313,9 @@
                                         <label>Регион:
                                             <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите регион/область/край</span></div></div>
                                         </label>
-                                        <input type="text" name="text" data-bind="value: customRegion, attr: {id: cssRegionList}"/>
+                                        <input type="text" name="text" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country"/>
                                         <!-- ko if: errorRegion-->
-                                            <div class="form_error" data-bind="text: errorRegion"></div>
+                                            <div class="form_error" data-bind="text: errorRegion"></div>"
                                         <!-- /ko -->
                                     </div>
                                 </td>
@@ -324,9 +324,9 @@
                                 <td>
                                     <div class="form_item form_item_city">
                                         <label>Город:
-                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите ваш населенный пункт.</span></div></div>
                                         </label>
-                                        <input type="text" name="text" data-bind="value: customCity, attr: {id: cssCityList}"/>
+                                        <input type="text" name="text" data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion"/>
                                         <!-- ko if: errorCity-->
                                             <div class="form_error" data-bind="text: errorCity"></div>
                                         <!-- /ko -->
@@ -337,9 +337,9 @@
                                 <td>
                                     <div class="form_item form_item_adres">
                                         <label>Адрес проживания:
-                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите ваш полный адрес проживания.</span></div></div>
                                         </label>
-                                        <input type="text" name="text" value="" data-bind="value: customAddress, attr: {id: cssAddress}"/>
+                                        <input type="text" name="text" value="" data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity"/>
                                         <div class="description">Улица, квартира, дом, номер подъезда, этажа, код домофона</div>
                                         <!-- ko if: errorAddress-->
                                             <div class="form_error" data-bind="text: errorAddress"></div>
@@ -351,7 +351,7 @@
                                 <td>
                                     <div class="form_item form_item_capcha">
                                         <label>Почтовый индекс:
-                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите ваш почтовый индекс, номер почтового отделения.</span></div></div>
                                         </label>
                                         <input type="text" name="text" value="" data-bind="value: postIndex, attr: {id: cssPostIndex}"/>
                                         <!-- ko if: errorPostIndex-->

@@ -39,7 +39,8 @@ Parameters = {
         },
         lastPage : {},
         https : null,
-        userInformation : null
+        userInformation : null,
+        country : null
     },
     filter : {},
     catalog : {
@@ -223,6 +224,31 @@ function Widget(){
     };
     this.WidgetLoader = function(test){
         Loader.Indicator(this.widgetName, test);
+    };
+    this.QueryError = function(data, callback){
+        if (data.err) {
+            if($('#' + Config.Base.containerIdErrorWindow).length == 0){
+                $('body').append(Config.Base.errorWindow);
+            }
+            else{
+                $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(data.err);
+            }
+            $( "#" + Config.Base.containerIdErrorWindow ).dialog({
+                modal: true,
+                buttons: [
+                    { text: "Повторить запрос", click: function(){
+                        $( this ).dialog( "close" );
+                        callback();
+                        self.WidgetLoader(true);
+                    }},
+                    { text: "Закрыть", click: function() { 
+                        $( this ).dialog( "close" ); 
+                    }}
+                ]
+            });
+            return false;
+        }
+        return true;
     };
     this.BaseLoad  = {
         Roots : function(callback){
@@ -504,11 +530,16 @@ function Widget(){
                     callback(JSON.parse(data));
             });
         },
-        Country : function(callback){
-            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/country'), function(data){
-                if(callback)
-                    callback(JSON.parse(data));
-            });
+        Country : function(shopId, callback){
+            if(!Parameters.cache.country){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + shopId  + '/country'), function(data){
+                    Parameters.cache.country = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                });
+            }
+            else
+                callback(JSON.parse(Parameters.cache.country));
         },
         Region: function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/region/' + str), function(data){

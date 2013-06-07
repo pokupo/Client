@@ -16,7 +16,10 @@ var Config = {
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
            previously_viewed : 'previously_viewed'  // id просмотренных товаров
-        }
+        },
+        containerIdErrorWindow : 'dialogErrorMessage', // id модального окна с ошибкой
+        conteinerIdTextErrorWindow: 'containerError', // id контейнера для текста ошибки
+        errorWindow : '<div id="' + Config.Base.containerIdErrorWindow + '" title="Ошибка" style="display:none"><p id="' + Config.Base.conteinerIdTextErrorWindow + '"></p></div>'
     },
     Containers : {  
         catalog : 'catalog', // id контейнера каталога 

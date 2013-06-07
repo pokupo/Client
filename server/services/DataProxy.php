@@ -31,8 +31,7 @@ class DataProxy implements IProxy {
               'method'=>"GET",
               'header'=>"Cookie: PHPSESSID=".$_COOKIE['PHPSESSID']."\r\n"
             )
-          );
-
+        );
         $context = stream_context_create($opts);
         $this->responseData = file_get_contents($url, false , $context);
         foreach($http_response_header as $value){
