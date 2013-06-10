@@ -19,7 +19,7 @@ var Config = {
         },
         containerIdErrorWindow : 'dialogErrorMessage', // id модального окна с ошибкой
         conteinerIdTextErrorWindow: 'containerError', // id контейнера для текста ошибки
-        errorWindow : '<div id="' + Config.Base.containerIdErrorWindow + '" title="Ошибка" style="display:none"><p id="' + Config.Base.conteinerIdTextErrorWindow + '"></p></div>'
+        errorWindow : '<div id="' + this.containerIdErrorWindow + '" title="Ошибка" style="display:none"><p id="' + this.conteinerIdTextErrorWindow + '"></p></div>'
     },
     Containers : {  
         catalog : 'catalog', // id контейнера каталога 
