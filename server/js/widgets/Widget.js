@@ -31,9 +31,16 @@ Parameters = {
         searchPageId : 1,
         scripts : {},
         tmpl : {},
+        reg : {
+            step1 : {},
+            step2 : {},
+            step3 : {},
+            step4 : {}
+        },
         lastPage : {},
         https : null,
-        userInformation : null
+        userInformation : null,
+        country : null
     },
     filter : {},
     catalog : {
@@ -143,6 +150,7 @@ function Widget(){
                 userPathApi : Config.Base.userPathApi,
                 cartPathApi : Config.Base.cartPathApi,
                 favPathApi : Config.Base.favPathApi,
+                geoPathApi : Config.Base.geoPathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
@@ -163,20 +171,6 @@ function Widget(){
             embed.SetParameters(data);
             embed.Init(embed, true);
         });
-    };
-    this.CreateContainer = function(){
-        if($('#' + self.settings.containerIdForTmpl).length == 0)
-            $('body').append("<div id='" + self.settings.containerIdForTmpl + "'></div>");
-    };
-    this.RegistrCustomBindings = function(){
-        ko.bindingHandlers.embedWidget = {
-            init: function(element, valueAccessor) {
-                var options = valueAccessor() || {};
-                self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
-                    EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
-                });
-            }
-        };
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
             var inputDate = data;
@@ -214,8 +208,47 @@ function Widget(){
             });
         });
     };
+    this.CreateContainer = function(){
+        if($('#' + self.settings.containerIdForTmpl).length == 0)
+            $('body').append("<div id='" + self.settings.containerIdForTmpl + "'></div>");
+    };
+    this.RegistrCustomBindings = function(){
+        ko.bindingHandlers.embedWidget = {
+            init: function(element, valueAccessor) {
+                var options = valueAccessor() || {};
+                self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
+                    EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
+                });
+            }
+        };
+    };
     this.WidgetLoader = function(test){
         Loader.Indicator(this.widgetName, test);
+    };
+    this.QueryError = function(data, callback){
+        if (data.err) {
+            if($('#' + Config.Base.containerIdErrorWindow).length == 0){
+                $('body').append(Config.Base.errorWindow);
+            }
+            
+            $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(data.err);
+            
+            $( "#" + Config.Base.containerIdErrorWindow ).dialog({
+                modal: true,
+                buttons: [
+                    { text: "Повторить запрос", click: function(){
+                        $( this ).dialog( "close" );
+                        callback();
+                        self.WidgetLoader(true);
+                    }},
+                    { text: "Закрыть", click: function() { 
+                        $( this ).dialog( "close" ); 
+                    }}
+                ]
+            });
+            return false;
+        }
+        return true;
     };
     this.BaseLoad  = {
         Roots : function(callback){
@@ -399,12 +432,6 @@ function Widget(){
                     callback(JSON.parse(data));
             });
         },
-        Registration : function( str, callback){
-             XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'reg/' + Parameters.shopId + '/' + str), function(data){
-                if(callback)
-                    callback(JSON.parse(data));
-            });
-        },
         CartInfo : function(seller, callback){
             var host = self.settings.hostApi;
             if(Parameters.cache.https == "always")
@@ -475,6 +502,65 @@ function Widget(){
                 }
             }
             XDMTransport.LoadData(host + self.settings.cartPathApi + 'clear/' + Parameters.shopId + '/' + str, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        UniqueUser : function(str, callback){ 
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'unique/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        Registration : function( str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'reg/' + Parameters.shopId + '/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        ActivateUser : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'rega/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        EditProfile : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/profile/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        Country : function(shopId, callback){
+            if(!Parameters.cache.country){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + shopId  + '/country'), function(data){
+                    Parameters.cache.country = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                });
+            }
+            else
+                callback(JSON.parse(Parameters.cache.country));
+        },
+        Region: function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/region/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        City : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/city/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        Street : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/street/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        EditAddress : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/address/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });

@@ -1,0 +1,378 @@
+<script type="text/html" id="registrationFromStep1Tmpl">
+<div class="bottom_title_center">Данные аккаунта</div>
+<div class="bottom_description_center">Укажите свой уникальный псевдоним, почту и телефон</div>
+<div class="user_register_block_1">
+    <form action="">
+        <table style="float: left; width: 100%;">
+            <tr>
+                <td>
+                    <div class="border">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_nik">
+                                        <label>Псевдоним:
+                                            <span style="color: #ed710d;">*</span>
+                                            <div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div> 
+                                        </label>
+
+                                        <input type="text" name="text" value="" maxlength="40" data-bind="value: username"/>
+                                        <!-- ko if: errorUsername-->
+                                        <div class="form_error" data-bind="text: errorUsername"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_mail">
+                                        <label>Ваш e-mail:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он будет логином для входа в личный кабинет, на этот адрес будут приходить уведомления о статусе вашего заказа.</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" value="" maxlength="64" data-bind="value: email"/>
+                                        <!-- ko if: errorEmail-->
+                                        <div class="form_error" data-bind="html: errorEmail"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_phone">
+                                        <label>Номер телефона:
+                                            <div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Номер мобильного телефона с кодом страны, используется для восстановления доступа к личному кабинету и для SMS уведомлений о статусе заказа, не обязательное поле для заполнения.</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" value="" maxlength="15" data-bind="value: phone, attr: {id : cssPhone}"/>
+                                        <div class="description">Введите номер сотового телефона, пример: 
+                                            <span>7 914 123 45 67</span></div>
+                                        <!-- ko if: errorPhone-->
+                                        <div class="form_error" data-bind="html: errorPhone"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_pass_1">
+                                        <label>Пароль:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите пароль для доступа к личному кабинету покупателя длиной не менее 6 символов</span></div></div>
+                                        </label>
+                                        <input type="password" name="firstPassword" maxlength="32" data-bind="value: firstPassword, attr : {id: cssFirstPassword}"/>
+                                        <!-- ko if: errorFirstPassword-->
+                                        <div class="form_error" data-bind="text: errorFirstPassword"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_pass_2">
+                                        <label>Повторить пароль:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Повторите свой пароль, что бы мы могли убедиться, что вы не ошиблись при его вводе.</span></div></div>
+                                        </label>
+                                        <input type="password" name="text" maxlength="32"  data-bind="value: secondPassword, attr : {id: cssSecondPassword}"/>
+                                        <!-- ko if: errorSecondPassword-->
+                                        <div class="form_error" data-bind="text: errorSecondPassword"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_rule">
+                                        <label>
+                                            <input type="checkbox" name="text" value="1" data-bind="checked: isChecked"/>Я принимаю условия <a href="#" target="_blank">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> 
+                                        </label>
+                                        <!-- ko if: errorIsChecked-->
+                                            <div class="form_error" data-bind="text: errorIsChecked"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="buttons">
+                        <input class="form_submit_1" type="submit" value="Назад" data-bind="click: Back"/>
+                        <input class="form_submit_3" type="submit" value="Далее" data-bind="click: SubmitForm"/>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</script>
+
+<script type="text/html" id="registrationFromStep2Tmpl">
+<div class="bottom_title_center">Активация аккаунта</div>
+<div class="bottom_description_center">Для активации аккаунта укажите коды высланные на почтовый ящик и/или телефон</div>
+<div class="user_register_block_3">
+    <form action="">
+        <table style="float: left; width: 100%;">
+            <tr>
+                <td>
+                    <div class="border">
+                        <table>
+                            <tr data-bind="attr: {id: cssMailToken}">
+                                <td>
+                                    <!-- ko if: errorConfirmLater -->
+                                    <div class="form_error" data-bind="text: errorConfirmLater"></div>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: mailConfirmLater -->
+                                    <div class="form_item form_item_mail">
+                                        <label>E-mail код: 
+                                            <!-- ko if: mailIsConfirm -->
+                                            <img title="" alt="" src="images/ico_14.png" />  <span style="color: #0a7d2d;">Подтверждено</span>
+                                            <!-- /ko -->
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите код подтверждения, который выслан на ваш почтовый ящик.</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" data-bind="value: mailToken"/>
+                                        <!-- ko if: errorEmailConfirm-->
+                                        <div class="form_error" data-bind="text: errorEmailConfirm"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                    <!-- /ko -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_checkbox">
+                                        <label><input type="checkbox" name="text" value="1" data-bind="checked: mailConfirmLater"/>
+                                            Подтвердить почтовый ящик позднее
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- ko if: isEmptyPhone -->
+                            <tr>
+                                <td>
+                                    <!-- ko ifnot: phoneConfirmLater -->
+                                    <div class="form_item form_item_phone">
+                                        <label>SMS код: 
+                                            <!-- ko if: phoneIsConfirm -->
+                                            <img title="" alt="" src="images/ico_14.png" />  <span style="color: #0a7d2d;">Подтверждено</span>
+                                            <!-- /ko -->
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите SMS код, который вылан на ваш мобильный телефон.</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" data-bind="value: phoneToken" />
+                                        <!-- ko if: errorPhoneConfirm-->
+                                        <div class="form_error" data-bind="text: errorPhoneConfirm"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                    <!-- /ko -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_checkbox">
+                                        <label><input type="checkbox" name="text" value="1" data-bind="checked: phoneConfirmLater"/>
+                                            Подтвердить номер телефона позднее
+                                        </label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="buttons">
+                        <input class="form_submit_1" type="submit" value="Назад" data-bind="click: Back"/>
+                        <input class="form_submit_2" type="submit" value="Активировать аккаунт" data-bind="click: SubmitForm"/>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</script>
+
+<script type="text/html" id="registrationFromStep3Tmpl">
+<div class="bottom_title_center">Персональные данные</div>
+<div class="bottom_description_center">Укажите свои персональные данные</div>
+<div class="user_register_block_2">
+    <form action="">
+        <table style="float: left; width: 100%;">
+            <tr>
+                <td>
+                    <div class="border">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_fio">
+                                        <label>Фамилия:
+                                            <span style="color: #ed710d;">*</span>
+                                        </label>
+                                        <input type="text" name="text" data-bind="value: lastName" />
+                                        <!-- ko if: errorLastName-->
+                                            <div class="form_error" data-bind="text: errorLastName"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_fio">
+                                        <label>Имя:
+                                            <span style="color: #ed710d;">*</span>
+                                        </label>
+                                        <input type="text" name="text" data-bind="value: firstName" />
+                                        <!-- ko if: errorFirstName-->
+                                            <div class="form_error" data-bind="text: errorFirstName"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_fio">
+                                        <label>Отчество:</label>
+                                        <input type="text" name="text" data-bind="value: middleName" />
+                                        <!-- ko if: errorMiddleName-->
+                                            <div class="form_error" data-bind="text: errorMiddleName"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_date">
+                                        <label>Дата рождения:
+                                            <span style="color: #ed710d;">*</span>
+                                        </label>
+                                        <input type="text" name="text" data-bind="value: birthDay, attr: {id: cssBirthDay}" />
+                                        <!-- ko if: errorBirthDay-->
+                                            <div class="form_error" data-bind="text: errorBirthDay"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_rule">
+                                        <label>Ваш пол:
+                                            <span style="color: #ed710d;">*</span>
+                                        </label><br />
+                                        <label><input name="gender" type="radio" value="m" data-bind="checked: gender"/>Мужчина</label> 
+                                        <label><input name="gender" type="radio" value="w" data-bind="checked: gender"/>Женщина</label>
+                                        <!-- ko if: errorGender-->
+                                            <div class="form_error" data-bind="text: errorGender"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="buttons">
+                        <input class="form_submit_2" type="submit" value="Указать позже" data-bind="click: SpecifyLater"/>
+                        <input class="form_submit_3" type="submit" value="Вперед" data-bind="click: SubmitForm"/>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</script>
+
+<script type="text/html" id="registrationFromStep4Tmpl">
+<div class="bottom_title_center">Адрес доставки</div>
+<div class="bottom_description_center">Для доставки покупок требуется указать свой адрес</div>
+<div class="user_register_block_2">
+    <form action="">
+        <table style="float: left; width: 100%;">
+            <tr>
+                <td>
+                    <div class="border">
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_country">
+                                        <label>Ваша страна:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Выберите страну проживания</span></div></div>
+                                        </label>
+                                        <select id="country_list" class="form_select" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' '"></select>
+                                        <!-- ko if: errorCountry-->
+                                            <div class="form_error" data-bind="text: errorCountry"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_state">
+                                        <label>Регион:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите регион/область/край</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country"/>
+                                        <!-- ko if: errorRegion-->
+                                            <div class="form_error" data-bind="text: errorRegion"></div>"
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_city">
+                                        <label>Город:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите ваш населенный пункт.</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion"/>
+                                        <!-- ko if: errorCity-->
+                                            <div class="form_error" data-bind="text: errorCity"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_adres">
+                                        <label>Адрес проживания:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите ваш полный адрес проживания.</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" value="" data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity"/>
+                                        <div class="description">Улица, дом, квартира</div>
+                                        <!-- ko if: errorAddress-->
+                                            <div class="form_error" data-bind="text: errorAddress"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="form_item form_item_capcha">
+                                        <label>Почтовый индекс:
+                                            <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите ваш почтовый индекс, номер почтового отделения.</span></div></div>
+                                        </label>
+                                        <input type="text" name="text" value="" data-bind="value: postIndex, attr: {id: cssPostIndex}"/>
+                                        <!-- ko if: errorPostIndex-->
+                                            <div class="form_error" data-bind="text: errorPostIndex"></div>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="buttons">
+                        <input class="form_submit_1" type="submit" value="Назад" data-bind="click: Back"/>
+                        <input class="form_submit_2" type="submit" value="Указать позже" data-bind="click: SpecifyLater"/>
+                        <input class="form_submit_3" type="submit" value="Вперед" data-bind="click: SubmitForm"/>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</script>

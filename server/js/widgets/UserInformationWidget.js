@@ -77,13 +77,13 @@ var UserInformationWidget = function(){
         });
     };
     self.CheckAuthorization = function(data){
-        if(data.err){
-            self.InsertContainer.AuthBlock();
-            self.Fill.AuthBlock();
-        }
-        else{
+        if(!data.err){
             self.InsertContainer.InfoBlock();
             self.Fill.InfoBlock(data);
+        }
+        else{
+            self.InsertContainer.AuthBlock();
+            self.Fill.AuthBlock();
         }
     };
     self.InsertContainer = {
@@ -141,8 +141,8 @@ var UserAuthorizationBlockViewModel = function(){
         Routing.SetHash('login', 'Авторизация пользователя', {});
     };
     self.ClickRegistration = function(){
-//        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
-//        Routing.SetHash('registration', 'Регистрация пользователя', {});
+        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+        Routing.SetHash('registration', 'Регистрация пользователя', {step:1}); 
     };
 };
 
