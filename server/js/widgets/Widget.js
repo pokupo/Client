@@ -230,9 +230,9 @@ function Widget(){
             if($('#' + Config.Base.containerIdErrorWindow).length == 0){
                 $('body').append(Config.Base.errorWindow);
             }
-            else{
-                $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(data.err);
-            }
+            
+            $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(data.err);
+            
             $( "#" + Config.Base.containerIdErrorWindow ).dialog({
                 modal: true,
                 buttons: [

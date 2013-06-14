@@ -80,11 +80,12 @@
                             <tr>
                                 <td>
                                     <div class="form_item form_item_rule">
-                                        <label><input type="checkbox" name="text" value="1" data-bind="checked: isChecked"/>Я принимаю условия <a href="#" target="_blank">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> 
-                                            <!-- ko if: errorIsChecked-->
-                                            <div class="form_error" data-bind="text: errorIsChecked"></div>
-                                            <!-- /ko -->
+                                        <label>
+                                            <input type="checkbox" name="text" value="1" data-bind="checked: isChecked"/>Я принимаю условия <a href="#" target="_blank">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> 
                                         </label>
+                                        <!-- ko if: errorIsChecked-->
+                                            <div class="form_error" data-bind="text: errorIsChecked"></div>
+                                        <!-- /ko -->
                                     </div>
                                 </td>
                             </tr>
@@ -230,9 +231,7 @@
                             <tr>
                                 <td>
                                     <div class="form_item form_item_fio">
-                                        <label>Отчество:
-                                            <span style="color: #ed710d;">*</span>
-                                        </label>
+                                        <label>Отчество:</label>
                                         <input type="text" name="text" data-bind="value: middleName" />
                                         <!-- ko if: errorMiddleName-->
                                             <div class="form_error" data-bind="text: errorMiddleName"></div>
@@ -340,7 +339,7 @@
                                             <span style="color: #ed710d;">*</span><div class="popup_block"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите ваш полный адрес проживания.</span></div></div>
                                         </label>
                                         <input type="text" name="text" value="" data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity"/>
-                                        <div class="description">Улица, квартира, дом, номер подъезда, этажа, код домофона</div>
+                                        <div class="description">Улица, дом, квартира</div>
                                         <!-- ko if: errorAddress-->
                                             <div class="form_error" data-bind="text: errorAddress"></div>
                                         <!-- /ko -->

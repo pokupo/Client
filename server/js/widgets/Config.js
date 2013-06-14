@@ -19,7 +19,7 @@ var Config = {
         },
         containerIdErrorWindow : 'dialogErrorMessage', // id модального окна с ошибкой
         conteinerIdTextErrorWindow: 'containerError', // id контейнера для текста ошибки
-        errorWindow : '<div id="' + this.containerIdErrorWindow + '" title="Ошибка" style="display:none"><p id="' + this.conteinerIdTextErrorWindow + '"></p></div>'
+        errorWindow : '<div id="dialogErrorMessage" title="Ошибка" style="display:none"><p id="containerError"></p></div>'
     },
     Containers : {  
         catalog : 'catalog', // id контейнера каталога 
@@ -226,12 +226,12 @@ var Config = {
             regFormStep4TmplId : "registrationFromStep4Tmpl", //id шаблона формы регистрации шаг 4
         },
         regular : { // регулярные выражения полей
-            username : /^[а-яa-zА-ЯA-Z0-9_\-\.\s]+$/,
+            username : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
             email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
             phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/,
-            firstName : /^[a-zа-яА-ЯA-Z]+$/,
-            lastName : /^[a-zа-яА-ЯA-Z]+$/,
-            middleName : /^[a-zа-яА-ЯA-Z]+$/,
+            firstName : /^[a-zёа-яА-ЯЁA-Z]+$/,
+            lastName : /^[a-zа-яёА-ЯЁA-Z]+$/,
+            middleName : /^[a-zа-яёА-ЯЁA-Z]+$/,
             birthDay : /^[\d]{2}.[\d]{2}.[\d]{4}$/,
             gender : /^[mw]$/
         },
@@ -292,7 +292,9 @@ var Config = {
                 regular : 'Только буквы латинского или русского алфавита'
             },
             birthDay : {
-                empty : 'Поле обязательно для заполнения'
+                empty : 'Поле обязательно для заполнения',
+                minDate : 'Возраст пользователя должен быть не менее 18 лет.',
+                maxDate : 'Возраст пользователя может быть не старше 101 года'
             },
             gender : {
                 empty : 'Поле обязательно для заполнения'

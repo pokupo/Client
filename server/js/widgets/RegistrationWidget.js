@@ -243,13 +243,15 @@ var RegistrationWidget = function() {
             return test;
         },
         Phone: function(data, step1) {
-            var test = true;
+            var test = false;
             if (data.check_phone) {
                 if (data.check_phone == 'on' || data.check_phone == 'ban' || data.check_phone == 'off')
                     step1.errorPhone(Config.Registration.error.phone.uniq);
                 if (data.check_phone == 'yes')
                     test = true;
             }
+            else
+                test = true;
 
             return test;
         },
@@ -407,6 +409,9 @@ var RegistrationWidget = function() {
                 changeYear: true,
                 dateFormat: 'dd.mm.yy',
                 defaultDate: '-24Y',
+                yearRange: "c-77:c+6",
+                minDate : '-101Y',
+                maxDate : '-18Y',
                 onClose: function(dateText, inst) {
                     form.birthDay(dateText);
                 }
@@ -842,21 +847,19 @@ var RegistrationFormStep3ViewModel = function() {
         return true;
     };
     self.MiddleNameValidation = function() {
-        if (!self.middleName()) {
-            self.errorMiddleName(Config.Registration.error.middleName.empty);
-            return false;
-        }
-        if (self.middleName().length < 2) {
-            self.errorMiddleName(Config.Registration.error.middleName.minLength);
-            return false;
-        }
-        if (self.middleName().length > 20) {
-            self.errorMiddleName(Config.Registration.error.middleName.maxLength);
-            return false;
-        }
-        if (!Config.Registration.regular.middleName.test(self.middleName())) {
-            self.errorMiddleName(Config.Registration.error.middleName.regular);
-            return false;
+        if (self.middleName()) {
+            if (self.middleName().length < 2) {
+                self.errorMiddleName(Config.Registration.error.middleName.minLength);
+                return false;
+            }
+            if (self.middleName().length > 20) {
+                self.errorMiddleName(Config.Registration.error.middleName.maxLength);
+                return false;
+            }
+            if (!Config.Registration.regular.middleName.test(self.middleName())) {
+                self.errorMiddleName(Config.Registration.error.middleName.regular);
+                return false;
+            }
         }
         self.errorMiddleName(null);
         return true;
@@ -870,6 +873,23 @@ var RegistrationFormStep3ViewModel = function() {
             self.errorBirthDay(Config.Registration.error.birthDay.regular);
             return false;
         }
+        var dateArray = self.birthDay().split('.');
+        var date = new Date(dateArray[2], dateArray[1]-1, dateArray[0]);
+        
+        var now = new Date();
+        var minDate = new Date(now.getYear() - 18, now.getMonth(), now.getDate());
+        if(minDate < date){
+            self.errorBirthDay(Config.Registration.error.birthDay.minDate);
+            return false;
+        }
+        
+        var now = new Date();
+        var maxDate = new Date(now.getYear() - 101, now.getMonth(), now.getDate());
+        if(maxDate > date){
+            self.errorBirthDay(Config.Registration.error.birthDay.maxDate);
+            return false;
+        }
+        
         self.errorBirthDay(null);
         return true;
     };
