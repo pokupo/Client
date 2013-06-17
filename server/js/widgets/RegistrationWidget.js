@@ -72,7 +72,7 @@ var RegistrationWidget = function() {
             self.WidgetLoader(false);
             var params = [];
             if (step1.username())
-                params.push('username=' + step1.username());
+                params.push('username=' + encodeURIComponent(step1.username()));
             if (step1.phone())
                 params.push('phone=' + step1.phone().replace(/\s/g, ''));
             if (step1.email())
@@ -96,13 +96,13 @@ var RegistrationWidget = function() {
                 if (test) {
                     var params = [];
                     if (step1.username())
-                        params.push('username=' + step1.username());
+                        params.push('username=' + encodeURIComponent(step1.username()));
                     if (step1.phone())
                         params.push('phone=' + step1.phone().replace(/\s/g, ''));
                     if (step1.email())
                         params.push('email=' + step1.email());
                     if (step1.firstPassword())
-                        params.push('password=' + step1.firstPassword());
+                        params.push('password=' + encodeURIComponent(step1.firstPassword()));
                     if (params.length > 0)
                         var str = '?' + params.join('&');
                     self.BaseLoad.Registration(str, function(data) {
@@ -165,9 +165,9 @@ var RegistrationWidget = function() {
             self.WidgetLoader(false);
             var day = step3.birthDay().split('.');
             var birthDay = day[2] + '-' + day[1] + '-' + day[0];
-            var str = '?sname=' + step3.lastName() +
-                    '&fname=' + step3.firstName() +
-                    '&mname=' + step3.firstName() +
+            var str = '?sname=' + encodeURIComponent(step3.lastName()) +
+                    '&fname=' + encodeURIComponent(step3.firstName()) +
+                    '&mname=' + encodeURIComponent(step3.firstName()) +
                     '&bdate=' + birthDay +
                     '&gender=' + step3.gender();
 
@@ -209,12 +209,12 @@ var RegistrationWidget = function() {
             if (step4.region())
                 str = str + '&code_region=' + $.trim(step4.region().regioncode);
             else
-                str = str + '&name_region=' + $.trim(step4.customRegion());
+                str = str + '&name_region=' + encodeURIComponent($.trim(step4.customRegion()));
             if (step4.city())
-                str = str + '&code_city=' + $.trim(step4.city().aoguid);
+                str = str + '&code_city=' + encodeURIComponent($.trim(step4.city().aoguid));
             else
-                str = str + '&name_city=' + $.trim(step4.customCity());
-            str = str + '&address=' + $.trim(step4.customAddress()) + '&post_code=' + $.trim(step4.postIndex());
+                str = str + '&name_city=' + encodeURIComponent($.trim(step4.customCity()));
+            str = str + '&address=' + encodeURIComponent($.trim(step4.customAddress())) + '&post_code=' + encodeURIComponent($.trim(step4.postIndex()));
 
             self.BaseLoad.EditAddress(str, function(data) {
                 var test = true;
