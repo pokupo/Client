@@ -1,0 +1,288 @@
+<script type="text/html" id="profileTmpl">
+    <div class="user_profile_block">
+        <div class="content">
+            <!-- ko data-bind="template: { name: 'registrationDataTmpl' } -->
+            <br />
+            <!-- ko data-bind="template: { name: 'registrationDataFormTmpl' } -->
+            <br />         
+            <!-- ko data-bind="template: { name: 'postDataTmpl' } -->
+            <br />
+            <!-- ko data-bind="template: { name: 'postDataFormTmpl' } -->
+            <br />
+            <!-- ko data-bind="template: { name: 'contactsDataFormTmpl' } -->
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="registrationDataTmpl">
+    <table style="width: 100%;">
+        <tr class="first">
+            <td>
+                <div class="row row_left">
+                    Регистрационные данные
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Псевдоним:</label>
+                    Ivanova
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Дата регистрации:</label>
+                    14 марта 2012 г.
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Пол:</label>
+                    Женский
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Ф.И. О.</label>
+                    Иванова Мария Михайловна
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Дата рождения:</label>
+                    21 апреля 1986 г
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Рейтинг:</label>
+                    1254 балла
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                <div class="top_block">
+                    <a href="#">Изменить</a>
+                    Регистрационные данные подтверждены
+                </div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="registrationDataFormTmpl">
+    <table style="width: 100%;">
+        <tr class="first">
+            <td>
+                <div class="row row_left">
+                    Регистрационные данные
+                </div>
+            </td>
+            <tr>
+                <td>
+                    <div class="row row_left">
+                        <label>Аватар:</label>
+                        <input name="textfield" type="file" id="textfield" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="row row_left">
+                        <label>Фамилия</label>
+                        <input name="textfield" type="text" id="textfield" value="Иванова" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="row row_left">
+                        <label>Имя</label>
+                        <input name="textfield" type="text" id="textfield" value="Мария" />
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="row row_left">
+                        <label>Отчество</label>
+                        <input name="textfield" type="text" id="textfield" value="Михайловна" />
+                    </div>
+               </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="row row_left">
+                        <label>Дата рождения:</label>
+                        <input name="textfield" type="text" id="textfield" value="21/04/1986" />
+                    </div>\n\
+                </td>
+            </tr>
+            <tr>
+                <td><div class="top_block"><a href="#">Назад</a> <a href="#">Сохранить</a></div></td>
+            </tr>
+    </table>
+</script>
+
+<script type="text/html" id="postDataTmpl">
+    <table style="width: 100%;">
+        <tr class="first">
+            <td>
+                <div class="row row_left">
+                    Почтовый адрес</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Страна:</label>
+                    Россия</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Регион:</label>
+                    Иркутская обл.</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Город:</label>
+                    Иркутск</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Почтовый индекс.</label> 
+                    664001</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Адрес:</label>
+                    ул. Ленина д. 20 кв. 1</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                <div class="top_block">
+                    <a href="#">Изменить</a> Почтовый адрес подтвержден</div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="postDataFormTmpl">
+    <table style="width: 100%;">
+        <tr class="first">
+            <td>
+                <div class="row row_left">
+                    Почтовый адрес</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Страна:</label><input name="textfield" type="text" id="textfield" value="Россия" />
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Регион:</label>
+                    <input name="textfield" type="text" id="textfield" value="Иркутская обл." /></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Город:</label>
+                    <input name="textfield" type="text" id="textfield" value="г. Иркутск" /></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Почтовый индекс.</label> 
+                    <input name="textfield" type="text" id="textfield" value="664001" /></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Адрес:</label>
+                    <input name="textfield" type="text" id="textfield" value="ул. Ленина д. 20 кв. 1" /></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+
+                <div class="top_block">
+                    <a href="#">Назад</a> <a href="#">Сохранить</a></div>
+            </td>
+        </tr>
+    </table>
+</script>
+
+<script type="text/html" id="contactsDataFormTmpl">
+    <table style="width: 100%;">
+        <tr class="first">
+            <td>
+                <div class="row row_left">
+                    Контактные данные</div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Е-маил:</label>
+                    <input name="textfield" type="text" id="textfield" value="mail@mail.ru " />
+                </div>
+                <div>E-mail подтвержден</div>
+                <div><a href="#">Выслать код подтверждения</a></div>
+                <span class="row row_left">
+                    <label>E-mail код:</label> <input name="textfield" type="text" id="textfield" value="" />
+                </span>
+                <a href="#">Подтвердить</a></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="row row_left">
+                    <label>Телефон:</label>
+                    <input name="textfield" type="text" id="textfield" value="7 914 912 34 56" />
+                </div>
+                <div>Телефон подтвержден</div>
+                <div><a href="#">Выслать код подтверждения</a></div>
+                <span class="row row_left">
+                    <label>SMS код:</label> <input name="textfield" type="text" id="textfield" value="" />
+                </span>
+                <a href="#">Подтвердить</a></td>
+        </tr>
+        <tr>
+            <td>
+
+                <div class="top_block">
+                    <a href="#">Сохранить</a></div>
+            </td>
+        </tr>
+    </table>
+</script>
