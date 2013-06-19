@@ -122,7 +122,7 @@ var RegistrationWidget = function() {
         EventDispatcher.AddEventListener('RegistrationWidget.step2.checking', function(step2) {
             self.WidgetLoader(false);
             var params = [];
-            params.push('username=' + step2.username());
+            params.push('username=' + encodeURIComponent(step2.username()));
             if (!step2.mailConfirmLater())
                 params.push('mail_token=' + step2.mailToken());
             if (!step2.phoneConfirmLater())
@@ -168,8 +168,8 @@ var RegistrationWidget = function() {
             var str = '?sname=' + encodeURIComponent(step3.lastName()) +
                     '&fname=' + encodeURIComponent(step3.firstName()) +
                     '&mname=' + encodeURIComponent(step3.firstName()) +
-                    '&bdate=' + birthDay +
-                    '&gender=' + step3.gender();
+                    '&bdate=' + encodeURIComponent(birthDay) +
+                    '&gender=' + encodeURIComponent(step3.gender());
 
             self.BaseLoad.EditProfile(str, function(data) {
                 var test = true;
@@ -205,9 +205,9 @@ var RegistrationWidget = function() {
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
             self.WidgetLoader(false);
-            var str = '?id_country=' + $.trim(step4.country().id);
+            var str = '?id_country=' + encodeURIComponent($.trim(step4.country().id));
             if (step4.region())
-                str = str + '&code_region=' + $.trim(step4.region().regioncode);
+                str = str + '&code_region=' + encodeURIComponent($.trim(step4.region().regioncode));
             else
                 str = str + '&name_region=' + encodeURIComponent($.trim(step4.customRegion()));
             if (step4.city())
@@ -426,7 +426,7 @@ var RegistrationWidget = function() {
 
             $('#' + form.cssRegionList).autocomplete({
                 source: function(request, response) {
-                    self.BaseLoad.Region(form.country().id + '/' + request.term, function(data) {
+                    self.BaseLoad.Region(form.country().id + '/' + encodeURIComponent(request.term), function(data) {
                         if (!data.err) {
                             response($.map(data, function(item) {
                                 return {
@@ -455,7 +455,7 @@ var RegistrationWidget = function() {
             $('#' + form.cssCityList).autocomplete({
                 source: function(request, response) {
                     if (form.region()) {
-                        self.BaseLoad.City(form.country().id + '/' + form.region().regioncode + '/' + request.term, function(data) {
+                        self.BaseLoad.City(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
                             if (!data.err) {
                                 response($.map(data, function(item) {
                                     return {
@@ -484,7 +484,7 @@ var RegistrationWidget = function() {
             $('#' + form.cssAddress).autocomplete({
                 source: function(request, response) {
                     if (form.region()) {
-                        self.BaseLoad.Street(form.country().id + '/' + form.region().regioncode + '/' + form.city().aoguid + '/' + request.term, function(data) {
+                        self.BaseLoad.Street(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
                             if (!data.err) {
                                 response($.map(data, function(item) {
                                     return {
@@ -513,17 +513,33 @@ var RegistrationWidget = function() {
             $('#' + form.cssCountryList).change(function() {
                 var v = $(this).getSetSSValue();
                 $.grep(form.countryList(), function(data) {
-                    if (data.id == v)
+                    if (data.id == v){
                         form.country(data);
+                        form.customRegion(null);
+                        form.region(null);
+                        form.customCity(null);
+                        form.city(null);
+                        form.customAddress(null)
+                        form.address(null);
+                        form.postIndex(null);
+                    }
                 })
             });
 
             $('#' + form.cssRegionList).bind('textchange', function(event, previousText) {
                 form.customRegion($(this).val());
+                form.customCity(null);
+                form.city(null);
+                form.customAddress(null)
+                form.address(null);
+                form.postIndex(null);
             });
 
             $('#' + form.cssCityList).bind('textchange', function(event, previousText) {
                 form.customCity($(this).val());
+                form.customAddress(null)
+                form.address(null);
+                form.postIndex(null);
             });
 
             self.WidgetLoader(true);

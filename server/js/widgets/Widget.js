@@ -413,7 +413,7 @@ function Widget(){
 
                 var str = "";
                 if(username && password)
-                    str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
+                    str = '?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) +'&remember_me=' + remember_me;
                 XDMTransport.LoadData(encodeURIComponent(host + self.settings.userPathApi + 'login/' + str), function(data){
                     Parameters.cache.userInformation = data;
                     if(callback)
@@ -473,7 +473,7 @@ function Widget(){
                 host = self.settings.httpsHostApi;
             var str = '';
             if(comment)
-               str = '/' + comment;
+               str = '/' + encodeURIComponent(comment);
             str = str + '/?idGoods=' + goodId
             XDMTransport.LoadData(encodeURIComponent(host + self.settings.favPathApi + 'add/' + Parameters.shopId + str), function(data){
                 if(callback)
