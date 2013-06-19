@@ -118,14 +118,15 @@ var SearchResultWidget = function(){
         EventDispatcher.AddEventListener('searchResultWidget.submit.form', function (data){
             var paging = self.settings.paging;
             var start = (Routing.GetCurrentPage()-1) * paging.itemsPerPage;
-            var query = start + '/' + paging.itemsPerPage + '/' + Parameters.filter.orderBy + '/' + (Parameters.filter.filterName ? Parameters.filter.filterName : '') + '?';
+            var query = start + '/' + paging.itemsPerPage + '/' + Parameters.filter.orderBy + '/' + (Parameters.filter.filterName ? encodeURIComponent(Parameters.filter.filterName) : '') + '?';
             var keys = ['keyWords', 'typeSearch', 'idCategories', 'startCost', 'endCost', 'exceptWords', 'typeSeller'];
             
+            var params = [];
             for(var i = 0; i <= keys.length-1; i++){
                 if(Parameters.filter[keys[i]])
-                     query = query + '&' + keys[i] + '=' + encodeURIComponent(Parameters.filter[keys[i]]);
+                     params[i] = keys[i] + '=' + encodeURIComponent(Parameters.filter[keys[i]]);
             }
-            
+            query = query + params.join('&');
             self.BaseLoad.SearchContent(Parameters.shopId, query, function(data){
                 EventDispatcher.DispatchEvent('searchResultWidget.onload.searchResult', data);
             })
