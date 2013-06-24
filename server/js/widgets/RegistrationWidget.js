@@ -72,7 +72,7 @@ var RegistrationWidget = function() {
             self.WidgetLoader(false);
             var params = [];
             if (step1.username())
-                params.push('username=' + step1.username());
+                params.push('username=' + encodeURIComponent(step1.username()));
             if (step1.phone())
                 params.push('phone=' + step1.phone().replace(/\s/g, ''));
             if (step1.email())
@@ -96,13 +96,13 @@ var RegistrationWidget = function() {
                 if (test) {
                     var params = [];
                     if (step1.username())
-                        params.push('username=' + step1.username());
+                        params.push('username=' + encodeURIComponent(step1.username()));
                     if (step1.phone())
                         params.push('phone=' + step1.phone().replace(/\s/g, ''));
                     if (step1.email())
                         params.push('email=' + step1.email());
                     if (step1.firstPassword())
-                        params.push('password=' + step1.firstPassword());
+                        params.push('password=' + encodeURIComponent(step1.firstPassword()));
                     if (params.length > 0)
                         var str = '?' + params.join('&');
                     self.BaseLoad.Registration(str, function(data) {
@@ -122,7 +122,7 @@ var RegistrationWidget = function() {
         EventDispatcher.AddEventListener('RegistrationWidget.step2.checking', function(step2) {
             self.WidgetLoader(false);
             var params = [];
-            params.push('username=' + step2.username());
+            params.push('username=' + encodeURIComponent(step2.username()));
             if (!step2.mailConfirmLater())
                 params.push('mail_token=' + step2.mailToken());
             if (!step2.phoneConfirmLater())
@@ -165,11 +165,11 @@ var RegistrationWidget = function() {
             self.WidgetLoader(false);
             var day = step3.birthDay().split('.');
             var birthDay = day[2] + '-' + day[1] + '-' + day[0];
-            var str = '?sname=' + step3.lastName() +
-                    '&fname=' + step3.firstName() +
-                    '&mname=' + step3.firstName() +
-                    '&bdate=' + birthDay +
-                    '&gender=' + step3.gender();
+            var str = '?sname=' + encodeURIComponent(step3.lastName()) +
+                    '&fname=' + encodeURIComponent(step3.firstName()) +
+                    '&mname=' + encodeURIComponent(step3.firstName()) +
+                    '&bdate=' + encodeURIComponent(birthDay) +
+                    '&gender=' + encodeURIComponent(step3.gender());
 
             self.BaseLoad.EditProfile(str, function(data) {
                 var test = true;
@@ -205,16 +205,16 @@ var RegistrationWidget = function() {
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
             self.WidgetLoader(false);
-            var str = '?id_country=' + $.trim(step4.country().id);
+            var str = '?id_country=' + encodeURIComponent($.trim(step4.country().id));
             if (step4.region())
-                str = str + '&code_region=' + $.trim(step4.region().regioncode);
+                str = str + '&code_region=' + encodeURIComponent($.trim(step4.region().regioncode));
             else
-                str = str + '&name_region=' + $.trim(step4.customRegion());
+                str = str + '&name_region=' + encodeURIComponent($.trim(step4.customRegion()));
             if (step4.city())
-                str = str + '&code_city=' + $.trim(step4.city().aoguid);
+                str = str + '&code_city=' + encodeURIComponent($.trim(step4.city().aoguid));
             else
-                str = str + '&name_city=' + $.trim(step4.customCity());
-            str = str + '&address=' + $.trim(step4.customAddress()) + '&post_code=' + $.trim(step4.postIndex());
+                str = str + '&name_city=' + encodeURIComponent($.trim(step4.customCity()));
+            str = str + '&address=' + encodeURIComponent($.trim(step4.customAddress())) + '&post_code=' + encodeURIComponent($.trim(step4.postIndex()));
 
             self.BaseLoad.EditAddress(str, function(data) {
                 var test = true;
@@ -426,7 +426,7 @@ var RegistrationWidget = function() {
 
             $('#' + form.cssRegionList).autocomplete({
                 source: function(request, response) {
-                    self.BaseLoad.Region(form.country().id + '/' + request.term, function(data) {
+                    self.BaseLoad.Region(form.country().id + '/' + encodeURIComponent(request.term), function(data) {
                         if (!data.err) {
                             response($.map(data, function(item) {
                                 return {
@@ -455,7 +455,7 @@ var RegistrationWidget = function() {
             $('#' + form.cssCityList).autocomplete({
                 source: function(request, response) {
                     if (form.region()) {
-                        self.BaseLoad.City(form.country().id + '/' + form.region().regioncode + '/' + request.term, function(data) {
+                        self.BaseLoad.City(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
                             if (!data.err) {
                                 response($.map(data, function(item) {
                                     return {
@@ -484,7 +484,7 @@ var RegistrationWidget = function() {
             $('#' + form.cssAddress).autocomplete({
                 source: function(request, response) {
                     if (form.region()) {
-                        self.BaseLoad.Street(form.country().id + '/' + form.region().regioncode + '/' + form.city().aoguid + '/' + request.term, function(data) {
+                        self.BaseLoad.Street(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
                             if (!data.err) {
                                 response($.map(data, function(item) {
                                     return {
@@ -513,17 +513,33 @@ var RegistrationWidget = function() {
             $('#' + form.cssCountryList).change(function() {
                 var v = $(this).getSetSSValue();
                 $.grep(form.countryList(), function(data) {
-                    if (data.id == v)
+                    if (data.id == v){
                         form.country(data);
+                        form.customRegion(null);
+                        form.region(null);
+                        form.customCity(null);
+                        form.city(null);
+                        form.customAddress(null)
+                        form.address(null);
+                        form.postIndex(null);
+                    }
                 })
             });
 
             $('#' + form.cssRegionList).bind('textchange', function(event, previousText) {
                 form.customRegion($(this).val());
+                form.customCity(null);
+                form.city(null);
+                form.customAddress(null)
+                form.address(null);
+                form.postIndex(null);
             });
 
             $('#' + form.cssCityList).bind('textchange', function(event, previousText) {
                 form.customCity($(this).val());
+                form.customAddress(null)
+                form.address(null);
+                form.postIndex(null);
             });
 
             self.WidgetLoader(true);
@@ -536,8 +552,8 @@ var RegistrationWidget = function() {
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function() {
-                for (var i = 0; i <= Config.Containers.authentication.length - 1; i++) {
-                    $("#" + Config.Containers.authentication[i]).css(self.settings.style);
+                for (var i = 0; i <= Config.Containers.registration.length - 1; i++) {
+                    $("#" + Config.Containers.registration[i]).css(self.settings.style);
                 }
             });
         }
@@ -1008,16 +1024,6 @@ var RegistrationFormStep4ViewModel = function() {
         return true;
     };
 };
-
-var CountryListViewModel = function(data) {
-    var self = this;
-    self.id = data.id;
-    self.name = data.name;
-    self.fullName = data.full_name;
-    self.partWorld = data.part_world;
-    self.location = data.location;
-};
-
 
 var TestRegistration = {
     Init: function() {

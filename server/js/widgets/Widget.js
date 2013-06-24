@@ -37,6 +37,11 @@ Parameters = {
             step3 : {},
             step4 : {}
         },
+        profile : {
+            personal : {},
+            delivery : {},
+            security : {}
+        },
         lastPage : {},
         https : null,
         userInformation : null,
@@ -75,7 +80,6 @@ var Loader = {
         for(var key in this.widgets){
             this.RegisterReady(key);
         }
-
         this.ShowLoading();
     },
     RegisterReady : function(key){
@@ -170,6 +174,13 @@ function Widget(){
             var embed = new window[data.options.widget]();
             embed.SetParameters(data);
             embed.Init(embed, true);
+        });
+        
+        EventDispatcher.AddEventListener('widget.onload.menuPersonalCabinet', function(opt){
+            MenuPersonalCabinetWidgetWidget.prototype = new Widget();
+            var menu = new MenuPersonalCabinetWidgetWidget();
+            menu.Init(menu);
+            menu.AddMenu(opt);
         });
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
@@ -413,7 +424,7 @@ function Widget(){
 
                 var str = "";
                 if(username && password)
-                    str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
+                    str = '?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) +'&remember_me=' + remember_me;
                 XDMTransport.LoadData(encodeURIComponent(host + self.settings.userPathApi + 'login/' + str), function(data){
                     Parameters.cache.userInformation = data;
                     if(callback)
@@ -473,7 +484,7 @@ function Widget(){
                 host = self.settings.httpsHostApi;
             var str = '';
             if(comment)
-               str = '/' + comment;
+               str = '/' + encodeURIComponent(comment);
             str = str + '/?idGoods=' + goodId
             XDMTransport.LoadData(encodeURIComponent(host + self.settings.favPathApi + 'add/' + Parameters.shopId + str), function(data){
                 if(callback)
@@ -524,8 +535,34 @@ function Widget(){
                     callback(JSON.parse(data));
             });
         },
-        EditProfile : function(str, callback){
-            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/profile/' + str), function(data){
+        EditProfile : function(form, callback){
+            if(form.find('#registration_data_query').length == 0)
+                form.append('<input type="text" id="registration_data_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.userPathApi + 'edit/profile/"/>');
+            XDMTransport.LoadPost(form, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        Profile : function(callback){
+            if($.isEmptyObject(Parameters.cache.profile.personal)){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'profile/'), function(data){
+                    Parameters.cache.profile.personal = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                });
+            }
+            else
+                callback(JSON.parse(Parameters.cache.profile.personal));
+        },
+        EditContacts : function(str, callback){
+            console.log(str);
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/contact/' + Parameters.shopId + '/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        SendToken : function(type, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'code/' + Parameters.shopId + '/' + type), function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });
@@ -561,6 +598,49 @@ function Widget(){
         },
         EditAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/address/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        DeliveryAddressList : function(callback){
+            if(!Parameters.cache.delivery){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info'), function(data){
+                    Parameters.cache.delivery = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                });
+            }
+            else
+                callback(JSON.parse(Parameters.cache.delivery));
+        },
+        ChangePassword : function(form, callback){
+            if(form.find('#change_password_query').length == 0)
+                form.append('<input type="text" id="change_password_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.userPathApi + 'npass/"/>');
+            XDMTransport.LoadPost(form, function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        AddDelivaryAddress : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/add/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        EditDelivaryAddress : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/edit/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        SetDefaultDelivaryAddress : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/default/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            });
+        },
+        DeleteDeliveryAddress : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/del/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
             });

@@ -215,6 +215,12 @@ var BreadCrumbViewModel = function(){
                 if(Routing.params.step == 4)
                     self.lastItem.push('Шаг 4 из 4');
             } 
+            if(Routing.route == 'profile'){
+                self.crumbs = ko.observableArray();
+                self.lastItem = ko.observableArray();
+                
+                self.lastItem.push('Личный кабинет');
+            }
 
             EventDispatcher.DispatchEvent('breadCrumbWidget.fill.item', self);
         }
