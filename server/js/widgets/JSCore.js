@@ -4,6 +4,7 @@ var JSSettings = {
     pathToTmpl : "server/tmpl/",
     pathToData : "server/services/DataProxy.php?query=",
     pathToCore: "server/index.html",
+    pathToPostCore : 'server/postData.html',
 
     scripts : [
         'jquery-ui-1.10.2.custom.min.js',
@@ -162,6 +163,27 @@ var XDMTransport = {
         }
         else{
             setTimeout(function(){XDMTransport.Load(data, callback)}, 1000);
+        }
+    },
+    LoadPost : function(data, callback){
+        if(typeof easyXDM !== 'undefined'){
+            var remote = new easyXDM.Rpc({
+                remote: JSSettings.host + JSSettings.pathToPostCore,
+                onReady: function(){
+                    data.attr('action', JSSettings.host + "services/DataPostProxy.php");
+                    data.submit(); 
+                }
+            }, {
+                local: {
+                    returnUploadResponse: function(response){
+                        if(callback)
+                           callback(response.msg);
+                    }
+                }
+            });
+        }
+        else{
+            setTimeout(function(){XDMTransport.LoadPost(data, callback)}, 1000);
         }
     }
 }

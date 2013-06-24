@@ -552,8 +552,8 @@ var RegistrationWidget = function() {
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function() {
-                for (var i = 0; i <= Config.Containers.authentication.length - 1; i++) {
-                    $("#" + Config.Containers.authentication[i]).css(self.settings.style);
+                for (var i = 0; i <= Config.Containers.registration.length - 1; i++) {
+                    $("#" + Config.Containers.registration[i]).css(self.settings.style);
                 }
             });
         }
@@ -1024,16 +1024,6 @@ var RegistrationFormStep4ViewModel = function() {
         return true;
     };
 };
-
-var CountryListViewModel = function(data) {
-    var self = this;
-    self.id = data.id;
-    self.name = data.name;
-    self.fullName = data.full_name;
-    self.partWorld = data.part_world;
-    self.location = data.location;
-};
-
 
 var TestRegistration = {
     Init: function() {

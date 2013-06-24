@@ -63,4 +63,13 @@ var BlockTrForTableViewModel = function(){
     }
 }
 
+var CountryListViewModel = function(data) {
+    var self = this;
+    self.id = data.id;
+    self.name = data.name;
+    self.fullName = data.full_name;
+    self.partWorld = data.part_world;
+    self.location = data.location;
+};
+
 

@@ -156,7 +156,7 @@ var UserInformationBlockViewModel = function(data){
             return false;
         return true;
     };
-    self.iconUser = Parameters.pathToImages + 'test.jpg';
+    self.iconUser = Parameters.pathToImages + data.route_icon_user;
     
     self.showRaiting = function(){
         if($.inArray('raiting', Config.UserInformation.showBlocks) < 0)
@@ -172,7 +172,7 @@ var UserInformationBlockViewModel = function(data){
         }
     };
     self.ClickPrivateOffice = function(){
-        
+        Routing.SetHash('profile', 'Личный кабинет', {});
     };
 };
 
