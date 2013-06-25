@@ -236,6 +236,14 @@ function Widget(){
     this.WidgetLoader = function(test){
         Loader.Indicator(this.widgetName, test);
     };
+    this.ScrollTop = function(elementId, speed){
+        if(Loader.countAll == Loader.readyCount){
+            $('html, body').animate({scrollTop: $("#" + elementId).offset().top}, speed); 
+        }
+        else{
+            setTimeout(function() {self.ScrollTop(elementId);}, 100); 
+        }
+    };
     this.QueryError = function(data, callback){
         if (data.err) {
             if($('#' + Config.Base.containerIdErrorWindow).length == 0){

@@ -165,13 +165,8 @@ var RegistrationWidget = function() {
             self.WidgetLoader(false);
             var day = step3.birthDay().split('.');
             var birthDay = day[2] + '-' + day[1] + '-' + day[0];
-            var str = '?sname=' + encodeURIComponent(step3.lastName()) +
-                    '&fname=' + encodeURIComponent(step3.firstName()) +
-                    '&mname=' + encodeURIComponent(step3.firstName()) +
-                    '&bdate=' + encodeURIComponent(birthDay) +
-                    '&gender=' + encodeURIComponent(step3.gender());
-
-            self.BaseLoad.EditProfile(str, function(data) {
+            step3.birthDayHiddenField(birthDay);
+            self.BaseLoad.EditProfile( $('form#' + step3.cssRegistrationDataForm), function(data) {
                 var test = true;
                 if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationWidget.step3.checking', step3)}))
                     test = false;
@@ -790,11 +785,14 @@ var RegistrationFormStep3ViewModel = function() {
     self.errorMiddleName = ko.observable(null);
 
     self.birthDay = ko.observable();
+    self.birthDayHiddenField = ko.observable();
     self.errorBirthDay = ko.observable(null);
     self.cssBirthDay = 'birthDay';
 
     self.gender = ko.observable('m');
     self.errorGender = ko.observable(null);
+    
+    self.cssRegistrationDataForm = 'registration_personal_information';
 
     self.Back = function() {
         EventDispatcher.DispatchEvent('RegistrationWidget.step2.view');

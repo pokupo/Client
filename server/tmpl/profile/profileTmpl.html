@@ -220,7 +220,7 @@
 </script>
 
 <script type="text/html" id="postDataFormTmpl">
-    <table style="width: 100%;" data-bind="visible: isEditBlock() == 1">
+    <table style="width: 100%;" data-bind="visible: isEditBlock() == 1, attr: {id : cssPostAddressForm }">
         <tr class="first">
             <td>
                 <div class="row row_left">
@@ -314,15 +314,17 @@
                 </div>
                 <div data-bind="visible: emailIsConfirm()">E-mail подтвержден</div>
                 <div data-bind="visible: !emailIsConfirm()">
-                    <div><a href="#" data-bind="click: SendMailToken">Выслать код подтверждения</a></div>
-                    <span class="row row_left">
+                    <div data-bind="visible: isExistEmail">
+                        <a href="#" data-bind="click: SendMailToken">Выслать код подтверждения</a>
+                    </div>
+                    <span class="row row_left" data-bind="visible: sentEmailCode">
                         <label>E-mail код:</label> 
                         <input name="textfield" type="text" id="textfield" data-bind="value:emailToken" />
                         <!-- ko if: errorEmailToken-->
                             <div class="form_error" data-bind="text: errorEmailToken"></div>
                         <!-- /ko -->
                     </span>
-                    <a href="#" data-bind="click: SubmitMailToken">Подтвердить</a></td>
+                    <a href="#" data-bind="click: SubmitMailToken, visible: sentEmailCode">Подтвердить</a></td>
                 <!-- /ko -->
         </tr>
         <tr>
@@ -337,15 +339,17 @@
                 </div>
                 <div data-bind="visible: phoneIsConfirm()">Телефон подтвержден</div>
                 <div data-bind="visible: !phoneIsConfirm()">
-                    <div><a href="#" data-bind="click: SendPhoneToken">Выслать код подтверждения</a></div>
-                    <span class="row row_left">
+                    <div  data-bind="visible: isExistPhone">
+                        <a href="#" data-bind="click: SendPhoneToken">Выслать код подтверждения</a>
+                    </div>
+                    <span class="row row_left"  data-bind="visible: sentCode">
                         <label>SMS код:</label> 
                         <input name="textfield" type="text" id="textfield" data-bind="value: phoneToken" />
                         <!-- ko if: errorPhoneToken-->
                             <div class="form_error" data-bind="text: errorPhoneToken"></div>
                         <!-- /ko -->
                     </span>
-                    <a href="#" data-bind="click: SubmitPhoneToken">Подтвердить</a>
+                    <a href="#" data-bind="click: SubmitPhoneToken, visible: sentCode">Подтвердить</a>
                </div>
             </td>    
         </tr>
@@ -414,7 +418,9 @@
             </td>
             <td class="row_9">
                 <a href="#" data-bind="click: Edit">Изменить</a></br/>
+                <!-- ko if: id -->
                 <a href="#" data-bind="click: Delete">Удалить</a>
+                <!-- /ko -->
             </td>
         </tr>
         <!-- /ko -->
