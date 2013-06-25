@@ -3,6 +3,7 @@ var JSSettings = {
     pathToJS : "server/js/",
     pathToTmpl : "server/tmpl/",
     pathToData : "server/services/DataProxy.php?query=",
+    pathToPostData : "server/services/DataPostProxy.php",
     pathToCore: "server/index.html",
     pathToPostCore : 'server/postData.html',
 
@@ -170,7 +171,7 @@ var XDMTransport = {
             var remote = new easyXDM.Rpc({
                 remote: JSSettings.host + JSSettings.pathToPostCore,
                 onReady: function(){
-                    data.attr('action', JSSettings.host + "services/DataPostProxy.php");
+                    data.attr('action', JSSettings.host + JSSettings.pathToPostData);
                     data.submit(); 
                 }
             }, {
