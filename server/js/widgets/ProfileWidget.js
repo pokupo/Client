@@ -385,14 +385,6 @@ var ProfileWidget = function() {
                 });
             
                 self.Fill.Personal(data, personal);
-                self.Render.Personal(personal);
-            });
-            
-            var shopId = Parameters.shopId;
-            if (self.settings.geoShop == 0)
-                shopId = 0;
-            self.BaseLoad.Country(shopId, function(data) {
-                personal.postalAddress.AddCountryList(data);
             });
         },
         Delivery : function(){
@@ -435,14 +427,22 @@ var ProfileWidget = function() {
     self.Fill = {
         Personal : function(data, personal){
             personal.AddContent(data);
-            if(personal.postalAddress.idCountry()){
-                $.grep(personal.postalAddress.countryList(), function(data) {
-                    if (data.id == personal.postalAddress.idCountry()){
-                        personal.postalAddress.country(data);
-                        personal.postalAddress.countryText(data.full_name);
-                    }
-                })
-            }
+            
+            var shopId = Parameters.shopId;
+            if (self.settings.geoShop == 0)
+                shopId = 0;
+            self.BaseLoad.Country(shopId, function(data) {
+                personal.postalAddress.AddCountryList(data);
+                if(personal.postalAddress.idCountry()){
+                    $.grep(personal.postalAddress.countryList(), function(data) {
+                        if (data.id == personal.postalAddress.idCountry()){
+                            console.log(data);
+                            personal.postalAddress.country(data);
+                        }
+                    })
+                }
+                self.Render.Personal(personal);
+            });
         },
         Delivery : function(data){
             var delivery = new ProfileDeliveryAddressViewModel();
@@ -1023,17 +1023,18 @@ var ProfilePostalAddressViewModel = function(){
     
     self.isEditBlock = ko.observable(0);
     
-    self.AddContent = function(data){
+    self.AddContent = function(data){ 
         self.data = data;
 
-        self.idCountry(data.country);
+        self.idCountry(data.id_country);
+        self.countryText(data.country);
         
         self.regionText(data.region);
         self.cityText(data.city);
         self.addressText(data.address);
         self.postIndexText(data.post_code);
         
-        self.country(data.country);
+        
         self.region({regioncode : data.code_region});
         self.customRegion(data.region);
         self.city({aoguid :data.code_city});

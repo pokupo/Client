@@ -232,7 +232,7 @@
             <td>
                 <div class="row row_left">
                     <label>Страна:</label>
-                    <select id="country_list_profile" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' '"></select>
+                    <select id="country_list_profile" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
                     <!-- ko if: errorCountry-->
                         <div class="form_error" data-bind="text: errorCountry"></div>
                     <!-- /ko -->
