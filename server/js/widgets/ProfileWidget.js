@@ -42,6 +42,7 @@ var ProfileWidget = function() {
         if (Routing.route == 'profile') {
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
+                    Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
                     if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
                         self.Info.Personal();
                     if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix)
