@@ -42,6 +42,7 @@ var ProfileWidget = function() {
         if (Routing.route == 'profile') {
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
+                    Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
                     if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
                         self.Info.Personal();
                     if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix)
@@ -167,6 +168,16 @@ var ProfileWidget = function() {
                 str = str + '&phone=' + encodeURIComponent(contacts.phone());
             self.BaseLoad.EditContacts(str, function(data){
                 if(data.result == 'ok'){
+                    contacts.sentCode(true);
+                    setTimeout(function() {
+                        contacts.isExistPhone(true);
+                    }, 60000);
+                    
+                    contacts.sentEmailCode(true);
+                    setTimeout(function() {
+                        contacts.isExistMail(true);
+                    }, 60000);
+                    
                     alert(Config.Profile.message.contactsEdit);
                 }
                 else{
@@ -385,14 +396,6 @@ var ProfileWidget = function() {
                 });
             
                 self.Fill.Personal(data, personal);
-                self.Render.Personal(personal);
-            });
-            
-            var shopId = Parameters.shopId;
-            if (self.settings.geoShop == 0)
-                shopId = 0;
-            self.BaseLoad.Country(shopId, function(data) {
-                personal.postalAddress.AddCountryList(data);
             });
         },
         Delivery : function(){
@@ -435,14 +438,21 @@ var ProfileWidget = function() {
     self.Fill = {
         Personal : function(data, personal){
             personal.AddContent(data);
-            if(personal.postalAddress.idCountry()){
-                $.grep(personal.postalAddress.countryList(), function(data) {
-                    if (data.id == personal.postalAddress.idCountry()){
-                        personal.postalAddress.country(data);
-                        personal.postalAddress.countryText(data.full_name);
-                    }
-                })
-            }
+            
+            var shopId = Parameters.shopId;
+            if (self.settings.geoShop == 0)
+                shopId = 0;
+            self.BaseLoad.Country(shopId, function(data) {
+                personal.postalAddress.AddCountryList(data);
+                if(personal.postalAddress.idCountry()){
+                    $.grep(personal.postalAddress.countryList(), function(data) {
+                        if (data.id == personal.postalAddress.idCountry()){
+                            personal.postalAddress.country(data);
+                        }
+                    })
+                }
+                self.Render.Personal(personal);
+            });
         },
         Delivery : function(data){
             var delivery = new ProfileDeliveryAddressViewModel();
@@ -613,7 +623,12 @@ var ProfileWidget = function() {
                 form.postalAddress.address(null);
                 form.postalAddress.postIndex(null);
             });
+   
             self.WidgetLoader(true);
+            
+            if(Routing.params.edit == 'postal_address'){
+                self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
+            }
         },
         DeliveryList : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -988,6 +1003,8 @@ var ProfileDataRegistrationViewModel = function(){
 var ProfilePostalAddressViewModel = function(){
     var self = this;
     self.data = null;
+    self.cssPostAddressForm = 'profile_postal_address_form';
+    
     self.countryText = ko.observable();
     self.idCountry = ko.observable();
     self.country = ko.observable();
@@ -1023,25 +1040,31 @@ var ProfilePostalAddressViewModel = function(){
     
     self.isEditBlock = ko.observable(0);
     
-    self.AddContent = function(data){
+    self.AddContent = function(data){ 
         self.data = data;
 
-        self.idCountry(data.country);
+        self.idCountry(data.id_country);
+        self.countryText(data.country);
         
         self.regionText(data.region);
-        self.cityText(data.city);
-        self.addressText(data.address);
-        self.postIndexText(data.post_code);
-        
-        self.country(data.country);
         self.region({regioncode : data.code_region});
         self.customRegion(data.region);
+        
+        self.cityText(data.city);
         self.city({aoguid :data.code_city});
         self.customCity(data.city);
+        
+        self.addressText(data.address);
         self.address(data.address);
         self.customAddress(data.address);
+        
+        self.postIndexText(data.post_code);
         self.postIndex(data.post_code);
+        
         self.checkInfo(data.check_info);
+        
+        if(Routing.params.edit == 'postal_address')
+            self.isEditBlock(1);
     };
     self.AddCountryList = function(data) {
         if (data.length > 0) {
@@ -1054,14 +1077,20 @@ var ProfilePostalAddressViewModel = function(){
         self.isEditBlock(1);
     };
     self.Back = function(){
-        self.country(self.data.country);
+        self.idCountry(self.data.id_country);
+
         self.region({regioncode : self.data.code_region});
         self.customRegion(self.data.region);
-        self.city({aoguid :self.data.code_city}); 
+        
+        self.city({aoguid :self.data.code_city});
         self.customCity(self.data.city);
+
         self.address(self.data.address);
         self.customAddress(self.data.address);
+        
+        self.postIndexText(self.data.post_code);
         self.postIndex(self.data.post_code);
+
         self.checkInfo(self.data.check_info);
         self.isEditBlock(0);
     };
@@ -1131,6 +1160,11 @@ var ProfileContactsViewModel = function(){
     var self = this;
     var user = JSON.parse(Parameters.cache.userInformation);
     self.email = ko.observable(user.email);
+    self.isExistEmail = ko.observable();
+    if(user.email)
+       self.isExistEmail(true); 
+    self.sentEmailCode = ko.observable();
+    
     self.emailToken = ko.observable();
     self.errorEmail = ko.observable(null);
     self.errorEmailToken = ko.observable(null);
@@ -1138,6 +1172,11 @@ var ProfileContactsViewModel = function(){
     
     self.phone = ko.observable(user.phone);
     self.cssPhone = 'phone_profile';
+    self.isExistPhone = ko.observable();
+    if(user.phone)
+       self.isExistPhone(true); 
+    self.sentCode = ko.observable();
+            
     self.phoneToken = ko.observable();
     self.errorPhone = ko.observable(null);
     self.errorPhoneToken = ko.observable(null);
@@ -1202,9 +1241,19 @@ var ProfileContactsViewModel = function(){
         return true;
     };
     self.SendMailToken = function(){
+        self.sentEmailCode(true);
+        self.isExistEmail(false);
+        setTimeout(function() {
+            self.isExistEmail(true);
+        }, 60000);
         EventDispatcher.DispatchEvent('ProfileWidget.send.token', 'mail');
     };
     self.SendPhoneToken = function(){
+        self.sentCode(true);
+        self.isExistPhone(false);
+        setTimeout(function() {
+            self.isExistPhone(true);
+        }, 60000);
         EventDispatcher.DispatchEvent('ProfileWidget.send.token', 'sms');
     };
     self.SubmitMailToken = function(){
@@ -1261,8 +1310,10 @@ var DeliveryAddressViewModel = function(data, list){
     self.contactPhone = data.contact_phone;
             
     self.Edit = function(){
-        console.log(self.isDefault());
-        EventDispatcher.DispatchEvent('ProfileWidget.delivery.edit', self);
+       if(self.id)
+           EventDispatcher.DispatchEvent('ProfileWidget.delivery.edit', self);
+       else
+           Routing.SetHash('profile', 'Личный кабинет', {info : 'personal', edit : 'postal_address'});
     };
     self.Delete = function(){
         EventDispatcher.DispatchEvent('ProfileWidget.delivery.delete', {address : self, list : list});

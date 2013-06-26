@@ -67,6 +67,7 @@ var MenuPersonalCabinetViewModel = function(){
     self.subMenu = ko.observableArray();
     var user = JSON.parse(Parameters.cache.userInformation);
     self.avatar = Parameters.pathToImages + user.route_icon_user;
+    self.username = user.login;
     
     self.AddSubMenu = function(subMenu, active){
         for(var key in subMenu){
