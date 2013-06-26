@@ -19,7 +19,14 @@ var Config = {
         },
         containerIdErrorWindow : 'dialogErrorMessage', // id модального окна с ошибкой
         conteinerIdTextErrorWindow: 'containerError', // id контейнера для текста ошибки
-        errorWindow : '<div id="dialogErrorMessage" title="Ошибка" style="display:none"><p id="containerError"></p></div>'
+        errorWindow : '<div id="dialogErrorMessage" title="Ошибка" style="display:none"><p id="containerError"></p></div>', // темплейт модального окна с ошибкой
+        containerIdMessageWindow : 'dialogMessage', // id модального окна с сообщением
+        conteinerIdTextMessageWindow: 'containerMessage', // id контейнера для текста сообщением
+        containerMessage : '<div id="dialogMessage" title="Сообщение" style="display:none"><p id="containerMessage"></p></div>', // темплейт модального окна с сообщением
+        timeMessage : 3000, //время посе которого скрывать сообщение
+        containerIdConfirmWindow : 'dialogConfirm', // id модального окна с предупреждением
+        conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
+        containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>' // темплейт модального окна с сообщением
     },
     Containers : {  
         catalog : 'catalog', // id контейнера каталога 
@@ -128,6 +135,9 @@ var Config = {
             path : "search/searchTmpl.html", // путь к шаблонам
             tmplId : "searchTmpl" // id шаблона формы поиска по умолчанию
         },
+        message : {
+             empty : 'Введите название товара для его поиска.'
+        },
         style : {// стиль блока
             'position' : 'absolute', 
             'top' : '0px', 
@@ -209,6 +219,10 @@ var Config = {
             path : "authentication/authenticationTmpl.html", // файл шаблонов
             authFormTmplId : "authenticationFormTmpl", //id шаблона формы авторизации
             authSidebarTmplId : "authenticationSidebarTmpl" //id шаблона левого блока
+        },
+        message : {
+            pleaseLogIn : 'Необходимо авторизоваться.',
+            confirmLogOut : 'Вы действительно хотите выйти?'
         },
         style : {// стиль блока
             'position' : 'absolute', 
@@ -374,7 +388,10 @@ var Config = {
             addAddressDelivery : 'Данные успешно сохранены.',
             failAddAddressDelivery : 'Данные не сохранены. Попробуйте повторить запрос позднее.',
             deleteAddressDelivery : 'Адрес доставки успешно удален.',
-            failDeleteAddressDelivery : 'Адрес доставки не удален. Попробуйте повторить запрос позднее.'
+            confirmDeleteAddressDelivery : "Вы уверены что хотите удалить адрес?",
+            failDeleteAddressDelivery : 'Адрес доставки не удален. Попробуйте повторить запрос позднее.',
+            setDefaultDelivery : 'Данные успешно обновлены.',
+            failSetDefaultDelivery : 'Данные не обновлены.'
         },
         error : { // сообщения об ошибках при валидации формы регистрации
             email : {
@@ -485,6 +502,10 @@ var Config = {
             cartTmplId : "cartGoodsTmpl", //id шаблона формы авторизации
             emptyCartTmplId : "emptyCartGoodsTmpl"
         },
+        message :{
+            addFavorites : 'Выбранные товары добавлены в избранное.',
+            failAddFavorites : 'Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.'
+        }, 
         style : {// стиль блока
             'position' : 'absolute', 
             'top' : '0px', 
