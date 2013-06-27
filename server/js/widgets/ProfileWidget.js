@@ -40,6 +40,7 @@ var ProfileWidget = function() {
     };
     self.CheckRouteProfile = function() {
         if (Routing.route == 'profile') {
+            self.WidgetLoader(false);
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
                     Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
@@ -86,12 +87,14 @@ var ProfileWidget = function() {
 
             self.BaseLoad.EditProfile($('form#' + personal.cssRegistrationDataForm), function(data) {
                 if(data.result == 'ok'){
+                    Parameters.cache.profile.personal = {};
                     personal.lastName(personal.lastNameField());
                     personal.firstName(personal.firstNameField());
                     personal.middleName(personal.middleNameField());
                     personal.birthDay(personal.birthDayField());
-                    alert(Config.Profile.message.editProfile);
-                    personal.isEditBlock(0);
+                    self.ShowMessage(Config.Profile.message.editProfile,function(){
+                        personal.isEditBlock(0);
+                    }, true);
                 }
                 else{
                     if(!data.err)
@@ -115,8 +118,15 @@ var ProfileWidget = function() {
 
             self.BaseLoad.EditAddress(str, function(request) {
                 if(request.result == 'ok'){
-                    alert(Config.Profile.message.editProfile);
-                    data.isEditBlock(0);
+                    self.ShowMessage(Config.Profile.message.editProfile,  function(){
+                        Parameters.cache.profile.personal = {};
+                        data.countryText(data.country().name);
+                        data.regionText(data.customRegion());
+                        data.cityText(data.customCity());
+                        data.addressText(data.customAddress());
+                        data.postIndexText(data.postIndex());
+                        data.isEditBlock(0);
+                    }, true);
                 }
                 else{
                     if(!request.err)
@@ -129,7 +139,7 @@ var ProfileWidget = function() {
         EventDispatcher.AddEventListener('ProfileWidget.send.token', function(type){
             self.BaseLoad.SendToken(type, function(data){
                 if(data.result == 'ok'){
-                    alert(Config.Profile.message.sendToken);
+                    self.ShowMessage(Config.Profile.message.sendToken, false, true);
                 }
                 else{
                     if(!data.err)
@@ -178,7 +188,7 @@ var ProfileWidget = function() {
                         contacts.isExistMail(true);
                     }, 60000);
                     
-                    alert(Config.Profile.message.contactsEdit);
+                    self.ShowMessage(Config.Profile.message.contactsEdit, false, true);
                 }
                 else{
                     if(!data.err)
@@ -194,12 +204,21 @@ var ProfileWidget = function() {
                     sequrity.oldPassword(null);
                     sequrity.newPassword(null);
                     sequrity.confirmPassword(null);
-                    alert(Config.Profile.message.changePassword);
+                    self.ShowMessage(Config.Profile.message.changePassword, false, true);
                 }
                 else{
                     if(!data.err)
                         data.err = Config.Profile.message.failChangePassord;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('ProfileWidget.password.change', sequrity)})
+                    self.QueryError(data, 
+                        function(){
+                            EventDispatcher.DispatchEvent('ProfileWidget.password.change', sequrity)
+                        },
+                        function(){
+                            sequrity.oldPassword(null);
+                            sequrity.newPassword(null);
+                            sequrity.confirmPassword(null);
+                        }
+                    );
                 }
             });
         });
@@ -228,9 +247,10 @@ var ProfileWidget = function() {
             
             self.BaseLoad.AddDelivaryAddress(str , function(response){
                 if(response.result == 'ok'){
-                    alert(Config.Profile.message.addAddressDelivery);
-                    Parameters.cache.delivery = null;
-                    Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery'});
+                    self.ShowMessage(Config.Profile.message.addAddressDelivery, function(){
+                        Parameters.cache.delivery = null;
+                        Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery'});
+                    }, true);
                 }
                 else{
                     if(!response.err)
@@ -260,9 +280,10 @@ var ProfileWidget = function() {
             
             self.BaseLoad.EditDelivaryAddress(str , function(response){
                 if(response.result == 'ok'){
-                    alert(Config.Profile.message.addAddressDelivery);
-                    Parameters.cache.delivery = null;
-                    Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery'});
+                    self.ShowMessage(Config.Profile.message.addAddressDelivery, function(){
+                        Parameters.cache.delivery = null;
+                        Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery'});
+                    }, true);
                 }
                 else{
                     if(!response.err)
@@ -275,9 +296,10 @@ var ProfileWidget = function() {
         EventDispatcher.AddEventListener('ProfileWidget.delivery.delete', function(delivery){
             self.BaseLoad.DeleteDeliveryAddress(delivery.address.id, function(data){
                 if(data.result == 'ok'){
-                    alert(Config.Profile.message.deleteAddressDelivery);
-                    Parameters.cache.delivery = null;
-                    delivery.list.remove(delivery.address);
+                    self.ShowMessage(Config.Profile.message.deleteAddressDelivery,function(){
+                        Parameters.cache.delivery = null;
+                        delivery.list.remove(delivery.address);
+                    }, true);
                 }
                 else{
                     if(!data.err)
@@ -641,10 +663,10 @@ var ProfileWidget = function() {
                         '&is_default=yes';
                 self.BaseLoad.SetDefaultDelivaryAddress(str, function(data){
                     if(data.result = 'ok'){
-                        alert('Данные успешно обновлены.');
+                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, fasle, true);
                     }
                     else{
-                        alert('Данные не обновлены.');
+                        self.ShowMessage(Config.Profile.message.failSetDefaultDelivery, fasle, true);
                     }
                 });
             })
@@ -1284,6 +1306,7 @@ var ProfileDeliveryAddressViewModel = function(){
     
     self.AddContent = function(data){
         for(var key in data){
+            DeliveryAddressViewModel.prototype = new Widget();
             self.addressList.push(new DeliveryAddressViewModel(data[key], self.addressList));
         }
     }
@@ -1316,7 +1339,9 @@ var DeliveryAddressViewModel = function(data, list){
            Routing.SetHash('profile', 'Личный кабинет', {info : 'personal', edit : 'postal_address'});
     };
     self.Delete = function(){
-        EventDispatcher.DispatchEvent('ProfileWidget.delivery.delete', {address : self, list : list});
+        self.Confirm(Config.Profile.message.confirmDeleteAddressDelivery, function(){
+            EventDispatcher.DispatchEvent('ProfileWidget.delivery.delete', {address : self, list : list});
+        }, false);
     };
 };
 

@@ -1,5 +1,7 @@
 var JSSettings = {
-    host : "http://dev.pokupo.ru/",
+    protocolHTTP : 'http://',
+    protocolHTTPS : 'https://',
+    host : "dev.pokupo.ru/",
     pathToJS : "server/js/",
     pathToTmpl : "server/tmpl/",
     pathToData : "server/services/DataProxy.php?query=",
@@ -108,7 +110,7 @@ var JSCore = {
     isReady : false,
     shopId : null,
     Init : function(){
-        JSLoader.Init(JSSettings.scripts, JSSettings.host + JSSettings.pathToJS);
+        JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.SetInputParameters();
         JSCore.shopId = JSSettings.inputParameters['shopId'];
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
@@ -139,23 +141,29 @@ var JSCore = {
     SetInputParameters : function(){
         JSSettings.inputParameters = JSCore.ParserInputParameters(/JSCore.js/);
     }
-}
+};
 
 var XDMTransport = {
     remote : "",
     Init: function(url){
         XDMTransport.remote = url;
     },
+    GetProtocol : function(data){
+       if( data )
+           return JSSettings.protocolHTTPS;
+       else
+           return JSSettings.protocolHTTP;
+    },
     LoadTmpl: function(data, callback){
         XDMTransport.Load(JSSettings.pathToTmpl + data, callback);
     },
-    LoadData: function(data, callback){
-        XDMTransport.Load(JSSettings.pathToData + data, callback);
+    LoadData: function(data, callback, protocol){
+        XDMTransport.Load(JSSettings.pathToData + data, callback, protocol);
     },
-    Load : function(data, callback){
+    Load : function(data, callback, protocol){
         if(typeof easyXDM !== 'undefined'){
             var socket = new  easyXDM.Socket({
-                remote: XDMTransport.remote,
+                remote: XDMTransport.GetProtocol(protocol) + XDMTransport.remote,
                 onMessage: function(msg) {
                     if(callback)callback(msg);
                 }
@@ -166,19 +174,18 @@ var XDMTransport = {
             setTimeout(function(){XDMTransport.Load(data, callback)}, 1000);
         }
     },
-    LoadPost : function(data, callback){
+    LoadPost : function(data, protocol){
         if(typeof easyXDM !== 'undefined'){
             var remote = new easyXDM.Rpc({
-                remote: JSSettings.host + JSSettings.pathToPostCore,
+                remote: XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostCore,
                 onReady: function(){
-                    data.attr('action', JSSettings.host + JSSettings.pathToPostData);
+                    data.attr('action', XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostData);
                     data.submit(); 
                 }
             }, {
                 local: {
                     returnUploadResponse: function(response){
-                        if(callback)
-                           callback(response.msg);
+                        EventDispatcher.DispatchEvent(EventDispatcher.HashCode(data.toString()), response.msg);
                     }
                 }
             });

@@ -62,6 +62,7 @@ var SearchWidget = function(){
         });
     };
     self.Fill = function(data){
+        SearchViewModel.prototype = new Widget();
         var search = new SearchViewModel();
         search.selectedCategory = data.name_category;
         if(Parameters.cache.childrenCategory[data.id])
@@ -158,7 +159,7 @@ var SearchViewModel = function(){
             $(data.text).val('');
         }
         else{
-            alert('Введите название товара для его поиска.');
+            self.ShowMessage(Config.Search.message.empty, false, true);
         }
     };
     self.FindSelectedSection = function(data, selected){

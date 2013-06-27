@@ -125,10 +125,13 @@ function Widget(){
     this.isReady = false;
     this.settings = {
         hostApi : null,
+        httpsHostApi : null,
         catalogPathApi : null,
         goodsPathApi : null,
         userPathApi : null,
         cartPathApi : null,
+        favPathApi : null,
+        geoPathApi : null,
         containerIdForTmpl : null
     };
     this.Init = function(widget, noindicate){
@@ -190,15 +193,15 @@ function Widget(){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
                         inputDate.data.IsFavorite(true);
-                        alert('Выбранные товары добавлены в избранное.');
+                        self.ShowMessage(Config.CartGoods.message.addFavorites, false, true);
                     }
                     else{
-                        alert('Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.');
+                        self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, true);
                     }
                 });
             }
             else{
-                alert('Необходимо авторизоваться.')
+                self.ShowMessage(Config.Authentication.message.pleaseLogIn , false, true);
             }
         });
         
@@ -209,7 +212,7 @@ function Widget(){
             var hash = data.hash;
             self.BaseLoad.AddGoodsToCart(goodsId, sellerId, count, function(data){
                 if(data.err){
-                    alert(data.err);
+                    self.ShowMessage(data.err, false, true);
                 }
                 else{
                     if(typeof AnimateAddToCart !== 'undefined')
@@ -244,7 +247,7 @@ function Widget(){
             setTimeout(function() {self.ScrollTop(elementId);}, 100); 
         }
     };
-    this.QueryError = function(data, callback){
+    this.QueryError = function(data, callback, callbackPost){
         if (data.err) {
             if($('#' + Config.Base.containerIdErrorWindow).length == 0){
                 $('body').append(Config.Base.errorWindow);
@@ -262,13 +265,67 @@ function Widget(){
                     }},
                     { text: "Закрыть", click: function() { 
                         $( this ).dialog( "close" ); 
+                        if(callbackPost)
+                            callbackPost();
                     }}
                 ]
             });
+            $('.ui-dialog-titlebar-close').hide();
             return false;
         }
         return true;
     };
+    this.ShowMessage = function(message, callback, hide){
+        if($('#' + Config.Base.containerIdMessageWindow).length == 0){
+            $('body').append(Config.Base.containerMessage);
+        }
+        $('#' + Config.Base.containerIdMessageWindow + ' #' + Config.Base.conteinerIdTextMessageWindow).text(message);
+            
+        var button = [];
+        if(!hide)
+            button.push({ text: "Закрыть", click: function() { 
+                    $( this ).dialog( "close" );
+                    if(callback)
+                        callback();
+                }});
+        
+        $( "#" + Config.Base.containerIdMessageWindow ).dialog({
+            modal: true,
+            buttons: button
+        });
+        $('.ui-dialog-titlebar-close').hide();
+        
+        if(hide){
+            setTimeout(function() {
+                $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
+                if(callback)
+                    callback();
+            }, Config.Base.timeMessage);
+        }
+    },
+    this.Confirm = function(message, callbackOk, callbackFail){
+        if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
+            $('body').append(Config.Base.containerConfirm);
+        }
+        $('#' + Config.Base.containerIdConfirmWindow + ' #' + Config.Base.conteinerIdTextConfirmWindow).text(message);
+        
+        $( "#" + Config.Base.containerIdConfirmWindow ).dialog({
+            modal: true,
+            buttons: [
+                { text: "Ok", click: function(){
+                    $( this ).dialog( "close" );
+                    if(callbackOk)
+                        callbackOk();
+                }},
+                { text: "Отменить", click: function() { 
+                    $( this ).dialog( "close" ); 
+                    if(callbackFail)
+                        callbackFail();
+                }}
+            ]
+        });
+        $('.ui-dialog-titlebar-close').hide();
+    },
     this.BaseLoad  = {
         Roots : function(callback){
             if(Parameters.cache.roots.length == 0){
@@ -427,8 +484,11 @@ function Widget(){
         Login : function(username, password, remember_me, callback){
             if(Parameters.cache.userInformation == null || JSON.parse(Parameters.cache.userInformation).err){
                 var host = self.settings.hostApi;
-                if(Parameters.cache.https == "always" || Parameters.cache.https == "login")
+                var protokol = false;
+                if(Parameters.cache.https == "always" || Parameters.cache.https == "login"){
                     host = self.settings.httpsHostApi;
+                    protokol = true;
+                }
 
                 var str = "";
                 if(username && password)
@@ -437,7 +497,7 @@ function Widget(){
                     Parameters.cache.userInformation = data;
                     if(callback)
                         callback(JSON.parse(data));
-                });
+                }, protokol);
             }
             else{
                 if(callback)
@@ -453,26 +513,35 @@ function Widget(){
         },
         CartInfo : function(seller, callback){
             var host = self.settings.hostApi;
-            if(Parameters.cache.https == "always")
+            var protokol = false;
+            if(Parameters.cache.https == "always"){
+                protokol = true;
                 host = self.settings.httpsHostApi;
+            }
             XDMTransport.LoadData(host + self.settings.cartPathApi + 'calc/' + Parameters.shopId + '/' + seller, function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, protokol);
         },
         CartGoods : function(seller, callback){
             var host = self.settings.hostApi;
-            if(Parameters.cache.https == "always")
+            var protokol = false;
+            if(Parameters.cache.https == "always"){
                 host = self.settings.httpsHostApi;
+                protokol = true;
+            }
             XDMTransport.LoadData(host + self.settings.cartPathApi + 'info/' + Parameters.shopId + '/' + seller, function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, protokol);
         },
         AddGoodsToCart : function(idGoods, sellerId, count, callback){
             var host = self.settings.hostApi;
-            if(Parameters.cache.https == "always")
+            var protokol = false;
+            if(Parameters.cache.https == "always"){
                 host = self.settings.httpsHostApi;
+                protokol = true;
+            }
             
             var str = '';
             if(sellerId){
@@ -484,12 +553,15 @@ function Widget(){
             XDMTransport.LoadData(host + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, protokol);
         },
         AddToFavorite : function(goodId, comment, callback){
             var host = self.settings.hostApi;
-            if(Parameters.cache.https == "always")
+            var protokol = false;
+            if(Parameters.cache.https == "always"){
                 host = self.settings.httpsHostApi;
+                protokol = true;
+            }
             var str = '';
             if(comment)
                str = '/' + encodeURIComponent(comment);
@@ -497,21 +569,27 @@ function Widget(){
             XDMTransport.LoadData(encodeURIComponent(host + self.settings.favPathApi + 'add/' + Parameters.shopId + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, protokol);
         },
         InfoFavorite : function(callback){
             var host = self.settings.hostApi;
-            if(Parameters.cache.https == "always")
+            var protokol = false;
+            if(Parameters.cache.https == "always"){
                 host = self.settings.httpsHostApi;
+                protokol = true;
+            }
             XDMTransport.LoadData(host + self.settings.favPathApi + 'info/' + Parameters.shopId + '/no' , function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, protokol);
         },
         ClearCart : function(sellerId, goodsId, callback){
             var host = self.settings.hostApi;
-            if(Parameters.cache.https == "always")
+            var protokol = false;
+            if(Parameters.cache.https == "always"){
                 host = self.settings.httpsHostApi;
+                protokol = true;
+            }
             
             var str = '';
             if(sellerId){
@@ -523,33 +601,33 @@ function Widget(){
             XDMTransport.LoadData(host + self.settings.cartPathApi + 'clear/' + Parameters.shopId + '/' + str, function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, protokol);
         },
         UniqueUser : function(str, callback){ 
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'unique/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         Registration : function( str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'reg/' + Parameters.shopId + '/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         ActivateUser : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'rega/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         EditProfile : function(form, callback){
             if(form.find('#registration_data_query').length == 0)
                 form.append('<input type="text" id="registration_data_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.userPathApi + 'edit/profile/"/>');
-            XDMTransport.LoadPost(form, function(data){
-                if(callback)
-                    callback(JSON.parse(data));
+            EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
+                callback(JSON.parse(data))
             });
+            XDMTransport.LoadPost(form, true);
         },
         Profile : function(callback){
             if($.isEmptyObject(Parameters.cache.profile.personal)){
@@ -557,23 +635,22 @@ function Widget(){
                     Parameters.cache.profile.personal = data;
                     if(callback)
                         callback(JSON.parse(data));
-                });
+                }, true);
             }
             else
                 callback(JSON.parse(Parameters.cache.profile.personal));
         },
         EditContacts : function(str, callback){
-            console.log(str);
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/contact/' + Parameters.shopId + '/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         SendToken : function(type, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'code/' + Parameters.shopId + '/' + type), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         Country : function(shopId, callback){
             if(!Parameters.cache.country){
@@ -581,7 +658,7 @@ function Widget(){
                     Parameters.cache.country = data;
                     if(callback)
                         callback(JSON.parse(data));
-                });
+                }, true);
             }
             else
                 callback(JSON.parse(Parameters.cache.country));
@@ -590,25 +667,25 @@ function Widget(){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/region/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         City : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/city/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         Street : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + Parameters.shopId  + '/street/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         EditAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/address/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         DeliveryAddressList : function(callback){
             if(!Parameters.cache.delivery){
@@ -616,7 +693,7 @@ function Widget(){
                     Parameters.cache.delivery = data;
                     if(callback)
                         callback(JSON.parse(data));
-                });
+                }, true);
             }
             else
                 callback(JSON.parse(Parameters.cache.delivery));
@@ -624,34 +701,34 @@ function Widget(){
         ChangePassword : function(form, callback){
             if(form.find('#change_password_query').length == 0)
                 form.append('<input type="text" id="change_password_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.userPathApi + 'npass/"/>');
-            XDMTransport.LoadPost(form, function(data){
-                if(callback)
-                    callback(JSON.parse(data));
+            EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
+                callback(JSON.parse(data))
             });
+            XDMTransport.LoadPost(form, true);
         },
         AddDelivaryAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/add/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         EditDelivaryAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/edit/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         SetDefaultDelivaryAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/default/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         },
         DeleteDeliveryAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/del/' + str), function(data){
                 if(callback)
                     callback(JSON.parse(data));
-            });
+            }, true);
         }
     };
 };

@@ -104,6 +104,7 @@ var GoodsWidget = function(){
             self.Render.Goods(self.goods);
         },
         Main : function(data){
+            GoodsMainBlockViewModel.prototype = new Widget();
             self.goods.AddBlock('main', new GoodsMainBlockViewModel(data));
             self.goods.AddBlock('description', data.description);
         },
@@ -273,11 +274,9 @@ var GoodsMainBlockViewModel = function(data){
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
     self.cssToCart = 'goodsToCart_' + self.uniq;
     self.cssTitleToCart = 'goodsTilteToCart_' + self.uniq;
-    //self.cssShareBlock = ('share_' + self.uniq).replace('-', '');
     self.cssShareBlock = 'share';
     self.Login = function(){ 
-        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
-        Routing.SetHash('login', 'Авторизация пользователя', {});
+        Routing.SetHash('profile', 'Личный кабинет', {});
     };
     self.showSelectionCount = ko.computed(function(){
         if($.inArray('selectionCount', Config.Goods.showBlocks) > 0 && self.count != 0)  
@@ -289,7 +288,7 @@ var GoodsMainBlockViewModel = function(data){
             self.ordered(self.ordered() + 1);
         }
         else
-            alert(Config.Goods.message.maxIsReached);
+            self.ShowMessage(Config.Goods.message.maxIsReached, false, true);
     };
     self.ClickMinus = function(){
         if(self.ordered() > 0)
@@ -312,23 +311,23 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-        alert('buy');
+
     };
     self.ReportAvailability = function(){
-        alert('report');
+
     };
     self.ToCart = function(){
         Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
         Routing.SetHash('cart', Config.CartGoods.title, {});
     };
     self.BidOnAuction = function(){
-        alert('bid on auction') ;
+
     };
     self.AddFavorites = function(){
         if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
             self.AddCommentForm();
         else
-            alert('Необходимо авторизоваться.');
+            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, true);
     };
     self.comment = ko.observable('');
     self.AddCommentForm = function(){
@@ -356,7 +355,7 @@ var GoodsMainBlockViewModel = function(data){
         
     };
     self.Gift = function(){
-        alert('gift');
+
     };
 }
 

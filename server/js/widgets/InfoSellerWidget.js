@@ -93,7 +93,7 @@ var InfoSellerViewModel = function(data){
     self.operators = data.operator;
     
     self.ClickOperator = function(data, event){
-        alert('operator id=' + data.id);
+
     }
 }
 
