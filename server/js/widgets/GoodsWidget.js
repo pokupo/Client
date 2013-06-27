@@ -288,7 +288,7 @@ var GoodsMainBlockViewModel = function(data){
             self.ordered(self.ordered() + 1);
         }
         else
-            self.ShowMessage(Config.Goods.message.maxIsReached, false, true);
+            self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
     };
     self.ClickMinus = function(){
         if(self.ordered() > 0)
@@ -327,7 +327,7 @@ var GoodsMainBlockViewModel = function(data){
         if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
             self.AddCommentForm();
         else
-            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, true);
+            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
     };
     self.comment = ko.observable('');
     self.AddCommentForm = function(){

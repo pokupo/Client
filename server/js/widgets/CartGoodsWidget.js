@@ -347,7 +347,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
             EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
         }
         else
-            self.ShowMessage(Config.Goods.message.maxIsReached, false, true);
+            self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
     };
     self.ClickMinus = function(){
         if(self.ordered() > 0){
@@ -362,7 +362,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
             self.AddCommentForm();
         else
-            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, true);
+            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
     };
     self.ClickFavorites = function(){
         

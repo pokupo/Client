@@ -159,7 +159,7 @@ var SearchViewModel = function(){
             $(data.text).val('');
         }
         else{
-            self.ShowMessage(Config.Search.message.empty, false, true);
+            self.ShowMessage(Config.Search.message.empty, false, false);
         }
     };
     self.FindSelectedSection = function(data, selected){

@@ -40,7 +40,8 @@ Parameters = {
         profile : {
             personal : {},
             delivery : {},
-            security : {}
+            security : {},
+            info : {}
         },
         lastPage : {},
         https : null,
@@ -193,15 +194,15 @@ function Widget(){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
                         inputDate.data.IsFavorite(true);
-                        self.ShowMessage(Config.CartGoods.message.addFavorites, false, true);
+                        self.ShowMessage(Config.CartGoods.message.addFavorites, false, false);
                     }
                     else{
-                        self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, true);
+                        self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, false);
                     }
                 });
             }
             else{
-                self.ShowMessage(Config.Authentication.message.pleaseLogIn , false, true);
+                self.ShowMessage(Config.Authentication.message.pleaseLogIn , false, false);
             }
         });
         
@@ -212,7 +213,7 @@ function Widget(){
             var hash = data.hash;
             self.BaseLoad.AddGoodsToCart(goodsId, sellerId, count, function(data){
                 if(data.err){
-                    self.ShowMessage(data.err, false, true);
+                    self.ShowMessage(data.err, false, false);
                 }
                 else{
                     if(typeof AnimateAddToCart !== 'undefined')
@@ -290,18 +291,16 @@ function Widget(){
                 }});
         
         $( "#" + Config.Base.containerIdMessageWindow ).dialog({
-            modal: true,
+            modal: false,
             buttons: button
         });
         $('.ui-dialog-titlebar-close').hide();
         
-        if(hide){
-            setTimeout(function() {
-                $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
-                if(callback)
-                    callback();
-            }, Config.Base.timeMessage);
-        }
+        setTimeout(function() {
+            $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
+            if(callback)
+                callback();
+        }, Config.Base.timeMessage);
     },
     this.Confirm = function(message, callbackOk, callbackFail){
         if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
@@ -628,6 +627,17 @@ function Widget(){
                 callback(JSON.parse(data))
             });
             XDMTransport.LoadPost(form, true);
+        },
+        ProfileInfo : function(callback){
+            if($.isEmptyObject(Parameters.cache.profile.info)){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'info/'), function(data){
+                    Parameters.cache.profile.info = data;
+                    if(callback)
+                        callback(JSON.parse(data));
+                }, true);
+            }
+            else
+                callback(JSON.parse(Parameters.cache.profile.info));
         },
         Profile : function(callback){
             if($.isEmptyObject(Parameters.cache.profile.personal)){

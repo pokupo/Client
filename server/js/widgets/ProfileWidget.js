@@ -94,7 +94,7 @@ var ProfileWidget = function() {
                     personal.birthDay(personal.birthDayField());
                     self.ShowMessage(Config.Profile.message.editProfile,function(){
                         personal.isEditBlock(0);
-                    }, true);
+                    }, false);
                 }
                 else{
                     if(!data.err)
@@ -126,7 +126,7 @@ var ProfileWidget = function() {
                         data.addressText(data.customAddress());
                         data.postIndexText(data.postIndex());
                         data.isEditBlock(0);
-                    }, true);
+                    }, false);
                 }
                 else{
                     if(!request.err)
@@ -139,7 +139,7 @@ var ProfileWidget = function() {
         EventDispatcher.AddEventListener('ProfileWidget.send.token', function(type){
             self.BaseLoad.SendToken(type, function(data){
                 if(data.result == 'ok'){
-                    self.ShowMessage(Config.Profile.message.sendToken, false, true);
+                    self.ShowMessage(Config.Profile.message.sendToken, false, false);
                 }
                 else{
                     if(!data.err)
@@ -160,6 +160,7 @@ var ProfileWidget = function() {
             var str = '?' + params.join('&');
 
             self.BaseLoad.ActivateUser(str, function(data) {
+                Parameters.cache.profile.info = {};
                 var test = true;
                 if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('ProfileWidget.submit.token', token)})){
                     if (self.Validate.MailToken(data, token.value))
@@ -188,7 +189,7 @@ var ProfileWidget = function() {
                         contacts.isExistMail(true);
                     }, 60000);
                     
-                    self.ShowMessage(Config.Profile.message.contactsEdit, false, true);
+                    self.ShowMessage(Config.Profile.message.contactsEdit, false, false);
                 }
                 else{
                     if(!data.err)
@@ -204,7 +205,7 @@ var ProfileWidget = function() {
                     sequrity.oldPassword(null);
                     sequrity.newPassword(null);
                     sequrity.confirmPassword(null);
-                    self.ShowMessage(Config.Profile.message.changePassword, false, true);
+                    self.ShowMessage(Config.Profile.message.changePassword, false, false);
                 }
                 else{
                     if(!data.err)
@@ -250,7 +251,7 @@ var ProfileWidget = function() {
                     self.ShowMessage(Config.Profile.message.addAddressDelivery, function(){
                         Parameters.cache.delivery = null;
                         Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery'});
-                    }, true);
+                    }, false);
                 }
                 else{
                     if(!response.err)
@@ -283,7 +284,7 @@ var ProfileWidget = function() {
                     self.ShowMessage(Config.Profile.message.addAddressDelivery, function(){
                         Parameters.cache.delivery = null;
                         Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery'});
-                    }, true);
+                    }, false);
                 }
                 else{
                     if(!response.err)
@@ -299,7 +300,7 @@ var ProfileWidget = function() {
                     self.ShowMessage(Config.Profile.message.deleteAddressDelivery,function(){
                         Parameters.cache.delivery = null;
                         delivery.list.remove(delivery.address);
-                    }, true);
+                    }, false);
                 }
                 else{
                     if(!data.err)
@@ -400,24 +401,11 @@ var ProfileWidget = function() {
             self.InsertContainer.Personal();
             var personal = new ProfilePersonalInformationViewModel();
             
-            self.BaseLoad.Profile(function(data){
-                var params = [];
-                var user = JSON.parse(Parameters.cache.userInformation);
-                params.push('username=' + encodeURIComponent(user.login));
-                if (user.phone)
-                    params.push('phone=' + user.phone.replace(/\s/g, ''));
-                if (user.email)
-                    params.push('email=' + user.email);
-                if (params.length > 0)
-                    var str = '?' + params.join('&');
-                self.BaseLoad.UniqueUser(str, function(data) {
-                    if(data.check_email == 'on')
-                        personal.contacts.emailIsConfirm(true);
-                    if(data.check_phone == 'on')
-                        personal.contacts.phoneIsConfirm(true);
+            self.BaseLoad.Profile(function(registration){
+                self.BaseLoad.ProfileInfo(function(data) {
+                    self.Fill.Personal(registration, personal);
+                    personal.registrationData.dateRegistration(data.date_reg);
                 });
-            
-                self.Fill.Personal(data, personal);
             });
         },
         Delivery : function(){
@@ -663,10 +651,10 @@ var ProfileWidget = function() {
                         '&is_default=yes';
                 self.BaseLoad.SetDefaultDelivaryAddress(str, function(data){
                     if(data.result = 'ok'){
-                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, fasle, true);
+                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, fasle, false);
                     }
                     else{
-                        self.ShowMessage(Config.Profile.message.failSetDefaultDelivery, fasle, true);
+                        self.ShowMessage(Config.Profile.message.failSetDefaultDelivery, fasle, false);
                     }
                 });
             })
@@ -839,6 +827,7 @@ var ProfilePersonalInformationViewModel = function(){
         self.postalAddress = postalAddress;
         
         self.contacts = new ProfileContactsViewModel();
+        self.contacts.AddContent();
     };
 };
 
@@ -992,7 +981,6 @@ var ProfileDataRegistrationViewModel = function(){
         self.data = data
         var user = JSON.parse(Parameters.cache.userInformation);
         self.username(user.login);
-        self.dateRegistration();
         self.gender(data.gender);
         self.lastName(data.f_name);
         self.firstName(data.s_name);
@@ -1180,11 +1168,8 @@ var ProfilePostalAddressViewModel = function(){
 
 var ProfileContactsViewModel = function(){
     var self = this;
-    var user = JSON.parse(Parameters.cache.userInformation);
-    self.email = ko.observable(user.email);
-    self.isExistEmail = ko.observable();
-    if(user.email)
-       self.isExistEmail(true); 
+    self.email = ko.observable();
+    self.isExistEmail = ko.observable(); 
     self.sentEmailCode = ko.observable();
     
     self.emailToken = ko.observable();
@@ -1192,11 +1177,9 @@ var ProfileContactsViewModel = function(){
     self.errorEmailToken = ko.observable(null);
     self.emailIsConfirm = ko.observable(false);
     
-    self.phone = ko.observable(user.phone);
+    self.phone = ko.observable();
     self.cssPhone = 'phone_profile';
     self.isExistPhone = ko.observable();
-    if(user.phone)
-       self.isExistPhone(true); 
     self.sentCode = ko.observable();
             
     self.phoneToken = ko.observable();
@@ -1204,6 +1187,21 @@ var ProfileContactsViewModel = function(){
     self.errorPhoneToken = ko.observable(null);
     self.phoneIsConfirm = ko.observable(false);
     
+    self.AddContent = function(){
+        var user = JSON.parse(Parameters.cache.profile.info);
+        if(user.confirm_phone == 'yes')
+            self.phoneIsConfirm(true);
+        if(user.confirm_email == 'yes')
+            self.emailIsConfirm(true);
+        if(user.phone){
+            self.phone(user.phone);
+            self.isExistPhone(true);
+        }
+        if(user.email){
+            self.email(user.email);
+            self.isExistEmail(true); 
+        }
+    };
     self.ValidationForm = function() {
         var test = true;
         if (!self.EmailValidation())
