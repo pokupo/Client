@@ -19,7 +19,14 @@ var Config = {
         },
         containerIdErrorWindow : 'dialogErrorMessage', // id модального окна с ошибкой
         conteinerIdTextErrorWindow: 'containerError', // id контейнера для текста ошибки
-        errorWindow : '<div id="dialogErrorMessage" title="Ошибка" style="display:none"><p id="containerError"></p></div>'
+        errorWindow : '<div id="dialogErrorMessage" title="Ошибка" style="display:none"><p id="containerError"></p></div>', // темплейт модального окна с ошибкой
+        containerIdMessageWindow : 'dialogMessage', // id модального окна с сообщением
+        conteinerIdTextMessageWindow: 'containerMessage', // id контейнера для текста сообщением
+        containerMessage : '<div id="dialogMessage" title="Сообщение" style="display:none"><p id="containerMessage"></p></div>', // темплейт модального окна с сообщением
+        timeMessage : 3000, //время посе которого скрывать сообщение
+        containerIdConfirmWindow : 'dialogConfirm', // id модального окна с предупреждением
+        conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
+        containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>' // темплейт модального окна с сообщением
     },
     Containers : {  
         catalog : 'catalog', // id контейнера каталога 
@@ -32,7 +39,9 @@ var Config = {
         authentication : ['content', 'catalog'], //id контейнеров авторизации
         registration : 'content', // id контейнера регистрации
         cart : 'cart_information', // id контейнера корзины
-        cartGoods : 'content' // id контейнера реестра товаров корзины
+        cartGoods : 'content', // id контейнера реестра товаров корзины
+        profile : 'content', // id контейнера меню профиля и содержимого
+        menuPersonalCabinet : 'advanced_search'
     },
     Goods : {
         tmpl: {
@@ -126,6 +135,9 @@ var Config = {
             path : "search/searchTmpl.html", // путь к шаблонам
             tmplId : "searchTmpl" // id шаблона формы поиска по умолчанию
         },
+        message : {
+             empty : 'Введите название товара для его поиска.'
+        },
         style : {// стиль блока
             'position' : 'absolute', 
             'top' : '0px', 
@@ -207,6 +219,10 @@ var Config = {
             path : "authentication/authenticationTmpl.html", // файл шаблонов
             authFormTmplId : "authenticationFormTmpl", //id шаблона формы авторизации
             authSidebarTmplId : "authenticationSidebarTmpl" //id шаблона левого блока
+        },
+        message : {
+            pleaseLogIn : 'Необходимо авторизоваться.',
+            confirmLogOut : 'Вы действительно хотите выйти?'
         },
         style : {// стиль блока
             'position' : 'absolute', 
@@ -324,6 +340,139 @@ var Config = {
             'background' : '#ddd'
         }
     },
+    MenuPersonalCabinet : {
+        tmpl : {
+            path : "menuPersonalCabinet/menuPersonalCabinetTmpl.html", // файл шаблонов
+            menuPersonalCabinet : 'menuPersonalCabinetTmpl', // id шаблона меню личного кабинета
+        },
+        style : {// стиль блока
+            'position' : 'relative', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    Profile : {
+        tmpl : {
+            path : "profile/profileTmpl.html", // файл шаблонов
+            personalInformationTmpl : "personalInformationTmpl", //id шаблона формы персоональных данных
+            deliveryAddressTmpl : "deliveryAddressTmpl", //id шаблона списка адресов доставки
+            deliveryAddressFormTmpl : "deliveryAddressFormTmpl", //id шаблона формы адресов доставки
+            securityTmpl : "securityTmpl" //id шаблона формы смены пароля
+        },
+        menu : {
+            personalInformation : {title : 'Персональные данные', prefix : 'personal'},
+            deliveryAddress : {title : 'Адреса доставки', prefix : 'delivery'},
+            security : {title : 'Безопасность', prefix : 'security'}
+        },
+        regular : { // регулярные выражения полей
+            email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+            phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/,
+            firstName : /^[a-zёа-яА-ЯЁA-Z]+$/,
+            lastName : /^[a-zа-яёА-ЯЁA-Z]+$/,
+            middleName : /^[a-zа-яёА-ЯЁA-Z]+$/,
+            birthDay : /^[\d]{2}.[\d]{2}.[\d]{4}$/,
+            addressee : /^[a-zа-яёА-ЯЁA-Z\s]+$/
+        },
+        message : {
+            sendToken : 'Код активации успешно выслан по указанным данным.',
+            failSendToken : 'Код не был отправлен. Попробуйте повторить запрос позднее.',
+            contactsEdit : 'Данные успешно обновлены',
+            failContactsEdit : 'Данные не обновлены. Попробуйте повторить запрос позднее.',
+            editProfile : 'Данные успешно обновлены',
+            failEditProfile : 'Данные не обновлены. Попробуйте повторить запрос позднее.',
+            changePassword: 'Пароль успешно изменен.',
+            failChangePassord : 'Пароль не изменен.',
+            addAddressDelivery : 'Данные успешно сохранены.',
+            failAddAddressDelivery : 'Данные не сохранены. Попробуйте повторить запрос позднее.',
+            deleteAddressDelivery : 'Адрес доставки успешно удален.',
+            confirmDeleteAddressDelivery : "Вы уверены что хотите удалить адрес?",
+            failDeleteAddressDelivery : 'Адрес доставки не удален. Попробуйте повторить запрос позднее.',
+            setDefaultDelivery : 'Данные успешно обновлены.',
+            failSetDefaultDelivery : 'Данные не обновлены.'
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                maxLength : 'Максимум 64 символа',
+                regular : 'Строка не является адресом электронной почты',
+                uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
+            },
+            phone : {
+                empty : 'Поле обязательно для заполнения',
+                regular : 'Не верный формат телефона',
+                uniq : 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
+            },
+            password : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Пароль должен быть не менее 6 символов',
+                maxLength : 'Пароль должен быть не более 64 символов',
+                equal : 'Пароль не совпадает с образцом' 
+            },
+            emailToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            phoneToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            addressee : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            firstName : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            lastName : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            middleName : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            birthDay : {
+                empty : 'Поле обязательно для заполнения',
+                minDate : 'Возраст пользователя должен быть не менее 18 лет.',
+                maxDate : 'Возраст пользователя может быть не старше 101 года'
+            },
+            country : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            region : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            city : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            address : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            postIndex : {
+                empty : 'Поле обязательно для заполнения'
+            }
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
     Cart : {
         cartId : 'cart', // id корзины товара
         title : 'Корзина', // заголовок блока
@@ -353,6 +502,10 @@ var Config = {
             cartTmplId : "cartGoodsTmpl", //id шаблона формы авторизации
             emptyCartTmplId : "emptyCartGoodsTmpl"
         },
+        message :{
+            addFavorites : 'Выбранные товары добавлены в избранное.',
+            failAddFavorites : 'Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.'
+        }, 
         style : {// стиль блока
             'position' : 'absolute', 
             'top' : '0px', 

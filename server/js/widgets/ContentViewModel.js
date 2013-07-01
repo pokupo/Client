@@ -45,7 +45,7 @@ var ContentViewModel = function(data, i){
         Routing.SetHash('goods', self.chortName, {category : Routing.GetActiveCategory(),id : self.id});
     }
     self.ClickShop = function(){
-        alert(self.shopId);
+        
     }
     self.ClickBuy = function(){
          EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, hash : self.uniq})
@@ -62,5 +62,14 @@ var BlockTrForTableViewModel = function(){
         self.str.push(data);
     }
 }
+
+var CountryListViewModel = function(data) {
+    var self = this;
+    self.id = data.id;
+    self.name = data.name;
+    self.fullName = data.full_name;
+    self.partWorld = data.part_world;
+    self.location = data.location;
+};
 
 

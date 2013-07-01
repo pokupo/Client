@@ -2,7 +2,7 @@
 <div class="bottom_title_center">Данные аккаунта</div>
 <div class="bottom_description_center">Укажите свой уникальный псевдоним, почту и телефон</div>
 <div class="user_register_block_1">
-    <form action="">
+    <form>
         <table style="float: left; width: 100%;">
             <tr>
                 <td>
@@ -196,7 +196,7 @@
 <div class="bottom_title_center">Персональные данные</div>
 <div class="bottom_description_center">Укажите свои персональные данные</div>
 <div class="user_register_block_2">
-    <form action="">
+    <form data-bind="attr: {id: cssRegistrationDataForm}" method="POST" target="upload_target" enctype="multipart/form-data">
         <table style="float: left; width: 100%;">
             <tr>
                 <td>
@@ -208,7 +208,7 @@
                                         <label>Фамилия:
                                             <span style="color: #ed710d;">*</span>
                                         </label>
-                                        <input type="text" name="text" data-bind="value: lastName" />
+                                        <input type="text" name="sname" data-bind="value: lastName" />
                                         <!-- ko if: errorLastName-->
                                             <div class="form_error" data-bind="text: errorLastName"></div>
                                         <!-- /ko -->
@@ -221,7 +221,7 @@
                                         <label>Имя:
                                             <span style="color: #ed710d;">*</span>
                                         </label>
-                                        <input type="text" name="text" data-bind="value: firstName" />
+                                        <input type="text" name="fname" data-bind="value: firstName" />
                                         <!-- ko if: errorFirstName-->
                                             <div class="form_error" data-bind="text: errorFirstName"></div>
                                         <!-- /ko -->
@@ -232,7 +232,7 @@
                                 <td>
                                     <div class="form_item form_item_fio">
                                         <label>Отчество:</label>
-                                        <input type="text" name="text" data-bind="value: middleName" />
+                                        <input type="text" name="mname" data-bind="value: middleName" />
                                         <!-- ko if: errorMiddleName-->
                                             <div class="form_error" data-bind="text: errorMiddleName"></div>
                                         <!-- /ko -->
@@ -245,7 +245,8 @@
                                         <label>Дата рождения:
                                             <span style="color: #ed710d;">*</span>
                                         </label>
-                                        <input type="text" name="text" data-bind="value: birthDay, attr: {id: cssBirthDay}" />
+                                        <input type="text" data-bind="value: birthDay, attr: {id: cssBirthDay}" />
+                                        <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
                                         <!-- ko if: errorBirthDay-->
                                             <div class="form_error" data-bind="text: errorBirthDay"></div>
                                         <!-- /ko -->

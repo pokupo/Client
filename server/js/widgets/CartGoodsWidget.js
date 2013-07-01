@@ -226,6 +226,7 @@ var BlockGoodsForSellerViewModel = function(content){
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
+           BlockCartGoodsSellersViewModel.prototype = new Widget();
            self.goods.push(new BlockCartGoodsSellersViewModel(data[i], self, content));
         }
         self.finalCost = data.final_cost;
@@ -346,7 +347,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
             EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
         }
         else
-            alert(Config.Goods.message.maxIsReached);
+            self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
     };
     self.ClickMinus = function(){
         if(self.ordered() > 0){
@@ -361,7 +362,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
             self.AddCommentForm();
         else
-            alert('Необходимо авторизоваться.');
+            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
     };
     self.ClickFavorites = function(){
         

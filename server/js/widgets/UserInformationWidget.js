@@ -100,6 +100,7 @@ var UserInformationWidget = function(){
             self.Render.AuthBlock(block);
         },
         InfoBlock : function(data){
+            UserInformationBlockViewModel.prototype = new Widget();
             var block = new UserInformationBlockViewModel(data);
             self.Render.InfoBlock(block);
         }
@@ -156,7 +157,7 @@ var UserInformationBlockViewModel = function(data){
             return false;
         return true;
     };
-    self.iconUser = Parameters.pathToImages + 'test.jpg';
+    self.iconUser = Parameters.pathToImages + data.route_icon_user;
     
     self.showRaiting = function(){
         if($.inArray('raiting', Config.UserInformation.showBlocks) < 0)
@@ -166,13 +167,13 @@ var UserInformationBlockViewModel = function(data){
     self.ratingUser = data.rating_user;
     
     self.ClickLogout = function(){
-        if(confirm('Вы действительно хотите выйти?')){
+        self.Confirm(Config.Authentication.message.confirmLogOut, function(){
             Loader.Indicator('UserInformationWidget', false);
             EventDispatcher.DispatchEvent('UserInformationWidget.click.logout');
-        }
+        }, false);
     };
     self.ClickPrivateOffice = function(){
-        
+        Routing.SetHash('profile', 'Личный кабинет', {});
     };
 };
 
