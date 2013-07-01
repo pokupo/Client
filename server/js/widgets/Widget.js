@@ -570,14 +570,14 @@ function Widget(){
                     callback(JSON.parse(data));
             }, protokol);
         },
-        InfoFavorite : function(callback){
+        InfoFavorite : function(fully, callback){
             var host = self.settings.hostApi;
             var protokol = false;
             if(Parameters.cache.https == "always"){
                 host = self.settings.httpsHostApi;
                 protokol = true;
             }
-            XDMTransport.LoadData(host + self.settings.favPathApi + 'info/' + Parameters.shopId + '/no' , function(data){
+            XDMTransport.LoadData(host + self.settings.favPathApi + 'info/' + Parameters.shopId + '/' + fully + '/' , function(data){
                 if(callback)
                     callback(JSON.parse(data));
             }, protokol);

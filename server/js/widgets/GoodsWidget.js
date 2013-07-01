@@ -77,7 +77,7 @@ var GoodsWidget = function(){
     self.Update = function(){
         self.WidgetLoader(false);
         $("#" + self.settings.containerId).html('');
-        self.BaseLoad.InfoFavorite(function(data){
+        self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
             self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
                 EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)

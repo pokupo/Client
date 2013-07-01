@@ -4,7 +4,6 @@ var ProfileWidget = function() {
     self.settings = {
         containerFormId: null,
         tmplPath: null,
-        profileMenuTmplId : null,
         personalInformationTmplId: null,
         deliveryAddressTmpl: null,
         deliveryAddressFormTmpl : null,
@@ -16,7 +15,6 @@ var ProfileWidget = function() {
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.profile;
         self.settings.tmplPath = Config.Profile.tmpl.path;
-        self.settings.profileMenuTmplId = Config.Profile.tmpl.profileMenuTmpl;
         self.settings.personalInformationTmplId = Config.Profile.tmpl.personalInformationTmpl;
         self.settings.deliveryAddressTmpl = Config.Profile.tmpl.deliveryAddressTmpl;
         self.settings.deliveryAddressFormTmpl = Config.Profile.tmpl.deliveryAddressFormTmpl;

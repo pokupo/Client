@@ -106,7 +106,7 @@ var CartGoodsWidget = function(){
     self.Update = function(){
         self.WidgetLoader(false);
         $("#" + self.settings.containerId).html('');
-        self.BaseLoad.InfoFavorite(function(data){
+        self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
             self.BaseLoad.CartGoods('', function(data){
                 EventDispatcher.DispatchEvent('CartGoods.onload.info', data);

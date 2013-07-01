@@ -201,6 +201,12 @@ var BreadCrumbViewModel = function(){
             
             if(Routing.route == 'goods')
                 self.lastItem.push('Карточка товара');
+            if(Routing.route == 'cart'){
+                self.crumbs = ko.observableArray();
+                self.lastItem = ko.observableArray();
+                
+                self.lastItem.push('Моя корзина');
+            }
             if(Routing.route == 'registration'){
                 self.crumbs = ko.observableArray();
                 self.lastItem = ko.observableArray();
@@ -215,7 +221,7 @@ var BreadCrumbViewModel = function(){
                 if(Routing.params.step == 4)
                     self.lastItem.push('Шаг 4 из 4');
             } 
-            if(Routing.route == 'profile'){
+            if(Routing.route == 'profile' || Routing.route == 'favorites'){
                 self.crumbs = ko.observableArray();
                 self.lastItem = ko.observableArray();
                 
