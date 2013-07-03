@@ -24,7 +24,7 @@ var MenuPersonalCabinetWidgetWidget = function(){
         }
     };
     self.CheckRoute = function() {
-        if(Routing.route == 'profile' || Routing.route == 'favorites'){
+        if(Routing.route == 'profile' || Routing.route == 'favorites' || Routing.route == 'cabinet_cart'){
             self.InsertContainer();
             self.Fill();
         }
@@ -109,12 +109,12 @@ var MenuPersonalCabinetViewModel = function(){
         Routing.SetHash('favorites', 'Избранное', {});
     };
     self.activeCart = ko.computed(function(){
-        if(Routing.route == 'cart')
+        if(Routing.route == 'cabinet_cart')
             return 'active';
         return '';
     }, this);
     self.ClickCart = function(){
-        
+        Routing.SetHash('cabinet_cart', 'Корзина', {});
     };
     self.activeMessages = ko.computed(function(){
         if(Routing.route == 'messages')

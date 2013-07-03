@@ -516,6 +516,26 @@ var Config = {
             'background' : '#ddd'
         }
     },
+    CabinetCartGoods : {
+        title : 'Моя корзина',
+        tmpl : {
+            path : "cabinetCartGoods/cabinetCartGoodsTmpl.html", // файл шаблонов
+            cartTmplId : "cabinetCartGoodsTmpl", //id шаблона формы авторизации
+            emptyCartTmplId : "emptyCabinetCartGoodsTmpl"
+        },
+        message :{
+            addFavorites : 'Выбранные товары добавлены в избранное.',
+            failAddFavorites : 'Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.'
+        }, 
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
     Favorites : {
         title : 'Избранное',
         tmpl : {

@@ -1,0 +1,163 @@
+<style>
+    .ui-widget-header{
+        border: none;
+        background: none;
+        color: #222222;
+        font-weight: 100;
+    }
+</style>
+<script type="text/html" id="cabinetCartGoodsTmpl">
+    <div class="basket_block">
+        <div class="content">
+            <!-- ko foreach: content -->
+
+            <table style="width: 1200px;margin: 0 auto;" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerForCartTmpl', id: 'infoSellerForCartTmpl'}}}"></table>
+
+            
+            <table style="float: left; width: 100%;">
+                
+                <!--  ko template: { name: 'cabinetCartGoodsHeaderBlockTmpl' } --><!-- /ko -->
+                
+                <!-- ko foreach: goods -->
+                   <!-- ko template: { name: 'cabinetCartGoodsGoodsBlockTmpl' } --><!-- /ko -->
+                <!-- /ko -->
+                
+                <!--  ko template: { name: 'cabinetCartGoodsFooterBlockTmpl' } --><!-- /ko -->
+                
+            </table>
+            <!-- /ko -->
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="cabinetCartGoodsHeaderBlockTmpl">
+    <tr>
+        <td>
+            <div class="table_row_head">
+                <div class="row_center">
+                    <table>
+                        <tr>
+                            <td class="row_1">
+                                <span class="head_1">Товар:
+                                    <div class=""><input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/></div>
+                                </span></td>
+                            <td class="row_2"></td>
+                            <td class="row_3"></td>
+                            <td class="row_4"><span class="head_2">Цена (руб.):</span></td>
+                            <td class="row_5"><span class="head_3">Количество:</span></td>
+                            <td class="row_6"><span class="head_4">Сумма (руб.):</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="cabinetCartGoodsGoodsBlockTmpl">
+    <tr>
+        <td>
+            <div class="table_row">
+                <div class="row_center">
+                    <table>
+                        <tr>
+                            <td class="row_1"><input type="checkbox" name="" value="" data-bind="checked: isSelected, value: id"/></td>
+                            <td class="row_2"><a href="#" data-bind="click: ClickGoods"><img title="" alt="" src="" data-bind="attr: {src: routeImages, title: fullName }"/></a></td>
+                            <td class="row_3">
+                                <span><a href="#" data-bind="text: fullName, click: ClickGoods"></a></span>
+                                <a href="#" class="del" data-bind="click: ClickRemove">Удалить из корзины</a>
+                                <!-- ko if: IsFavorite -->
+                                <a href="#" class="add" data-bind="click: ClickFavorites">Избранный товар</a>
+                                <!-- /ko -->
+                                <!-- ko ifnot : IsFavorite -->
+                                <a href="#" class="add" data-bind="click: AddFavorites">Отложить в избранное</a>
+                                <!-- /ko -->
+                            </td>
+                            <td class="row_4">
+                            <span>
+                                <!--ko text: sellEndCost --><!--/ko--> руб.
+                                <!-- ko if: (sellCost && sellEndCost() != sellCost() ) -->
+                                <span><!--ko text: sellCost --><!--/ko--> руб.</span>
+                                <!-- /ko -->
+                            </span>
+                            <!-- <span class="end_cost" data-bind="text: sellCost"></span>-->
+                            </td>
+                            <td class="row_5">
+                                <div class="count">
+                                    <a href="#" class="minus" data-bind="click: ClickMinus"></a>
+                                    <input type="text" name="text" value="" data-bind="value: ordered"/>
+                                    <a href="#" class="plus" data-bind="click: ClickPlus"></a>
+                                </div>
+                                <div class="reserv">доступно <!-- ko text: countReserv --><!-- /ko --> шт.</div>
+                            </td>
+                            <td class="row_6">
+                                <!--ko text: endSum --><!--/ko--> руб.
+                                <!-- ko if: (sum && endSum() != sum() ) -->
+                                <span><!--ko text: sum --><!--/ko--> руб.</span>
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="cabinetCartGoodsFooterBlockTmpl">
+    <tr>
+        <td>
+            <div class="result">
+                <div class="result_left">
+                    <span>Действия для выбраного:</span>
+                    <div class="buttons">
+                    <!-- ko if: DisabledButton -->
+                        <input class="form_submit_del" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                        <input class="form_submit_fav" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
+                    <!-- /ko -->
+                    <!-- ko ifnot: DisabledButton -->
+                        <input class="form_submit_del" disabled="disabled" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                        <input class="form_submit_fav" disabled="disabled" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
+                    <!-- /ko -->
+                    </div>
+                    <a href="#" data-bind="click: ClickClearCurt">Очистить корзину</a>
+                </div>
+                <div class="result_right">
+                    <span class="text_top">
+                        <span class="text_2">
+                            <!-- ko if: totalSum() != tatalForPayment() -->
+                            <span><!-- ko text: totalSum --><!-- /ko --> руб.</span>
+                            <!-- /ko -->
+                            
+                            <!-- ko text: tatalForPayment --><!-- /ko --> руб. 
+                        </span><span class="text_1">Цена:</span>
+                    </span>
+                    <span class="text_center">
+                        <!-- ko if: tatalDiscount() > 0 -->
+                            <span class="text_2"><!-- ko text: tatalDiscount --><!-- /ko --> руб.</span>
+                            <span class="text_1">Скидка на заказ:</span>
+                        <!-- /ko -->
+                    </span>
+                    <span class="text_bottom">
+                        <span class="text_2"><!-- ko text: tatalForPayment --><!-- /ko --> руб.</span><span class="text_1">К оплате:</span>
+                    </span>
+                </div>
+                <div class="result_botton">
+                    <input class="form_submit_1" type="submit" value="Оформить заказ" data-bind="click: ClickIssueOrder"/>
+                    <input class="form_submit_2" type="submit" value="Продолжить покупки" data-bind="click: ClickProceed"/>
+                </div>
+            </div>
+            <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
+                <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
+            </div>
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="emptyCabinetCartGoodsTmpl">
+    <div class="basket_block">
+        <div class="content">
+            <p>В корзине нет ни одного товара.</p>
+        </div>
+    </div>
+</script>
