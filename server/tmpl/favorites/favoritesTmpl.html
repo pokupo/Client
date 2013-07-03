@@ -10,21 +10,21 @@
     <div class="favorites_block">
         <div class="content">
             <!-- ko foreach: content -->
-
-            <table style="width: 1200px;margin: 0 auto;" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerForCartTmpl', id: 'infoSellerForCartTmpl'}}}"></table>
-
-            
-            <table style="float: left; width: 100%;">
-                
-                <!--  ko template: { name: 'favoritesHeaderBlockTmpl' } --><!-- /ko -->
-                
-                <!-- ko foreach: goods -->
-                   <!-- ko template: { name: 'favoritesGoodsBlockTmpl' } --><!-- /ko -->
+                <!-- ko if: showSellerInfo -->
+                    <table style="width: 1200px;margin: 0 auto;" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerForCartTmpl', id: 'infoSellerForCartTmpl'}}}"></table>
                 <!-- /ko -->
-                
-                <!--  ko template: { name: 'favoritesFooterBlockTmpl' } --><!-- /ko -->
-                
-            </table>
+
+                <table style="float: left; width: 100%;">
+
+                    <!--  ko template: { name: 'favoritesHeaderBlockTmpl' } --><!-- /ko -->
+
+                    <!-- ko foreach: goods -->
+                       <!-- ko template: { name: 'favoritesGoodsBlockTmpl' } --><!-- /ko -->
+                    <!-- /ko -->
+
+                    <!--  ko template: { name: 'favoritesFooterBlockTmpl' } --><!-- /ko -->
+
+                </table>
             <!-- /ko -->
         </div>
     </div>
@@ -61,9 +61,13 @@
                     <table>
                         <tr>
                             <td class="row_1"><input type="checkbox" name="" value="" data-bind="checked: isSelected, value: id"/></td>
-                            <td class="row_2"><a href="#" data-bind="click: ClickGoods"><img title="" alt="" src="" data-bind="attr: {src: routeImages, title: fullName }"/></a></td>
+                            <td class="row_2">
+                                <a href="#" data-bind="click: ClickGoods">
+                                    <img title="" alt="" src="" data-bind="attr: {src: routeImages, title: fullName, id : cssToCart }"/>
+                                </a>
+                            </td>
                             <td class="row_3">
-                                <span><a href="#" data-bind="text: fullName, click: ClickGoods"></a></span>
+                                <span><a href="#" data-bind="text: fullName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></span>
                                 <a href="#" class="del" data-bind="click: ClickRemove">Удалить из избранного</a>
                             </td>
                             <td class="row_4">
@@ -100,9 +104,9 @@
                     <input class="form_submit_del" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
                 <!-- /ko -->
                 <!-- ko ifnot: DisabledButton -->
-                    <input class="form_submit_del" disabled="disabled" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                    <input class="form_submit_del" disabled="disabled" type="submit" value="Удалить"/>
                 <!-- /ko -->
-                <a href="#" data-bind="click: ClickClearCurt">Очистить избранное от товаров</a>
+                <a href="#" data-bind="click: ClickClearFavorites">Очистить избранное от товаров</a>
             </div>
         </td>
     </tr>

@@ -570,6 +570,12 @@ function Widget(){
                     callback(JSON.parse(data));
             }, protokol);
         },
+        ClearFavorite : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.favPathApi + 'clear/' + Parameters.shopId + '/' + str), function(data){
+                if(callback)
+                    callback(JSON.parse(data));
+            }, true);
+        },
         InfoFavorite : function(fully, callback){
             var host = self.settings.hostApi;
             var protokol = false;

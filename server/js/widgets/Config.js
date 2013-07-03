@@ -525,8 +525,8 @@ var Config = {
         },
         showBlocks : ['infoShop','addToCart','buy'],
         message :{
-//            addFavorites : 'Выбранные товары добавлены в избранное.',
-//            failAddFavorites : 'Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.'
+            clearGoods : 'Выбранные товары удалены из избранного.',
+            failClearGoods : 'Произошла ошибка при удалении товара из избранного. Попробуйте еще раз.'
         }, 
         style : {// стиль блока
             'position' : 'absolute', 
