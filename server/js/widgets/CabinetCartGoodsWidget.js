@@ -1,6 +1,6 @@
-var CartGoodsWidget = function(){
+var CabinetCartGoodsWidget = function(){
     var self = this;
-    self.widgetName = 'CartGoodsWidget';
+    self.widgetName = 'CabinetCartGoodsWidget';
     self.cart = null;
     self.settings = {
         tmplPath : null,
@@ -12,16 +12,16 @@ var CartGoodsWidget = function(){
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cartGoods;
-        self.settings.tmplPath = Config.CartGoods.tmpl.path;
-        self.settings.cartTmplId = Config.CartGoods.tmpl.cartTmplId;
-        self.settings.emptyCartTmplId = Config.CartGoods.tmpl.emptyCartTmplId;
-        self.settings.style = Config.CartGoods.style;
+        self.settings.tmplPath = Config.CabinetCartGoods.tmpl.path;
+        self.settings.cartTmplId = Config.CabinetCartGoods.tmpl.cartTmplId;
+        self.settings.emptyCartTmplId = Config.CabinetCartGoods.tmpl.emptyCartTmplId;
+        self.settings.style = Config.CabinetCartGoods.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/CartGoodsWidget.js/);
+        self.settings.inputParameters = JSCore.ParserInputParameters(/CabinetCartGoodsWidget.js/);
         if(self.settings.inputParameters['params']){
             var input = JSON.parse(self.settings.inputParameters['params']);
             self.settings.inputParameters['params'] = input;
@@ -40,13 +40,13 @@ var CartGoodsWidget = function(){
                 }
             }
             if(input.tmpl){
-                self.settings.tmplPath = 'cartGoods/' + input.tmpl + '.html';
+                self.settings.tmplPath = 'cabinetCartGoods/' + input.tmpl + '.html';
             }
         }
     };
     self.CheckRoute = function(){
-        if(Routing.route == 'cart'){
-            self.Update();
+        if(Routing.route == 'cabinet_cart'){
+            self.Update.Content();
         }
         else{
             self.WidgetLoader(true);
@@ -67,12 +67,12 @@ var CartGoodsWidget = function(){
         }
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'cart'){
-                self.Update();
+            if(Routing.route == 'cabinet_cart'){
+                self.Update.Content();
             }
         });
         
-        EventDispatcher.AddEventListener('CartGoods.onload.info', function (data){
+        EventDispatcher.AddEventListener('CabinetCartGoods.onload.info', function (data){
             if(!data.err){
                 self.InsertContainer.Content();
                 self.Fill.Content(data);
@@ -83,7 +83,7 @@ var CartGoodsWidget = function(){
             }
         });
         
-        EventDispatcher.AddEventListener('CartGoods.change.count', function(goods){
+        EventDispatcher.AddEventListener('CabinetCartGoods.change.count', function(goods){
             self.BaseLoad.AddGoodsToCart(goods.goodsId, goods.sellerId, goods.count, function(data){
                  EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
                  goods.sellCost = data.sell_cost;
@@ -91,27 +91,46 @@ var CartGoodsWidget = function(){
             });
         });
         
-        EventDispatcher.AddEventListener('CartGoods.clear', function(data){
+        EventDispatcher.AddEventListener('CabinetCartGoods.clear', function(data){
             var goodsId = data.goodsId ? data.goodsId : false;
             self.BaseLoad.ClearCart(data.sellerId, goodsId, function(data){
                  EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
             });
         });
         
-        EventDispatcher.AddEventListener('CartGoods.empty.cart', function(){
+        EventDispatcher.AddEventListener('CabinetCartGoods.empty.cart', function(){
             self.InsertContainer.EmptyCart();
             self.Render.EmptyCart();
         });
     };
-    self.Update = function(){
-        self.WidgetLoader(false);
-        $("#" + self.settings.containerId).html('');
-        self.BaseLoad.InfoFavorite('no', function(data){
-            Parameters.cache.favorite = data;
-            self.BaseLoad.CartGoods('', function(data){
-                EventDispatcher.DispatchEvent('CartGoods.onload.info', data);
+    self.Update = {
+        Content : function(){
+            self.WidgetLoader(false);
+            self.BaseLoad.Login(false, false, false, function(data){
+                if(!data.err){
+                    Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
+                    $("#" + self.settings.containerId).html('');
+                    self.BaseLoad.InfoFavorite('no', function(data){
+                        Parameters.cache.favorite = data;
+                        self.BaseLoad.CartGoods('', function(data){
+                            EventDispatcher.DispatchEvent('CabinetCartGoods.onload.info', data);
+                        });
+                    });
+                    self.Update.Menu();
+                }
+                else{
+                    Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+                    Routing.SetHash('login', 'Авторизация пользователя', {});
+                    self.WidgetLoader(true);
+                }
             });
-        });
+        },
+        Menu : function(){
+            Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
+                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
+            });
+        },
     };
     self.InsertContainer = {
         Content : function(){
@@ -271,19 +290,15 @@ var BlockGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
 
-        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
         
         if(self.goods().length == 0)
             content.content.remove(self);
         if(content.content().length == 0)
-            EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
+            EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
     };
     self.ClickProceed = function(){
-        var last = Parameters.cache.lastPage;
-        if(last.route != 'cart')
-            Routing.SetHash(last.route, last.title, last.data);
-        else
-            Routing.SetHash('catalog', 'Домашняя', {});
+        Routing.SetHash('catalog', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
         console.log('order');
@@ -298,9 +313,9 @@ var BlockGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
         content.content.remove(self);
-        EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerInfo.seller.id});
+        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.seller.id});
         if(content.content().length == 0)
-            EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
+            EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
     };
     self.ClickSelectAll = function(block){
         var check = $('#' + self.cssSelectAll).is(':checked');
@@ -344,7 +359,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
             self.ordered(self.ordered() + 1);
-            EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
+            EventDispatcher.DispatchEvent('CabinetCartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
         }
         else
             self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
@@ -352,7 +367,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
     self.ClickMinus = function(){
         if(self.ordered() > 0){
             self.ordered(self.ordered() - 1);
-             EventDispatcher.DispatchEvent('CartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
+             EventDispatcher.DispatchEvent('CabinetCartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
         }
     };
     self.ClickGoods = function(){
@@ -368,12 +383,12 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         
     };
     self.ClickRemove = function(){
-        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
+        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
         block.goods.remove(self);
         if(block.goods().length == 0){
             content.content.remove(block);
             if(content.content().length == 0){
-                EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
+                EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
             }
         }
     };
@@ -400,17 +415,17 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
 };
 
 
-var TestCartGoods = {
+var TestCabinetCartGoods = {
     Init : function(){
         if(typeof Widget == 'function'){
-            CartGoodsWidget.prototype = new Widget();
-            var cartGoods = new CartGoodsWidget();
-            cartGoods.Init(cartGoods);
+            CabinetCartGoodsWidget.prototype = new Widget();
+            var cabinetCartGoods = new CabinetCartGoodsWidget();
+            cabinetCartGoods.Init(cabinetCartGoods);
         }
         else{
-            setTimeout(function(){TestCartGoods.Init()}, 100);
+            setTimeout(function(){TestCabinetCartGoods.Init()}, 100);
         }
     }
 }
 
-TestCartGoods.Init();
+TestCabinetCartGoods.Init();
