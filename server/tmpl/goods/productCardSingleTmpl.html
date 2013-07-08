@@ -1,0 +1,131 @@
+<script type="text/html" id="goodsTmpl">
+<div class="productCardBox">
+    <h1 data-bind="text: blocks.main.chortName, attr: {id : blocks.main.cssTitleToCart}"></h1>
+    <table cellpadding="0" cellspacing="0" width="100%" class="productCardTable">
+        <tr>
+            <td style="width:305px; padding-right:20px;" data-bind="template: { name: 'goodsGalleryBlockTmpl', data: blocks }"></td>
+            <td>
+                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : 'productCardSingleInfoSellerTmpl'}}"></div>
+                <!-- ko with: blocks.main -->
+                    <div class="productActionBox">
+                        <table cellpadding="0" cellspacing="0" width="100%" class="productActionTable">
+                            <tr>
+                                <td>
+                                    <div class="productActionInfoBox">
+                                        <div class="productActionInfoRow">
+                                            <span class="label">Цена:</span>
+                                            <span class="value price"><!--ko text: sellEndCost --><!--/ko--> руб.</span>
+                                            <!-- ko if: (sellCost && sellEndCost != sellCost ) -->
+                                                <span class="value oldPrice"><!--ko text: sellCost --><!--/ko--> руб.</span>
+                                            <!--/ko-->
+                                        </div>
+                                        <div class="productActionInfoRow">
+                                            <span class="label">В наличии:</span>
+                                            <span class="value"><!--ko text: inStock --><!--/ko--></span>
+                                        </div>
+                                        <div class="productActionInfoRow">
+                                            <span class="label">Ваш статус:</span>
+                                            <span class="value">
+                                                <!-- ko if: nameGroupUser -->
+                                                <a href="#" data-bind="click: Login"><!-- ko text: nameGroupUser --><!-- /ko --></a>
+                                                <!-- /ko -->
+                                                <!-- ko ifnot: nameGroupUser -->
+                                                <a href="#" data-bind="click: Login">Авторизация покупателя/Регистрация покупателя"</a>
+                                                <!-- /ko -->
+                                            </span> 
+                                        </div>
+                                        <div class="productActionInfoRow">
+                                            <span class="label">Ваша скидка:</span>
+                                            <span class="value"><!--ko text: discount --><!--/ko--></span> 
+                                        </div>
+                                        <div class="productActionInfoRow total">
+                                            <span class="label">Итоговая цена:</span>
+                                            <span class="value totalPrice"><!--ko text: sellEndCost --><!--/ko--> руб.</span> 
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding: 10px; width:141px; vertical-align: top;">
+                                    <div class="addToCartBox">
+                                        <!-- ko if: showSelectionCount --> 
+                                            <div class="quantityBox">
+                                                    <a href="#" class="minus" data-bind="click: ClickMinus"></a>
+                                                    <input value="1" class="quantityInput" name="text" type="text" data-bind="value: ordered">
+                                                    <a href="#" class="plus" data-bind="click: ClickPlus"></a>
+                                            </div>
+                                        <!-- /ko -->
+                                        <!-- ko if: showAddToCart --> 
+                                            <a href="#" class="addToCartButton" data-bind="click: AddToCart">В корзину</a> 
+                                        <!-- /ko -->
+                                        <!-- ko if: showBuy --> 
+                                            <a href="#" class="addToCartButton" data-bind="click: Buy">Купить</a>
+                                        <!-- /ko -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- ko if: idAuction -->
+                        <table cellpadding="0" cellspacing="0" width="100%" class="productActionTable auctionAvailable">
+                            <tr>
+                                <td>
+                                    <div class="productActionInfoBox">
+                                        <div class="productActionInfoRow">
+                                            <span>Внимание! Этот товар можно приобрести на аукционе.</span>
+                                            <span>Текущая цена:</span> <!-- ko text: auctionPrice --><!-- /ko --> руб 
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="padding:10px 18px 10px 18px; width:141px; vertical-align: top;">
+                                    <a href="#" class="makeBidButton" data-bind="click: BidOnAuction">Сделать ставку</a> 
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- /ko -->
+                    </div>
+                    <div class="productLinksBox">
+                        <span class="available">В наличии: <!-- ko text: count --><!-- /ko --></span>
+                        <!-- ko if: count == 0 -->
+                            <span class="report_me"><a href="#" data-bind="click: ReportAvailability">Сообщить о наличии</a></span>
+                        <!-- /ko -->
+                        <span class="favorites">
+                            <!-- ko if: IsFavorite -->
+                                <a href="#" data-bind="click: ClickFavorites">Избранный товар</a>
+                            <!-- /ko -->
+                            <!-- ko ifnot : IsFavorite -->
+                                <a href="#"  data-bind="click: AddFavorites">В избранное</a>
+                            <!-- /ko -->
+                        </span>
+                        <span class="wishlist"><a href="#" data-bind="click: Gift">Хочу в подарок!</a></span>
+                        <div style="display: inline" class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="button" data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"></div> 
+                    </div>
+                <!-- /ko -->
+            </td>
+        </tr>
+    </table>
+</div>
+</script>
+
+<script type="text/html" id="goodsGalleryBlockTmpl">
+    <div class="productImageBox">
+        <div class="productBigImage">
+            <img title="" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }"/>
+            <!-- ko if: ($parent.blocks.main.sellCost && $parent.blocks.main.sellEndCost != $parent.blocks.main.sellCost ) -->
+            <div class="productSaveLabel"><span>Скидка</span><!-- ko text: $parent.blocks.main.discount --><!-- /ko --></div>
+            <!-- /ko -->
+        </div>
+        <!-- ko if: $parent.ShowGallery() -->
+            <div class="productCarousel">
+                <ul class="jcarousel" data-bind="css: $parent.cssBlockGallery">
+                <!-- ko foreach: gallery -->
+                    <li>
+                       <div class="p">
+                          <a href="" rel="lightbox[plants]" title="" data-bind="attr: {href: image, title: title }">
+                             <img title="" alt="" src="" data-bind="attr: {src: thumb, title: title }" />
+                          </a>
+                       </div>
+                    </li>
+                <!-- /ko -->
+                </ul>
+            </div>
+        <!-- /ko -->
+    </div>
+</script>
