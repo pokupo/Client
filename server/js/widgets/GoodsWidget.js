@@ -77,7 +77,7 @@ var GoodsWidget = function(){
     self.Update = function(){
         self.WidgetLoader(false);
         $("#" + self.settings.containerId).html('');
-        self.BaseLoad.InfoFavorite(function(data){
+        self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
             self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
                 EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)
@@ -279,7 +279,7 @@ var GoodsMainBlockViewModel = function(data){
         Routing.SetHash('profile', 'Личный кабинет', {});
     };
     self.showSelectionCount = ko.computed(function(){
-        if($.inArray('selectionCount', Config.Goods.showBlocks) > 0 && self.count != 0)  
+        if($.inArray('selectionCount', Config.Goods.showBlocks) >= 0 && self.count != 0)  
             return true;
         return false;
     }, this);
@@ -295,7 +295,7 @@ var GoodsMainBlockViewModel = function(data){
             self.ordered(self.ordered() - 1);
     };
     self.showAddToCart = ko.computed(function(){
-        if($.inArray('addToCart', Config.Goods.showBlocks) > 0 && self.count != 0)
+        if($.inArray('addToCart', Config.Goods.showBlocks) >= 0 && self.count != 0)
             return true;
         return false;
     }, this);
@@ -306,7 +306,7 @@ var GoodsMainBlockViewModel = function(data){
         EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered(), hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){
-        if($.inArray('buy', Config.Goods.showBlocks) > 0 && self.count != 0)
+        if($.inArray('buy', Config.Goods.showBlocks) >= 0 && self.count != 0)
             return true;
         return false;
     }, this);

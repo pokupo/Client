@@ -41,7 +41,8 @@ var Config = {
         cart : 'cart_information', // id контейнера корзины
         cartGoods : 'content', // id контейнера реестра товаров корзины
         profile : 'content', // id контейнера меню профиля и содержимого
-        menuPersonalCabinet : 'advanced_search'
+        menuPersonalCabinet : 'advanced_search',
+        favorites : 'content' // id контейнера избранного
     },
     Goods : {
         tmpl: {
@@ -505,6 +506,47 @@ var Config = {
         message :{
             addFavorites : 'Выбранные товары добавлены в избранное.',
             failAddFavorites : 'Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.'
+        }, 
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    CabinetCartGoods : {
+        title : 'Моя корзина',
+        tmpl : {
+            path : "cabinetCartGoods/cabinetCartGoodsTmpl.html", // файл шаблонов
+            cartTmplId : "cabinetCartGoodsTmpl", //id шаблона формы авторизации
+            emptyCartTmplId : "emptyCabinetCartGoodsTmpl"
+        },
+        message :{
+            addFavorites : 'Выбранные товары добавлены в избранное.',
+            failAddFavorites : 'Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.'
+        }, 
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    Favorites : {
+        title : 'Избранное',
+        tmpl : {
+            path : "favorites/favoritesTmpl.html", // файл шаблонов
+            cartTmplId : "favoritesTmpl", //id шаблона формы авторизации
+            emptyCartTmplId : "emptyFavoritesTmpl"
+        },
+        showBlocks : ['infoShop','addToCart','buy'],
+        message :{
+            clearGoods : 'Выбранные товары удалены из избранного.',
+            failClearGoods : 'Произошла ошибка при удалении товара из избранного. Попробуйте еще раз.'
         }, 
         style : {// стиль блока
             'position' : 'absolute', 
