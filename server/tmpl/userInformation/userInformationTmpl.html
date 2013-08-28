@@ -1,39 +1,25 @@
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/informer.css" type="text/css">
+
 <script type="text/html" id="userInformationTmpl">
-    <table class="block_auth">
-       <tbody>
-          <tr class="tr_block_auth">
-             <td class="td_block_auth">
-                <ul class="enter_menu">
-                   <li class="first">
-                      <a href="#" data-bind="click: ClickLogout">Выход</a>
-                   </li>
-                   <li class="last">
-                      <!-- ko if: showIcon() -->
-                      <img class="icon_user" src="" data-bind="attr: {src: iconUser }"> 
-                      <!-- /ko -->
-                      <a class="name_user" title="Личный кабинет" href="#" data-bind="click: ClickPrivateOffice, text: login"></a>
-                      <!-- ko if: showRaiting() -->
-                      <span class="raiting_user">[<!-- ko text: ratingUser --><!-- /ko -->]</span>
-                      <!-- /ko -->
-                   </li>
-                </ul>
-             </td>
-          </tr>
-       </tbody>
-    </table>
+    <ul class="fastLinks">
+       <li class="first">
+          <a href="#" data-bind="click: ClickLogout">Выход</a>
+       </li>
+       <li class="last">
+          <!-- ko if: showIcon() -->
+          <img class="icon_user" src="" data-bind="attr: {src: iconUser }"> 
+          <!-- /ko -->
+          <a class="name_user" title="Личный кабинет" href="#" data-bind="click: ClickPrivateOffice, text: login"></a>
+          <!-- ko if: showRaiting() -->
+          <span class="raiting_user">[<!-- ko text: ratingUser --><!-- /ko -->]</span>
+          <!-- /ko -->
+       </li>
+    </ul>
 </script>
 
 <script type="text/html" id="authorizationLinkTmpl">
-    <table class="block_auth">
-        <tbody>
-            <tr class="tr_block_auth">
-                <td class="td_block_auth">
-                    <ul class="enter_menu">     
-                        <li class="first"><a href="#" data-bind="click: ClickLogin">Вход</a></li>
-                        <li class="last"><a href="#" data-bind="click: ClickRegistration">Регистрация</a></li>            
-                    </ul>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <ul class="fastLinks">     
+        <li class="first"><a href="#" data-bind="click: ClickLogin">Вход</a></li>
+        <li class="last"><a href="#" data-bind="click: ClickRegistration">Регистрация</a></li>            
+    </ul>
 </script>

@@ -1,36 +1,27 @@
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/informer.css" type="text/css">
+
 <script type="text/html" id="cartTmpl">
-    <table class="block_cart">
-        <tbody>
-            <tr class="tr_block_cart">
-                <td class="td_block_cart">
-                    <div class="basket">
-                        <a href="#" data-bind="click: ClickCart">
-                            <span class="right_fon">
-                                <span class="ico_1">
-                                    <span class="ico_2" id="cart">
-                                        <!-- ko if: ShowTitle() -->
-                                            <span class="title_cart" data-bind="text: title"></span>
-                                        <!-- /ko -->
-                                        <!-- ko if: ShowCount() -->
-                                            <span class="count_cart" data-bind="text: count"></span>
-                                            <span class="unit_count_cart">шт.</span>
-                                        <!-- /ko -->
-                                        <!-- ko if: ShowBaseCost() -->
-                                            <span class="base_cost_cart">
-                                                <s data-bind="text: baseCost"></s>
-                                            </span> 
-                                        <!-- /ko -->
-                                        <!-- ko if: ShowFinalCost() -->
-                                            <span class="end_cost_cart" data-bind="text: finalCost"></span>
-                                            <span class="unit_cost_cart">руб.</span>
-                                        <!-- /ko -->
-                                    </span>
-                                </span>
-                            </span>
-                        </a>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <a href="#" data-bind="click: ClickCart" class="topInformer">
+        <span class="informerIcon_cart">
+            <span class="informerArrow" id="cart">
+                <!-- ko if: ShowTitle() -->
+                    <span data-bind="text: title"></span>
+                <!-- /ko -->
+                <!-- ko if: ShowCount() -->
+                    <span data-bind="text: count"></span>
+                    <span >шт.</span>
+                <!-- /ko -->
+                <!-- ko if: ShowBaseCost() && ShowFinalCost() -->
+                    <span class="delimiter">&nbsp;</span>
+                <!-- /ko -->
+                <!-- ko if: ShowBaseCost() -->
+                    <span data-bind="text: baseCost"></span> 
+                <!-- /ko -->
+                <!-- ko if: ShowFinalCost() -->
+                    <s data-bind="text: finalCost"></s>
+                    <span class="unit_cost_cart">руб.</span>
+                <!-- /ko -->
+            </span>
+        </span>
+    </a>
 </script>

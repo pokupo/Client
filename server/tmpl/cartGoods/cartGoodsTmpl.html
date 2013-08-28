@@ -6,157 +6,173 @@
         font-weight: 100;
     }
 </style>
+
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/product-card.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/items-list.css" type="text/css">
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/cart.css" type="text/css">
+
 <script type="text/html" id="cartGoodsTmpl">
-    <div class="basket_block">
-        <div class="content">
-            <!-- ko foreach: content -->
+    <div class="pageWidth">
+        <h1>Моя корзина</h1>
+    </div>
+    
+    <!-- ko foreach: content -->
+        <div class="horizontalSection noborder">
+            <div class="pageWidth">
+                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerTmpl', id: 'infoSellerTmpl'}}}"></div>
+            </div>
+        </div>
+        
+        <!--  ko template: { name: 'HeaderBlockTmpl' } --><!-- /ko -->
+                
+        <!-- ko foreach: goods -->
+           <!-- ko template: { name: 'GoodsBlockTmpl' } --><!-- /ko -->
+        <!-- /ko -->
 
-            <table style="width: 1200px;margin: 0 auto;" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerForCartTmpl', id: 'infoSellerForCartTmpl'}}}"></table>
+        <!--  ko template: { name: 'FooterBlockTmpl' } --><!-- /ko -->
+    <!-- /ko -->
+</script>
 
-            
-            <table style="float: left; width: 100%;">
-                
-                <!--  ko template: { name: 'HeaderBlockTmpl' } --><!-- /ko -->
-                
-                <!-- ko foreach: goods -->
-                   <!-- ko template: { name: 'GoodsBlockTmpl' } --><!-- /ko -->
-                <!-- /ko -->
-                
-                <!--  ko template: { name: 'FooterBlockTmpl' } --><!-- /ko -->
-                
-            </table>
-            <!-- /ko -->
+<script type="text/html" id="HeaderBlockTmpl">
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <div class="itemsListTableRow cartList">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td class="itemsListTableCell col_1">
+                            <input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/>
+                        </td>
+                        <td class="itemsListTableCell col_2">Товар</td>
+                        <td class="itemsListTableCell col_3">&nbsp;</td>
+                        <td class="itemsListTableCell col_4">Цена</td>
+                        <td class="itemsListTableCell col_5">Количество</td>
+                        <td class="itemsListTableCell col_6">Сумма</td>
+                    </tr>
+                </table>
+           </div>
         </div>
     </div>
 </script>
 
-<script type="text/html" id="HeaderBlockTmpl">
-    <tr>
-        <td>
-            <div class="table_row_head">
-                <div class="row_center">
-                    <table>
-                        <tr>
-                            <td class="row_1">
-                                <span class="head_1">Товар:
-                                    <div class=""><input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/></div>
-                                </span></td>
-                            <td class="row_2"></td>
-                            <td class="row_3"></td>
-                            <td class="row_4"><span class="head_2">Цена (руб.):</span></td>
-                            <td class="row_5"><span class="head_3">Количество:</span></td>
-                            <td class="row_6"><span class="head_4">Сумма (руб.):</span></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </td>
-    </tr>
-</script>
-
 <script type="text/html" id="GoodsBlockTmpl">
-    <tr>
-        <td>
-            <div class="table_row">
-                <div class="row_center">
-                    <table>
-                        <tr>
-                            <td class="row_1"><input type="checkbox" name="" value="" data-bind="checked: isSelected, value: id"/></td>
-                            <td class="row_2"><a href="#" data-bind="click: ClickGoods"><img title="" alt="" src="" data-bind="attr: {src: routeImages, title: fullName }"/></a></td>
-                            <td class="row_3">
-                                <span><a href="#" data-bind="text: fullName, click: ClickGoods"></a></span>
-                                <a href="#" class="del" data-bind="click: ClickRemove">Удалить из корзины</a>
-                                <!-- ko if: IsFavorite -->
-                                <a href="#" class="add" data-bind="click: ClickFavorites">Избранный товар</a>
-                                <!-- /ko -->
-                                <!-- ko ifnot : IsFavorite -->
-                                <a href="#" class="add" data-bind="click: AddFavorites">Отложить в избранное</a>
-                                <!-- /ko -->
-                            </td>
-                            <td class="row_4">
-                            <span>
+    <div class="horizontalSection">
+        <div class="pageWidth">
+             <div class="itemsListTableRow cartList">
+                 <table cellpadding="0" cellspacing="0" width="100%" class="textInfoBlock">
+                     <tr>
+                        <td class="itemsListTableCell col_1">
+                            <input type="checkbox" name="" value="" data-bind="checked: isSelected, value: id"/>
+                        </td>
+                        <td class="itemsListTableCell col_2">
+                            <div class="photo">
+                                <a href="#" data-bind="click: ClickGoods">
+                                    <img title="" alt="" src="" data-bind="attr: {src: routeImages, title: fullName }"/>
+                                </a>
+                            </div>
+                        </td>
+                        <td class="itemsListTableCell col_3">
+                            <div class="title">
+                                <a href="#" data-bind="text: fullName, click: ClickGoods"></a>
+                            </div>
+                            <a href="#" class="action del" data-bind="click: ClickRemove">Удалить из корзины</a>
+                            <!-- ko if: IsFavorite -->
+                            <a href="#" class="action add" data-bind="click: ClickFavorites">Избранный товар</a>
+                            <!-- /ko -->
+                            <!-- ko ifnot : IsFavorite -->
+                            <a href="#" class="action add" data-bind="click: AddFavorites">Отложить в избранное</a>
+                            <!-- /ko -->
+                        </td>
+                        <td class="itemsListTableCell col_4">
+                            <span class="priceSingle">
                                 <!--ko text: sellEndCost --><!--/ko--> руб.
-                                <!-- ko if: (sellCost && sellEndCost() != sellCost() ) -->
-                                <span><!--ko text: sellCost --><!--/ko--> руб.</span>
-                                <!-- /ko -->
                             </span>
-                            <!-- <span class="end_cost" data-bind="text: sellCost"></span>-->
-                            </td>
-                            <td class="row_5">
-                                <div class="count">
-                                    <a href="#" class="minus" data-bind="click: ClickMinus"></a>
-                                    <input type="text" name="text" value="" data-bind="value: ordered"/>
-                                    <a href="#" class="plus" data-bind="click: ClickPlus"></a>
-                                </div>
-                                <div class="reserv">доступно <!-- ko text: countReserv --><!-- /ko --> шт.</div>
-                            </td>
-                            <td class="row_6">
+                        </td>
+                        <td class="itemsListTableCell col_5">
+                            <div class="quantityBox">
+                                <a href="#" class="minus" data-bind="click: ClickMinus"></a>
+                                <input type="text" name="text"  class="quantityInput" data-bind="value: ordered"/>
+                                <a href="#" class="plus" data-bind="click: ClickPlus"></a>
+                            </div>
+                        </td>
+                        <td class="itemsListTableCell col_6">
+                            <span class="addToCartBlock">
                                 <!--ko text: endSum --><!--/ko--> руб.
-                                <!-- ko if: (sum && endSum() != sum() ) -->
-                                <span><!--ko text: sum --><!--/ko--> руб.</span>
-                                <!-- /ko -->
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </td>
-    </tr>
+                            </span>
+                        </td>
+                     </tr>
+                 </table>
+             </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="FooterBlockTmpl">
-    <tr>
-        <td>
-            <div class="result">
-                <div class="result_left">
-                    <span>Действия для выбраного:</span>
-                    <div class="buttons">
-                    <!-- ko if: DisabledButton -->
-                        <input class="form_submit_del" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
-                        <input class="form_submit_fav" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
-                    <!-- /ko -->
-                    <!-- ko ifnot: DisabledButton -->
-                        <input class="form_submit_del" disabled="disabled" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
-                        <input class="form_submit_fav" disabled="disabled" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
-                    <!-- /ko -->
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <div class="cartActionBlock">
+                <div class="result">
+                    <div class="result_left">
+                        <span>Действия для выбраного:</span>
+                        <div class="buttons">
+                        <!-- ko if: DisabledButton -->
+                            <input class="addButtonSmall" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                            <input class="addButtonSmall" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
+                        <!-- /ko -->
+                        <!-- ko ifnot: DisabledButton -->
+                            <input class="addButtonSmall" disabled="disabled" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                            <input class="addButtonSmall" disabled="disabled" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
+                        <!-- /ko -->
+                        </div>
+                        <a href="#" data-bind="click: ClickClearCurt">Очистить корзину</a>
                     </div>
-                    <a href="#" data-bind="click: ClickClearCurt">Очистить корзину</a>
-                </div>
-                <div class="result_right">
-                    <span class="text_top">
-                        <span class="text_2">
-                            <!-- ko if: totalSum() != tatalForPayment() -->
-                            <span><!-- ko text: totalSum --><!-- /ko --> руб.</span>
+                    <div class="cartTotals">
+                        <table cellpadding="0" cellspacing="0">
+                            <tr>
+                              <td><span class="descr">Цена:</span></td>
+                              <td>
+                                   <span class="price"><!-- ko text: tatalForPayment --><!-- /ko --> руб.</span>
+                                   <!-- ko if: totalSum() != tatalForPayment() -->
+                                   <span class="oldPrice"><!-- ko text: totalSum --><!-- /ko --> руб.</span>
+                                   <!-- /ko -->
+                              </td>
+                            </tr>
+                            
+                            <!-- ko if: tatalDiscount() > 0 -->
+                            <tr>
+                              <td><span class="descr">Ваша скидка:</span></td>
+                              <td><span class="price"><!-- ko text: tatalDiscount --><!-- /ko --> руб.</span></td>
+                            </tr>
                             <!-- /ko -->
                             
-                            <!-- ko text: tatalForPayment --><!-- /ko --> руб. 
-                        </span><span class="text_1">Цена:</span>
-                    </span>
-                    <span class="text_center">
-                        <!-- ko if: tatalDiscount() > 0 -->
-                            <span class="text_2"><!-- ko text: tatalDiscount --><!-- /ko --> руб.</span>
-                            <span class="text_1">Скидка на заказ:</span>
-                        <!-- /ko -->
-                    </span>
-                    <span class="text_bottom">
-                        <span class="text_2"><!-- ko text: tatalForPayment --><!-- /ko --> руб.</span><span class="text_1">К оплате:</span>
-                    </span>
+                            <tr class="totals">
+                              <td><span class="descr">К оплате:</span></td>
+                              <td><span class="totalPrice"><!-- ko text: tatalForPayment --><!-- /ko --> руб.</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="horizontalSection">
+                       <table cellpadding="0" cellspacing="0" align="right" style="margin-top:15px;">
+                          <tr>
+                            <td><a href="#" class="subButtonBig"  data-bind="click: ClickProceed">Продолжить покупки</a></td>
+                            <td width="20">&nbsp;</td>
+                            <td><input type="button" class="nextButton size4" value="Оформить заказ"  data-bind="click: ClickIssueOrder"></td>
+                          </tr>
+                       </table>
+                    </div>
+                    <div class="clear"></div>
                 </div>
-                <div class="result_botton">
-                    <input class="form_submit_1" type="submit" value="Оформить заказ" data-bind="click: ClickIssueOrder"/>
-                    <input class="form_submit_2" type="submit" value="Продолжить покупки" data-bind="click: ClickProceed"/>
+                <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
+                    <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
                 </div>
             </div>
-            <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
-                <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
-            </div>
-        </td>
-    </tr>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="emptyCartGoodsTmpl">
-    <div class="basket_block">
-        <div class="content">
+    <div class="horizontalSection">
+        <div class="pageWidth">
             <p>В корзине нет ни одного товара.</p>
         </div>
     </div>

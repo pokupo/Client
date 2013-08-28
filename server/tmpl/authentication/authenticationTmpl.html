@@ -1,50 +1,61 @@
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/progress-steps.css" type="text/css" media="screen, projection">
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/form-box.css" type="text/css" media="screen, projection">
+                 
 <script type="text/html" id="authenticationFormTmpl">
-    <div class="user_login_block">
-        <div>
-            <div data-bind="text: error"></div>
-            <form action="" method="post" data-bind="submit: Login">
-                <table style="width: 100%;">
-                    <tbody><tr>
-                            <td>
-                                <div class="form_item form_item_mail">
-                                    <label for="username">Логин:</label>
-                                    <input type="text" id="username" name="username" value="" required="required" data-bind="value: username">
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="form_item form_item_pass">
-                                    <a href="" data-bind="click: ForgotPassword">Забыли пароль?</a>
-                                    <label for="password">Пароль:</label>
-                                    <input type="password" id="password" name="password" required="required" data-bind="value: password">
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="form_item form_item_mail">
-                                    <input type="checkbox" id="remember_me" name="remember_me" value="on" data-bind="value: rememberMe">
-                                    <label for="remember_me">Запомнить меня</label>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <input class="form_submit" type="submit" id="_submit" name="submit" value="Войти">
-            </form>
-            <a href="#" class="z_payment_enter" data-bind="click: ClickZPayment">Войти через Z-Payment</a>
-        </div>
-    </div>
-</script>
-<script type="text/html" id="authenticationSidebarTmpl">
-    <div class="enter_block_1">
-        <div class="block_title">Первый раз у нас?</div>
-        <ul>
-            <li><span>Покупайте и продавайте с удовольствием</span></li>
-            <li><span>Общайтесь с единомышленниками</span></li>
-            <li><span>Будьте уверены в безопасности сделок</span></li>
-        </ul>
-        <a href="#" class="register" data-bind="click: ClickRegistration">Регистрация</a>
-    </div>
+    <div class="pageWidth">
+    <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+        <tr>
+           <td width="300" valign="middle">
+               <div class="enter_block">
+                   <div class="block_title">Первый раз у нас?</div>
+                   <ul>
+                       <li><span>Покупайте и продавайте с удовольствием</span></li>
+                       <li><span>Общайтесь с единомышленниками</span></li>
+                       <li><span>Будьте уверены в безопасности сделок</span></li>
+                   </ul>
+                   <a href="#" class="hiButton">Регистрация</a>
+               </div>
+           </td>
+
+           <td valign="top" align="center">
+                <div class="formBox" style="width:380px;">
+                   <div class="formBoxInner">
+                       <div data-bind="text: error"></div>
+                       <form method="post" data-bind="submit: Login">
+                            <table cellpadding="0" cellspacing="0" class="formBoxTable">
+                                <tr>
+                                    <td>
+                                        <div class="form_item">
+                                            <label>Логин:</label>
+                                            <input type="text" id="username" name="username" value="" required="required" data-bind="value: username">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form_item">
+                                            <a href="#" data-bind="click: ForgotPassword">Забыли пароль</a>
+                                            <label>Пароль:</label>
+                                            <input type="password" id="password" name="password" required="required" data-bind="value: password">
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="form_item">
+                                            <label style="float:left;"><input type="checkbox" name="text" data-bind="value: rememberMe"/>Запомнить меня</label>
+                                            <input class="form_submit" type="submit" value="Войти" style="float:right" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                   </div>
+                </div><!-- /formBox -->
+           </td>           
+           <td width="300">&nbsp;</td>
+        </tr>
+     </table><!-- /checkoutStep -->
+     <div class="clear"></div>
+     </div>
 </script>

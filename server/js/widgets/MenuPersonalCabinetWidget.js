@@ -28,6 +28,9 @@ var MenuPersonalCabinetWidgetWidget = function(){
             self.InsertContainer();
             self.Fill();
         }
+        else{
+            $("#" + self.settings.containerMenuId).empty()
+        }
     };
     self.RegisterEvents = function() {
         self.BaseLoad.Tmpl(self.settings.tmplPath, function() {

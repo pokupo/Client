@@ -1,83 +1,57 @@
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/account.css" type="text/css">
+
 <script type="text/html" id="personalInformationTmpl">
-    <div class="user_profile_block">
-        <div class="content">
+    <div class="horizontalSection noborder">
+        <div class="pageWidth">
             <!-- ko template: { name: 'registrationDataTmpl', data: registrationData } --><!-- /ko -->
             <!-- ko template: { name: 'registrationDataFormTmpl', data: registrationData } --><!-- /ko -->
-            <br />         
+                     
             <!-- ko template: { name: 'postDataTmpl', data: postalAddress } --><!-- /ko -->
             <!-- ko template: { name: 'postDataFormTmpl', data : postalAddress } --><!-- /ko -->
-            <br />
+            
             <!-- ko template: { name: 'contactsDataFormTmpl', data: contacts } --><!-- /ko -->
         </div>
     </div>
 </script>
 
 <script type="text/html" id="registrationDataTmpl">
-    <table style="width: 100%;" data-bind="visible: isEditBlock() == 0">
-        <tr class="first">
-            <td>
-                <div class="row row_left">Регистрационные данные</div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+    <div class="floatFieldsFormSetion" data-bind="visible: isEditBlock() == 0">
+        <div class="formSetionHeader">Регистрационные данные</div>
+            <div class="floatFields4columns">
+                <div class="formItem">
                     <label>Псевдоним:</label>
-                    <!-- ko text: username --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: username --><!-- /ko --></span>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Дата регистрации:</label>
                     <!-- ko if: dateRegistration-->
-                        <!-- ko text: dateRegistration --><!-- /ko --> г.
+                        <span class="formValue"><!-- ko text: dateRegistration --><!-- /ko --> г.</span>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Пол:</label>
-                    <!-- ko text: genderText --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: genderText --><!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Ф.И. О.</label>
-                    <!-- ko text: fullName --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: fullName --><!-- /ko --></span>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Дата рождения:</label>
                     <!-- ko if: birthDay -->
-                        <!-- ko text: birthDay --><!-- /ko --> г
+                        <span class="formValue"><!-- ko text: birthDay --><!-- /ko --> г</span>
                     <!-- /ko-->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Рейтинг:</label>
                     <!-- ko if: birthDay -->
-                        <!-- ko text: rating--><!-- /ko --> балла
+                        <span class="formValue"><!-- ko text: rating--><!-- /ko --> балла</span>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-
-                <div class="top_block">
-                    <a href="#" data-bind="click: Edit">Изменить</a>
+                <div class="clear"></div>
+                
+                <div class="formButBox">
+                    <input class="addButton" type="submit"  data-bind="click: Edit" value="Изменить">
                     <!-- ko if: checkInfo() == 'yes' -->
                         Регистрационные данные подтверждены
                     <!-- /ko -->
@@ -85,138 +59,92 @@
                         Регистрационные данные не подтверждены
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-    </table>
+                
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="registrationDataFormTmpl">
-    <form data-bind="attr: {id: cssRegistrationDataForm}, visible: isEditBlock() == 1" method="POST" target="upload_target" enctype="multipart/form-data">
-    <table style="width: 100%;">
-        <tr class="first">
-            <td>
-                <div class="row row_left">
-                    Регистрационные данные
+    <div class="floatFieldsFormSetion" data-bind="visible: isEditBlock() == 1">
+        <div class="formSetionHeader">Регистрационные данные</div>
+        <form data-bind="attr: {id: cssRegistrationDataForm}" method="POST" target="upload_target" enctype="multipart/form-data">
+            <div class="floatFields4columns">
+                <div class="formItem">
+                    <label>Фамилия</label>
+                    <input name="sname" type="text" id="textfield" data-bind="value: lastNameField" />
+                    <!-- ko if: errorLastName-->
+                        <div class="form_error" data-bind="text: errorLastName"></div>
+                    <!-- /ko -->
                 </div>
-            </td>
-            <tr>
-                <td>
-                    <div class="row row_left">
-                        <label>Аватар:</label>
-                        <input name="avatar" type="file" id="textfield" />
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="row row_left">
-                        <label>Фамилия</label>
-                        <input name="sname" type="text" id="textfield" data-bind="value: lastNameField" />
-                        <!-- ko if: errorLastName-->
-                            <div class="form_error" data-bind="text: errorLastName"></div>
-                        <!-- /ko -->
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="row row_left">
-                        <label>Имя</label>
-                        <input name="fname" type="text" id="textfield" data-bind="value: firstNameField" />
-                        <!-- ko if: errorFirstName-->
-                            <div class="form_error" data-bind="text: errorFirstName"></div>
-                        <!-- /ko -->
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="row row_left">
-                        <label>Отчество</label>
-                        <input name="mname" type="text" id="textfield" data-bind="value: middleNameField"/>
-                        <!-- ko if: errorMiddleName-->
-                            <div class="form_error" data-bind="text: errorMiddleName"></div>
-                        <!-- /ko -->
-                    </div>
-               </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="row row_left">
-                        <label>Дата рождения:</label>
-                        <input type="text" id="textfield"data-bind="value: birthDayField, attr: {id: cssBirthDay}" />
-                        <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
-                        <!-- ko if: errorBirthDay-->
-                            <div class="form_error" data-bind="text: errorBirthDay"></div>
-                        <!-- /ko -->
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <div class="top_block">
-                        <a href="#" data-bind="click: Back">Назад</a> 
-                        <a href="#" data-bind="click: Submit">Сохранить</a>
-                    </div>
-                </td>
-            </tr>
-    </table>
-    </form>
+                <div class="formItem">
+                    <label>Имя</label>
+                    <input name="fname" type="text" id="textfield" data-bind="value: firstNameField" />
+                    <!-- ko if: errorFirstName-->
+                        <div class="form_error" data-bind="text: errorFirstName"></div>
+                    <!-- /ko -->
+                </div>
+                <div class="formItem">
+                    <label>Отчество</label>
+                    <input name="mname" type="text" id="textfield" data-bind="value: middleNameField"/>
+                    <!-- ko if: errorMiddleName-->
+                        <div class="form_error" data-bind="text: errorMiddleName"></div>
+                    <!-- /ko -->
+                </div>
+                <div class="formItem">
+                    <label>Дата рождения:</label>
+                    <input type="text" id="textfield"data-bind="value: birthDayField, attr: {id: cssBirthDay}" />
+                    <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
+                    <!-- ko if: errorBirthDay-->
+                        <div class="form_error" data-bind="text: errorBirthDay"></div>
+                    <!-- /ko -->
+                </div>
+                <div class="formItem">
+                    <label>Аватар:</label>
+                    <input name="avatar" type="file" id="textfield" />
+                </div>
+                
+                <div class="clear"></div>
+                <div class="formButBox">
+                    <input class="addButton" type="submit" value="Сохранить" data-bind="click: Submit"/>
+                    <input class="subButton" type="submit" value="Не Сохранять" data-bind="click: Back"/>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </form>
+    </div>
 </script>
 
 <script type="text/html" id="postDataTmpl">
-    <table style="width: 100%;" data-bind="visible: isEditBlock() == 0">
-        <tr class="first">
-            <td>
-                <div class="row row_left">
-                    Почтовый адрес</div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+    <div class="floatFieldsFormSetion" data-bind="visible: isEditBlock() == 0">
+        <div class="formSetionHeader">Почтовый адрес</div>
+            <div class="floatFields4columns">
+                <div class="formItem">
                     <label>Страна:</label>
-                    <!-- ko text: countryText --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: countryText --><!-- /ko --></span>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Регион:</label>
-                    <!-- ko text: regionText --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: regionText --><!-- /ko --></span>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Город:</label>
-                    <!-- ko text: cityText --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: cityText --><!-- /ko --></span>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Почтовый индекс.</label> 
-                    <!-- ko text: postIndexText --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: postIndexText --><!-- /ko --></span>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Адрес:</label>
-                    <!-- ko text: addressText --><!-- /ko -->
+                    <span class="formValue"><!-- ko text: addressText --><!-- /ko --></span>
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
 
-                <div class="top_block">
-                    <a href="#" data-bind="click: Edit">Изменить</a> 
+                <div class="clear"></div>
+                
+                <div class="formButBox">
+                    <input class="addButton" type="submit"  data-bind="click: Edit" value="Изменить">
                     <!-- ko if: checkInfo() == 'yes' -->
                         Почтовый адрес подтвержден
                     <!-- /ko -->
@@ -224,212 +152,189 @@
                         Почтовый адрес не подтвержден
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-    </table>
+                
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="postDataFormTmpl">
-    <table style="width: 100%;" data-bind="visible: isEditBlock() == 1, attr: {id : cssPostAddressForm }">
-        <tr class="first">
-            <td>
-                <div class="row row_left">
-                    Почтовый адрес
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+    <div class="floatFieldsFormSetion" data-bind="visible: isEditBlock() == 1, attr: {id : cssPostAddressForm }">
+        <div class="formSetionHeader">Почтовый адрес</div>
+            <div class="floatFields4columns">
+                <div class="formItem">
                     <label>Страна:</label>
                     <select id="country_list_profile" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
                     <!-- ko if: errorCountry-->
                         <div class="form_error" data-bind="text: errorCountry"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Регион:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country"/>
                     <!-- ko if: errorRegion-->
                         <div class="form_error" data-bind="text: errorRegion"></div>"
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Город:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion"/>
                     <!-- ko if: errorCity-->
                         <div class="form_error" data-bind="text: errorCity"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Адрес:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity"/>                  
                     <!-- ko if: errorAddress-->
                         <div class="form_error" data-bind="text: errorAddress"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Почтовый индекс.</label> 
                     <input name="textfield" type="text" id="textfield" data-bind="value: postIndex, attr: {id: cssPostIndex}"/>
                     <!-- ko if: errorPostIndex-->
                         <div class="form_error" data-bind="text: errorPostIndex"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="top_block">
-                    <a href="#" data-bind="click: Back">Назад</a> 
-                    <a href="#" data-bind="click: Submit">Сохранить</a>
-               </div>
-            </td>
-        </tr>
-    </table>
+                
+                <div class="clear"></div>
+                <div class="formButBox">
+                    <input class="addButton" type="submit" value="Сохранить" data-bind="click: Submit"/>
+                    <input class="subButton" type="submit" value="Не Сохранять" data-bind="click: Back"/>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="contactsDataFormTmpl">
-    <table style="width: 100%;">
-        <tr class="first">
-            <td>
-                <div class="row row_left">
-                    Контактные данные</div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+    <div class="floatFieldsFormSetion">
+        <div class="formSetionHeader">Контактные данные</div>
+            <div class="floatFields4columns">
+                <div class="formItem">
                     <label>Е-маил:</label>
                     <span data-bind="visible: emailIsConfirm(), text: email"></span>
                     <input name="textfield" type="text" id="textfield" data-bind="value: email, visible: !emailIsConfirm()" />
                     <!-- ko if: errorEmail-->
                         <div class="form_error" data-bind="text: errorEmail"></div>
                     <!-- /ko -->
-                </div>
-                <div data-bind="visible: emailIsConfirm()">E-mail подтвержден</div>
-                <div data-bind="visible: !emailIsConfirm()">
-                    <div data-bind="visible: isExistEmail">
-                        <a href="#" data-bind="click: SendMailToken">Выслать код подтверждения</a>
+                    <div data-bind="visible: emailIsConfirm()">E-mail подтвержден</div>
+                    <div data-bind="visible: !emailIsConfirm()">
+                        <div data-bind="visible: isExistEmail">
+                            <a href="#" data-bind="click: SendMailToken">Выслать код подтверждения</a>
+                        </div>
+                        <span class="row row_left" data-bind="visible: sentEmailCode">
+                            <label>E-mail код:</label> 
+                            <input name="textfield" type="text" id="textfield" data-bind="value:emailToken" />
+                            <!-- ko if: errorEmailToken-->
+                                <div class="form_error" data-bind="text: errorEmailToken"></div>
+                            <!-- /ko -->
+                        </span>
+                        <a href="#" data-bind="click: SubmitMailToken, visible: sentEmailCode">Подтвердить</a></td>
                     </div>
-                    <span class="row row_left" data-bind="visible: sentEmailCode">
-                        <label>E-mail код:</label> 
-                        <input name="textfield" type="text" id="textfield" data-bind="value:emailToken" />
-                        <!-- ko if: errorEmailToken-->
-                            <div class="form_error" data-bind="text: errorEmailToken"></div>
-                        <!-- /ko -->
-                    </span>
-                    <a href="#" data-bind="click: SubmitMailToken, visible: sentEmailCode">Подтвердить</a></td>
-                <!-- /ko -->
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                </div>
+                <div class="formItem">
                     <label>Телефон:</label>
                     <span data-bind="visible: phoneIsConfirm(), text: phone"></span>
                     <input name="textfield" type="text" id="textfield" data-bind="value: phone, visible: !phoneIsConfirm(), attr: {id : cssPhone}" />
                     <!-- ko if: errorPhone-->
                         <div class="form_error" data-bind="text: errorPhone"></div>
                     <!-- /ko -->
-                </div>
-                <div data-bind="visible: phoneIsConfirm()">Телефон подтвержден</div>
-                <div data-bind="visible: !phoneIsConfirm()">
-                    <div  data-bind="visible: isExistPhone">
-                        <a href="#" data-bind="click: SendPhoneToken">Выслать код подтверждения</a>
+                    <div data-bind="visible: phoneIsConfirm()">Телефон подтвержден</div>
+                    <div data-bind="visible: !phoneIsConfirm()">
+                        <div  data-bind="visible: isExistPhone">
+                            <a href="#" data-bind="click: SendPhoneToken">Выслать код подтверждения</a>
+                        </div>
+                        <span class="row row_left"  data-bind="visible: sentCode">
+                            <label>SMS код:</label> 
+                            <input name="textfield" type="text" id="textfield" data-bind="value: phoneToken" />
+                            <!-- ko if: errorPhoneToken-->
+                                <div class="form_error" data-bind="text: errorPhoneToken"></div>
+                            <!-- /ko -->
+                        </span>
+                        <a href="#" data-bind="click: SubmitPhoneToken, visible: sentCode">Подтвердить</a>
                     </div>
-                    <span class="row row_left"  data-bind="visible: sentCode">
-                        <label>SMS код:</label> 
-                        <input name="textfield" type="text" id="textfield" data-bind="value: phoneToken" />
-                        <!-- ko if: errorPhoneToken-->
-                            <div class="form_error" data-bind="text: errorPhoneToken"></div>
-                        <!-- /ko -->
-                    </span>
-                    <a href="#" data-bind="click: SubmitPhoneToken, visible: sentCode">Подтвердить</a>
-               </div>
-            </td>    
-        </tr>
-        <tr data-bind="visible: !phoneIsConfirm() || !emailIsConfirm()">
-            <td>
-                <div class="top_block">
-                    <a href="#" data-bind="click: SubmitForm">Сохранить</a>
                 </div>
-            </td>
-        </tr>
-    </table>
+                
+                <div class="clear"></div>
+                <div class="formButBox" data-bind="visible: !phoneIsConfirm() || !emailIsConfirm()">
+                    <input class="addButton" type="submit" value="Сохранить" data-bind="click: SubmitForm"/>
+                </div>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
 </script>
 
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/list-box.css" type="text/css" media="screen, projection">
 <script type="text/html" id="deliveryAddressTmpl">
-    <div class="profile_block_1">
-        <div class="content">
-            <table style="width: 100%;">
-                <tr>
-                    <td>
-                        <div class="top_block">
-                            <a href="#" data-bind="click: ClickAddAddress">Добавить новый адрес</a>
-                            <span class="adres_count">Всего адресов: <span data-bind="text: addressList().length"></span></span>
-                        </div>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <!-- ko template: { name: 'deliveryAddressListTmpl' } --><!-- /ko -->
-                    </td>
-                </tr>
-            </table>
+    <div class="horizontalSection noborder">
+        <div class="pageWidth">
+            <h1>Выберите адрес доставки</h1>
+             
+            <div class="listBox">
+                <div style="float:left; margin:0px 0px 10px 0px;">
+                    <a href="#" class="addButton" data-bind="click: ClickAddAddress">Добавить новый адрес</a>
+                </div>
+                
+                <div class="clear"></div>
+                
+                <!-- ko template: { name: 'deliveryAddressListTmpl' } --><!-- /ko -->
+                
+                <div class="clear"></div>
+
+                <div class="paginationBox">
+                    <div class="adres_counter">Адресов: <!-- ko text: addressList().length --><!-- /ko --></div>
+                    <div class="clear"></div>
+                </div>
+
+                <div class="clear"></div>
+            </div>
         </div>
     </div>
 </script>
 
 <script type="text/html" id="deliveryAddressListTmpl">
-    <table class="profile_table_1">
-        <tr class="col_1">
-            <td class="row_2">Адрес</td>
-            <td class="row_3">Почт. индекс</td>
-            <td class="row_4">Страна</td>
-            <td class="row_5">Регион</td>
-            <td class="row_6">Город</td>
-            <td class="row_7">Получатель</td>
-            <td class="row_8">Основной</td>
-            <td class="row_9"></td>
+    <table cellpadding="0" cellspacing="0" class="listTable">
+        <tr class="listTableHeader">
+            <td>Адрес</td>
+            <td>Почт. индекс</td>
+            <td>Страна</td>
+            <td>Регион</td>
+            <td>Город</td>
+            <td>Получатель</td>
+            <td>Основной</td>
+            <td></td>
+            <td></td>
         </tr>
         <!-- ko foreach: addressList -->
-        <tr class="col_2">
-            <td class="row_2" data-bind="text: address"></td>
-            <td class="row_3" data-bind="text: postCode"></td>
-            <td class="row_4" data-bind="text: country"></td>
-            <td class="row_5" data-bind="text: region"></td>
-            <td class="row_6" data-bind="text: city"></td>
-            <td class="row_7">
+        <tr class="listTableRow">
+            <td data-bind="text: address"></td>
+            <td data-bind="text: postCode"></td>
+            <td data-bind="text: country"></td>
+            <td data-bind="text: region"></td>
+            <td data-bind="text: city"></td>
+            <td>
                 <p data-bind="text: addressee"></p>
                 <p data-bind="text: contactPhone"></p>
             </td>
-            <td class="row_8">
+            <td align="center" >
                 <!-- ko if: isDefault()-->
-                <input type="radio" name="is_default" data-bind="attr : {checked: 'checked', id:cssIsDefault }, value: id" >
+                <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked', id:cssIsDefault }, value: id" >
                 <!-- /ko -->
                 <!-- ko ifnot: isDefault()-->
-                <input type="radio" name="is_default" data-bind="value: id, attr : {id:cssIsDefault}" >
+                <input class="addrN" type="radio" name="is_default" data-bind="value: id, attr : {id:cssIsDefault}" >
                 <!-- /ko -->
             </td>
-            <td class="row_9">
-                <a href="#" data-bind="click: Edit">Изменить</a></br/>
+            <td align="center" >
+                <a href="#" data-bind="click: Edit" class="editButton" title="Изменить"></a></br/>
+            </td>
+            <td align="center" >
                 <!-- ko if: id -->
-                <a href="#" data-bind="click: Delete">Удалить</a>
+                <a href="#" data-bind="click: Delete" class="deleleButton" title="Удалить из списка"></a>
                 <!-- /ko -->
             </td>
         </tr>
@@ -438,167 +343,117 @@
 </script>
 
 <script type="text/html" id="deliveryAddressFormTmpl">
-    <div class="profile_block_1">
-        <div class="content">
-    <table style="width: 100%;">
-        <tr class="first">
-            <td>
-                <div class="row row_left">Адрес доставки</div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+    <div class="floatFieldsFormSetion">
+        <div class="pageWidth">
+            <div class="formSetionHeader">Адрес доставки</div>
+            <div class="floatFields4columns">
+                <div class="formItem">
                     <label>Страна:</label>
                     <select id="delivery_country_list" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
                     <!-- ko if: errorCountry -->
                         <div class="form_error" data-bind="text: errorCountry "></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Регион:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country"/>
                     <!-- ko if: errorRegion-->
                         <div class="form_error" data-bind="text: errorRegion"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Город:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion"/>
                     <!-- ko if: errorCity-->
                         <div class="form_error" data-bind="text: errorCity"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Адрес:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity"/>                  
                     <!-- ko if: errorAddress-->
                         <div class="form_error" data-bind="text: errorAddress"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Почтовый индекс.</label> 
                     <input name="textfield" type="text" id="textfield" data-bind="value: postCode, attr: {id: cssPostCode}"/>
                     <!-- ko if: errorPostCode-->
                         <div class="form_error" data-bind="text: errorPostCode"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Получатель:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: addressee"/>
                     <!-- ko if: errorAddressee-->
                         <div class="form_error" data-bind="text: errorAddressee"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Контактный телефон:</label>
                     <input name="textfield" type="text" id="textfield" data-bind="value: contactPhone, attr:{id:cssContactPhone}" />
                     <!-- ko if: errorContactPhone-->
                         <div class="form_error" data-bind="text: errorContactPhone"></div>
                     <!-- /ko -->
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="row row_left">
+                <div class="formItem">
                     <label>Основной адрес:</label>
                     <input name="textfield" type="checkbox" id="textfield" data-bind="checked: isDefault" />
                 </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div class="top_block">
-                    <a href="#" data-bind="click: Back">Назад</a>
+
+                <div class="clear"></div>
+
+                <div class="formButBox">
                     <!-- ko ifnot: id -->
-                    <a href="#" data-bind="click: Submit">Сохранить</a>
+                    <input class="addButton" type="submit" value="Сохранить" data-bind="click: Submit"/>
                     <!-- /ko -->
                     <!-- ko if: id -->
-                    <a href="#" data-bind="click: Edit">Сохранить</a>
+                    <input class="addButton" type="submit" value="Сохранить" data-bind="click: Edit"/>
                     <!-- /ko -->
+                    <input class="subButton" type="submit" value="Назад" data-bind="click: Back"/>
                 </div>
-            </td>
-        </tr>
-    </table>
-    </div>
+
+                <div class="clear"></div>
+            </div>
+        </div>
     </div>
 </script>
     
 <script type="text/html" id="securityTmpl">
-    <div class="profile_block_1">
-        <div class="content">
-            <form data-bind="attr: {id: cssSequrityForm}" method="POST" target="upload_target" enctype="multipart/form-data">
-                <table style="width: 100%;">
-                    <tr class="first">
-                        <td>
-                            <div class="row row_left">Изменить пароль</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="row row_left">
-                                <label>Старый пароль:</label>
-                                <input name="password" type="password" data-bind="value: oldPassword, attr : {id: cssOldPassword}"/>
-                                <!-- ko if: errorOldPassword-->
-                                    <div class="form_error" data-bind="text: errorOldPassword"></div>
-                                <!-- /ko -->
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="row row_left">
-                                <label>Новый пароль:</label>
-                                <input name="new_password" type="password" data-bind="value: newPassword, attr : {id: cssNewPassword}"/>
-                                <!-- ko if: errorNewPassword-->
-                                    <div class="form_error" data-bind="text: errorNewPassword"></div>
-                                <!-- /ko -->
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="row row_left">
-                                <label>Повтор нового пароля:</label>
-                                <input type="password" data-bind="value: confirmPassword, attr : {id: cssConfirmPassword}"/>
-                                <!-- ko if: errorConfirmPassword-->
-                                    <div class="form_error" data-bind="text: errorConfirmPassword"></div>
-                                <!-- /ko -->
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="top_block"><a href="#" data-bind="click: Submit">Сохранить</a></div>
-                        </td>
-                    </tr>
-                </table>
-            </form>
+    <div class="floatFieldsFormSetion">
+        <div class="pageWidth">
+            <div class="formSetionHeader">Изменить пароль</div>
+            <div class="floatFields4columns">
+                <form data-bind="attr: {id: cssSequrityForm}" method="POST" target="upload_target" enctype="multipart/form-data">
+                    <div class="formItem">
+                        <label>Старый пароль:</label>
+                        <input name="password" type="password" data-bind="value: oldPassword, attr : {id: cssOldPassword}"/>
+                        <!-- ko if: errorOldPassword-->
+                            <div class="form_error" data-bind="text: errorOldPassword"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem">
+                        <label>Новый пароль:</label>
+                        <input name="new_password" type="password" data-bind="value: newPassword, attr : {id: cssNewPassword}"/>
+                        <!-- ko if: errorNewPassword-->
+                            <div class="form_error" data-bind="text: errorNewPassword"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem">
+                        <label>Повтор нового пароля:</label>
+                        <input type="password" data-bind="value: confirmPassword, attr : {id: cssConfirmPassword}"/>
+                        <!-- ko if: errorConfirmPassword-->
+                            <div class="form_error" data-bind="text: errorConfirmPassword"></div>
+                        <!-- /ko -->
+                    </div>
+                    
+                    <div class="clear"></div>
+                    <div class="formButBox">
+                        <input class="addButton" type="submit" value="Сохранить" data-bind="click: Submit"/>
+                    </div>
+                    <div class="clear"></div>
+                </form>
+            </div>
         </div>
     </div>
 </script>

@@ -1,7 +1,7 @@
 
 var timerId = 0;
 
-function InitSlider(cssSliderContainer){
+function AnimateSlider(cssSliderContainer){
     $('.' + cssSliderContainer).append('<div class=\'main-jc-buttons\'>');
     var timer = 0;
     $('.view-slider').find('.view-content').children().each(function(i){

@@ -136,12 +136,11 @@ var GoodsWidget = function(){
                 self.InsertContainer.Content();
                 if(Config.Containers.catalog)
                    $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
                 
                 if(data.ShowGallery())
-                    new InitCarousel(Config.Goods.galleryId);
+                    new AnimateCarousel(Config.Goods.galleryId);
             }
             self.AddGoodsInCookie(data);
             delete data;

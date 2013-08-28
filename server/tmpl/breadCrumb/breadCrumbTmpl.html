@@ -1,28 +1,29 @@
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/breadcrumbs.css" type="text/css">
+
 <script type="text/html" id="breadCrumbTmpl">
-    <div class="top_content_region">
-    <div class="top_title_2">
-        <table>
-            <tr>
-                <!-- ko if: showReturn -->
-                <td class="return"> <a href="#" data-bind="click: Return">&lt;Назад</a>&nbsp;&nbsp; </td>
-                <!-- /ko -->
-                <td class="first"></td>
-                <td class="text">
-                    <a href="#" data-bind="click: ToHomepage"><img title="" alt="" src="images/br_fon_5.png" /></a>
+    <table cellpadding="0" cellspacing="0">
+        <tr>
+            <!-- ko if: showReturn -->
+                <td class="previous">
+                    <div>
+                        <a href="#" data-bind="click: Return">&lt;Назад</a>&nbsp;&nbsp;
+                    </div>
                 </td>
-                <!-- ko foreach: crumbs -->
-                <td class="second"></td>
-                <td class="text" data-bind="css: cssItem"></td>
-                <!-- /ko -->
-                <!-- ko foreach: lastItem -->
-                <td class="second"></td>
-                <td class="text" data-bind="text: $data"></td>
-                <!-- /ko -->
-                <td class="last"></td>
-            </tr>
-        </table>
-    </div>
-    </div>
+            <!-- /ko -->
+            <td class="base">
+                <div>
+                    <a href="#" data-bind="click: ToHomepage"><img title="" alt="" src="http://pokupo-server.asmsoft.ru/images/br_fon_5.png" /></a>
+                </div>
+            </td>
+            <!-- ko foreach: crumbs -->
+            <td class="second" data-bind="css: cssItem"></td>
+            <!-- /ko -->
+            <!-- ko foreach: lastItem -->
+            <td class="last" data-bind="text: $data"></td>
+            <!-- /ko -->
+        </tr>
+    </table>
+    <div class="clear"></div>
 </script>
 
 <script type="text/html" id="breadCrumbSelectListTmpl">

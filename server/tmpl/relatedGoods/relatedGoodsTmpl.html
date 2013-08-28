@@ -1,19 +1,17 @@
 <script type="text/html" id="relatedGoodsSliderTmpl">
-    <div class="content">
+    <div class="homeSlideshow">
         <!-- ko if: countGoods > 0 -->
         <div class="block_title">Вместе с этим товаром покупают</div>
-        <div id="block-views-slider-block_1" data-bind="css: cssBlockContainer">
-            <div class="content">
-                <div class="view-slider">
-                    <div class="view-content">
-                        <!-- ko foreach: content -->
-                        <div data-bind="css: cssBlock">
-                            <a href="#" data-bind="attr: {href: imageHref}">
-                                <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, click: ClickGoods}"/>
-                            </a>
-                        </div>
-                        <!-- /ko -->
+        <div id="slideshowBox" data-bind="css: cssBlockContainer">
+            <div class="view-slider">
+                <div class="view-content">
+                    <!-- ko foreach: content -->
+                    <div data-bind="css: cssBlock">
+                        <a href="#" data-bind="attr: {href: imageHref}">
+                            <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, click: ClickGoods}"/>
+                        </a>
                     </div>
+                    <!-- /ko -->
                 </div>
             </div>
         </div>
@@ -21,27 +19,43 @@
     </div>
 </script>
 
+<link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/carousel.css" type="text/css">
+
 <script type="text/html" id="relatedGoodsCaruselTmpl">
-    <div class="content">
-    <!-- ko if: countGoods > 0 -->
-        <div class="block_title">Вместе с этим товаром покупают</div>
-        <ul id="jcarousel_2" data-bind="css: cssBlockContainer">
-            <!-- ko foreach: content -->
-            <li data-bind="css: {auction: idAuction() > 0}">
-                <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, id : cssToCart}"/></div>
-                <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></div>
-                <div class="category"><a href="#" data-bind="text: shopName, click: ClickShop"></a></div>
-                <span class="price">
-                    <!-- ko if: discount > 0 -->
-                    <span data-bind="text: sellGoods"></span><br />
+    <div class="carouselWrapper wide">
+        <div class="block_front_carusel">
+        <!-- ko if: countGoods > 0 -->
+            <div class="block_title">Вместе с этим товаром покупают</div>
+            <div class="cont">
+                <ul id="jcarousel_2" data-bind="css: cssBlockContainer">
+                    <!-- ko foreach: content -->
+                    <li data-bind="css: {auction: idAuction() > 0}">
+                        <div class="photo">
+                            <img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, id : cssToCart}"/>
+                        </div>
+                        <div class="textInfoBlock">
+                            <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></div>
+                            <div class="category"><a href="#" data-bind="text: shopName, click: ClickShop"></a></div>
+                        </div>
+                        <div class="addToCartBlock">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <!-- ko if: discount > 0 -->
+                                        <span data-bind="text: sellGoods"></span><br />
+                                        <!-- /ko -->
+                                        <!--ko text: sellCost --><!--/ko--> руб.
+                                    </td>
+                                    <td><a href="#" class="bay" data-bind="click: ClickBuy">Купить</a></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </li>
                     <!-- /ko -->
-                    <!--ko text: sellCost --><!--/ko-->
-                </span> 
-                <a href="#" class="bay" data-bind="click: ClickBuy">Купить</a>
-            </li>
-            <!-- /ko -->
-        </ul>
-    <!-- /ko -->
+                </ul>
+            </div>
+        <!-- /ko -->
+        </div>
     </div>
 </script>
 

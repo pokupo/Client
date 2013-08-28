@@ -194,8 +194,8 @@ var BreadCrumbViewModel = function(){
                 
                 Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category; 
                 self.crumbs.push(breadCrumb);
-            }
-            
+            } 
+
             var last = self.crumbs().pop();
             self.lastItem.push(last.title);
             
@@ -211,15 +211,17 @@ var BreadCrumbViewModel = function(){
                 self.crumbs = ko.observableArray();
                 self.lastItem = ko.observableArray();
                 
-                self.lastItem.push('Регистрация покупателя');
+                Parameters.cache.crumbsTitle[0] = 'Регистрация покупателя';
+                self.crumbs.push(new BreadCrumbItem({id:0, name_category: ''}));
+
                 if(Routing.params.step == 1)
-                    self.lastItem.push('Шаг 1 из 4');
+                    self.lastItem.push('Шаг 1');
                 if(Routing.params.step == 2)
-                    self.lastItem.push('Шаг 2 из 4');
+                    self.lastItem.push('Шаг 2');
                 if(Routing.params.step == 3)
-                    self.lastItem.push('Шаг 3 из 4');
+                    self.lastItem.push('Шаг 3');
                 if(Routing.params.step == 4)
-                    self.lastItem.push('Шаг 4 из 4');
+                    self.lastItem.push('Шаг 4');
             } 
             if(Routing.route == 'profile' || Routing.route == 'favorites'){
                 self.crumbs = ko.observableArray();

@@ -38,8 +38,10 @@ var ContentWidget = function(){
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content;
+        self.settings.blockContainerId = Config.Containers.block;
         self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
         self.settings.tmplForContent = Config.Content.tmpl.pathList;
+        self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;
         self.settings.blockSliderTmpl = Config.Content.tmpl.blockSliderTmpl;
         self.settings.blockCaruselTmpl = Config.Content.tmpl.blockCaruselTmpl;
         self.settings.blockTileTmpl = Config.Content.tmpl.blockTileTmpl;
@@ -100,12 +102,12 @@ var ContentWidget = function(){
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
             if(data.typeView == 'slider'){ 
                 self.Render.Block(data);
-                new InitSlider(data.cssBlockContainer);
+                new AnimateSlider(data.cssBlockContainer);
                 delete  data;
             }
             if(data.typeView == 'carousel'){
                 self.Render.Block(data);
-                new InitCarousel(data.cssBlockContainer);
+                new AnimateCarousel(data.cssBlockContainer);
                 delete  data;
             }
             if(data.typeView == 'tile'){
@@ -117,16 +119,6 @@ var ContentWidget = function(){
         EventDispatcher.AddEventListener('contentWidget.fill.listContent', function(data){
             self.InsertContainer.List(data.typeView);
             self.Render.List(data);
-            
-            $(Parameters.sortingBlockContainer + ' .sort select').sSelect({
-                defaultText: Parameters.listSort[data.filters.orderBy]
-            }).change(function(){
-                self.WidgetLoader(false);
-                data.filters.orderBy = $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue();
-                
-                Routing.UpdateMoreParameters({orderBy : data.filters.orderBy});
-                Routing.UpdateHash({page : 1});
-            });
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
@@ -148,7 +140,7 @@ var ContentWidget = function(){
         });
     };
     self.CheckData = function(data){
-        $("#" + self.settings.containerId).html('');
+        self.InsertContainer.Main();
         if(data.err)
             self.WidgetLoader(true);
         for(var i = 0; i <= data.length - 1; i++){
@@ -171,17 +163,23 @@ var ContentWidget = function(){
         }
     };
     self.InsertContainer = {
+        Main : function(){
+            if($('#' + self.settings.blockContainerId).length == 0)
+                $("#" + self.settings.containerId).html($('script#' + self.settings.blockMainTmpl).html());
+            else
+                $('#' + self.settings.blockContainerId).empty();
+        },
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settings.containerId).append($('script#' + self.settings.blockSliderTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockSliderTmpl).html());
             }
             if(type == 'carousel'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.blockCaruselTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockCaruselTmpl).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.blockTileTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockTileTmpl).html());
             }
-            $("#" + self.settings.containerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
+            $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
         },
         List : function(type){
             $("#" + self.settings.containerId).html('');
@@ -228,8 +226,9 @@ var ContentWidget = function(){
     self.Render = {
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                var f = data.filters;
+                new AnimateSelectList(f.sort.cssSortList);
             }
             delete data;
             self.WidgetLoader(true);
@@ -244,7 +243,6 @@ var ContentWidget = function(){
         },
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
             self.WidgetLoader(true);
@@ -331,13 +329,19 @@ var ListContentViewModel = function(settings){
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
+    self.GetSort = function(){
+        var s = new SortContentListViewModel();
+        s.AddContent(Config.Content.sortList);
+        s.SetDefault(Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderByContent);
+        return s;
+    };
     self.filters = {
         typeView : self.typeView,
-        orderBy : Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderByContent,
         filterName : Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName,
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : ko.observableArray(),
         countOptionList : ko.observable(settings.listPerPage.length-1),
+        sort : self.GetSort(),
         FilterNameGoods : function(data){
             self.filters.filterName = settings.filterName = $(data.text).val();
 
@@ -459,6 +463,38 @@ var ListContentViewModel = function(settings){
         self.paging = Paging.GetPaging(self.countGoods, settings, ClickLinkPage);
     }
 }
+
+var SortContentItemViewModel = function(data, active){
+    var self = this;
+    self.name = data.name;
+    self.title = data.title;
+    self.ClickSort = function(){
+        active(self);
+        Loader.Indicator('ContentWidget', false); 
+                
+        Routing.UpdateMoreParameters({orderBy : self.name});
+        Routing.UpdateHash({page : 1});
+    };
+};
+
+var SortContentListViewModel = function(){
+    var self = this;
+    self.activeItem = ko.observable();
+    self.list = ko.observableArray();
+    self.cssSortList = 'sort_list';
+    
+    self.AddContent = function(data){
+        $.each(data, function(i){
+            self.list.push(new SortContentItemViewModel(data[i], self.activeItem));
+        });
+    };
+    self.SetDefault = function(orderBy){
+        $.each(self.list(), function(i){
+            if(self.list()[i].name == orderBy)
+                self.activeItem(self.list()[i]);
+        });
+    };
+};
 
 /* End Content*/
 var TestContent = {

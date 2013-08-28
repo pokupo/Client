@@ -419,27 +419,15 @@ var ProfileWidget = function() {
     };
     self.InsertContainer = {
         Personal : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.personalInformationTmplId).html());
         },
         Delivery : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.deliveryAddressTmpl).html());
         },
         DeliveryForm : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.deliveryAddressFormTmpl).html());
         },
         Security : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.securityTmpl).html());
         }
     };
@@ -511,8 +499,6 @@ var ProfileWidget = function() {
             });
             
             $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-            
-//            $('#' + form.postalAddress.cssCountryList).sSelect({defaultText: ' '});
 
             $('#' + form.postalAddress.cssRegionList).autocomplete({
                 source: function(request, response) {
@@ -665,7 +651,6 @@ var ProfileWidget = function() {
             }
             
             $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-//            $('#' + delivery.cssCountryList).sSelect({defaultText: ' '});
             
             $('#' + delivery.cssRegionList).autocomplete({
                 source: function(request, response) {
