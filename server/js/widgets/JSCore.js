@@ -1,23 +1,14 @@
 var JSSettings = {
-//    protocolHTTP : 'http://',
-//    protocolHTTPS : 'https://',
-//    host : "dev.pokupo.ru/",
-//    pathToJS : "server/js/",
-//    pathToTmpl : "server/tmpl/",
-//    pathToData : "server/services/DataProxy.php?query=",
-//    pathToPostData : "server/services/DataPostProxy.php",
-//    pathToCore: "server/index.html",
-//    pathToPostCore : 'server/postData.html',
-
     protocolHTTP : 'http://',
-    protocolHTTPS : 'https://',       
-    host : "pokupo-server.asmsoft.ru/",    
-    pathToJS : "js/",
-    pathToTmpl : "tmpl/",
-    pathToData : "services/DataProxy.php?query=",
-    pathToPostData : "services/DataPostProxy.php",
-    pathToCore: "index.html",
-    pathToPostCore : 'postData.html',
+    protocolHTTPS : 'https://',
+    host : "dev.pokupo.ru/",
+    pathToJS : "server/js/",
+    pathToTmpl : "server/tmpl/",
+    pathToData : "server/services/DataProxy.php?query=",
+    pathToPostData : "server/services/DataPostProxy.php",
+    pathToCore: "server/index.html",
+    pathToPostCore : 'server/postData.html',
+
     scripts : [
         'jquery-ui-1.10.2.custom.min.js',
         'easyXDM.min.js',
@@ -38,7 +29,9 @@ var JSSettings = {
         'widgets/AnimateSlider.js',
         'widgets/AnimateCarousel.js',
         'widgets/AnimateAddToCart.js',
-        'widgets/AnimateSelectList.js'],
+        'widgets/AnimateSelectList.js',
+        'widgets/AnimateBreadCrumb.js',
+        'widgets/AnimateTab.js'],
     inputParameters : {}
 }
 

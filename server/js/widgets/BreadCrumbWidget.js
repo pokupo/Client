@@ -71,66 +71,45 @@ var BreadCrumbWidget = function(){
                 self.WidgetLoader(true );
         });
         
-        EventDispatcher.AddEventListener('breadCrumbWidget.rendered.item', function(data){
-            
-            for(var i = 0; i <= data.crumbs().length-1; i++){ 
-                self.BaseLoad.Section(data.crumbs()[i].id, function(sec){
-                    self.Fill.SelectList(sec.data, sec.parentId)
-                });
-            }
+        EventDispatcher.AddEventListener('breadCrumbWidget.click.item', function(item){
+            self.BaseLoad.Path(item.id, function(data){
+                Routing.SetHash('catalog', data[data.length-1].name_category, Routing.GetPath(data));
+            });
         });
         
-        EventDispatcher.AddEventListener('breadCrumbWidget.fill.selectList', function(data){
-            self.Render.SelectList(data);
-        });
+//        EventDispatcher.AddEventListener('breadCrumbWidget.rendered.item', function(data){
+//            
+//            for(var i = 0; i <= data.crumbs().length-1; i++){ 
+//                self.BaseLoad.Section(data.crumbs()[i].id, function(sec){
+//                    self.Fill.SelectList(sec.data, sec.parentId)
+//                });
+//            }
+//        });
+        
+//        EventDispatcher.AddEventListener('breadCrumbWidget.fill.selectList', function(data){
+//            self.Render.SelectList(data);
+//        });
     };
     self.Fill = {
         BreadCrumb : function(data){
             var breadCrumb = new BreadCrumbViewModel();
             breadCrumb.AddCrumbs(data);
-        },
-        SelectList : function(data, id){
-            var crumb = new SelectListBreadCrumbItemViewModel();
-            crumb.AddSelectList(data, id);
         }
+//        SelectList : function(data, id){
+//            var crumb = new SelectListBreadCrumbItemViewModel();
+//            crumb.AddSelectList(data, id);
+//        }
     },
     self.Render = {
         BreadCrumb : function(data){
             for(var i=0; i<=self.settings.containerId.length-1; i++){
                 if($("#" + self.settings.containerId[i]).length > 0){
-                    $("#" + self.settings.containerId[i]).html("");
-                    $("#" + self.settings.containerId[i]).append($('script#' + self.settings.tmplId).html());
+                    $("#" + self.settings.containerId[i]).empty().append($('script#' + self.settings.tmplId).html());
                     ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
+                    new AnimateBreadCrumb(data.cssItem);
                 }
                 delete data;
             }
-            EventDispatcher.DispatchEvent('breadCrumbWidget.rendered.item', data);
-        },
-        SelectList : function(data){
-            for(var i=0; i<=self.settings.containerId.length-1; i++){
-                if($("#" + self.settings.containerId[i] + ' .' + data.cssSelectList).length > 0){
-                    $("#" + self.settings.containerId[i] + ' .' + data.cssSelectList).append($('script#' + self.settings.tmplSelectListId).html());
-                    ko.applyBindings(data, $("#" + self.settings.containerId[i] + ' .' + data.cssSelectList + ' select')[0]);
-                }
-            }
-
-            if($('.' + data.cssSelectList + ' select').length > 0){
-                $('.' + data.cssSelectList + ' select').sSelect({
-                    defaultText: Parameters.cache.crumbsTitle[data.parentId]
-                }).change(function(){
-                    self.WidgetLoader(false );
-                    var id = $('.' + data.cssSelectList + ' select').getSetSSValue();
-                    for(var i=0; i<=self.settings.containerId.length-1; i++){
-                        $("#" + self.settings.containerId[i]).html("");
-                    }
-
-                    self.BaseLoad.Path(id, function(data){
-                        Routing.SetHash('catalog', data[data.length-1].name_category, Routing.GetPath(data));
-                    });
-                });
-            }
-            delete data;
-            
             self.WidgetLoader(true );
         }
     }
@@ -153,12 +132,14 @@ var BreadCrumbItem = function(data){
     var self = this;
     self.id = data.id;
     self.title = data.name_category;
-    self.typeCategory = data.type_category;
-    self.cssItem = 'pathItem_' + data.id;
+    self.typeCategory = data.type_category; 
     self.selectList = ko.observableArray();
+    self.ClickItem = function(){
+        
+    };
     self.AddSelectList = function(children){
         for(var i = 0; i <= children.length-1; i++){
-            if(!Parameters.cache.crumbsTitle[children[i].id])
+//            if(!Parameters.cache.crumbsTitle[children[i].id])
                 self.selectList.push(new SelectListBreadCrumbItem(children[i]));
         }
     }
@@ -166,9 +147,11 @@ var BreadCrumbItem = function(data){
 
 var BreadCrumbViewModel = function(){
     var self = this;
-    self.lastItem = ko.observableArray();;
+    self.lastItem = ko.observable();;
     self.title = "";
     self.crumbs = ko.observableArray();
+    self.cssItem = 'breadcrumbs_item';
+    
     self.ToHomepage = function(){
         Routing.SetHash('catalog', 'Домашняя', {});
     };
@@ -183,7 +166,7 @@ var BreadCrumbViewModel = function(){
         Routing.SetHash(link.route, link.title, link.data, true);
     };
     self.AddCrumbs = function(data){
-        Parameters.cache.crumbsTitle = [];
+//        Parameters.cache.crumbsTitle = [];
         if(data){
             for(var i = 0; i <= data.length - 1; i++){
                 var breadCrumb = new BreadCrumbItem(data[i]);
@@ -192,42 +175,40 @@ var BreadCrumbViewModel = function(){
                    breadCrumb.AddSelectList(data[i].children);
                 }
                 
-                Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category; 
+//                Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category; 
                 self.crumbs.push(breadCrumb);
             } 
-
-            var last = self.crumbs().pop();
-            self.lastItem.push(last.title);
             
             if(Routing.route == 'goods')
-                self.lastItem.push('Карточка товара');
+                self.lastItem('Карточка товара');
             if(Routing.route == 'cart'){
                 self.crumbs = ko.observableArray();
-                self.lastItem = ko.observableArray();
-                
-                self.lastItem.push('Моя корзина');
+                self.lastItem('Моя корзина');
             }
             if(Routing.route == 'registration'){
                 self.crumbs = ko.observableArray();
-                self.lastItem = ko.observableArray();
                 
-                Parameters.cache.crumbsTitle[0] = 'Регистрация покупателя';
-                self.crumbs.push(new BreadCrumbItem({id:0, name_category: ''}));
+//                Parameters.cache.crumbsTitle[0] = 'Регистрация покупателя';
+                self.crumbs.push(new BreadCrumbItem({id:0, name_category: 'Регистрация покупателя'}));
 
                 if(Routing.params.step == 1)
-                    self.lastItem.push('Шаг 1');
+                    self.lastItem('Шаг 1');
                 if(Routing.params.step == 2)
-                    self.lastItem.push('Шаг 2');
+                    self.lastItem('Шаг 2');
                 if(Routing.params.step == 3)
-                    self.lastItem.push('Шаг 3');
+                    self.lastItem('Шаг 3');
                 if(Routing.params.step == 4)
-                    self.lastItem.push('Шаг 4');
+                    self.lastItem('Шаг 4');
             } 
             if(Routing.route == 'profile' || Routing.route == 'favorites'){
                 self.crumbs = ko.observableArray();
-                self.lastItem = ko.observableArray();
                 
-                self.lastItem.push('Личный кабинет');
+                self.lastItem('Личный кабинет');
+            }
+            
+            if(!self.lastItem()){
+                var last = self.crumbs().pop();
+                self.lastItem(last.title);
             }
 
             EventDispatcher.DispatchEvent('breadCrumbWidget.fill.item', self);
@@ -239,22 +220,14 @@ var SelectListBreadCrumbItem = function(data){
     var self = this;
     self.id = data.id;
     self.title = data.name_category;
-}
-
-var SelectListBreadCrumbItemViewModel = function(){
-    var self = this;
-    self.parentId = 0;
-    self.cssSelectList = '';
-    self.listCrumbs = ko.observableArray();
-    self.AddSelectList = function(data, id){
-        if(data){
-            for(var i = 0; i <= data.length - 1; i++){
-                    self.listCrumbs.push(new SelectListBreadCrumbItem(data[i]));
-            }
-            self.parentId = id;
-            self.cssSelectList = 'pathItem_' + id;
-            EventDispatcher.DispatchEvent('breadCrumbWidget.fill.selectList', self);
-        }
+    self.cssActiveItem = ko.computed(function(){
+        if(Routing.route == 'catalog' && self.id == Routing.GetActiveCategory())
+            return 'active';
+        return '';
+    }, this);
+    
+    self.ClickItem = function(){
+        EventDispatcher.DispatchEvent('breadCrumbWidget.click.item', {id : self.id});
     }
 }
 

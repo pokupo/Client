@@ -679,7 +679,7 @@ var RegistrationFormStep1ViewModel = function() {
         return true;
     };
     self.RestoreAccess = function() {
-        console.log('restore');
+ 
     };
 };
 

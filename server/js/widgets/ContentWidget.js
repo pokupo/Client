@@ -22,6 +22,17 @@ var ContentWidget = function(){
         paging : null,
         styleContent : null
     };
+    self.testBlock = {
+        count : 0,
+        ready : 0,
+        IsReady : function(){
+//    console.log(self.testBlock.count);
+//    console.log(self.testBlock.ready);
+            if(self.testBlock.count == self.testBlock.ready)
+                return true;
+            return false;
+        }
+    };
     self.SetInputParameters = function(){
         self.settings.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
         
@@ -100,20 +111,8 @@ var ContentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
-            if(data.typeView == 'slider'){ 
-                self.Render.Block(data);
-                new AnimateSlider(data.cssBlockContainer);
-                delete  data;
-            }
-            if(data.typeView == 'carousel'){
-                self.Render.Block(data);
-                new AnimateCarousel(data.cssBlockContainer);
-                delete  data;
-            }
-            if(data.typeView == 'tile'){
-                self.Render.Block(data);
-                delete  data;
-            }
+            self.Render.Block(data);
+            delete  data;
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.listContent', function(data){
@@ -143,23 +142,26 @@ var ContentWidget = function(){
         self.InsertContainer.Main();
         if(data.err)
             self.WidgetLoader(true);
-        for(var i = 0; i <= data.length - 1; i++){
-            Parameters.cache.contentBlock[data[i].id] = {
-                sort : i, 
-                block : data[i]
-            };
-            self.InsertContainer.Block(i, data[i].type_view);
-            
-            var query = '0/' + self.settings.countGoodsInBlock + '/name/';
-            var queryHash = data[i].id + EventDispatcher.HashCode(query);
-            
-            EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
-                self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
-            });
+        else{
+            self.testBlock.count = data.length;
+            for(var i = 0; i <= data.length - 1; i++){
+                Parameters.cache.contentBlock[data[i].id] = {
+                    sort : i, 
+                    block : data[i]
+                };
+                self.InsertContainer.Block(i, data[i].type_view);
 
-            self.BaseLoad.Content(data[i].id, query, function(data){
-                EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
-            })
+                var query = '0/' + self.settings.countGoodsInBlock + '/name/';
+                var queryHash = data[i].id + EventDispatcher.HashCode(query);
+
+                EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
+                    self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
+                });
+
+                self.BaseLoad.Content(data[i].id, query, function(data){
+                    EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
+                })
+            }
         }
     };
     self.InsertContainer = {
@@ -179,7 +181,7 @@ var ContentWidget = function(){
             if(type == 'tile'){
                 $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockTileTmpl).html());
             }
-            $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
+            $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
         List : function(type){
             $("#" + self.settings.containerId).html('');
@@ -224,6 +226,18 @@ var ContentWidget = function(){
         }
     };
     self.Render = {
+        Animate : {
+            block : ko.observableArray(),
+            Do : function(){
+                var b = self.Render.Animate.block()
+                $.each(b, function(i){
+                    if(b[i].type == 'slider')
+                        new AnimateSlider(b[i].css);
+                    if(b[i].type == 'carousel')
+                        new AnimateCarousel(b[i].css);
+                })
+            }
+        },
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
@@ -236,10 +250,15 @@ var ContentWidget = function(){
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
                 ko.applyBindings(data, $('#' + data.cssBlock)[0]);
-                $('#' + data.cssBlock).show();
+                self.Render.Animate.block.push({type: data.typeView, css : data.cssBlockContainer})
+                self.testBlock.ready = self.testBlock.ready + 1;
+
+                if(self.testBlock.IsReady()){
+                    self.WidgetLoader(true); 
+                    self.Render.Animate.Do();
+                }
             }
             delete data;
-            self.WidgetLoader(true);
         },
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){

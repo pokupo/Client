@@ -12,22 +12,32 @@
             <!-- /ko -->
             <td class="base">
                 <div>
-                    <a href="#" data-bind="click: ToHomepage"><img title="" alt="" src="http://pokupo-server.asmsoft.ru/images/br_fon_5.png" /></a>
+                    <a href="#" data-bind="click: ToHomepage">
+                        <img title="" alt="" src="http://pokupo-server.asmsoft.ru/images/br_fon_5.png" />
+                    </a>
                 </div>
             </td>
             <!-- ko foreach: crumbs -->
-            <td class="second" data-bind="css: cssItem"></td>
+            <td class="second">
+                <!-- ko if: selectList().length > 0 -->
+                <div class="breadcrumbsSubnav" data-bind="css: $parent.cssItem">
+                    <a href="#" class="default" data-bind="text: title, click: ClickItem"></a>
+                    <ul data-bind="foreach: selectList">
+                        <li><a href="#" data-bind="text: title, click: ClickItem, css: cssActiveItem"></a></li>
+                    </ul>
+                </div>
+                <!-- /ko -->
+                <!-- ko if: selectList().length == 0 -->
+                    <a href="#" class="default" data-bind="text: title, click: ClickItem"></a>
+                <!-- /ko -->
+            </td>
             <!-- /ko -->
-            <!-- ko foreach: lastItem -->
-            <td class="last" data-bind="text: $data"></td>
-            <!-- /ko -->
+            <td class="last" data-bind="text: lastItem"></td>
         </tr>
     </table>
     <div class="clear"></div>
 </script>
 
 <script type="text/html" id="breadCrumbSelectListTmpl">
-    <select data-bind="foreach: listCrumbs">
-        <option value="" data-bind="value: id, text: title"></option>
-    </select>
+
 </script>

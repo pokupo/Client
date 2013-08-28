@@ -293,7 +293,7 @@ var BlockGoodsForSellerViewModel = function(content){
         Routing.SetHash('catalog', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
-        console.log('order');
+        
     };
     self.ClickClearCurt = function(){
         var count = self.goods().length-1;

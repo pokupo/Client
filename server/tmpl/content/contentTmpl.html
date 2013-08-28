@@ -224,25 +224,17 @@
 </script>
 
 <script type="text/html" id="contentNoResultsTmpl">
-    <div class="top_content_region">
+    <div class="pageWidth">
         <h1 data-bind="text: titleBlock"></h1>
     </div>
-    <table style="width: 100%; float: left;">
-        <tr>
-            <td data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></td>
-        </tr>
-        <tr>
-            <td>
-                <div class="category_block_3">
-                    <div class="rows rows_1">
-                        <div class="row_content">
-                              <p data-bind="text:message"></p>
-                        </div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </table>
+    
+    <div class="horizontalSection" data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></div>
+    
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <p data-bind="text:message"></p>
+        </div>
+    </div>
 </script>
 
 <link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/tilescss/horizontal-search-bar.css" type="text/css">

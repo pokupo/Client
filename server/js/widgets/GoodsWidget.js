@@ -138,6 +138,7 @@ var GoodsWidget = function(){
                    $("#" + Config.Containers.catalog).hide();
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
+                new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
                 
                 if(data.ShowGallery())
                     new AnimateCarousel(Config.Goods.galleryId);

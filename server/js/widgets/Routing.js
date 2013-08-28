@@ -139,8 +139,7 @@ var Routing = {
         Parameters.cache.history.push({route:this.route, title:document.title, data:this.params});
         
         this.ParserHash();
-        
-        console.log(this.params);
+
         EventDispatcher.DispatchEvent('widget.change.route');
     },
     UpdateMoreParameters : function(opt){
