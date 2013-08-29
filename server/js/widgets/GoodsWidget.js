@@ -352,7 +352,7 @@ var GoodsMainBlockViewModel = function(data){
         self.IsFavorite(false)
     
     self.ClickFavorites = function(){
-        
+        Routing.SetHash('favorites', 'Избранное', {});
     };
     self.Gift = function(){
 

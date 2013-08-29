@@ -26,8 +26,6 @@ var ContentWidget = function(){
         count : 0,
         ready : 0,
         IsReady : function(){
-//    console.log(self.testBlock.count);
-//    console.log(self.testBlock.ready);
             if(self.testBlock.count == self.testBlock.ready)
                 return true;
             return false;

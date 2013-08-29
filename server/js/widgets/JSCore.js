@@ -21,6 +21,7 @@ var JSSettings = {
         'jquery.dynatree.min.js',
         'jquery.maskedinput.min.js',
         'jquery.textchange.min.js',
+        'lightbox.js',
         'widgets/Config.js',
         'widgets/Routing.js',
         'widgets/Paging.js',

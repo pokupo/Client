@@ -76,29 +76,12 @@ var BreadCrumbWidget = function(){
                 Routing.SetHash('catalog', data[data.length-1].name_category, Routing.GetPath(data));
             });
         });
-        
-//        EventDispatcher.AddEventListener('breadCrumbWidget.rendered.item', function(data){
-//            
-//            for(var i = 0; i <= data.crumbs().length-1; i++){ 
-//                self.BaseLoad.Section(data.crumbs()[i].id, function(sec){
-//                    self.Fill.SelectList(sec.data, sec.parentId)
-//                });
-//            }
-//        });
-        
-//        EventDispatcher.AddEventListener('breadCrumbWidget.fill.selectList', function(data){
-//            self.Render.SelectList(data);
-//        });
     };
     self.Fill = {
         BreadCrumb : function(data){
             var breadCrumb = new BreadCrumbViewModel();
             breadCrumb.AddCrumbs(data);
         }
-//        SelectList : function(data, id){
-//            var crumb = new SelectListBreadCrumbItemViewModel();
-//            crumb.AddSelectList(data, id);
-//        }
     },
     self.Render = {
         BreadCrumb : function(data){
@@ -139,8 +122,7 @@ var BreadCrumbItem = function(data){
     };
     self.AddSelectList = function(children){
         for(var i = 0; i <= children.length-1; i++){
-//            if(!Parameters.cache.crumbsTitle[children[i].id])
-                self.selectList.push(new SelectListBreadCrumbItem(children[i]));
+            self.selectList.push(new SelectListBreadCrumbItem(children[i]));
         }
     }
 }
@@ -166,7 +148,6 @@ var BreadCrumbViewModel = function(){
         Routing.SetHash(link.route, link.title, link.data, true);
     };
     self.AddCrumbs = function(data){
-//        Parameters.cache.crumbsTitle = [];
         if(data){
             for(var i = 0; i <= data.length - 1; i++){
                 var breadCrumb = new BreadCrumbItem(data[i]);
@@ -175,7 +156,6 @@ var BreadCrumbViewModel = function(){
                    breadCrumb.AddSelectList(data[i].children);
                 }
                 
-//                Parameters.cache.crumbsTitle[data[i].id] = data[i].name_category; 
                 self.crumbs.push(breadCrumb);
             } 
             
@@ -188,7 +168,6 @@ var BreadCrumbViewModel = function(){
             if(Routing.route == 'registration'){
                 self.crumbs = ko.observableArray();
                 
-//                Parameters.cache.crumbsTitle[0] = 'Регистрация покупателя';
                 self.crumbs.push(new BreadCrumbItem({id:0, name_category: 'Регистрация покупателя'}));
 
                 if(Routing.params.step == 1)
