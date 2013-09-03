@@ -1,29 +1,43 @@
 <script type="text/html" id="menuPersonalCabinetTmpl">
-    <div class="top_content_region">
-        <div class="user_block_1">
-                <div class="ava"><img title="" alt="" data-bind="attr: {src : avatar}"/></div>
-                <div class="name"><a href="#" data-bind="text: username, click: ClickProfile"></a></div>
-            </div>
+    <div class="pageWidth">
+        <div class="accountBox">
+             <table cellpadding="0" cellspacing="0">
+                <tr>
+                    <td class="accountPhotoCell">
+                        <img title="" alt="" data-bind="attr: {src : avatar}" align="left" style="margin-right:15px;" />
+                    </td>
+                    <td class="accountInfoCell">
+                        <h1><a href="#" data-bind="text: username, click: ClickProfile"></a></h1>
+                    </td>
+                </tr>
+            </table>
         </div>
-    <div class="profile_menu_1">
-        <div class="content">
-            <a href="#" class="link" data-bind="click: ClickBecomeSeller">Стать продавцом</a>
-            <ul>
+    </div>
+    
+    <div class="pageWidth">
+        <div class="tabsBox">
+            <ul class="tabsTitles">
                 <li class="first" data-bind="css: activeProfile"><a href="#" data-bind="click: ClickProfile"><span>Профиль</span></a></li>
                 <li data-bind="css: activePurchases "><a href="#" data-bind="click: ClickPurchases"><span>Мои покупки</span></a></li>
                 <!--<li data-bind="css: activeAuction"><a href="#" data-bind="click: ClickAuction"><span>Аукционы</span></a></li>-->
                 <li data-bind="css: activeFavorites"><a href="#" data-bind="click: ClickFavorites"><span>Избранное</span></a></li>
                 <li data-bind="css: activeCart"><a href="#" data-bind="click: ClickCart"><span>Корзина</span></a></li>
                 <li data-bind="css: activeMessages" class="last"><a href="#" data-bind="click: ClickMessages"><span>Сообщения</span><span class="count">+6</span></a></li>
+                <li class="rightLink" ><a href="#" class="link" data-bind="click: ClickBecomeSeller">Стать продавцом</a></li>
+                <div class="clear"></div>
             </ul>
         </div>
     </div>
     <!-- ko if: subMenu().length > 0 -->
-    <div class="profile_menu_3">
-        <div class="content">
-            <ul data-bind="foreach: subMenu">
-                <li data-bind="css: activeSubMenu"><a href="#" data-bind="click: ClickSubMenu, text: title"></a></li>
-            </ul>
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <div class="tabsContent active">
+                <div class="tabsSubnav">
+                    <!-- ko foreach: subMenu -->
+                    <a href="#" data-bind="css: activeSubMenu, click: ClickSubMenu, text: title"></a>
+                    <!-- /ko -->
+                </div>
+            </div>
         </div>
     </div>
     <!-- /ko -->

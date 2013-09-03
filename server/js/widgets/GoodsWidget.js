@@ -136,12 +136,12 @@ var GoodsWidget = function(){
                 self.InsertContainer.Content();
                 if(Config.Containers.catalog)
                    $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
+                new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
                 
                 if(data.ShowGallery())
-                    new InitCarousel(Config.Goods.galleryId);
+                    new AnimateCarousel(Config.Goods.galleryId);
             }
             self.AddGoodsInCookie(data);
             delete data;
@@ -352,7 +352,7 @@ var GoodsMainBlockViewModel = function(data){
         self.IsFavorite(false)
     
     self.ClickFavorites = function(){
-        
+        Routing.SetHash('favorites', 'Избранное', {});
     };
     self.Gift = function(){
 

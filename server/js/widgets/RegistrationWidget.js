@@ -318,27 +318,15 @@ var RegistrationWidget = function() {
     };
     self.InsertContainer = {
         Step1: function() {
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep1TmplId).html());
         },
         Step2: function() {
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep2TmplId).html());
         },
         Step3: function() {
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep3TmplId).html());
         },
         Step4: function() {
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep4TmplId).html());
         }
     };
@@ -691,7 +679,7 @@ var RegistrationFormStep1ViewModel = function() {
         return true;
     };
     self.RestoreAccess = function() {
-        console.log('restore');
+ 
     };
 };
 

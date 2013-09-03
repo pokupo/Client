@@ -154,19 +154,11 @@ var CartGoodsWidget = function(){
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                if(Config.Containers.catalog)
-                       $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
             self.WidgetLoader(true);
         },
         EmptyCart : function(){
-            if($("#" + self.settings.containerId).length > 0){
-                if(Config.Containers.catalog)
-                       $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-            }
             self.WidgetLoader(true);
         }
     };
@@ -286,7 +278,7 @@ var BlockGoodsForSellerViewModel = function(content){
             Routing.SetHash('catalog', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
-        console.log('order');
+
     };
     self.ClickClearCurt = function(){
         var count = self.goods().length-1;

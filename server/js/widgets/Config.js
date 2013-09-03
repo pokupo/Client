@@ -10,7 +10,7 @@ var Config = {
         geoPathApi : "/api/geo/", // префикс API гео локации
         pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
-        sortingBlockContainer : '.sorting_block', // id раскрывающегося списка сортировки товаров
+        sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
         containerIdForTmpl : "container_tmpl", // id контейнера в который будут загружены все шаблоны
         loading : "/loading50.gif", // иконка загрузщика
         title : 'Pokupo', // заголовок страницы по умолчанию
@@ -33,6 +33,7 @@ var Config = {
         search  : 'search_block', // id контейнера формы поиска 
         breadCrumbs : ['breadCrumb_1','breadCrumb_2'], // id контейнеров хлебных крошек
         content : 'content', // id контейнера контента
+        block : 'block',
         searchResult : ['advanced_search', 'content'], // id контейнеров расширенной формы и результатов поиска
         goods : 'content', // id контейнера информации о товаре
         userInformation : 'user_information', // id контейнера информации о пользователе
@@ -41,7 +42,7 @@ var Config = {
         cart : 'cart_information', // id контейнера корзины
         cartGoods : 'content', // id контейнера реестра товаров корзины
         profile : 'content', // id контейнера меню профиля и содержимого
-        menuPersonalCabinet : 'advanced_search',
+        menuPersonalCabinet : 'profile_menu',
         favorites : 'content' // id контейнера избранного
     },
     Goods : {
@@ -77,7 +78,9 @@ var Config = {
     Catalog : {
         tmpl : {
             path : "catalog/catalogTmpl.html", // путь к шаблонам
-            tmplId : "catalogTmpl" // id шаблона виджета каталога по умолчанию
+            mainPath : "content/mainTmpl.html", // путь к шаблонам
+            tmplId : "catalogTmpl", // id шаблона виджета каталога по умолчанию
+            blockMainTmplId : 'blockMainTmpl'
         },
         style : { // стиль блока
             'position' : 'absolute', 
@@ -109,8 +112,10 @@ var Config = {
             filter : 'Товаров по ключу "%%filterName%%" не найдено' // сообщение в случае отсутствия товаров после фильтрации
         },
         tmpl: {
+            mainPath : "content/mainTmpl.html", // путь к шаблонам
             pathBlock : "content/blockTmpl.html", // файл шаблона промо блоков
             pathList : "content/contentTmpl.html", // файл шаблона реестра товаров
+            blockMainTmpl : "blockMainTmpl",
             blockSliderTmpl : "blockSliderTmpl", // id шаблона слайдера (промо)
             blockCaruselTmpl : "blockCaruselTmpl", // id шаблона карусели (промо)
             blockTileTmpl : "blockTileTmpl", // id шаблона плитки (промо)
@@ -121,6 +126,7 @@ var Config = {
         },
         countGoodsInBlock : 6,  // кол-во товаров выводимых в блоке по умолчанию
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
+        sortList : [{name: 'rating', title: 'рейтингу'}, {name: 'name', title: 'названию'}, {name: 'cost', title: 'цене'}],
         orderBy : 'name', // сортировка по умолчанию
         style : { // стиль блока 
             'position' : 'absolute', 
@@ -159,6 +165,7 @@ var Config = {
         },
         idAdvancedSearchForm : "advancedSearch", // id расширенной формы
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
+        sortList : [{name: 'rating', title: 'рейтингу'}, {name: 'name', title: 'названию'}, {name: 'cost', title: 'цене'}],
         listTypeSearch : { // тип поиска 
             any : 'Любое из слов',
             all : 'Все слова'
@@ -218,8 +225,7 @@ var Config = {
         https : "always", // always, never, login
         tmpl : {
             path : "authentication/authenticationTmpl.html", // файл шаблонов
-            authFormTmplId : "authenticationFormTmpl", //id шаблона формы авторизации
-            authSidebarTmplId : "authenticationSidebarTmpl" //id шаблона левого блока
+            authFormTmplId : "authenticationFormTmpl" //id шаблона формы авторизации
         },
         message : {
             pleaseLogIn : 'Необходимо авторизоваться.',

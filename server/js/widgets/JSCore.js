@@ -21,14 +21,18 @@ var JSSettings = {
         'jquery.dynatree.min.js',
         'jquery.maskedinput.min.js',
         'jquery.textchange.min.js',
+        'lightbox.js',
         'widgets/Config.js',
         'widgets/Routing.js',
         'widgets/Paging.js',
         'widgets/ContentViewModel.js',
         'widgets/Widget.js',
-        'widgets/Slider.js',
-        'widgets/Carousel.js',
-        'widgets/AnimateAddToCart.js'],
+        'widgets/AnimateSlider.js',
+        'widgets/AnimateCarousel.js',
+        'widgets/AnimateAddToCart.js',
+        'widgets/AnimateSelectList.js',
+        'widgets/AnimateBreadCrumb.js',
+        'widgets/AnimateTab.js'],
     inputParameters : {}
 }
 

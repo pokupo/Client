@@ -190,19 +190,11 @@ var FavoritesWidget = function() {
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                if(Config.Containers.catalog)
-                       $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
             self.WidgetLoader(true);
         },
         EmptyFaforites : function(){
-            if($("#" + self.settings.containerId).length > 0){
-                if(Config.Containers.catalog)
-                       $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-            }
             self.WidgetLoader(true);
         }
     };

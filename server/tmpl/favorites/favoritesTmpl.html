@@ -7,115 +7,115 @@
     }
 </style>
 <script type="text/html" id="favoritesTmpl">
-    <div class="favorites_block">
-        <div class="content">
-            <!-- ko foreach: content -->
-                <!-- ko if: showSellerInfo -->
-                    <table style="width: 1200px;margin: 0 auto;" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerForCartTmpl', id: 'infoSellerForCartTmpl'}}}"></table>
-                <!-- /ko -->
+    <!-- ko foreach: content -->
+        <!-- ko if: showSellerInfo -->
+            <div class="horizontalSection">
+                <div class="pageWidth">
+                    <br/>
+                    <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerTmpl', id: 'infoSellerTmpl'}}}"></div>
+                </div>
+            </div>
+        <!-- /ko -->
 
-                <table style="float: left; width: 100%;">
+        <!--  ko template: { name: 'favoritesHeaderBlockTmpl' } --><!-- /ko -->
 
-                    <!--  ko template: { name: 'favoritesHeaderBlockTmpl' } --><!-- /ko -->
+        <!-- ko foreach: goods -->
+           <!-- ko template: { name: 'favoritesGoodsBlockTmpl' } --><!-- /ko -->
+        <!-- /ko -->
 
-                    <!-- ko foreach: goods -->
-                       <!-- ko template: { name: 'favoritesGoodsBlockTmpl' } --><!-- /ko -->
-                    <!-- /ko -->
+        <!--  ko template: { name: 'favoritesFooterBlockTmpl' } --><!-- /ko -->
 
-                    <!--  ko template: { name: 'favoritesFooterBlockTmpl' } --><!-- /ko -->
+    <!-- /ko -->
+</script>
 
+<script type="text/html" id="favoritesHeaderBlockTmpl">
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <div class="itemsListTableRow cartList">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td class="itemsListTableCell col_1">
+                            <input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/>
+                        </td>
+                        <td class="itemsListTableCell col_2">Товар:</td>
+                        <td class="itemsListTableCell col_3"></td>
+                        <td class="itemsListTableCell col_4">Цена</td>
+                        <td class="itemsListTableCell col_5"></td>
+                    </tr>
                 </table>
-            <!-- /ko -->
+            </div>
         </div>
     </div>
 </script>
 
-<script type="text/html" id="favoritesHeaderBlockTmpl">
-    <tr>
-        <td>
-            <div class="table_row">
-                <div class="row_center">
-                    <table>
-                        <tr>
-                            <td class="row_1">
-                                <span class="head_1">Товар:
-                                    <div class=""><input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/></div>
-                                </span></td>
-                            <td class="row_2"></td>
-                            <td class="row_3"></td>
-                            <td class="row_4"><span class="head_2">Цена (руб.):</span></td>
-                            <td class="row_5"></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </td>
-    </tr>
-</script>
-
 <script type="text/html" id="favoritesGoodsBlockTmpl">
-    <tr>
-        <td>
-            <div class="table_row">
-                <div class="row_center">
-                    <table>
-                        <tr>
-                            <td class="row_1"><input type="checkbox" name="" value="" data-bind="checked: isSelected, value: id"/></td>
-                            <td class="row_2">
+    <div class="horizontalSection">
+        <div class="pageWidth">
+             <div class="itemsListTableRow cartList">
+                 <table cellpadding="0" cellspacing="0" width="100%" class="textInfoBlock">
+                    <tr>
+                        <td class="itemsListTableCell col_1"><input type="checkbox" name="" value="" data-bind="checked: isSelected, value: id"/></td>
+                        <td class="itemsListTableCell col_2">
+                            <div class="photo">
                                 <a href="#" data-bind="click: ClickGoods">
                                     <img title="" alt="" src="" data-bind="attr: {src: routeImages, title: fullName, id : cssToCart }"/>
                                 </a>
-                            </td>
-                            <td class="row_3">
-                                <span><a href="#" data-bind="text: fullName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></span>
-                                <a href="#" class="del" data-bind="click: ClickRemove">Удалить из избранного</a>
-                            </td>
-                            <td class="row_4">
-                                <span>
-                                    <!--ko text: sellEndCost --><!--/ko--> руб.
-                                    <!-- ko if: (sellCost && sellEndCost() != sellCost() ) -->
-                                    <span><!--ko text: sellCost --><!--/ko--> руб.</span>
-                                    <!-- /ko -->
-                                </span>
-                                <!-- <span class="end_cost" data-bind="text: sellCost"></span>-->
-                            </td>
-                            <td class="row_5">
-                                <!-- ko if: showAddToCart --> 
-                                    <a href="#" class="bay_link" data-bind="click: AddToCart">В корзину</a> 
-                                <!-- /ko -->
-                                <!-- ko if: showBuy --> 
-                                    <a href="#" class="bay_link" data-bind="click: Buy">Купить</a>
-                                <!-- /ko -->
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                            </div>
+                        </td>
+                        <td class="itemsListTableCell col_3">
+                            <div class="title"><a href="#" data-bind="text: fullName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></div>
+                            <a href="#" class="action del" data-bind="click: ClickRemove">Удалить из избранного</a>
+                        </td>
+                        <td class="itemsListTableCell col_4">
+                            <span class="priceSingle">
+                                <!--ko text: sellEndCost --><!--/ko--> руб.
+                            </span>
+                        </td>
+                        <td class="itemsListTableCell col_5">
+                            <div class="addToCartBlock">
+                            <!-- ko if: showAddToCart --> 
+                                <a href="#" class="bay" data-bind="click: AddToCart">В корзину</a> 
+                            <!-- /ko -->
+                            <!-- ko if: showBuy --> 
+                                <a href="#" class="bay" data-bind="click: Buy">Купить</a>
+                            <!-- /ko -->
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
-        </td>
-    </tr>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="favoritesFooterBlockTmpl">
-    <tr>
-        <td>
-            <div class="result">
-                <span>Действия для выбраного:</span>
-                <!-- ko if: DisabledButton -->
-                    <input class="form_submit_del" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
-                <!-- /ko -->
-                <!-- ko ifnot: DisabledButton -->
-                    <input class="form_submit_del" disabled="disabled" type="submit" value="Удалить"/>
-                <!-- /ko -->
-                <a href="#" data-bind="click: ClickClearFavorites">Очистить избранное от товаров</a>
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <div class="cartActionBlock">
+                <div class="result">
+                    <div class="result_left">
+                        <span>Действия для выбраного:</span>
+                            <div class="buttons">
+                            <!-- ko if: DisabledButton -->
+                                <input class="addButtonSmall" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
+                            <!-- /ko -->
+                            <!-- ko ifnot: DisabledButton -->
+                                <input class="addButtonSmall" disabled="disabled" type="submit" value="Удалить"/>
+                            <!-- /ko -->
+                        </div>
+                        <a href="#" data-bind="click: ClickClearFavorites">Очистить избранное от товаров</a>
+                    </div>
+                </div>
             </div>
-        </td>
-    </tr>
+            <div class="clear"></div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="emptyFavoritesTmpl">
-    <div class="basket_block">
-        <div class="content">
-            <p>В корзине нет ни одного товара.</p>
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <p>В избранном нет ни одного товара.</p>
         </div>
     </div>
 </script>
