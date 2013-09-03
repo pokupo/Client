@@ -155,6 +155,8 @@ function Widget(){
     this.SelfInit = function(){
         if(!this.isReady){
             this.isReady = true;
+            if(document.location.protocol == 'https:')
+                Config.Base.hostApi = Config.Base.httpsHostApi;
             self.settings = {
                 hostApi : Config.Base.hostApi,
                 httpsHostApi : Config.Base.httpsHostApi,
