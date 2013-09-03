@@ -142,6 +142,7 @@ var ContentWidget = function(){
             self.WidgetLoader(true);
         else{
             self.testBlock.count = data.length;
+            self.testBlock.ready = 0;
             for(var i = 0; i <= data.length - 1; i++){
                 Parameters.cache.contentBlock[data[i].id] = {
                     sort : i, 
@@ -227,13 +228,18 @@ var ContentWidget = function(){
         Animate : {
             block : ko.observableArray(),
             Do : function(){
-                var b = self.Render.Animate.block()
-                $.each(b, function(i){
-                    if(b[i].type == 'slider')
-                        new AnimateSlider(b[i].css);
-                    if(b[i].type == 'carousel')
-                        new AnimateCarousel(b[i].css);
-                })
+                if(Loader.IsReady()){
+                    var b = self.Render.Animate.block()
+                    $.each(b, function(i){
+                        if(b[i].type == 'slider')
+                            new AnimateSlider(b[i].css);
+                        if(b[i].type == 'carousel')
+                            new AnimateCarousel(b[i].css);
+                    })
+                }
+                else{
+                    setTimeout(function(){self.Render.Animate.Do()}, 100);
+                }
             }
         },
         List : function(data){

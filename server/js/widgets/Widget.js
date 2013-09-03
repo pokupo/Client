@@ -89,8 +89,13 @@ var Loader = {
             this.readyCount = this.readyCount + 1;
         }
     },
+    IsReady : function(){
+        if(this.countAll == this.readyCount)
+            return true;
+        return false;
+    },
     ShowLoading : function(){
-        if(this.countAll != this.readyCount){
+        if(!this.IsReady()){
             this.HideContent();
             if($('#loadingContainer').length == 0)
                 $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
