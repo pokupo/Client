@@ -114,6 +114,8 @@ var JSCore = {
     isReady : false,
     shopId : null,
     Init : function(){
+        if(document.location.protocol == 'https:')
+            JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
         JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.SetInputParameters();
         JSCore.shopId = JSSettings.inputParameters['shopId'];
