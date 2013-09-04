@@ -143,6 +143,7 @@ var ContentWidget = function(){
         else{
             self.testBlock.count = data.length;
             self.testBlock.ready = 0;
+            self.Render.Animate.block = ko.observableArray();
             for(var i = 0; i <= data.length - 1; i++){
                 Parameters.cache.contentBlock[data[i].id] = {
                     sort : i, 
