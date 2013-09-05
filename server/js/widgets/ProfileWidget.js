@@ -148,7 +148,7 @@ var ProfileWidget = function() {
         });
         
         EventDispatcher.AddEventListener('ProfileWidget.submit.token', function(token){
-            var user = JSON.parse(Parameters.cache.userInformation);
+            var user = Parameters.cache.userInformation;
             var params = [];
             params.push('username=' + encodeURIComponent(user.login));
             if (token.type == 'mail')
@@ -962,7 +962,7 @@ var ProfileDataRegistrationViewModel = function(){
     
     self.AddContent = function(data){
         self.data = data
-        var user = JSON.parse(Parameters.cache.userInformation);
+        var user = Parameters.cache.userInformation;
         self.username(user.login);
         self.gender(data.gender);
         self.lastName(data.f_name);
@@ -1171,7 +1171,7 @@ var ProfileContactsViewModel = function(){
     self.phoneIsConfirm = ko.observable(false);
     
     self.AddContent = function(){
-        var user = JSON.parse(Parameters.cache.profile.info);
+        var user = Parameters.cache.profile.info;
         if(user.confirm_phone == 'yes')
             self.phoneIsConfirm(true);
         if(user.confirm_email == 'yes')

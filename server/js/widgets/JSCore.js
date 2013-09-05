@@ -1,14 +1,24 @@
 var JSSettings = {
+    //    protocolHTTP : 'http://',
+//    protocolHTTPS : 'https://',
+//    host : "dev.pokupo.ru/",
+//    pathToJS : "server/js/",
+//    pathToTmpl : "server/tmpl/",
+//    pathToData : "server/services/DataProxy.php?query=",
+//    pathToPostData : "server/services/DataPostProxy.php",
+//    pathToCore: "server/index.html",
+//    pathToPostCore : 'server/postData.html',
+    
     protocolHTTP : 'http://',
-    protocolHTTPS : 'https://',
-    host : "dev.pokupo.ru/",
-    pathToJS : "server/js/",
-    pathToTmpl : "server/tmpl/",
-    pathToData : "server/services/DataProxy.php?query=",
-    pathToPostData : "server/services/DataPostProxy.php",
-    pathToCore: "server/index.html",
-    pathToPostCore : 'server/postData.html',
-
+    protocolHTTPS : 'https://',       
+    host : "pokupo-server.asmsoft.ru/",    
+    pathToJS : "js/",
+    pathToTmpl : "tmpl/",
+    pathToData : "services/DataProxy.php?query=",
+    pathToPostData : "services/DataPostProxy.php",
+    pathToCore: "index.html",
+    pathToPostCore : 'postData.html',
+    
     scripts : [
         'jquery-ui-1.10.2.custom.min.js',
         'easyXDM.min.js',
@@ -151,6 +161,7 @@ var JSCore = {
 
 var XDMTransport = {
     remote : "",
+    event : {},
     Init: function(url){
         XDMTransport.remote = url;
     },
@@ -160,45 +171,57 @@ var XDMTransport = {
        else
            return JSSettings.protocolHTTP;
     },
+    EventExecute : function(msg, hash){
+       $.each(XDMTransport.event[hash], function(i){
+           XDMTransport.event[hash][i](msg);
+       })
+           
+       delete XDMTransport.event[hash];
+    },
     LoadTmpl: function(data, callback){
-        XDMTransport.Load(JSSettings.pathToTmpl + data, callback);
+        $.ajax({
+            type: "GET",
+            async : true,
+            url: decodeURIComponent(XDMTransport.GetProtocol() +  JSSettings.host +  JSSettings.pathToTmpl + data),
+            dataType: 'html',
+            success: function(msg) {
+                 if(callback)callback(msg);
+            }
+        })
     },
     LoadData: function(data, callback, protocol){
-        XDMTransport.Load(JSSettings.pathToData + data, callback, protocol);
+        XDMTransport.Load(data, callback, protocol);
     },
     Load : function(data, callback, protocol){
-        if(typeof easyXDM !== 'undefined'){
-            var socket = new  easyXDM.Socket({
-                remote: XDMTransport.GetProtocol(protocol) + XDMTransport.remote,
-                onMessage: function(msg) {
-                    if(callback)callback(msg);
+        var hash = EventDispatcher.HashCode(data + callback.toString());
+        
+        if(XDMTransport.event[hash] == undefined)
+            XDMTransport.event[hash] = [];
+        XDMTransport.event[hash].push(callback);
+        
+        if(XDMTransport.event[hash].length == 1){
+            $.ajax({
+                type: "GET",
+                async : true,
+                url: decodeURIComponent(data),
+                dataType: 'json',
+                success: function(msg) {
+                    XDMTransport.EventExecute(msg, hash);
                 }
-            });
-            socket.postMessage(data);
-        }
-        else{
-            setTimeout(function(){XDMTransport.Load(data, callback)}, 1000);
+            })
         }
     },
     LoadPost : function(data, protocol){
-        if(typeof easyXDM !== 'undefined'){
-            var remote = new easyXDM.Rpc({
-                remote: XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostCore,
-                onReady: function(){
-                    data.attr('action', XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostData);
-                    data.submit(); 
-                }
-            }, {
-                local: {
-                    returnUploadResponse: function(response){
-                        EventDispatcher.DispatchEvent(EventDispatcher.HashCode(data.toString()), response.msg);
-                    }
-                }
-            });
-        }
-        else{
-            setTimeout(function(){XDMTransport.LoadPost(data, callback)}, 1000);
-        }
+        var url = data.find('input#registration_data_query').val();
+        $.ajax({
+            type: "POST",
+            async : false,
+            url: decodeURIComponent(url),
+            dataType: 'json',
+            success: function(msg) {
+                 EventDispatcher.DispatchEvent(EventDispatcher.HashCode(data.toString()), msg);
+            }
+        })
     }
 }
 

@@ -324,7 +324,7 @@ var GoodsMainBlockViewModel = function(data){
 
     };
     self.AddFavorites = function(){
-        if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
+        if(Parameters.cache.userInformation != null && !Parameters.cache.userInformation.err)
             self.AddCommentForm();
         else
             self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);

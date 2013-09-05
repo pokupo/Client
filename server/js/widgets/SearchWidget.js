@@ -66,7 +66,7 @@ var SearchWidget = function(){
         var search = new SearchViewModel();
         search.selectedCategory = data.name_category;
         if(Parameters.cache.childrenCategory[data.id])
-            search.AddListCategory(JSON.parse(Parameters.cache.childrenCategory[data.id]), data);
+            search.AddListCategory(Parameters.cache.childrenCategory[data.id], data);
     };
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){

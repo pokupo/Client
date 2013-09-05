@@ -424,7 +424,7 @@ var ListContentViewModel = function(settings){
        self.message = message; 
     };
     self.AddCategoryInfo = function(categoryId){
-        var data = JSON.parse(Parameters.cache.infoCategory[categoryId]);
+        var data = Parameters.cache.infoCategory[categoryId];
         self.id            = data.id;
         self.titleBlock    = data.name_category;
         if(Parameters.cache.typeView){
