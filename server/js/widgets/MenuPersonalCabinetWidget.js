@@ -28,6 +28,9 @@ var MenuPersonalCabinetWidgetWidget = function(){
             self.InsertContainer();
             self.Fill();
         }
+        else{
+            $("#" + self.settings.containerMenuId).empty()
+        }
     };
     self.RegisterEvents = function() {
         self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
@@ -67,7 +70,7 @@ var MenuPersonalCabinetWidgetWidget = function(){
 var MenuPersonalCabinetViewModel = function(){
     var self = this;
     self.subMenu = ko.observableArray();
-    var user = JSON.parse(Parameters.cache.userInformation);
+    var user = Parameters.cache.userInformation;
     self.avatar = Parameters.pathToImages + user.route_icon_user;
     self.username = user.login;
     

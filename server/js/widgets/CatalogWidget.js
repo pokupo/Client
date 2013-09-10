@@ -9,28 +9,45 @@ var CatalogWidget = function(){
         styleCatalog : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.catalog;
+        self.settings.containerId = Config.Containers.content;
+        self.settings.catalogContainerId = Config.Containers.catalog;
         self.settings.tmplPath = Config.Catalog.tmpl.path;
+        self.settings.mainTmplPath = Config.Catalog.tmpl.mainPath;
         self.settings.tmplId = Config.Catalog.tmpl.tmplId;
+        self.settings.blockMainTmpl = Config.Catalog.tmpl.blockMainTmplId;
         self.settings.styleCatalog = Config.Catalog.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/CatalogWidget.js/);
+            if(temp.catalog){
+                input = temp.catalog;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.catalog){
+            input = WParameters.catalog;
+        }
+        self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){
 
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
+            self.BaseLoad.Tmpl(self.settings.mainTmplPath, function(){
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
+                    EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
+                });
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
+                self.BaseLoad.Tmpl(self.settings.mainTmplPath, function(){
+                    self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
+                        EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
+                    });
                 });
             });
         }
@@ -41,7 +58,6 @@ var CatalogWidget = function(){
             }
             else{
                 self.WidgetLoader(true);
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             }
         });
         
@@ -51,8 +67,9 @@ var CatalogWidget = function(){
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
             if(Routing.route == 'catalog'){
-                if(Routing.IsSection())
+                if(Routing.IsSection()){
                     self.WidgetLoader(false);
+                }
                 else
                     self.WidgetLoader(true);
 
@@ -60,10 +77,16 @@ var CatalogWidget = function(){
             }
         });
     };
+    self.InsertContainer = {
+        Main : function(){
+            if($("#" + self.settings.catalogContainerId).length == 0){
+                $("#" + self.settings.containerId).html($('script#' + self.settings.blockMainTmpl).html());
+            }
+        }
+    },
     self.Update = function(){
         if(Routing.IsSection() && !Parameters.cache.catalogs[Routing.GetActiveCategory()]){
-                $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
-                $("#" + self.settings.containerId).show();
+                self.InsertContainer.Main();
                 self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
                     
                     self.BaseLoad.Path(Routing.GetActiveCategory(), function(path){
@@ -74,7 +97,7 @@ var CatalogWidget = function(){
                                 name_category : path[path.length-1].name_category,
                                 type_category : 'section',
                                 back : 'return',
-                                children : JSON.parse(Parameters.cache.childrenCategory[Routing.GetActiveCategory()])
+                                children : Parameters.cache.childrenCategory[Routing.GetActiveCategory()]
                             }
                             self.Fill.Tree(parent);
                         }
@@ -85,12 +108,10 @@ var CatalogWidget = function(){
                 })
             }
             else if(Routing.IsSection() || Parameters.cache.catalogs[Routing.GetActiveCategory()]){
-                $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
-                $("#" + self.settings.containerId).show();
-                self.Fill.Tree(JSON.parse(Parameters.cache.roots));
+                self.InsertContainer.Main();
+                self.Fill.Tree(Parameters.cache.roots);
             }
             else{
-                $("#" + self.settings.containerId).empty();
                 self.WidgetLoader(true);
             }
     }
@@ -104,11 +125,11 @@ var CatalogWidget = function(){
         }
     };
     self.Render = {
-        Tree : function(data){
-            if($("#" + self.settings.containerId).length > 0){
-                $("#" + self.settings.containerId).empty();
-                $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
-                ko.applyBindings(data, $('#' + self.settings.containerId )[0]);
+        Tree : function(data){ 
+            if($("#" + self.settings.catalogContainerId).length > 0){
+                $("#" + self.settings.catalogContainerId).empty();
+                $("#" + self.settings.catalogContainerId).append($('script#' + self.settings.tmplId).html());
+                ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
             }
             self.WidgetLoader(true);
         }
@@ -120,7 +141,7 @@ var CatalogWidget = function(){
                     self.settings.styleCatalog[key] = self.settings.inputParameters[key];
             }
             $().ready(function(){
-                $('#' + self.settings.containerId).css(self.settings.styleCatalog);
+                $('#' + self.settings.catalogContainerId).css(self.settings.styleCatalog);
             });
         }
     }
@@ -190,7 +211,7 @@ var SectionViewModel = function(data){
             Routing.SetHash('catalog', data.name_category, params);
         }
         else{
-            var path = JSON.parse(Parameters.cache.path[self.id]).path;
+            var path = Parameters.cache.path[self.id].path;
             params = {section : path[path.length-2].id};
             Routing.SetHash('catalog', path[path.length-2].name_category, params);
         }

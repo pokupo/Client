@@ -22,24 +22,46 @@ var ContentWidget = function(){
         paging : null,
         styleContent : null
     };
+    self.testBlock = {
+        count : 0,
+        ready : 0,
+        IsReady : function(){
+            if(self.testBlock.count == self.testBlock.ready)
+                return true;
+            return false;
+        }
+    };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/ContentWidget.js/);
+            if(temp.content){
+                input = temp.content;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.content){
+            input = WParameters.content;
+        }
         
-        if(self.settings.inputParameters.block){
-            self.settings.countGoodsInBlock = JSON.parse(self.settings.inputParameters.block).count;
+        if(!$.isEmptyObject(input)){
+            if(input.block){
+                self.settings.countGoodsInBlock = input.block.count;
+            }
+            if(input.content){
+                if(input.content.defaultCount)
+                    self.settings.paging.itemsPerPage = input.content.defaultCount;
+                if(input.content.list)
+                    self.settings.listPerPage = input.content.list;
+            }
         }
-        if(self.settings.inputParameters.content){
-            var content = JSON.parse(self.settings.inputParameters.content)
-            if(content.defaultCount)
-                self.settings.paging.itemsPerPage = content.defaultCount;
-            if(content.list)
-                self.settings.listPerPage = content.list;
-        }
+        self.settings.inputParameters = input;
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content;
+        self.settings.blockContainerId = Config.Containers.block;
         self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
         self.settings.tmplForContent = Config.Content.tmpl.pathList;
+        self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;
         self.settings.blockSliderTmpl = Config.Content.tmpl.blockSliderTmpl;
         self.settings.blockCaruselTmpl = Config.Content.tmpl.blockCaruselTmpl;
         self.settings.blockTileTmpl = Config.Content.tmpl.blockTileTmpl;
@@ -98,35 +120,13 @@ var ContentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.block', function (data){
-            if(data.typeView == 'slider'){ 
-                self.Render.Block(data);
-                new InitSlider(data.cssBlockContainer);
-                delete  data;
-            }
-            if(data.typeView == 'carousel'){
-                self.Render.Block(data);
-                new InitCarousel(data.cssBlockContainer);
-                delete  data;
-            }
-            if(data.typeView == 'tile'){
-                self.Render.Block(data);
-                delete  data;
-            }
+            self.Render.Block(data);
+            delete  data;
         });
         
         EventDispatcher.AddEventListener('contentWidget.fill.listContent', function(data){
             self.InsertContainer.List(data.typeView);
             self.Render.List(data);
-            
-            $(Parameters.sortingBlockContainer + ' .sort select').sSelect({
-                defaultText: Parameters.listSort[data.filters.orderBy]
-            }).change(function(){
-                self.WidgetLoader(false);
-                data.filters.orderBy = $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue();
-                
-                Routing.UpdateMoreParameters({orderBy : data.filters.orderBy});
-                Routing.UpdateHash({page : 1});
-            });
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
@@ -148,40 +148,51 @@ var ContentWidget = function(){
         });
     };
     self.CheckData = function(data){
-        $("#" + self.settings.containerId).html('');
+        self.InsertContainer.Main();
         if(data.err)
             self.WidgetLoader(true);
-        for(var i = 0; i <= data.length - 1; i++){
-            Parameters.cache.contentBlock[data[i].id] = {
-                sort : i, 
-                block : data[i]
-            };
-            self.InsertContainer.Block(i, data[i].type_view);
-            
-            var query = '0/' + self.settings.countGoodsInBlock + '/name/';
-            var queryHash = data[i].id + EventDispatcher.HashCode(query);
-            
-            EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
-                self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
-            });
+        else{
+            self.testBlock.count = data.length;
+            self.testBlock.ready = 0;
+            self.Render.Animate.block = ko.observableArray();
+            for(var i = 0; i <= data.length - 1; i++){
+                Parameters.cache.contentBlock[data[i].id] = {
+                    sort : i, 
+                    block : data[i]
+                };
+                self.InsertContainer.Block(i, data[i].type_view);
 
-            self.BaseLoad.Content(data[i].id, query, function(data){
-                EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
-            })
+                var query = '0/' + self.settings.countGoodsInBlock + '/name/';
+                var queryHash = data[i].id + EventDispatcher.HashCode(query);
+
+                EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
+                    self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
+                });
+
+                self.BaseLoad.Content(data[i].id, query, function(data){
+                    EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
+                })
+            }
         }
     };
     self.InsertContainer = {
+        Main : function(){
+            if($('#' + self.settings.blockContainerId).length == 0)
+                $("#" + self.settings.containerId).html($('script#' + self.settings.blockMainTmpl).html());
+            else
+                $('#' + self.settings.blockContainerId).empty();
+        },
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settings.containerId).append($('script#' + self.settings.blockSliderTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockSliderTmpl).html());
             }
             if(type == 'carousel'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.blockCaruselTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockCaruselTmpl).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.blockTileTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockTileTmpl).html());
             }
-            $("#" + self.settings.containerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort).hide();
+            $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
         List : function(type){
             $("#" + self.settings.containerId).html('');
@@ -226,10 +237,28 @@ var ContentWidget = function(){
         }
     };
     self.Render = {
+        Animate : {
+            block : ko.observableArray(),
+            Do : function(){
+                if(Loader.IsReady()){
+                    var b = self.Render.Animate.block()
+                    $.each(b, function(i){
+                        if(b[i].type == 'slider')
+                            new AnimateSlider(b[i].css);
+                        if(b[i].type == 'carousel')
+                            new AnimateCarousel(b[i].css);
+                    })
+                }
+                else{
+                    setTimeout(function(){self.Render.Animate.Do()}, 100);
+                }
+            }
+        },
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                var f = data.filters;
+                new AnimateSelectList(f.sort.cssSortList);
             }
             delete data;
             self.WidgetLoader(true);
@@ -237,14 +266,18 @@ var ContentWidget = function(){
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
                 ko.applyBindings(data, $('#' + data.cssBlock)[0]);
-                $('#' + data.cssBlock).show();
+                self.Render.Animate.block.push({type: data.typeView, css : data.cssBlockContainer})
+                self.testBlock.ready = self.testBlock.ready + 1;
+
+                if(self.testBlock.IsReady()){
+                    self.WidgetLoader(true); 
+                    self.Render.Animate.Do();
+                }
             }
             delete data;
-            self.WidgetLoader(true);
         },
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
             self.WidgetLoader(true);
@@ -331,13 +364,19 @@ var ListContentViewModel = function(settings){
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
+    self.GetSort = function(){
+        var s = new SortContentListViewModel();
+        s.AddContent(Config.Content.sortList);
+        s.SetDefault(Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderByContent);
+        return s;
+    };
     self.filters = {
         typeView : self.typeView,
-        orderBy : Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderByContent,
         filterName : Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName,
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : ko.observableArray(),
         countOptionList : ko.observable(settings.listPerPage.length-1),
+        sort : self.GetSort(),
         FilterNameGoods : function(data){
             self.filters.filterName = settings.filterName = $(data.text).val();
 
@@ -396,7 +435,7 @@ var ListContentViewModel = function(settings){
        self.message = message; 
     };
     self.AddCategoryInfo = function(categoryId){
-        var data = JSON.parse(Parameters.cache.infoCategory[categoryId]);
+        var data = Parameters.cache.infoCategory[categoryId];
         self.id            = data.id;
         self.titleBlock    = data.name_category;
         if(Parameters.cache.typeView){
@@ -459,6 +498,38 @@ var ListContentViewModel = function(settings){
         self.paging = Paging.GetPaging(self.countGoods, settings, ClickLinkPage);
     }
 }
+
+var SortContentItemViewModel = function(data, active){
+    var self = this;
+    self.name = data.name;
+    self.title = data.title;
+    self.ClickSort = function(){
+        active(self);
+        Loader.Indicator('ContentWidget', false); 
+                
+        Routing.UpdateMoreParameters({orderBy : self.name});
+        Routing.UpdateHash({page : 1});
+    };
+};
+
+var SortContentListViewModel = function(){
+    var self = this;
+    self.activeItem = ko.observable();
+    self.list = ko.observableArray();
+    self.cssSortList = 'sort_list';
+    
+    self.AddContent = function(data){
+        $.each(data, function(i){
+            self.list.push(new SortContentItemViewModel(data[i], self.activeItem));
+        });
+    };
+    self.SetDefault = function(orderBy){
+        $.each(self.list(), function(i){
+            if(self.list()[i].name == orderBy)
+                self.activeItem(self.list()[i]);
+        });
+    };
+};
 
 /* End Content*/
 var TestContent = {

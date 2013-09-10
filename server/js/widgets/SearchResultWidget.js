@@ -39,14 +39,24 @@ var SearchResultWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/SearchResultWidget.js/);
-        if(self.settings.inputParameters.content){
-            var content = JSON.parse(self.settings.inputParameters.content)
-            if(content.defaultCount)
-                self.settings.paging.itemsPerPage = content.defaultCount;
-            if(content.list)
-                self.settings.listPerPage = content.list;
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/SearchResultWidget.js/);
+            if(temp.searchResult){
+                input = temp.searchResult;
+            }
         }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.searchResult){
+            input = WParameters.searchResult;
+        }
+        
+        if(!$.isEmptyObject(input)){
+            if(input.defaultCount)
+                self.settings.paging.itemsPerPage = input.defaultCount;
+            if(input.list)
+                self.settings.listPerPage = input.list;
+        }
+        self.settings.inputParameters = input;
     };
     self.CheckRouting = function(){
         if(Routing.route == 'search'){
@@ -139,13 +149,6 @@ var SearchResultWidget = function(){
         EventDispatcher.AddEventListener('searchResultWidget.fill.searchResult', function(data){
             self.InsertContainer.SearchResult(data.typeView);
             self.Render.SearchResult(data);
-            
-            $(Parameters.sortingBlockContainer + ' .sort select').sSelect({
-                defaultText: Parameters.listSort[Parameters.filter.orderBy]
-            }).change(function(){
-                Parameters.filter.orderBy = $(Parameters.sortingBlockContainer + ' .sort select').getSetSSValue();
-                EventDispatcher.DispatchEvent('searchResultWidget.submit.form')
-            });
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.fill.categories', function (data){ 
@@ -190,7 +193,7 @@ var SearchResultWidget = function(){
     self.Fill = {
         AdvancedSearchForm : function(){
             var searchForm = new AdvancedSearchFormViewModel(self.settings);
-            searchForm.AddCategories(JSON.parse(Parameters.cache.roots));
+            searchForm.AddCategories(Parameters.cache.roots);
         },
         SearchResult : function(data){
             var searchResult = new ListSearchResultViewModel(self.settings);
@@ -236,9 +239,9 @@ var SearchResultWidget = function(){
         },
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
-                $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
+                var f = data.filters;
+                new AnimateSelectList(f.sort.cssSortList);
             }
             delete data;
             self.WidgetLoader(true);
@@ -398,9 +401,15 @@ var ListSearchResultViewModel = function(settings){
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
+    self.GetSort = function(){
+        var s = new SortSearchResultListViewModel();
+        s.AddContent(Config.SearchResult.sortList);
+        s.SetDefault(Parameters.filter.orderBy);
+        return s;
+    };
     self.filters = {
         typeView : self.typeView,
-        orderBy : Parameters.filter.orderBy,
+        sort : self.GetSort(),
         filterName : Parameters.filter.filterName,
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : ko.observableArray(),
@@ -449,7 +458,6 @@ var ListSearchResultViewModel = function(settings){
                 self.typeView = 'list';
                 self.filters.typeView = 'list';
                 Parameters.cache.typeView = 'list';
-                console.log(Parameters.cache.searchContent[self.GetQueryHash()]);
                 self.AddContent(Parameters.cache.searchContent[self.GetQueryHash()]);
                 EventDispatcher.DispatchEvent('searchResultWidget.fill.searchResult', self);
             }
@@ -494,14 +502,16 @@ var ListSearchResultViewModel = function(settings){
         self.filters.ViewSelectCount();
         EventDispatcher.DispatchEvent('searchResultWidget.fill.searchResult', self);
     };
-    self.GetQueryHash = function(){
+    self.GetQueryHash = function(){     
         var start = (Routing.GetCurrentPage()-1) * settings.paging.itemsPerPage;       
-        var query = start + '/' + settings.paging.itemsPerPage + '/' + Parameters.filter.orderBy + '/' + (Parameters.filter.filterName ? Parameters.filter.filterName : '') + '?';
+        var query = start + '/' + settings.paging.itemsPerPage + '/' + Parameters.filter.orderBy + '/' + (Parameters.filter.filterName ? encodeURIComponent(Parameters.filter.filterName) : '') + '?';
         var keys = ['keyWords', 'typeSearch', 'idCategories', 'startCost', 'endCost', 'exceptWords', 'typeSeller'];
+        var params = [];
         for(var i = 0; i <= keys.length-1; i++){
             if(Parameters.filter[keys[i]])
-                query = query + '&' + keys[i] + '=' + encodeURIComponent(Parameters.filter[keys[i]]);
+                params[i] = keys[i] + '=' + encodeURIComponent(Parameters.filter[keys[i]]);
         }
+        query = query + params.join('&');
         return Parameters.shopId + EventDispatcher.HashCode(query);
     };
     self.AddPages = function(){
@@ -513,6 +523,39 @@ var ListSearchResultViewModel = function(settings){
         self.paging = Paging.GetPaging(self.countGoods, settings, ClickLinkPage);
     }
 }
+
+var SortSearchResultItemViewModel = function(data, active){
+    var self = this;
+    self.name = data.name;
+    self.title = data.title;
+    self.ClickSort = function(){
+        active(self);
+        Loader.Indicator('SearchResultWidget', false); 
+        
+        Parameters.filter.orderBy = self.name;
+        Routing.UpdateMoreParameters({orderBy : self.name});
+        Routing.UpdateHash({page : 1});
+    };
+};
+
+var SortSearchResultListViewModel = function(){
+    var self = this;
+    self.activeItem = ko.observable();
+    self.list = ko.observableArray();
+    self.cssSortList = 'sort_search_result_list';
+    
+    self.AddContent = function(data){
+        $.each(data, function(i){
+            self.list.push(new SortSearchResultItemViewModel(data[i], self.activeItem));
+        });
+    };
+    self.SetDefault = function(orderBy){
+        $.each(self.list(), function(i){
+            if(self.list()[i].name == orderBy)
+                self.activeItem(self.list()[i]);
+        });
+    };
+};
 
 var TestSearchResult = {
     Init : function(){

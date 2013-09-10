@@ -25,16 +25,24 @@ var ProfileWidget = function() {
         self.SetPosition();
     };
     self.SetInputParameters = function() {
-        self.settings.inputParameters = JSCore.ParserInputParameters(/ProfileWidget.js/);
-        if (self.settings.inputParameters['params']) {
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
-
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/ProfileWidget.js/);
+            if(temp.profile){
+                input = temp.profile;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.profile){
+            input = WParameters.profile;
+        }
+        
+        if(!$.isEmptyObject(input)){
             if (input.tmpl)
                 self.settings.tmplPath = 'profile/' + input.tmpl + '.html';
             if (input.geoShop)
                 self.settings.geoShop = input.geoShop;
         }
+        self.settings.inputParameters = input;
     };
     self.CheckRouteProfile = function() {
         if (Routing.route == 'profile') {
@@ -148,7 +156,7 @@ var ProfileWidget = function() {
         });
         
         EventDispatcher.AddEventListener('ProfileWidget.submit.token', function(token){
-            var user = JSON.parse(Parameters.cache.userInformation);
+            var user = Parameters.cache.userInformation;
             var params = [];
             params.push('username=' + encodeURIComponent(user.login));
             if (token.type == 'mail')
@@ -419,27 +427,15 @@ var ProfileWidget = function() {
     };
     self.InsertContainer = {
         Personal : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.personalInformationTmplId).html());
         },
         Delivery : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.deliveryAddressTmpl).html());
         },
         DeliveryForm : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.deliveryAddressFormTmpl).html());
         },
         Security : function(){
-            if (Config.Containers.catalog)
-                $("#" + Config.Containers.catalog).hide();
-            $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.securityTmpl).html());
         }
     };
@@ -511,8 +507,6 @@ var ProfileWidget = function() {
             });
             
             $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-            
-//            $('#' + form.postalAddress.cssCountryList).sSelect({defaultText: ' '});
 
             $('#' + form.postalAddress.cssRegionList).autocomplete({
                 source: function(request, response) {
@@ -665,7 +659,6 @@ var ProfileWidget = function() {
             }
             
             $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-//            $('#' + delivery.cssCountryList).sSelect({defaultText: ' '});
             
             $('#' + delivery.cssRegionList).autocomplete({
                 source: function(request, response) {
@@ -977,7 +970,7 @@ var ProfileDataRegistrationViewModel = function(){
     
     self.AddContent = function(data){
         self.data = data
-        var user = JSON.parse(Parameters.cache.userInformation);
+        var user = Parameters.cache.userInformation;
         self.username(user.login);
         self.gender(data.gender);
         self.lastName(data.f_name);
@@ -1186,7 +1179,7 @@ var ProfileContactsViewModel = function(){
     self.phoneIsConfirm = ko.observable(false);
     
     self.AddContent = function(){
-        var user = JSON.parse(Parameters.cache.profile.info);
+        var user = Parameters.cache.profile.info;
         if(user.confirm_phone == 'yes')
             self.phoneIsConfirm(true);
         if(user.confirm_email == 'yes')

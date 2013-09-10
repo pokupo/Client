@@ -23,10 +23,18 @@ var FavoritesWidget = function() {
         self.SetPosition();
     };
     self.SetInputParameters = function() {
-        self.settings.inputParameters = JSCore.ParserInputParameters(/FavoritesWidget.js/);
-        if (self.settings.inputParameters['params']) {
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/FavoritesWidget.js/);
+            if(temp.favorites){
+                input = temp.favorites;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.favorites){
+            input = WParameters.favorites;
+        }
+        
+        if(!$.isEmptyObject(input)){
             if (input.show) {
                 for (var i = 0; i <= self.settings.showBlocks.length - 1; i++) {
                     if ($.inArray(self.settings.showBlocks[i], input.show) < 0)
@@ -37,6 +45,7 @@ var FavoritesWidget = function() {
                 self.settings.tmplPath = 'favorites/' + input.tmpl + '.html';
             }
         }
+        self.settings.inputParameters = input;
     };
     self.CheckRoute = function() {
         if (Routing.route == 'favorites') {
@@ -190,19 +199,11 @@ var FavoritesWidget = function() {
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                if(Config.Containers.catalog)
-                       $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
             self.WidgetLoader(true);
         },
         EmptyFaforites : function(){
-            if($("#" + self.settings.containerId).length > 0){
-                if(Config.Containers.catalog)
-                       $("#" + Config.Containers.catalog).hide();
-                $("#wrapper").removeClass("with_sidebar").addClass("with_top_border");
-            }
             self.WidgetLoader(true);
         }
     };

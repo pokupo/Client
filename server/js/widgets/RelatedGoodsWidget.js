@@ -99,9 +99,9 @@ window.RelatedGoodsWidget = function(){
         ko.applyBindings(data, $(self.settings.container).children()[0]);
         
         if(self.settings.relatedGoods.typeView == 'slider')
-                new InitSlider(data.cssBlockContainer);
+                new AnimateSlider(data.cssBlockContainer);
         if(self.settings.relatedGoods.typeView == 'carousel')
-                new InitCarousel(data.cssBlockContainer);
+                new AnimateCarousel(data.cssBlockContainer);
     };
 }
 

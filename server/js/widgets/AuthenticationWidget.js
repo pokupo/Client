@@ -3,7 +3,6 @@ var AuthenticationWidget = function(){
     self.widgetName = 'AuthenticationWidget';
     self.settings = {
         containerFormId : null,
-        containerSidebarId : null,
         tmplPath : null,
         authFormTmplId : null,
         authSidebarTmplId : null,
@@ -16,7 +15,6 @@ var AuthenticationWidget = function(){
         self.settings.containerSidebarId = Config.Containers.authentication[1]; 
         self.settings.tmplPath = Config.Authentication.tmpl.path;
         self.settings.authFormTmplId = Config.Authentication.tmpl.authFormTmplId;
-        self.settings.authSidebarTmplId = Config.Authentication.tmpl.authSidebarTmplId;
         self.settings.https = Config.Authentication.https;
         self.settings.style = Config.Authentication.style;
         self.SetInputParameters();
@@ -24,11 +22,17 @@ var AuthenticationWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/AuthenticationWidget.js/);
-        if(self.settings.inputParameters['params']){
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
-            
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/AuthenticationWidget.js/);
+            if(temp.authentication){
+                input = temp.authentication;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.authentication){
+            input = WParameters.authentication;
+        }
+        if(!$.isEmptyObject(input)){
             if(input.tmpl){
                 self.settings.tmplPath = 'authentication/' + input.tmpl + '.html';
             }
@@ -37,6 +41,7 @@ var AuthenticationWidget = function(){
                 Parameters.cache.https = input.https;
             }
         }
+        self.settings.inputParameters = input;
     };
     self.CheckRoute = function(){
         if(Routing.route == 'login'){
@@ -92,7 +97,6 @@ var AuthenticationWidget = function(){
         });
     };
     self.SelectTypeContent = function(){
-        $("#wrapper").removeClass("with_top_border").addClass("with_sidebar");
         if(Routing.route == 'login'){
             self.InsertContainer.Authentication();
             self.Fill.Authentication();
@@ -103,7 +107,6 @@ var AuthenticationWidget = function(){
             if(Config.Containers.catalog)
                  $("#" + Config.Containers.catalog).show();
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.authFormTmplId).html());
-            $("#" + self.settings.containerSidebarId).empty().append($('script#' + self.settings.authSidebarTmplId).html());
         }
     };
     self.Fill = {
