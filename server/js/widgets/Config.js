@@ -26,7 +26,8 @@ var Config = {
         timeMessage : 3000, //время посе которого скрывать сообщение
         containerIdConfirmWindow : 'dialogConfirm', // id модального окна с предупреждением
         conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
-        containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>' // темплейт модального окна с сообщением
+        containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>', // темплейт модального окна с сообщением
+        sourceParameters : 'object' // источник параметров (строка подключения скрипта 'string' или обьект 'object')
     },
     Containers : {  
         catalog : 'catalog', // id контейнера каталога 

@@ -75,7 +75,6 @@ var Loader = {
     widgets : {},
     Indicator : function(widget, isReady){
         this.widgets[widget] = isReady;
-//        console.log(this.widgets);
         this.countAll = 0;
         this.readyCount = 0;
         

@@ -39,14 +39,24 @@ var SearchResultWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/SearchResultWidget.js/);
-        if(self.settings.inputParameters.content){
-            var content = JSON.parse(self.settings.inputParameters.content)
-            if(content.defaultCount)
-                self.settings.paging.itemsPerPage = content.defaultCount;
-            if(content.list)
-                self.settings.listPerPage = content.list;
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/SearchResultWidget.js/);
+            if(temp.searchResult){
+                input = temp.searchResult;
+            }
         }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.searchResult){
+            input = WParameters.searchResult;
+        }
+        
+        if(!$.isEmptyObject(input)){
+            if(input.defaultCount)
+                self.settings.paging.itemsPerPage = input.defaultCount;
+            if(input.list)
+                self.settings.listPerPage = input.list;
+        }
+        self.settings.inputParameters = input;
     };
     self.CheckRouting = function(){
         if(Routing.route == 'search'){

@@ -25,16 +25,24 @@ var ProfileWidget = function() {
         self.SetPosition();
     };
     self.SetInputParameters = function() {
-        self.settings.inputParameters = JSCore.ParserInputParameters(/ProfileWidget.js/);
-        if (self.settings.inputParameters['params']) {
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
-
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/ProfileWidget.js/);
+            if(temp.profile){
+                input = temp.profile;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.profile){
+            input = WParameters.profile;
+        }
+        
+        if(!$.isEmptyObject(input)){
             if (input.tmpl)
                 self.settings.tmplPath = 'profile/' + input.tmpl + '.html';
             if (input.geoShop)
                 self.settings.geoShop = input.geoShop;
         }
+        self.settings.inputParameters = input;
     };
     self.CheckRouteProfile = function() {
         if (Routing.route == 'profile') {

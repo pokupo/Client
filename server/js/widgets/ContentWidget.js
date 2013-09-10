@@ -32,18 +32,29 @@ var ContentWidget = function(){
         }
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/ContentWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/ContentWidget.js/);
+            if(temp.content){
+                input = temp.content;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.content){
+            input = WParameters.content;
+        }
         
-        if(self.settings.inputParameters.block){
-            self.settings.countGoodsInBlock = JSON.parse(self.settings.inputParameters.block).count;
+        if(!$.isEmptyObject(input)){
+            if(input.block){
+                self.settings.countGoodsInBlock = input.block.count;
+            }
+            if(input.content){
+                if(input.content.defaultCount)
+                    self.settings.paging.itemsPerPage = input.content.defaultCount;
+                if(input.content.list)
+                    self.settings.listPerPage = input.content.list;
+            }
         }
-        if(self.settings.inputParameters.content){
-            var content = JSON.parse(self.settings.inputParameters.content)
-            if(content.defaultCount)
-                self.settings.paging.itemsPerPage = content.defaultCount;
-            if(content.list)
-                self.settings.listPerPage = content.list;
-        }
+        self.settings.inputParameters = input;
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content;

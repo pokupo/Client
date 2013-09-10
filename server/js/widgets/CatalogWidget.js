@@ -21,7 +21,17 @@ var CatalogWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/CatalogWidget.js/);
+            if(temp.catalog){
+                input = temp.catalog;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.catalog){
+            input = WParameters.catalog;
+        }
+        self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){
 

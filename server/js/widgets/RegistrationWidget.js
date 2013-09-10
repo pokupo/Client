@@ -25,16 +25,24 @@ var RegistrationWidget = function() {
         self.SetPosition();
     };
     self.SetInputParameters = function() {
-        self.settings.inputParameters = JSCore.ParserInputParameters(/RegistrationWidget.js/);
-        if (self.settings.inputParameters['params']) {
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/RegistrationWidget.js/);
+            if(temp.registration){
+                input = temp.registration;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.registration){
+            input = WParameters.registration;
+        }
 
-            if (input.tmpl)
+        if(!$.isEmptyObject(input)){
+            if(input.tmpl)
                 self.settings.tmplPath = 'registration/' + input.tmpl + '.html';
-            if (input.geoShop)
+            if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
         }
+        self.settings.inputParameters = input;
     };
     self.CheckRouteRegistration = function() {
         if (Routing.route == 'registration') {

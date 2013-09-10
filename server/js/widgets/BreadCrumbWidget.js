@@ -20,7 +20,17 @@ var BreadCrumbWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/BreadCrumbWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/BreadCrumbWidget.js/);
+            if(temp.breadCrumb){
+                input = temp.breadCrumb;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.breadCrumb){
+            input = WParameters.breadCrumb;
+        }
+        self.settings.inputParameters = input;
     };
     self.GetTmplRoute = function(){
         return self.settings.tmplPath + self.settings.tmplId + '.html';

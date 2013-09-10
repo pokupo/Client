@@ -18,7 +18,18 @@ var SearchWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/SearchWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/SearchWidget.js/);
+            if(temp.search){
+                input = temp.search;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.search){
+            input = WParameters.search;
+        }
+        
+        self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){

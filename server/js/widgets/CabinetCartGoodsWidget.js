@@ -21,10 +21,18 @@ var CabinetCartGoodsWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/CabinetCartGoodsWidget.js/);
-        if(self.settings.inputParameters['params']){
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/CabinetCartGoodsWidget.js/);
+            if(temp.cabinetCartGoods){
+                input = temp.cabinetCartGoods;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.cabinetCartGoods){
+            input = WParameters.cabinetCartGoods;
+        }
+        
+        if(!$.isEmptyObject(input)){
             if(input.show){
                 for(var i = 0; i <= input.show.length-1; i++){
                     if($.inArray(input.show[i], self.settings.showBlocks) < 0)
@@ -43,6 +51,7 @@ var CabinetCartGoodsWidget = function(){
                 self.settings.tmplPath = 'cabinetCartGoods/' + input.tmpl + '.html';
             }
         }
+        self.settings.inputParameters = input;
     };
     self.CheckRoute = function(){
         if(Routing.route == 'cabinet_cart'){

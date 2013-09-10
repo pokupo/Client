@@ -31,19 +31,38 @@
         <link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/css/advanced-search.css" type="text/css">
         <link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/css/footer.css" type="text/css"/>
         
+        <script type="text/javascript">
+            var WParameters = {
+                authentication : { https: 'login' },
+                registration : { geoShop: 0 },
+                core : { shopId: 1 },
+                catalog: {},
+                breadCrumb : {},
+                content : { block : {count: 6}, content: {list: [10, 20, 50], defaultCount: 20} },
+                search : {},
+                searchResult : { content: {list: [10, 20, 50], defaultCount: 20} },
+                goods : { infoBlock: 1111111, show: ["selectionCount","addToCart","buy","gallery","shipping","opinion"] },
+                userInformation : { show: ["icon","raiting"] },
+                cart : {show:{title:"always",count:true,baseCost:true,finalCost:true}},
+                cartGoods : {},
+                profile : {},
+                favorites : { show: ["infoShop","addToCart","buy"] },
+                cabinetCartGoods : {}
+            }
+        </script>
         <script src="http://pokupo-server.asmsoft.ru/js/jquery-1.8.2.min.js" type="text/javascript"></script>
 
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/AuthenticationWidget.js?params={"https":"login"}' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/RegistrationWidget.js?params={"geoShop":0}' type="text/javascript"></script>
-        <script src="http://pokupo-server.asmsoft.ru/js/widgets/JSCore.js?shopId=1" type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/AuthenticationWidget.js?authentication={"https":"login"}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/RegistrationWidget.js?registration={"geoShop":0}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/JSCore.js?core={"shopId":1}' type="text/javascript"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/widgets/CatalogWidget.js" type="text/javascript"></script>
-        <script src="http://pokupo-server.asmsoft.ru/js/widgets/BreadCrumbWidget.js?selectList=none" type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/ContentWidget.js?block={"count":6}&content={"list":[10,20,50],"defaultCount":20}' type="text/javascript"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/widgets/BreadCrumbWidget.js" type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/ContentWidget.js?content={block:{"count":6},content={"list":[10,20,50],"defaultCount":20}}' type="text/javascript"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/widgets/SearchWidget.js" type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/SearchResultWidget.js?content={"list":[10,20,50],"defaultCount":20}' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/GoodsWidget.js?params={"infoBlock":1111111,"show":["selectionCount","addToCart","buy","gallery","shipping","opinion"]}' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/UserInformationWidget.js?params={"show":["icon","raiting"]}' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/CartWidget.js?params={"show":{"title":"always","count":true,"baseCost":true,"finalCost":true}}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/SearchResultWidget.js?searchResult={"list":[10,20,50],"defaultCount":20}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/GoodsWidget.js?goods={"infoBlock":1111111,"show":["selectionCount","addToCart","buy","gallery","shipping","opinion"]}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/UserInformationWidget.js?userInformation={"show":["icon","raiting"]}' type="text/javascript"></script>
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/CartWidget.js?cart={"show":{"title":"always","count":true,"baseCost":true,"finalCost":true}}' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/CartGoodsWidget.js' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/ProfileWidget.js' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/FavoritesWidget.js?params={"show":["infoShop","addToCart","buy"]}' type="text/javascript"></script>
