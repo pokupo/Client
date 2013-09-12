@@ -311,7 +311,7 @@ var ProfileWidget = function() {
                 else{
                     if(!data.err)
                         data.err = Config.Profile.message.failDeleteAddressDelivery;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.add', data)})
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.delete', delivery)})
                 }
             });
         });
@@ -642,11 +642,11 @@ var ProfileWidget = function() {
                 var str = '?id_address=' + id +
                         '&is_default=yes';
                 self.BaseLoad.SetDefaultDelivaryAddress(str, function(data){
-                    if(data.result = 'ok'){
-                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, fasle, false);
+                    if(data.result == 'ok'){
+                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
                     }
                     else{
-                        self.ShowMessage(Config.Profile.message.failSetDefaultDelivery, fasle, false);
+                        self.ShowMessage(Config.Profile.message.failSetDefaultDelivery, false, false);
                     }
                 });
             })

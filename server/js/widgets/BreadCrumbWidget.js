@@ -189,6 +189,22 @@ var BreadCrumbViewModel = function(){
                 if(Routing.params.step == 4)
                     self.lastItem('Шаг 4');
             } 
+            if(Routing.route == 'order'){
+                self.crumbs = ko.observableArray();
+                
+                self.crumbs.push(new BreadCrumbItem({id:0, name_category: 'Оформление заказа'}));
+
+                if(Routing.params.step == 1)
+                    self.lastItem('Шаг 1');
+                if(Routing.params.step == 2)
+                    self.lastItem('Шаг 2');
+                if(Routing.params.step == 3)
+                    self.lastItem('Шаг 3');
+                if(Routing.params.step == 4)
+                    self.lastItem('Шаг 4');
+                if(Routing.params.step == 5)
+                    self.lastItem('Шаг 5');
+            } 
             if(Routing.route == 'profile' || Routing.route == 'favorites'){
                 self.crumbs = ko.observableArray();
                 

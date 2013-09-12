@@ -37,6 +37,15 @@ Parameters = {
             step3 : {},
             step4 : {}
         },
+        order : {
+            step1 : {
+                login : {},
+                reg : {},
+                confirm : {},
+                profile : {}
+            },
+            step2 : {}
+        },
         profile : {
             personal : {},
             delivery : {},
@@ -138,6 +147,7 @@ function Widget(){
         cartPathApi : null,
         favPathApi : null,
         geoPathApi : null,
+        shopPathApi : null,
         containerIdForTmpl : null
     };
     this.Init = function(widget, noindicate){
@@ -166,6 +176,7 @@ function Widget(){
                 cartPathApi : Config.Base.cartPathApi,
                 favPathApi : Config.Base.favPathApi,
                 geoPathApi : Config.Base.geoPathApi,
+                shopPathApi : Config.Base.shopPathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
@@ -749,6 +760,12 @@ function Widget(){
         },
         DeleteDeliveryAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/del/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        Shipping : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.hostApi + self.settings.shopPathApi + Parameters.shopId + '/shipping/' + str), function(data){
                 if(callback)
                     callback(data);
             }, true);

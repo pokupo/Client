@@ -1,0 +1,1398 @@
+var OrderWidget = function() {
+    var self = this;
+    self.widgetName = 'OrderWidget';
+    self.settings = {
+        containerFormId: null,
+        tmplPath: null,
+        ordFormStep1TmplId: null,
+        ordFormStep1ConfirmTmplId : null,
+        ordFormStep1ProfileTmplId : null,
+        ordFormStep2TmplId: null,
+        ordFormStep3TmplId: null,
+        ordFormStep3DeliveryTmplId : null,
+        ordFormStep4TmplId: null,
+        ordFormStep5TmplId: null,
+        inputParameters: {},
+        style: null
+    };
+    self.order = {
+        delivery : {},
+        shipping : {}
+    };
+    self.InitWidget = function() {
+        self.settings.containerFormId = Config.Containers.order;
+        self.settings.tmplPath = Config.Order.tmpl.path;
+        self.settings.ordFormStep1TmplId = Config.Order.tmpl.ordFormStep1TmplId;
+        self.settings.ordFormStep1ConfirmTmplId = Config.Order.tmpl.ordConfirmFormStep1TmplId;
+        self.settings.ordFormStep1ProfileTmplId = Config.Order.tmpl.ordProfileFormStep1TmplId
+        self.settings.ordFormStep2TmplId = Config.Order.tmpl.ordFormStep2TmplId;
+        self.settings.ordFormStep3TmplId = Config.Order.tmpl.ordFormStep3TmplId;
+        self.settings.ordFormStep3DeliveryTmplId = Config.Order.tmpl.ordDeliveryFormStep3TmplId;
+        self.settings.ordFormStep4TmplId = Config.Order.tmpl.ordFormStep4TmplId;
+        self.settings.ordFormStep5TmplId = Config.Order.tmpl.ordFormStep5TmplId;
+        self.settings.style = Config.Order.style;
+        self.SetInputParameters();
+        self.RegisterEvents();
+        self.SetPosition();
+    };
+    self.SetInputParameters = function() {
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/OrderWidget.js/);
+            if(temp.order){
+                input = temp.order;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.order){
+            input = WParameters.order;
+        }
+
+        if(!$.isEmptyObject(input)){
+            if(input.tmpl)
+                self.settings.tmplPath = 'order/' + input.tmpl + '.html';
+        }
+        self.settings.inputParameters = input;
+    };
+    self.CheckRouteOrder = function() {
+        if (Routing.route == 'order') {
+            self.WidgetLoader(false);
+            self.BaseLoad.Login(false, false, false, function(data){
+                if (Routing.params.step == 1 && !Routing.params.block){
+                    if(data.err)
+                        self.Step.Step1();
+                    else
+                        Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                }
+                if (Routing.params.step == 1 && Routing.params.block == 'confirm'){
+                        self.Step.Step1Confirm();
+                }
+                if (Routing.params.step == 1 && Routing.params.block == 'profile'){
+                        self.Step.Step1Profile();
+                }
+                if (Routing.params.step == 2)
+                    self.Step.Step2();
+                console.log(Routing.params);
+                if (Routing.params.step == 3 && !Routing.params.block)
+                    self.Step.Step3();
+                if (Routing.params.step == 3 && Routing.params.block == 'add')
+                    self.Step.Step3Form();
+                if (Routing.params.step == 4)
+                    self.Step.Step4();
+                if (Routing.params.step == 5)
+                    self.Step.Step5();
+            });
+        }
+        else
+            self.WidgetLoader(true);
+    };
+    self.RegisterEvents = function() {
+        if (JSLoader.loaded) {
+            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
+                self.CheckRouteOrder();
+            });
+        }
+        else {
+            EventDispatcher.AddEventListener('onload.scripts', function(data) {
+                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
+                    self.CheckRouteOrder();
+                });
+            });
+        }
+
+        EventDispatcher.AddEventListener('widget.change.route', function() {
+            self.CheckRouteOrder();
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step1.authentication', function(data){
+            self.BaseLoad.Login(data.username, data.password, data.rememberMe, function(request){
+               if(request.err){
+                    Parameters.cache.order.step1.reg.loginForm.error("Ошибка в логине или пароле");
+                    Parameters.cache.order.step1.reg.loginForm.password = null;
+                    self.Render.Step1(Parameters.cache.order.step1.reg);
+                }
+                else{
+                    Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                }
+           })
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step1.registration', function(step1) {
+            self.WidgetLoader(false);
+            var params = [];
+            if (step1.username())
+                params.push('username=' + encodeURIComponent(step1.username()));
+            if (step1.phone())
+                params.push('phone=' + step1.phone().replace(/\s/g, ''));
+            if (step1.email())
+                params.push('email=' + step1.email());
+            if (params.length > 0)
+                var str = '?' + params.join('&');
+
+            self.BaseLoad.UniqueUser(str, function(data) {
+                var test = true;
+                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('OrderWidget.step1.registration', step1)})){
+                    if (!self.Validate.Username(data, step1))
+                        test = false;
+                    if (!self.Validate.Email(data, step1))
+                        test = false;
+                    if (!self.Validate.Phone(data, step1))
+                        test = false;
+                }
+                else
+                    test = false;
+                
+                if (test) {
+                    var params = [];
+                    if (step1.username())
+                        params.push('username=' + encodeURIComponent(step1.username()));
+                    if (step1.phone())
+                        params.push('phone=' + step1.phone().replace(/\s/g, ''));
+                    if (step1.email())
+                        params.push('email=' + step1.email());
+                    if (step1.firstPassword())
+                        params.push('password=' + encodeURIComponent(step1.firstPassword()));
+                    if (params.length > 0)
+                        var str = '?' + params.join('&');
+                    self.BaseLoad.Registration(str, function(data) {
+                        Parameters.cache.order.step1.reg = step1;
+                        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'confirm'});
+                    });
+                }
+                else
+                    self.WidgetLoader(true);
+            });
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step1.confirm', function(step1confirm){
+            self.WidgetLoader(false);
+            var params = [];
+            params.push('username=' + encodeURIComponent(step1confirm.username()));
+            if (!step1confirm.mailConfirmLater())
+                params.push('mail_token=' + step1confirm.mailToken());
+            if (!step1confirm.phoneConfirmLater())
+                params.push('sms_token=' + step1confirm.phoneToken());
+            var str = '?' + params.join('&');
+
+            self.BaseLoad.ActivateUser(str, function(data) {
+                var test = true;
+                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('OrderWidget.step1.confirm', step1confirm)})){
+                    if (!self.Validate.MailToken(data, step1confirm))
+                        test = false;
+                    if (!self.Validate.PhoneToken(data, step1confirm))
+                        test = false;
+                }
+                else
+                    test = false;
+                
+                if (test) {
+                    self.BaseLoad.Login(false, false, false, function(request) {
+                        Parameters.cache.order.step1.confirm = step1confirm;
+                        EventDispatcher.DispatchEvent('widget.authentication.ok', {request: request});
+                        if (!request.err)
+                            Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'profile'});
+                    });
+                }
+                else
+                    self.WidgetLoader(true);
+            });
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step1.view1', function(){
+            Routing.SetHash('order', 'Оформление заказа', {step: 1});            
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step1.later', function(data) {
+            Routing.SetHash('order', 'Оформление заказа', {step: 2});
+        });
+
+        EventDispatcher.AddEventListener('OrderWidget.step1.profile', function(step1) {
+            self.WidgetLoader(false);
+            var day = step1.birthDay().split('.');
+            var birthDay = day[2] + '-' + day[1] + '-' + day[0];
+            step1.birthDayHiddenField(birthDay);
+            self.BaseLoad.EditProfile( $('form#' + step1.cssRegistrationDataForm), function(data) {
+                var test = true;
+                if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('OrderWidget.step1.profile', step1)}))
+                    test = false;
+
+                if (test) {
+                    Parameters.cache.order.step1.profile = step1;
+                    Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                }
+                else
+                    self.WidgetLoader(true);
+            });
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step2.loadData', function(data){
+            self.Fill.Step2(data);
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step2.change', function(data){
+            self.order.shipping = data;
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step3.loadData', function(data){
+            self.Fill.Step3(data);
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step3.add', function(data){
+            var str = '?id_country=' + encodeURIComponent($.trim(data.country().id));
+            if (data.region())
+                str = str + '&code_region=' + encodeURIComponent($.trim(data.region().regioncode));
+            else
+                str = str + '&name_region=' + encodeURIComponent($.trim(data.customRegion()));
+            if (data.city())
+                str = str + '&code_city=' + encodeURIComponent($.trim(data.city().aoguid));
+            else
+                str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
+            str = str + '&address=' + encodeURIComponent($.trim(data.customAddress())) + 
+                    '&post_code=' + encodeURIComponent($.trim(data.postCode())) + 
+                    '&addressee=' + encodeURIComponent($.trim(data.addressee())) + 
+                    '&contact_phone=' + encodeURIComponent($.trim(data.contactPhone())) + 
+                    '&is_default=' + encodeURIComponent(data.isDefault() ? 'yes' : 'no');
+            
+            self.BaseLoad.AddDelivaryAddress(str , function(response){
+                if(response.result == 'ok'){
+                    self.ShowMessage(Config.Order.message.addAddressDelivery, function(){
+                        Parameters.cache.order.step3 = {};
+                        Routing.SetHash('Order', 'Оформление заказа', {step: 3});
+                    }, false);
+                }
+                else{
+                    if(!response.err)
+                        response.err = Config.Order.message.failAddAddressDelivery;
+                    self.QueryError(response, function(){EventDispatcher.DispatchEvent('OrderWidget.step3.add', data)})
+                }
+            });
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data){
+            var str = '?id_address=' + data.id +
+                    '&is_default=yes';
+            self.BaseLoad.SetDefaultDelivaryAddress(str, function(res){
+                if(res.result == 'ok'){
+                    self.ShowMessage(Config.Order.message.setDefaultDelivery, false, false);
+                    self.order.delivery = data;
+                }
+                else{
+                    self.QueryError(
+                            { err : Config.Order.message.failSetDefaultDelivery },
+                            function(){EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)},
+                            function(){
+                                Parameters.cache.order.step3 = {};
+                                Routing.SetHash('order', 'Оформление заказа', {step: 3})
+                            }
+                        );
+                }
+            });
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step3.delete', function(delivery){
+            self.BaseLoad.DeleteDeliveryAddress(delivery.address.id, function(data){
+                if(data.result == 'ok'){
+                    self.ShowMessage(Config.Order.message.deleteAddressDelivery,function(){
+                        Parameters.cache.order.step3 = {};
+                        delivery.list.remove(delivery.address);
+                    }, false);
+                }
+                else{
+                    if(!data.err)
+                        data.err = Config.Order.message.failDeleteAddressDelivery;
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('OrderWidget.step3.delete', delivery)})
+                }
+            });
+        });
+    };
+    self.Validate = {
+        Username: function(data, step1) {
+            var test = false;
+            if (data.check_username) {
+                if (data.check_username == 'on' || data.check_username == 'ban' || data.check_username == 'off')
+                    step1.errorUsername(Config.Order.error.username.uniq);
+                if (data.check_username == 'yes')
+                    test = true;
+            }
+
+            return test;
+        },
+        Phone: function(data, step1) {
+            var test = false;
+            if (data.check_phone) {
+                if (data.check_phone == 'on' || data.check_phone == 'ban' || data.check_phone == 'off')
+                    step1.errorPhone(Config.Order.error.phone.uniq);
+                if (data.check_phone == 'yes')
+                    test = true;
+            }
+            else
+                test = true;
+
+            return test;
+        },
+        Email: function(data, step1) {
+            var test = false;
+            if (data.check_email) {
+                if (data.check_email == 'on' || data.check_email == 'ban' || data.check_email == 'off')
+                    step1.errorEmail(Config.Order.error.email.uniq);
+                if (data.check_email == 'yes')
+                    test = true;
+            }
+
+            return test;
+        },
+        MailToken: function(data, step2) {
+            if (data.confirm_email) {
+                if (data.confirm_email == 'no') {
+                    step2.errorEmailConfirm(Config.Order.error.emailToken.confirm);
+                    return false;
+                }
+            }
+
+            return true;
+        },
+        PhoneToken: function(data, step2) {
+            if (data.confirm_phone) {
+                if (data.confirm_phone == 'no') {
+                    step2.errorPhoneConfirm(Config.Order.error.phoneToken.confirm);
+                    return false;
+                }
+            }
+
+            return true;
+        },
+        Profile: function(data, step3) {
+            if (data.err) {
+                step3.errorAddress(data.err);
+                return false;
+            }
+
+            return true;
+        },
+        Address: function(data, step4) {
+            if (data.err) {
+                step4.errorAddress(data.err);
+                return false;
+            }
+
+            return true;
+        }
+    };
+    self.Step = {
+        Step1: function() {
+            self.InsertContainer.Step1();
+            self.Fill.Step1();
+        },
+        Step1Confirm : function(){
+            self.InsertContainer.Step1Confirm();
+            self.Fill.Step1Confirm();
+        },
+        Step1Profile : function(){
+            self.InsertContainer.Step1Profile();
+            self.Fill.Step1Profile();
+        },
+        Step2: function() {
+            self.BaseLoad.Shipping('', function(data){
+                self.InsertContainer.Step2();
+                EventDispatcher.DispatchEvent('OrderWidget.step2.loadData', data)
+            });
+        },
+        Step3: function() {
+            self.BaseLoad.DeliveryAddressList(function(data){
+                self.InsertContainer.Step3();
+                EventDispatcher.DispatchEvent('OrderWidget.step3.loadData', data)
+            });
+        },
+        Step3Form : function(){
+            var form = new OrderDeliveryFormStep3ViewModel();
+            self.WidgetLoader(false);
+            var shopId = Parameters.shopId;
+
+            self.BaseLoad.Country(shopId, function(data) {
+                self.InsertContainer.Step3Form();
+                self.Fill.Step3Form(form, data);
+            });
+        },
+        Step4: function() {
+            self.InsertContainer.Step4();
+            self.Fill.Step4();
+        },
+        Step5: function() {
+            self.InsertContainer.Step5();
+            self.Fill.Step5();
+        }
+    };
+    self.InsertContainer = {
+        Step1: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep1TmplId).html());
+        },
+        Step1Confirm: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep1ConfirmTmplId).html());
+        },
+        Step1Profile: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep1ProfileTmplId).html());
+        },
+        Step2: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep2TmplId).html());
+        },
+        Step3: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep3TmplId).html());
+        },
+        Step3Form : function(){
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep3DeliveryTmplId).html());
+        },
+        Step4: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep4TmplId).html());
+        },
+        Step5: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep5TmplId).html());
+        }
+    };
+    self.Fill = {
+        Step1: function(){
+            var form = Parameters.cache.order.step1.reg;
+            if ($.isEmptyObject(form))
+                form = new OrderFormStep1ViewModel();
+            self.Render.Step1(form);
+        },
+        Step1Confirm : function(){
+            var form = new OrderConfirmRegistrationFormStep1ViewModel();
+            self.Render.Step1Confirm(form);
+        },
+        Step1Profile : function(){
+            var form = new OrderProfileRegistrationFormStep1ViewModel();
+            self.Render.Step1Profile(form);
+        },
+        Step2: function(data){
+            var form = Parameters.cache.order.step2;
+            if ($.isEmptyObject(form)){
+                var form = new OrderFormStep2ViewModel();
+                form.AddShipping(data);
+                Parameters.cache.order.step2 = form;
+            }
+            self.Render.Step2(form);
+        },
+        Step3: function(data){
+            var form = Parameters.cache.order.step3;
+            if ($.isEmptyObject(form)){
+                form = new OrderFormStep3ViewModel();
+                form.AddContent(data, self.order);
+            }
+            
+            self.Render.Step3(form);
+            Parameters.cache.order.step3 = form;
+        },
+        Step3Form : function(form, data){
+            form.AddCountryList(data);
+            if(form.idCountry()){
+                $.grep(form.countryList(), function(data) {
+                    if (data.id == form.idCountry()){
+                        form.country(data);
+                    }
+                })
+            }
+            self.Render.Step3Form(form);
+        },
+        Step4: function(){
+            
+        },
+        Step5: function(){
+            
+        }      
+    };
+    self.Render = {
+        Step1: function(form){
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+            }
+            $('input#' + form.registrationForm.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+            
+            delete form;
+            self.WidgetLoader(true);
+        },
+        Step1Confirm: function(form){
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+            }
+            self.WidgetLoader(true);
+        },
+        Step1Profile: function(form){
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+            }
+            $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'dd.mm.yy',
+                defaultDate: '-24Y',
+                yearRange: "c-77:c+6",
+                minDate : '-101Y',
+                maxDate : '-18Y',
+                onClose: function(dateText, inst) {
+                    form.birthDay(dateText);
+                }
+            });
+            self.WidgetLoader(true);
+        },
+        Step2: function(form){
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+            }
+            self.WidgetLoader(true);
+        },
+        Step3: function(form){
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+            }
+            self.WidgetLoader(true);
+        },
+        Step3Form : function(delivery){
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+            }
+            
+            $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+            
+            $('#' + delivery.cssRegionList).autocomplete({
+                source: function(request, response) {
+                    self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
+                        if (!data.err) {
+                            response($.map(data, function(item) {
+                                return {
+                                    value: $.trim(item.formalname + ' ' + item.shortname),
+                                    region: item
+                                };
+                            }));
+                        }
+                        else {
+                            $('#' + delivery.cssRegionList).autocomplete("close");
+                            return false;
+                        }
+                    });
+                },
+                select: function(event, ui) {
+                    delivery.region(ui.item.region);
+                    delivery.customRegion(ui.item.value);
+                    if (ui.item.region && ui.item.region.postalcode != 0)
+                        delivery.postCode(ui.item.region.postalcode);
+                    else {
+                        delivery.postCode(null);
+                    }
+                }
+            });
+
+            $('#' + delivery.cssCityList).autocomplete({
+                source: function(request, response) {
+                    if (delivery.region()) {
+                        self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                            if (!data.err) {
+                                response($.map(data, function(item) {
+                                    return {
+                                        value: $.trim(item.shortname + '. ' + item.formalname),
+                                        city: item
+                                    };
+                                }));
+                            }
+                            else {
+                                $('#' + delivery.cssCityList).autocomplete("close");
+                                return false;
+                            }
+                        });
+                    }
+                },
+                select: function(event, ui) {
+                    delivery.city(ui.item.city);
+                    delivery.customCity(ui.item.value);
+                    if (ui.item.city && ui.item.city.postalcode != 0)
+                        delivery.postCode(ui.item.city.postalcode);
+                    else
+                        delivery.postCode(null);
+                }
+            });
+
+            $('#' + delivery.cssAddress).autocomplete({
+                source: function(request, response) {
+                    if (delivery.region()) {
+                        self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                            if (!data.err) {
+                                response($.map(data, function(item) {
+                                    return {
+                                        value: $.trim(item.shortname + '. ' + item.formalname),
+                                        street: item
+                                    };
+                                }));
+                            }
+                            else {
+                                $('#' + delivery.cssAddress).autocomplete("close");
+                                return false;
+                            }
+                        });
+                    }
+                },
+                select: function(event, ui) {
+                    delivery.address(ui.item.street);
+                    delivery.customAddress(ui.item.value);
+                    if (ui.item.street && ui.item.street.postalcode != 0)
+                        delivery.postCode(ui.item.street.postalcode);
+                    else
+                        delivery.postCode(null);
+                }
+            });
+            $('#' + delivery.cssCountryList).change(function() {
+                var v = $('#' + delivery.cssCountryList + ' option:selected').val();
+//                var v = $(this).getSetSSValue();
+                $.grep(delivery.countryList(), function(data) {
+                    if (data.id == v){
+                        delivery.country(data);
+                        delivery.customRegion(null);
+                        delivery.region(null);
+                        delivery.customCity(null);
+                        delivery.city(null);
+                        delivery.customAddress(null)
+                        delivery.address(null);
+                        delivery.postCode(null);
+                    }
+                })
+            });
+
+            $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
+                delivery.customRegion($(this).val());
+                delivery.customCity(null);
+                delivery.city(null);
+                delivery.customAddress(null)
+                delivery.address(null);
+                delivery.postCode(null);
+            });
+
+            $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
+                delivery.customCity($(this).val());
+                delivery.customAddress(null)
+                delivery.address(null);
+                delivery.postCode(null);
+            });
+            
+            self.WidgetLoader(true);
+        },
+        Step4: function(){
+            
+        },
+        Step5: function(){
+            
+        }  
+    };
+    self.SetPosition = function() {
+        if (self.settings.inputParameters['position'] == 'absolute') {
+            for (var key in self.settings.inputParameters) {
+                if (self.settings.style[key])
+                    self.settings.style[key] = self.settings.inputParameters[key];
+            }
+            $().ready(function() {
+                for (var i = 0; i <= Config.Containers.registration.length - 1; i++) {
+                    $("#" + Config.Containers.registration[i]).css(self.settings.style);
+                }
+            });
+        }
+    };
+}
+
+var OrderFormStep1ViewModel = function(){
+    var self = this;
+    self.loginForm = new OrderLoginFormStep1ViewModel();
+    self.registrationForm = new OrderRegistrationFormStep1ViewModel();
+};
+
+var OrderLoginFormStep1ViewModel = function(){
+    var self = this;
+    self.username = null;
+    self.password = null;
+    self.rememberMe = null;
+    self.error = ko.observable();
+    
+    self.Login = function(data){
+        self.username = $(data.username).val();
+        self.password = $(data.password).val();
+        self.rememberMe = $(data.remember_me).is(':checked') ? 'on' : 'off';
+        EventDispatcher.DispatchEvent('OrderWidget.step1.authentication', self);
+    };
+    self.ForgotPassword = function(){
+        
+    };
+};
+
+var OrderRegistrationFormStep1ViewModel = function(){
+    var self = this;
+    self.username = ko.observable(null);
+    self.errorUsername = ko.observable(null);
+    self.email = ko.observable(null);
+    self.errorEmail = ko.observable(null);
+    self.cssPhone = 'phone';
+    self.phone = ko.observable(null);
+    self.errorPhone = ko.observable(null);
+    self.cssFirstPassword = 'firstPassword';
+    self.firstPassword = ko.observable(null);
+    self.errorFirstPassword = ko.observable(null);
+    self.cssSecondPassword = 'secondPassword';
+    self.secondPassword = ko.observable(null);
+    self.errorSecondPassword = ko.observable(null);
+    self.isChecked = ko.observable(false);
+    self.errorIsChecked = ko.observable(null);
+
+
+    self.SubmitForm = function() {
+        if (self.ValidationForm()) {
+            EventDispatcher.DispatchEvent('OrderWidget.step1.registration', self);
+        }
+    };
+    self.ValidationForm = function() {
+        var test = true;
+        if (!self.UsernameValidation())
+            test = false;
+        if (!self.EmailValidation())
+            test = false;
+        if (!self.PhoneValidation())
+            test = false;
+        if (!self.PasswordValidation())
+            test = false;
+        if (!self.PasswordSecondValidation())
+            test = false;
+        if (!self.IsCheckedValidation())
+            test = false;
+
+        return test;
+    };
+    self.UsernameValidation = function() {
+        if (!self.username()) {
+            self.errorUsername(Config.Order.error.username.empty);
+            return false;
+        }
+        if (self.username().length < 3) {
+            self.errorUsername(Config.Order.error.username.minLength);
+            return false;
+        }
+        if (self.username().length > 40) {
+            self.errorUsername(Config.Order.error.username.maxLength);
+            return false;
+        }
+        if (!Config.Order.regular.username.test(self.username())) {
+            self.errorUsername(Config.Order.error.username.regular);
+            return false;
+        }
+        self.errorUsername(null);
+        return true;
+    };
+    self.EmailValidation = function() {
+        if (!self.email()) {
+            self.errorEmail(Config.Order.error.email.empty);
+            return false;
+        }
+        if (self.email().length > 64) {
+            self.errorUsername(Config.Order.error.email.maxLength);
+            return false;
+        }
+        if (!Config.Order.regular.email.test(self.email())) {
+            self.errorEmail(Config.Order.error.email.regular);
+            return false;
+        }
+        self.errorEmail(null);
+        return true;
+    };
+    self.PhoneValidation = function() {
+        if (self.phone()) {
+            if (!Config.Order.regular.phone.test($.trim(self.phone()))) {
+                self.errorPhone(Config.Order.error.phone.regular);
+                return false;
+            }
+        }
+        self.errorPhone(null);
+        return true;
+    };
+    self.PasswordValidation = function() {
+        self.firstPassword($('input#' + self.cssFirstPassword).val());
+        if (!self.firstPassword()) {
+            self.errorFirstPassword(Config.Order.error.password.empty);
+            return false;
+        }
+        if (self.firstPassword().length < 6) {
+            self.errorFirstPassword(Config.Order.error.password.minLength);
+            return false;
+        }
+        if (self.firstPassword().length > 64) {
+            self.errorFirstPassword(Config.Order.error.password.maxLength);
+            return false;
+        }
+
+        self.errorFirstPassword(null);
+        return true;
+    };
+    self.PasswordSecondValidation = function() {
+        self.secondPassword($('input#' + self.cssSecondPassword).val());
+        if (!self.secondPassword()) {
+            self.errorSecondPassword(Config.Order.error.password.empty);
+            return false;
+        }
+        if (self.firstPassword() != self.secondPassword()) {
+            self.errorSecondPassword(Config.Order.error.password.equal);
+            return false;
+        }
+        self.errorSecondPassword(null);
+        return true;
+    };
+    self.IsCheckedValidation = function() {
+        if (!self.isChecked()) {
+            self.errorIsChecked(Config.Order.error.isChecked.empty);
+            return false;
+        }
+
+        self.errorIsChecked(null);
+        return true;
+    };
+    self.RestoreAccess = function() {
+ 
+    };
+};
+
+var OrderConfirmRegistrationFormStep1ViewModel = function() {
+    var self = this;
+    self.username = Parameters.cache.order.step1.reg.registrationForm.username;
+
+    self.cssMailToken = 'mail_token_block';
+    self.mailToken = ko.observable();
+    self.mailIsConfirm = ko.observable(false);
+    self.errorEmailConfirm = ko.observable(null);
+    self.mailConfirmLater = ko.observable(false);
+
+    self.cssPhoneToken = 'phone_token_block';
+    self.phoneToken = ko.observable();
+    self.phoneIsConfirm = ko.observable(false);
+    self.errorPhoneConfirm = ko.observable(null);
+    self.phoneConfirmLater = ko.observable(false);
+
+    self.errorConfirmLater = ko.observable(null);
+
+    self.isEmptyPhone = ko.computed(function() {
+        if (!$.isEmptyObject(Parameters.cache.order.step1.reg) && Parameters.cache.order.step1.reg.registrationForm.phone())
+            return true;
+        self.phoneConfirmLater(true);
+        return false;
+    }, this);
+    self.SubmitForm = function() {
+        if (self.ValidationForm()) {
+            EventDispatcher.DispatchEvent('OrderWidget.step1.confirm', self);
+        }
+    };
+    self.Back = function(){
+        EventDispatcher.DispatchEvent('OrderWidget.step1.view1');
+    };
+    self.ValidationForm = function() {
+        var test = true;
+        if (!self.EmailTokenValidation())
+            test = false;
+        if (!self.PhoneTokenValidation())
+            test = false;
+        if (!self.EmptyConfirm())
+            test = false;
+
+        return test;
+    };
+    self.EmailTokenValidation = function() {
+        if (!self.mailConfirmLater()) {
+            if (!self.mailToken()) {
+                self.errorEmailConfirm(Config.Order.error.emailToken.empty);
+                return false;
+            }
+        }
+
+        self.errorEmailConfirm(null);
+        return true;
+    };
+    self.PhoneTokenValidation = function() {
+        if (!self.phoneConfirmLater()) {
+            if (!self.phoneToken()) {
+                self.errorPhoneConfirm(Config.Order.error.phoneToken.empty);
+                return false;
+            }
+        }
+
+        self.errorPhoneConfirm(null);
+        return true;
+    };
+    self.EmptyConfirm = function() {
+        if (self.phoneConfirmLater() && self.mailConfirmLater()) {
+            self.errorConfirmLater(Config.Order.error.confirmLater.empty);
+            return false;
+        }
+        else
+            self.errorConfirmLater(null);
+
+        return true;
+    };
+};
+
+var OrderProfileRegistrationFormStep1ViewModel = function(){
+    var self = this;
+    self.lastName = ko.observable();
+    self.errorLastName = ko.observable(null);
+
+    self.firstName = ko.observable();
+    self.errorFirstName = ko.observable(null);
+
+    self.middleName = ko.observable();
+    self.errorMiddleName = ko.observable(null);
+
+    self.birthDay = ko.observable();
+    self.birthDayHiddenField = ko.observable();
+    self.errorBirthDay = ko.observable(null);
+    self.cssBirthDay = 'birthDay';
+
+    self.gender = ko.observable('m');
+    self.errorGender = ko.observable(null);
+    
+    self.cssRegistrationDataForm = 'order_personal_information';
+
+    self.Back = function() {
+        EventDispatcher.DispatchEvent('OrderWidget.step1.view2');
+    };
+    self.SpecifyLater = function() {
+        EventDispatcher.DispatchEvent('OrderWidget.step1.later', self);
+    };
+    self.SubmitForm = function() {
+        if (self.ValidationForm()) {
+            EventDispatcher.DispatchEvent('OrderWidget.step1.profile', self);
+        }
+    };
+    self.ValidationForm = function() {
+        var test = true;
+        if (!self.FirstNameValidation())
+            test = false;
+        if (!self.LastNameValidation())
+            test = false;
+        if (!self.MiddleNameValidation())
+            test = false;
+        if (!self.BirthDayValidation())
+            test = false;
+        if (!self.GanderValidation())
+            test = false;
+
+        return test;
+    };
+    self.FirstNameValidation = function() {
+        if (!self.firstName()) {
+            self.errorFirstName(Config.Order.error.firstName.empty);
+            return false;
+        }
+        if (self.firstName().length < 2) {
+            self.errorFirstName(Config.Order.error.firstName.minLength);
+            return false;
+        }
+        if (self.firstName().length > 20) {
+            self.errorFirstName(Config.Order.error.firstName.maxLength);
+            return false;
+        }
+        if (!Config.Registration.regular.firstName.test(self.firstName())) {
+            self.errorFirstName(Config.Order.error.firstName.regular);
+            return false;
+        }
+        self.errorFirstName(null);
+        return true;
+    };
+    self.LastNameValidation = function() {
+        if (!self.lastName()) {
+            self.errorLastName(Config.Order.error.lastName.empty);
+            return false;
+        }
+        if (self.lastName().length < 2) {
+            self.errorLastName(Config.Order.error.lastName.minLength);
+            return false;
+        }
+        if (self.lastName().length > 20) {
+            self.errorLastName(Config.Order.error.lastName.maxLength);
+            return false;
+        }
+        if (!Config.Registration.regular.lastName.test(self.lastName())) {
+            self.errorLastName(Config.Order.error.lastName.regular);
+            return false;
+        }
+        self.errorLastName(null);
+        return true;
+    };
+    self.MiddleNameValidation = function() {
+        if (self.middleName()) {
+            if (self.middleName().length < 2) {
+                self.errorMiddleName(Config.Order.error.middleName.minLength);
+                return false;
+            }
+            if (self.middleName().length > 20) {
+                self.errorMiddleName(Config.Order.error.middleName.maxLength);
+                return false;
+            }
+            if (!Config.Order.regular.middleName.test(self.middleName())) {
+                self.errorMiddleName(Config.Order.error.middleName.regular);
+                return false;
+            }
+        }
+        self.errorMiddleName(null);
+        return true;
+    };
+    self.BirthDayValidation = function() {
+        if (!self.birthDay()) {
+            self.errorBirthDay(Config.Order.error.birthDay.empty);
+            return false;
+        }
+        if (!Config.Order.regular.birthDay.test(self.birthDay())) {
+            self.errorBirthDay(Config.Order.error.birthDay.regular);
+            return false;
+        }
+        var dateArray = self.birthDay().split('.');
+        var date = new Date(dateArray[2], dateArray[1]-1, dateArray[0]);
+        
+        var now = new Date();
+        var minDate = new Date(now.getYear() - 18, now.getMonth(), now.getDate());
+        if(minDate < date){
+            self.errorBirthDay(Config.Order.error.birthDay.minDate);
+            return false;
+        }
+        
+        var now = new Date();
+        var maxDate = new Date(now.getYear() - 101, now.getMonth(), now.getDate());
+        if(maxDate > date){
+            self.errorBirthDay(Config.Order.error.birthDay.maxDate);
+            return false;
+        }
+        
+        self.errorBirthDay(null);
+        return true;
+    };
+    self.GanderValidation = function() {
+        if (!self.gender()) {
+            self.errorGender(Config.Order.error.gender.empty);
+            return false;
+        }
+        if (!Config.Order.regular.gender.test(self.gender())) {
+            self.errorGender(Config.Order.error.gender.regular);
+            return false;
+        }
+        self.errorGender(null);
+        return true;
+    };
+};
+
+var OrderFormStep2ViewModel = function(){
+    var self = this;
+    self.shipping = ko.observableArray();
+    
+    self.AddShipping = function(data){
+        self.shipping = ko.observableArray();
+        for(var i = 0; i <= data.length-1; i++){
+           var item = new OrderItemFormStep2ViewModel();
+           item.AddContent(data[i], self);
+           self.shipping.push(item); 
+        }
+    };
+    self.Back = function(){
+        Loader.Indicator('OrderWidget', false);
+        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
+    };
+    self.Submit = function(){
+        Loader.Indicator('OrderWidget', false);
+        Routing.SetHash('order', 'Оформление заказа', {step: 3});
+    };
+};
+
+var OrderItemFormStep2ViewModel = function(){
+    var self = this;
+    self.nameShippingCompany = ko.observable();
+    self.siteShippingCompany = ko.observable();
+    self.logoShippingCompany = ko.observable();
+    self.id = ko.observable();
+    self.nameMethodShipping = ko.observable();
+    self.descMethodShipping = ko.observable();
+    self.costShipping = ko.observable();
+    self.cssActive = ko.observable('shipping_row');
+    self.isActive = ko.observable(false);
+    
+    self.parent = null;
+    
+    self.AddContent = function(data, parent){
+        if(data.hasOwnProperty('name_shipping_company'))
+            self.nameShippingCompany(data.name_shipping_company);
+        if(data.hasOwnProperty('site_shipping_company'))
+            self.siteShippingCompany(data.site_shipping_company);
+        if(data.hasOwnProperty('logo_shipping_company'))
+            self.logoShippingCompany(Config.Base.pathToImages + data.logo_shipping_company);
+        if(data.hasOwnProperty('id'))
+            self.id(data.id);
+        if(data.hasOwnProperty('name_method_shipping'))
+            self.nameMethodShipping(data.name_method_shipping);
+        if(data.hasOwnProperty('desc_method_shipping'))
+            self.descMethodShipping(data.desc_method_shipping);
+        if(data.hasOwnProperty('cost_shipping'))
+            self.costShipping(data.cost_shipping + ' руб.');
+        
+        self.parent = parent;
+    };
+    self.ClickItem = function(){
+        $.each(self.parent.shipping(), function(i){
+            self.parent.shipping()[i].cssActive('shipping_row');
+            self.parent.shipping()[i].isActive(false);
+        });
+        
+        self.cssActive('shipping_row active');
+        self.isActive(true);
+        
+        EventDispatcher.DispatchEvent('OrderWidget.step2.change', self);
+    }
+};
+
+var OrderFormStep3ViewModel = function(){
+    var self = this;
+    self.addressList = ko.observableArray();
+    self.cssAddressList = 'delivary_address_list';
+    
+    self.ClickAddAddress = function(){
+         Routing.SetHash('order', 'Оформление заказа', {step: 3, block: 'add'});
+    };
+    self.AddContent = function(data, order){
+        for(var key in data){
+            OrderItemFormStep3ViewModel.prototype = new Widget();
+            var address = new OrderItemFormStep3ViewModel(data[key], self.addressList)
+            self.addressList.push(address);
+            if(data[key].is_default == 'yes')
+                order.delivery = address;
+        }
+    };
+    self.Back = function(){
+        Loader.Indicator('OrderWidget', false);
+        Routing.SetHash('order', 'Оформление заказа', {step: 2});
+    };
+    self.Submit = function(){
+        Loader.Indicator('OrderWidget', false);
+        Routing.SetHash('order', 'Оформление заказа', {step: 4});
+    };
+};
+
+var OrderItemFormStep3ViewModel = function(data, list){
+    var self = this;
+    if(data.id)
+        self.id = data.id;
+    else
+        self.id = '';
+    self.idCountry = data.id_country;
+    self.country = data.country;
+    self.codeRegion = data.code_region;
+    self.region = data.region;
+    self.codeCity = data.code_city;
+    self.city = data.city;
+    self.postCode = data.post_code;
+    self.address = data.address;
+    self.addressee = data.addressee;
+    if(data.is_default == 'yes'){
+        self.isDefault = ko.observable(true);
+        self.cssIsDefault = ko.observable('delivery_address_is_default active');
+    }
+    else{
+        self.isDefault = ko.observable(false);
+        self.cssIsDefault = ko.observable('delivery_address_is_default');
+    }
+    
+    self.contactPhone = data.contact_phone;
+    self.list = list;
+    
+    self.Delete = function(){
+        self.Confirm(Config.Order.message.confirmDeleteAddressDelivery, function(){
+            EventDispatcher.DispatchEvent('OrderWidget.step3.delete', {address : self, list : list});
+        }, false);
+    };
+    self.ClickItem = function(){
+        $.each(list(), function(i){
+            list()[i].cssIsDefault('delivery_address_is_default');
+            list()[i].isDefault(false);
+        });
+        
+        self.cssIsDefault('delivery_address_is_default active');
+        self.isDefault(true);
+        
+        EventDispatcher.DispatchEvent('OrderWidget.step3.change', self);
+    };
+    
+};
+
+var OrderDeliveryFormStep3ViewModel = function(data){
+    var self = this;
+    self.id = ko.observable();
+    self.idCountry = ko.observable();
+    self.country = ko.observable();
+    self.cssCountryList = 'delivery_country_list';
+    self.errorCountry = ko.observable(null);
+    
+    self.codeRegion = ko.observable();
+    self.region = ko.observable();
+    self.customRegion = ko.observable();
+    self.cssRegionList = 'delivery_region';
+    self.errorRegion = ko.observable(null);
+    
+    self.codeCity = ko.observable();
+    self.city = ko.observable();
+    self.customCity = ko.observable();
+    self.cssCityList = 'delivery_city';
+    self.errorCity = ko.observable(null);
+    
+    self.postCode = ko.observable();
+    self.cssPostCode = 'delivery_post_index';
+    self.errorPostCode = ko.observable(null);
+    
+    self.address = ko.observable();
+    self.customAddress = ko.observable();
+    self.cssAddress = 'delivery_cssAddress';
+    self.errorAddress = ko.observable(null);
+    
+    self.addressee = ko.observable();
+    self.errorAddressee = ko.observable(null);
+    
+    self.contactPhone = ko.observable();
+    self.cssContactPhone = 'delivery_contact_phone';
+    self.errorContactPhone = ko.observable(null)
+    
+    self.isDefault = ko.observable();
+    
+    self.countryList = ko.observableArray();
+    
+    self.AddCountryList = function(data){
+        if (data.length > 0) {
+            for (var i = 0; i <= data.length - 1; i++) {
+                self.countryList.push(new CountryListViewModel(data[i]));
+            }
+        }
+    };
+    
+    self.AddContent = function(data){
+        self.id(data.id);
+        self.idCountry(data.idCountry);
+        self.region({regioncode : data.codeRegion});
+        self.customRegion(data.region);
+        self.city({aoguid :data.codeCity});
+        self.customCity(data.city);
+        self.postCode(data.postCode);
+        self.customAddress(data.address);
+        self.addressee(data.addressee);
+        self.isDefault(data.isDefault());
+        self.contactPhone(data.contactPhone);
+    };
+    self.Submit = function(){
+        if (self.ValidationForm()) {
+            EventDispatcher.DispatchEvent('OrderWidget.step3.add', self);
+        }
+    };
+    self.ValidationForm = function() {
+        var test = true;
+        if (!self.PhoneValidation())
+            test = false;
+        if (!self.UsernameValidation())
+            test = false;
+        if (!self.CountryValidation())
+            test = false;
+        if (!self.RegionValidation())
+            test = false;
+        if (!self.CityValidation())
+            test = false;
+        if (!self.AddressValidation())
+            test = false;
+        if (!self.PostIndexValidation())
+            test = false;
+        
+        return test;
+    };
+    self.CountryValidation = function() {
+        if (!self.country()) {
+            self.errorCountry(Config.Order.error.country.empty);
+            return false;
+        }
+        self.errorCountry(null);
+        return true;
+    };
+    self.RegionValidation = function() {
+        if (!self.customRegion()) {
+            self.errorRegion(Config.Order.error.region.empty);
+            return false;
+        }
+        self.errorRegion(null);
+        return true;
+    };
+    self.CityValidation = function() {
+        if (!self.customCity()) {
+            self.errorCity(Config.Order.error.city.empty);
+            return false;
+        }
+        self.errorCity(null);
+        return true;
+    };
+    self.AddressValidation = function() {
+        if (!self.customAddress()) {
+            self.errorAddress(Config.Order.error.address.empty);
+            return false;
+        }
+        self.errorAddress(null);
+        return true;
+    };
+    self.PostIndexValidation = function() {
+        if (!self.postCode()) {
+            self.errorPostCode(Config.Order.error.postIndex.empty);
+            return false;
+        }
+        self.errorPostCode(null);
+        return true;
+    };
+    self.UsernameValidation = function() {
+        if (!self.addressee()) {
+            self.errorAddressee(Config.Order.error.addressee.empty);
+            return false;
+        }
+        if (self.addressee().length < 3) {
+            self.errorAddressee(Config.Order.error.addressee.minLength);
+            return false;
+        }
+        if (self.addressee().length > 40) {
+            self.errorAddressee(Config.Order.error.addressee.maxLength);
+            return false;
+        }
+        if (!Config.Order.regular.addressee.test(self.addressee())) {
+            self.errorAddressee(Config.Registration.error.addressee.regular);
+            return false;
+        }
+        self.errorAddressee(null);
+        return true;
+    };
+    self.PhoneValidation = function() {
+         if (!self.contactPhone()) {
+            self.errorContactPhone(Config.Order.error.phone.empty);
+            return false;
+        }
+        if (!Config.Order.regular.phone.test($.trim(self.contactPhone()))) {
+            self.errorContactPhone(Config.Order.error.phone.regular);
+            return false;
+        }
+        
+        self.errorContactPhone(null);
+        return true;
+    };
+    self.Back = function(){
+        Routing.SetHash('order', 'Оформление заказа', {step: 3});
+    };
+};
+
+var TestOrder = {
+    Init: function() {
+        if (typeof Widget == 'function') {
+            OrderWidget.prototype = new Widget();
+            var order = new OrderWidget();
+            order.Init(order);
+        }
+        else {
+            setTimeout(function() {
+                TestOrder.Init()
+            }, 100);
+        }
+    }
+};
+
+TestOrder.Init();
+
+
