@@ -329,7 +329,7 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-
+         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.sellerId, goodsId: self.id, count: self.ordered()});
     };
     self.ReportAvailability = function(){
 

@@ -1,4 +1,4 @@
-<script type="text/html" id="orderFromStep1Tmpl">
+<script type="text/html" id="orderFormStep1Tmpl">
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -27,14 +27,14 @@
                             <td valign="top" align="center">
                                 <h1>Зарегистрированный пользователь</h1>
                                 <div class="formBox" style="width:380px;">
-                                    <div class="formBoxInner" data-bind="template: { name: 'orderLoginFromStep1Tmpl', data: loginForm }"></div>
+                                    <div class="formBoxInner" data-bind="template: { name: 'orderLoginFormStep1Tmpl', data: loginForm }"></div>
                                 </div>
                             </td>
                             <td width="50">&nbsp;</td>
                             <td valign="top" align="center">
                                 <h1>Новый пользователь</h1>
                                 <div class="formBox" style="width:380px;">
-                                    <div class="formBoxInner"  data-bind="template: { name: 'orderRegistrationFromStep1Tmpl', data: registrationForm }"></div>
+                                    <div class="formBoxInner"  data-bind="template: { name: 'orderRegistrationFormStep1Tmpl', data: registrationForm }"></div>
                                 </div>
                             </td>                    
                         </tr>
@@ -47,7 +47,7 @@
 </div>
 </script>
 
-<script type="text/html" id="orderLoginFromStep1Tmpl">
+<script type="text/html" id="orderLoginFormStep1Tmpl">
     <div data-bind="text: error"></div>
     <form data-bind="submit: Login">
         <table cellpadding="0" cellspacing="0" class="formBoxTable">
@@ -80,7 +80,7 @@
     </form>
 </script>
 
-<script type="text/html" id="orderRegistrationFromStep1Tmpl">
+<script type="text/html" id="orderRegistrationFormStep1Tmpl">
     <form>
         <table cellpadding="0" cellspacing="0" class="formBoxTable">
             <tr>
@@ -171,7 +171,7 @@
     </form>
 </script>
 
-<script type="text/html" id="orderConfirmFromStep1Tmpl">
+<script type="text/html" id="orderConfirmFormStep1Tmpl">
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -392,7 +392,7 @@
 </div>
 </script>
 
-<script type="text/html" id="orderFromStep2Tmpl">
+<script type="text/html" id="orderFormStep2Tmpl">
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -402,7 +402,7 @@
                         <tr>
                             <td>
                                 <div class="progressStepsBox">
-                                    <div class="step step_1 active"><a href="#" data-bind="click: Back">1</a></div>
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
                                     <div class="step active"><div>2</div></div>
                                     <div class="step"><div>3</div></div>
                                     <div class="step"><div>4</div></div>
@@ -481,7 +481,7 @@
 </div>
 </script>
 
-<script type="text/html" id="orderFromStep3Tmpl">
+<script type="text/html" id="orderFormStep3Tmpl">
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -491,8 +491,8 @@
                         <tr>
                             <td>
                                 <div class="progressStepsBox">
-                                    <div class="step step_1 active"><a href="#">1</a></div>
-                                    <div class="step active"><a href="#">2</a></div>
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
                                     <div class="step active"><div>3</div></div>
                                     <div class="step"><div>4</div></div>
                                     <div class="step"><div>5</div></div>
@@ -574,7 +574,7 @@
 </div>
 </script>
 
-<script type="text/html" id="orderDeliveryFromStep3Tmpl">
+<script type="text/html" id="orderDeliveryFormStep3Tmpl">
     <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -584,8 +584,8 @@
                         <tr>
                             <td>
                                 <div class="progressStepsBox">
-                                    <div class="step step_1 active"><a href="#">1</a></div>
-                                    <div class="step active"><a href="#">2</a></div>
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
                                     <div class="step active"><div>3</div></div>
                                     <div class="step"><div>4</div></div>
                                     <div class="step"><div>5</div></div>
@@ -728,11 +728,7 @@
 </div>
 </script>
 
-<script type="text/html" id="orderFromStep4Tmpl">
-
-</script>
-
-<script type="text/html" id="orderFromStep5Tmpl">
+<script type="text/html" id="orderFormStep4Tmpl">
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -742,10 +738,104 @@
                         <tr>
                             <td>
                                 <div class="progressStepsBox">
-                                    <div class="step step_1 active"><a href="#">1</a></div>
-                                    <div class="step active"><a href="#">2</a></div>
-                                    <div class="step active"><a href="#">3</a></div>
-                                    <div class="step active"><a href="#">4</a></div>
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep3">3</a></div>
+                                    <div class="step active"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <h1>Выберите способ оплаты</h1>
+                    <div class="listBox" style="width:700px;">
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <!-- ko template: { name: 'headerTableOrderFormStep4Tmpl' } --><!-- /ko -->
+                            <!-- ko foreach: payment -->
+                                <!-- ko template: { name: 'rowTableOrderFormStep4Tmpl' } --><!-- /ko -->
+                            <!-- /ko -->
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table align="center">
+                        <tr>
+                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="headerTableOrderFormStep4Tmpl">
+    <tr class="listTableHeader">
+        <td width="80">Система</td>
+        <td>&nbsp;</td>
+        <td width="20%">К оплате</td>
+        <td>&nbsp;</td>
+        <td>Выбрать</td>
+    </tr>
+</script>
+
+<script type="text/html" id="rowTableOrderFormStep4Tmpl">
+    <tr class="listTableRow"  data-bind="click: ClickItem, css: cssActive()">
+        <td style="border-right:none">
+            <img src="" width="80" height="80" data-bind="attr: {src: logoPayment }">
+        </td>
+        <td style="border-left:none">
+            <strong data-bind="text: namePayment"></strong>
+        </td>
+        <td>
+            <!-- ko text: costPayment --><!-- /ko -->
+            <div class="popupTip">
+                <img title="" alt="" src="images/ico_11.png" />
+                <div class="popup" style="display: none;">
+                    <span data-bind="text: instrPayment"></span>
+                </div>
+            </div>
+        </td>
+        <td>
+            <!-- ko text: namePayment --><!-- /ko -->
+        </td>
+        <td align="center">
+            <!-- ko if: isActive()-->
+                <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id" >
+            <!-- /ko -->
+            <!-- ko ifnot: isActive()-->
+                <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="orderFormStep5Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep3">3</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep4">4</a></div>
                                     <div class="step active"><div>5</div></div>
                                     <div class="clear"></div>
                                 </div>
@@ -765,36 +855,40 @@
                                 <td>Количество</td>
                                 <td>Сумма</td>
                             </tr>
+                            <!-- ko foreach: goods -->
                             <tr class="listTableRow">
-                                <td width="80" style="border-right:none"><img src="images/logos/shopping-bag-icon.gif" width="80" height="80"></td>
-                                <td style="border-left:none"><strong>Сумка бумажная ламинированная</strong></td>
-                                <td>220 руб</td>
-                                <td>100 шт</td>
-                                <td>22 000 руб</td>
+                                <td width="80" style="border-right:none">
+                                    <img src="" width="80" height="80" data-bind="attr: {src: routeImage}">
+                                </td>
+                                <td style="border-left:none">
+                                    <strong data-bind="text: fullName"></strong>
+                                </td>
+                                <td data-bind="text: sellCost"></td>
+                                <td data-bind="text: count"></td>
+                                <td data-bind="text: itogSellCost"></td>
                             </tr>
+                            <!-- /ko -->
+                            <!-- ko if: discount -->
                             <tr class="listTableRow">
-                                <td width="80" style="border-right:none"><img src="images/logos/shopping-bag-icon.gif" width="80" height="80"></td>
-                                <td style="border-left:none"><strong>Сумка бумажная ламинированная большая (200x1330)</strong></td>
-
-                                <td>320 руб</td>
-                                <td>100 шт</td>
-                                <td>32 000 руб</td>
+                                <td colspan="4"><strong>Скидка:</strong> <!-- ko text: discount --><!-- /ko --></td>
+                                <td data-bind="text: discountSum"></td>
                             </tr>
+                            <!-- /ko -->
+                            <!-- ko if: realShipping -->
                             <tr class="listTableRow">
-                                <td colspan="4"><strong>Скидка:</strong> 10%</td>
-                                <td>5 000 руб</td>
+                                <td colspan="4">
+                                    <strong>Доставка:</strong> <!-- ko text: methodShipping --><!-- /ko -->
+                                </td>
+                                <td data-bind="text: costShipping"></td>
                             </tr>
+                            <!-- /ko -->
                             <tr class="listTableRow">
-                                <td colspan="4"><strong>Доставка:</strong> DHL</td>
-                                <td>5 000 руб</td>
-                            </tr>
-                            <tr class="listTableRow">
-                                <td colspan="4"><strong>Способ оплаты:</strong> Почта России. Комиссия: 10 руб</td>
-                                <td>10 руб</td>
+                                <td colspan="4"><strong>Способ оплаты:</strong> <!-- ko text: typePayment --><!-- /ko --></td>
+                                <td data-bind="text: costPayment"></td>
                             </tr>
                             <tr class="listTableRow">
                                 <td colspan="4"><strong>Всего:</strong></td>
-                                <td><strong class="total">132010.00 руб</strong></td>
+                                <td><strong class="total" data-bind="text: finalCost()"></strong></td>
                             </tr>
                         </table>
                         <div class="clear"></div>
@@ -811,13 +905,13 @@
                                 <td>Контактный телефон</td>
                             </tr>
                             <tr class="listTableRow">
-                                <td>ул. Пушкина 35, кв. 46</td>
-                                <td>Москва</td>
-                                <td>Регион</td>
-                                <td>Россия</td>
-                                <td>15919</td>
-                                <td>Малиновская Марина</td>
-                                <td>123 12 1234</td>
+                                <td data-bind="text: delivery().address"></td>
+                                <td data-bind="text: delivery().city"></td>
+                                <td data-bind="text: delivery().region"></td>
+                                <td data-bind="text: delivery().country"></td>
+                                <td data-bind="text: delivery().postCode"></td>
+                                <td data-bind="text: delivery().addressee"></td>
+                                <td data-bind="text: delivery().contactPhone"></td>
                             </tr>
                         </table>
                         <div class="clear"></div>
@@ -829,9 +923,9 @@
                     <br>
                     <table align="center">
                         <tr>
-                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад"></td>
+                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
                             <td width="50">&nbsp;</td>
-                            <td style="text-align:left"><input type="button" class="nextButton size2" value="Подтверждаю"></td>
+                            <td style="text-align:left"><input type="button" class="nextButton size2" value="Подтверждаю" data-bind="click: Submit"></td>
                         </tr>
                     </table>
                 </td>

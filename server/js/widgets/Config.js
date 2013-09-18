@@ -9,6 +9,7 @@ var Config = {
         favPathApi : "/api/fav/", // префикс API избранное
         geoPathApi : "/api/geo/", // префикс API гео локации
         shopPathApi : "/api/shop/", // префикс API магазина
+        orderPathApi : "/api/order/", // префикс API заказов
         pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
@@ -569,14 +570,14 @@ var Config = {
     Order : {
         tmpl : {
             path : "order/orderTmpl.html", // файл шаблонов
-            ordFormStep1TmplId : "orderFromStep1Tmpl", //id шаблона формы заказа шаг 1
-            ordConfirmFormStep1TmplId : "orderConfirmFromStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
+            ordFormStep1TmplId : "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
+            ordConfirmFormStep1TmplId : "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
             ordProfileFormStep1TmplId : 'orderProfileFormStep1Tmpl', // id шаблона формы персоональных данных
-            ordFormStep2TmplId : "orderFromStep2Tmpl", //id шаблона формы заказа шаг 2
-            ordFormStep3TmplId : "orderFromStep3Tmpl", //id шаблона формы заказа шаг 3
-            ordDeliveryFormStep3TmplId : 'orderDeliveryFromStep3Tmpl',
-            ordFormStep4TmplId : "orderFromStep4Tmpl", //id шаблона формы заказа шаг 4
-            ordFormStep5TmplId : "orderFromStep5Tmpl", //id шаблона формы заказа шаг 5
+            ordFormStep2TmplId : "orderFormStep2Tmpl", //id шаблона формы заказа шаг 2
+            ordFormStep3TmplId : "orderFormStep3Tmpl", //id шаблона формы заказа шаг 3
+            ordDeliveryFormStep3TmplId : 'orderDeliveryFormStep3Tmpl',
+            ordFormStep4TmplId : "orderFormStep4Tmpl", //id шаблона формы заказа шаг 4
+            ordFormStep5TmplId : "orderFormStep5Tmpl", //id шаблона формы заказа шаг 5
         },
         regular : { // регулярные выражения полей
             username : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
@@ -596,7 +597,11 @@ var Config = {
             confirmDeleteAddressDelivery : "Вы уверены что хотите удалить адрес?",
             failDeleteAddressDelivery : 'Адрес доставки не удален. Попробуйте повторить запрос позднее.',
             setDefaultDelivery : 'Данные успешно обновлены.',
-            failSetDefaultDelivery : 'Данные не обновлены.'
+            failSetDefaultDelivery : 'Данные не обновлены.',
+            orderConfirm : 'Ваш заказ подтвержден.',
+            selectMethodPayment : 'Необходимо выбрать способ оплаты.',
+            selectAddress : 'Необходимо выбрать метод доставки.',
+            selectMethodShipping : 'Необходимо выбрать метод доставки.'
         },
         error : { // сообщения об ошибках при валидации формы регистрации
             username : {

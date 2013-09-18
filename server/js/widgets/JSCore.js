@@ -1,6 +1,6 @@
 var JSSettings = {
     protocolHTTP : 'http://',
-    protocolHTTPS : 'https://',
+    protocolHTTPS : 'https://',       
     host : "dev.pokupo.ru/",
     pathToJS : "server/js/",
     pathToTmpl : "server/tmpl/",
@@ -212,7 +212,7 @@ var XDMTransport = {
     },
     Load : function(data, callback, protocol){
         var hash = EventDispatcher.HashCode(data + callback.toString());
-        
+
         if(XDMTransport.event[hash] == undefined)
             XDMTransport.event[hash] = [];
         XDMTransport.event[hash].push(callback);
@@ -275,7 +275,7 @@ var XDMTransport = {
                 });
             }
             else{
-                setTimeout(function(){XDMTransport.LoadPost(data, callback)}, 1000);
+                setTimeout(function(){XDMTransport.LoadPost(data, protocol)}, 1000);
             }
         }
         
