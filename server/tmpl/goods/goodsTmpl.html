@@ -177,9 +177,14 @@
 <script type="text/html" id="goodsShippingBlockTmpl">
     <!-- ko foreach: content.params -->
     <div style="width: 100%; margin-bottom: 20px;">
-        <h3 style="margin-bottom: 10px" data-bind="text: name_method_shipping"></h3>
-        <div style="float: left; width:70%"><p data-bind="text: desc_method_shipping"></p></div>
-        <div style="float: left;"><b><!-- ko text: cost_shipping --><!-- /ko --> руб.</b></div>
+        <h3 style="margin-bottom: 10px" data-bind="text: nameMethodShipping"></h3>
+        <div style="float: left; width:70%"><p data-bind="text: descMethodShipping"></p></div>
+        <!-- ko if: costShipping -->
+        <div style="float: left;"><b>
+            <!-- ko text: costShipping --><!-- /ko -->
+            руб.</b>
+        </div>
+        <!-- /ko -->
     </div>
     <div style="clear: both; width: 100%; "></div>
     <!-- /ko -->

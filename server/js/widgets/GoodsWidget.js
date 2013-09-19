@@ -21,26 +21,37 @@ var GoodsWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/GoodsWidget.js/);
-        var input = JSON.parse(self.settings.inputParameters['params']);
-        self.settings.inputParameters = input;
-        if(input.show){
-            for(var i = 0; i <= input.show.length-1; i++){
-                if($.inArray(input.show[i], self.settings.showBlocks) < 0)
-                    self.settings.showBlocks.push(input.show[i]);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/GoodsWidget.js/);
+            if(temp.goods){
+                input = temp.goods;
             }
         }
-        if(input.hide){
-            for(var i = 0; i <= input.hide.length-1; i++){
-                var test = $.inArray(input.hide[i], self.settings.showBlocks);
-                if(test > 0){
-                    self.settings.showBlocks.splice(test, 1);
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.goods){
+            input = WParameters.goods;
+        }
+        
+        if(!$.isEmptyObject(input)){
+            if(input.show){
+                for(var i = 0; i <= input.show.length-1; i++){
+                    if($.inArray(input.show[i], self.settings.showBlocks) < 0)
+                        self.settings.showBlocks.push(input.show[i]);
                 }
             }
+            if(input.hide){
+                for(var i = 0; i <= input.hide.length-1; i++){
+                    var test = $.inArray(input.hide[i], self.settings.showBlocks);
+                    if(test > 0){
+                        self.settings.showBlocks.splice(test, 1);
+                    }
+                }
+            }
+            if(input.tmpl){
+                self.settings.tmplPath = 'goods/' + input.tmpl + '.html';
+            }
         }
-        if(input.tmpl){
-            self.settings.tmplPath = 'goods/' + input.tmpl + '.html';
-        }
+        self.settings.inputParameters = input;
     };
     self.CheckRoute = function(){
         if(Routing.route == 'goods'){
@@ -98,7 +109,6 @@ var GoodsWidget = function(){
                 else
                     self.Fill.Block(key, data[key]);
             }
-            
             self.goods.blocks.main.sellerId = data.seller.id
             self.goods.SetListMoreBlock(); 
             self.Render.Goods(self.goods);
@@ -126,7 +136,15 @@ var GoodsWidget = function(){
         },
         Block : function(key, data){
             var block = new MoreBlockViewModel(key);
+            if(key == 'shipping'){
+                var shipping = [];
+                for(var r in data){
+                    shipping.push(new ShippingBlockViewModel(data[r]));
+                }
+                data = shipping;
+            }
             block.AddParams(data);
+            
             self.goods.AddBlock(key, block);
         }
     };
@@ -311,7 +329,7 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-
+         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.sellerId, goodsId: self.id, count: self.ordered()});
     };
     self.ReportAvailability = function(){
 
@@ -324,7 +342,7 @@ var GoodsMainBlockViewModel = function(data){
 
     };
     self.AddFavorites = function(){
-        if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
+        if(Parameters.cache.userInformation != null && !Parameters.cache.userInformation.err)
             self.AddCommentForm();
         else
             self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
@@ -365,6 +383,18 @@ var GalleryBlockViewModel = function(data){
     self.title = data.name_photo;
     self.thumb = Parameters.pathToImages + data.route_photo;
     self.image = Parameters.pathToImages + '/big' + data.route_photo
+}
+
+var ShippingBlockViewModel = function(data){
+    var self = this;
+    self.id = data.id;
+    self.nameMethodShipping = data.name_method_shipping;
+    self.descMethodShipping = data.desc_method_shipping;
+    self.costShipping = ko.computed(function(){
+        if(data.cost_shipping)
+            return data.cost_shipping;
+        return null;
+    }, this);
 }
 
 var MoreBlockViewModel = function(key){

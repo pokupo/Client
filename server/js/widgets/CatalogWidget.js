@@ -21,7 +21,17 @@ var CatalogWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/CatalogWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/CatalogWidget.js/);
+            if(temp.catalog){
+                input = temp.catalog;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.catalog){
+            input = WParameters.catalog;
+        }
+        self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){
 
@@ -87,7 +97,7 @@ var CatalogWidget = function(){
                                 name_category : path[path.length-1].name_category,
                                 type_category : 'section',
                                 back : 'return',
-                                children : JSON.parse(Parameters.cache.childrenCategory[Routing.GetActiveCategory()])
+                                children : Parameters.cache.childrenCategory[Routing.GetActiveCategory()]
                             }
                             self.Fill.Tree(parent);
                         }
@@ -99,7 +109,7 @@ var CatalogWidget = function(){
             }
             else if(Routing.IsSection() || Parameters.cache.catalogs[Routing.GetActiveCategory()]){
                 self.InsertContainer.Main();
-                self.Fill.Tree(JSON.parse(Parameters.cache.roots));
+                self.Fill.Tree(Parameters.cache.roots);
             }
             else{
                 self.WidgetLoader(true);
@@ -201,7 +211,7 @@ var SectionViewModel = function(data){
             Routing.SetHash('catalog', data.name_category, params);
         }
         else{
-            var path = JSON.parse(Parameters.cache.path[self.id]).path;
+            var path = Parameters.cache.path[self.id].path;
             params = {section : path[path.length-2].id};
             Routing.SetHash('catalog', path[path.length-2].name_category, params);
         }

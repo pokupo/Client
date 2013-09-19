@@ -21,10 +21,18 @@ var CartGoodsWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/CartGoodsWidget.js/);
-        if(self.settings.inputParameters['params']){
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/CartGoodsWidget.js/);
+            if(temp.cartGoods){
+                input = temp.cartGoods;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.cartGoods){
+            input = WParameters.cartGoods;
+        }
+        
+        if(!$.isEmptyObject(input)){
             if(input.show){
                 for(var i = 0; i <= input.show.length-1; i++){
                     if($.inArray(input.show[i], self.settings.showBlocks) < 0)
@@ -278,7 +286,7 @@ var BlockGoodsForSellerViewModel = function(content){
             Routing.SetHash('catalog', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
-
+        Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
     };
     self.ClickClearCurt = function(){
         var count = self.goods().length-1;
@@ -351,7 +359,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
     self.AddFavorites = function(){
-        if(Parameters.cache.userInformation != null && !JSON.parse(Parameters.cache.userInformation).err)
+        if(Parameters.cache.userInformation != null && !Parameters.cache.userInformation.err)
             self.AddCommentForm();
         else
             self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);

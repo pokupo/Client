@@ -22,19 +22,28 @@ var CartWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/CartWidget.js/);
-        if(self.settings.inputParameters['params']){
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/CartWidget.js/);
+            if(temp.cart){
+                input = temp.cart;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.cart){
+            input = WParameters.cart;
+        }
+        
+        if(!$.isEmptyObject(input)){
             if(input.show){
                 for(var key in input.show){
                      self.settings.showBlocks[key] = input.show[key];
                 }
             }
             if(input.tmpl){
-                self.settings.tmplPath = 'userInformation/' + input.tmpl + '.html';
+                self.settings.tmplPath = 'cart/' + input.tmpl + '.html';
             }
         }
+        self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){

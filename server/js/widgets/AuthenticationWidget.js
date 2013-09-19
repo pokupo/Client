@@ -22,11 +22,17 @@ var AuthenticationWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/AuthenticationWidget.js/);
-        if(self.settings.inputParameters['params']){
-            var input = JSON.parse(self.settings.inputParameters['params']);
-            self.settings.inputParameters['params'] = input;
-            
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/AuthenticationWidget.js/);
+            if(temp.authentication){
+                input = temp.authentication;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.authentication){
+            input = WParameters.authentication;
+        }
+        if(!$.isEmptyObject(input)){
             if(input.tmpl){
                 self.settings.tmplPath = 'authentication/' + input.tmpl + '.html';
             }
@@ -35,6 +41,7 @@ var AuthenticationWidget = function(){
                 Parameters.cache.https = input.https;
             }
         }
+        self.settings.inputParameters = input;
     };
     self.CheckRoute = function(){
         if(Routing.route == 'login'){

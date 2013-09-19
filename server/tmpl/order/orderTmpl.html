@@ -1,0 +1,937 @@
+<script type="text/html" id="orderFormStep1Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><div>1</div></div>
+                                    <div class="step"><div>2</div></div>
+                                    <div class="step"><div>3</div></div>
+                                    <div class="step"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <table cellpadding="0" cellspacing="0"  align="center">
+                        <tr>
+                            <td valign="top" align="center">
+                                <h1>Зарегистрированный пользователь</h1>
+                                <div class="formBox" style="width:380px;">
+                                    <div class="formBoxInner" data-bind="template: { name: 'orderLoginFormStep1Tmpl', data: loginForm }"></div>
+                                </div>
+                            </td>
+                            <td width="50">&nbsp;</td>
+                            <td valign="top" align="center">
+                                <h1>Новый пользователь</h1>
+                                <div class="formBox" style="width:380px;">
+                                    <div class="formBoxInner"  data-bind="template: { name: 'orderRegistrationFormStep1Tmpl', data: registrationForm }"></div>
+                                </div>
+                            </td>                    
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="orderLoginFormStep1Tmpl">
+    <div data-bind="text: error"></div>
+    <form data-bind="submit: Login">
+        <table cellpadding="0" cellspacing="0" class="formBoxTable">
+            <tr>
+                <td>
+                    <div class="form_item">
+                        <label>Логин:</label>
+                        <input type="text" id="username" name="username" value="" required="required" data-bind="value: username">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form_item">
+                        <a href="#" data-bind="click: ForgotPassword">Забыли пароль</a>
+                        <label>Пароль:</label>
+                        <input type="password" id="password" name="password" required="required" data-bind="value: password">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form_item">
+                        <label style="float:left;"><input type="checkbox" name="text" data-bind="value: rememberMe"/>Запомнить меня</label>
+                        <input class="form_submit" type="submit" value="Войти" style="float:right" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</script>
+
+<script type="text/html" id="orderRegistrationFormStep1Tmpl">
+    <form>
+        <table cellpadding="0" cellspacing="0" class="formBoxTable">
+            <tr>
+                <td>
+                    <div class="form_item form_item_mail">
+                        <label>Псевдоним:
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
+                        </label>
+                        <input type="text" name="text" value="" maxlength="40" data-bind="value: username"/>
+                        <!-- ko if: errorUsername-->
+                        <div class="form_error" data-bind="text: errorUsername"></div>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form_item form_item_mail">
+                        <label>Ваш e-mail:
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он будет логином для входа в личный кабинет, на этот адрес будут приходить уведомления о статусе вашего заказа.</span></div></div>
+                        </label>
+                        <input type="text" name="text" value="" maxlength="64" data-bind="value: email"/>
+                        <!-- ko if: errorEmail-->
+                        <div class="form_error" data-bind="html: errorEmail"></div>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form_item form_item_nik">
+                        <label>Номер телефона:
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Номер мобильного телефона с кодом страны, используется для восстановления доступа к личному кабинету и для SMS уведомлений о статусе заказа, не обязательное поле для заполнения.</span></div></div>
+                        </label>
+                        <input type="text" name="text" value="" maxlength="15" data-bind="value: phone, attr: {id : cssPhone}"/>
+                        <div class="description">Введите номер сотового телефона, пример: 
+                            <span>7 914 123 45 67</span></div>
+                        <!-- ko if: errorPhone-->
+                        <div class="form_error" data-bind="html: errorPhone"></div>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form_item form_item_pass_2">
+                        <label>Пароль:
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите пароль для доступа к личному кабинету покупателя длиной не менее 6 символов.</span></div></div>
+                        </label>
+                        <input type="password" name="firstPassword" maxlength="32" data-bind="value: firstPassword, attr : {id: cssFirstPassword}"/>
+                        <!-- ko if: errorFirstPassword-->
+                        <div class="form_error" data-bind="text: errorFirstPassword"></div>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form_item form_item_pass_2">
+                        <label>Повторить пароль:
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Повторите свой пароль, что бы мы могли убедиться, что вы не ошиблись при его вводе.</span></div></div>
+                        </label>
+                        <input type="password" name="text" maxlength="32"  data-bind="value: secondPassword, attr : {id: cssSecondPassword}"/>
+                        <!-- ko if: errorSecondPassword-->
+                        <div class="form_error" data-bind="text: errorSecondPassword"></div>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class="form_item form_item_rule">
+                        <label>
+                            <input type="checkbox" name="text" value="1" data-bind="checked: isChecked"/>Я принимаю условия <a href="#" target="_blank">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> 
+                        </label>
+                        <!-- ko if: errorIsChecked-->
+                            <div class="form_error" data-bind="text: errorIsChecked"></div>
+                        <!-- /ko -->
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <input class="nextButton size2" type="submit" value="Продолжить" data-bind="click: SubmitForm"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</script>
+
+<script type="text/html" id="orderConfirmFormStep1Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><div>1</div></div>
+                                    <div class="step"><div>2</div></div>
+                                    <div class="step"><div>3</div></div>
+                                    <div class="step"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <form>
+                        <h1>Активация аккаунта</h1>
+                        <div class="bottom_description_center">Для активации аккаунта укажите коды высланные на почтовый ящик и/или телефон</div>
+                        <div class="formBox" style="width:380px;">
+                            <div class="formBoxInner">
+                                <table cellpadding="0" cellspacing="0" class="formBoxTable">
+                                    <tr data-bind="attr: {id: cssMailToken}">
+                                        <td>
+                                            <!-- ko if: errorConfirmLater -->
+                                            <div class="form_error" data-bind="text: errorConfirmLater"></div>
+                                            <!-- /ko -->
+                                            <!-- ko ifnot: mailConfirmLater -->
+                                            <div class="form_item form_item_mail">
+                                                <label>E-mail код: 
+                                                    <!-- ko if: mailIsConfirm -->
+                                                    <img title="" alt="" src="images/ico_14.png" />  <span style="color: #0a7d2d;">Подтверждено</span>
+                                                    <!-- /ko -->
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите код подтверждения, который выслан на ваш почтовый ящик.</span></div></div>
+                                                </label>
+                                                <input type="text" name="text" data-bind="value: mailToken"/>
+                                                <!-- ko if: errorEmailConfirm-->
+                                                <div class="form_error" data-bind="text: errorEmailConfirm"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                            <!-- /ko -->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_rule">
+                                                <label><input type="checkbox" name="text" value="1" data-bind="checked: mailConfirmLater"/>Подтвердить почтовый ящик позднее</label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- ko if: isEmptyPhone -->
+                                    <tr>
+                                        <td>
+                                            <!-- ko ifnot: phoneConfirmLater -->
+                                            <div class="form_item form_item_phone">
+                                                <label>SMS код: 
+                                                    <!-- ko if: phoneIsConfirm -->
+                                                    <img title="" alt="" src="images/ico_14.png" />  <span style="color: #0a7d2d;">Подтверждено</span>
+                                                    <!-- /ko -->
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите SMS код, который вылан на ваш мобильный телефон.</span></div></div>
+                                                </label>
+                                                <input type="text" name="text" data-bind="value: phoneToken" />
+                                                <!-- ko if: errorPhoneConfirm-->
+                                                <div class="form_error" data-bind="text: errorPhoneConfirm"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                            <!-- /ko -->
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_checkbox">
+                                                <label><input type="checkbox" name="text" value="1" data-bind="checked: phoneConfirmLater"/>
+                                                    Подтвердить номер телефона позднее
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- /ko -->
+                                </table>
+                            </div>
+                        </div>
+                        <br>
+                        <table align="center">
+                            <tr>
+                                <td style="text-align:right"><input type="button" class="prevButton size1" value="Назад" data-bind="click: Back"></td>
+                                <td width="50">&nbsp;</td>
+                                <td style="text-align:left"> <input type="button" class="nextButton size5" value="Активировать аккаунт"  data-bind="click: SubmitForm"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </td>
+             </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="orderProfileFormStep1Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><div>1</div></div>
+                                    <div class="step"><div>2</div></div>
+                                    <div class="step"><div>3</div></div>
+                                    <div class="step"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <form  data-bind="attr: {id: cssRegistrationDataForm}">
+                        <h1>Персональные данные</h1>
+                        <div class="bottom_description_center">Укажите свои персональные данные</div>
+                        <div class="formBox" style="width:380px;">
+                            <div class="formBoxInner">
+                                <table cellpadding="0" cellspacing="0" class="formBoxTable">
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_fio">
+                                                <label>Фамилия:
+                                                    <span style="color: #ed710d;">*</span>
+                                                </label>
+                                                <input type="text" name="sname" data-bind="value: lastName" />
+                                                <!-- ko if: errorLastName-->
+                                                    <div class="form_error" data-bind="text: errorLastName"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_fio">
+                                                <label>Имя:
+                                                    <span style="color: #ed710d;">*</span>
+                                                </label>
+                                                <input type="text" name="fname" data-bind="value: firstName" />
+                                                <!-- ko if: errorFirstName-->
+                                                    <div class="form_error" data-bind="text: errorFirstName"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_fio">
+                                                <label>Отчество:</label>
+                                                <input type="text" name="mname" data-bind="value: middleName" />
+                                                <!-- ko if: errorMiddleName-->
+                                                    <div class="form_error" data-bind="text: errorMiddleName"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_date">
+                                                <label>Дата рождения:
+                                                    <span style="color: #ed710d;">*</span>
+                                                </label>
+                                                <input type="text" data-bind="value: birthDay, attr: {id: cssBirthDay}" />
+                                                <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
+                                                <!-- ko if: errorBirthDay-->
+                                                    <div class="form_error" data-bind="text: errorBirthDay"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_rule">
+                                                <label>Ваш пол:
+                                                    <span style="color: #ed710d;">*</span>
+                                                </label><br />
+                                                <label><input name="gender" type="radio" value="m" data-bind="checked: gender"/>Мужчина</label> 
+                                                <label><input name="gender" type="radio" value="w" data-bind="checked: gender"/>Женщина</label>
+                                                <!-- ko if: errorGender-->
+                                                    <div class="form_error" data-bind="text: errorGender"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div><!-- /formBox -->
+                        <table align="center">
+                            <tr>
+                                <td style="text-align:right"><input type="button" class="prevButton size2" value="Указать позже" data-bind="click: SpecifyLater"></td>
+                                <td width="50">&nbsp;</td>
+                                <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: SubmitForm"></td>
+                            </tr>
+                        </table>
+                    </form>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="orderFormStep2Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><div>2</div></div>
+                                    <div class="step"><div>3</div></div>
+                                    <div class="step"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <h1>Выберите способ доставки</h1>
+                    <div class="listBox" style="width:700px;">
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <tr class="listTableHeader">
+                                <td colspan="2">Способ доставки</td>
+                                <td width="20%">Стоимость</td>
+                                <td>&nbsp;</td>
+                                <td>Выбрать</td>
+                            </tr>
+                            <!-- ko foreach: shipping() -->
+                                <tr class="listTableRow" data-bind="click: ClickItem, css: cssActive()">
+                                    <td width="80" style="border-right:none">
+                                        <img src="" width="80" height="80" data-bind="attr: {src: logoShippingCompany}">
+                                    </td>
+                                    <td style="border-left:none">
+                                        <strong data-bind="text: nameMethodShipping"></strong>
+                                    </td>
+                                    <td>
+                                        <!-- ko if: costShipping -->
+                                            <!-- ko text: costShipping --><!-- /ko --> 
+                                            <div class="popupTip">
+                                                <img title="" alt="" src="images/ico_11.png" />
+                                                <div class="popup" style="display: none;">
+                                                    <span>подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии.</span>
+                                                </div>
+                                            </div>
+                                        <!-- /ko -->
+                                    </td>
+                                    <td data-bind="text: descMethodShipping"></td>
+                                    <td align="center">
+                                        <!-- ko if: isActive()-->
+                                        <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked'}, value: id" >
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: isActive()-->
+                                        <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+                                        <!-- /ko -->
+                                    </td>
+                                </tr>
+                            <!-- /ko -->
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table align="center">
+                        <tr>
+                            <td style="text-align:right">
+                                <input type="button" class="prevButton size2" value="Назад" data-bind="click: Back">
+                            </td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:left">
+                                <input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="orderFormStep3Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
+                                    <div class="step active"><div>3</div></div>
+                                    <div class="step"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <h1>Выберите адрес доставки</h1>
+                    <div class="listBox">
+                        <div style="float:left; margin:0px 0px 10px 0px;">
+                            <a href="#" class="addButton" data-bind="click: ClickAddAddress">Добавить новый адрес</a>
+                        </div>
+                        <div class="clear"></div>
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <tr class="listTableHeader">
+                                <td>Адрес</td>
+                                <td>Город</td>
+                                <td>Регион</td>
+                                <td>Страна</td>
+                                <td>Почтовый индекс</td>
+                                <td>Получатель</td>
+                                <td>Контактный телефон</td>
+                                <td>Выбрать</td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <!-- ko foreach: addressList -->
+                            <tr class="listTableRow"  data-bind="click: ClickItem, css: cssIsDefault()">
+                                <td data-bind="text: address"></td>
+                                <td data-bind="text: city"></td>
+                                <td data-bind="text: region"></td>
+                                <td data-bind="text: country"></td>
+                                <td data-bind="text: postCode"></td>
+                                <td data-bind="text: addressee"></td>
+                                <td data-bind="text: contactPhone"></td>
+                                <td align="center" >
+                                    <!-- ko if: isDefault()-->
+                                    <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id" >
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: isDefault()-->
+                                    <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+                                    <!-- /ko -->
+                                </td>
+                                <td align="center" >
+                                    <!-- ko if: id -->
+                                    <a href="#" data-bind="click: Delete" class="deleleButton" title="Удалить из списка"></a>
+                                    <!-- /ko -->
+                                </td>
+                            </tr>
+                            <!-- /ko -->
+                        </table>
+                        <div class="clear"></div>
+                        <div class="paginationBox">
+                            <div class="adres_counter">Адресов: <!-- ko text: addressList().length --><!-- /ko --></div>
+                            <div class="clear"></div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table align="center">
+                        <tr>
+                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="orderDeliveryFormStep3Tmpl">
+    <div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
+                                    <div class="step active"><div>3</div></div>
+                                    <div class="step"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <h1>Адрес Доставки</h1>
+                    <div class="formBox" style="width:380px;">
+                        <div class="formBoxInner">
+                            <form>
+                                <table cellpadding="0" cellspacing="0" class="formBoxTable">
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_country">
+                                                <label>Ваша страна:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <select id="delivery_country_list" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
+                                                <!-- ko if: errorCountry -->
+                                                    <div class="form_error" data-bind="text: errorCountry "></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_state">
+                                                <label>Регион:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <input name="textfield" type="text" id="textfield" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country"/>
+                                                <!-- ko if: errorRegion-->
+                                                    <div class="form_error" data-bind="text: errorRegion"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_city">
+                                                <label>Город:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <input name="textfield" type="text" id="textfield" data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion"/>
+                                                <!-- ko if: errorCity-->
+                                                    <div class="form_error" data-bind="text: errorCity"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_adres">
+                                                <label>Адрес проживания:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <input name="textfield" type="text" id="textfield" data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity"/>                  
+                                                <!-- ko if: errorAddress-->
+                                                    <div class="form_error" data-bind="text: errorAddress"></div>
+                                                <!-- /ko -->
+                                                <div class="description">Улица, квартира, дом, номер подъезда, этажа, код домофона</div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_capcha">
+                                                <label>Почтовый индекс:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <input name="textfield" type="text" id="textfield" data-bind="value: postCode, attr: {id: cssPostCode}"/>
+                                                <!-- ko if: errorPostCode-->
+                                                    <div class="form_error" data-bind="text: errorPostCode"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_country">
+                                                <label>Получатель (Ф.И.О): *:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <input name="textfield" type="text" id="textfield" data-bind="value: addressee"/>
+                                                <!-- ko if: errorAddressee-->
+                                                    <div class="form_error" data-bind="text: errorAddressee"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_country">
+                                                <label>Контактный телефон:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <input name="textfield" type="text" id="textfield" data-bind="value: contactPhone, attr:{id:cssContactPhone}" />
+                                                <!-- ko if: errorContactPhone-->
+                                                    <div class="form_error" data-bind="text: errorContactPhone"></div>
+                                                <!-- /ko -->
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="form_item form_item_country">
+                                                <label>Основной адрес:
+                                                    <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
+                                                </label>
+                                                <input name="textfield" type="checkbox" id="textfield" data-bind="checked: isDefault" />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table align="center">
+                        <tr>
+                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="orderFormStep4Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep3">3</a></div>
+                                    <div class="step active"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <h1>Выберите способ оплаты</h1>
+                    <div class="listBox" style="width:700px;">
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <!-- ko template: { name: 'headerTableOrderFormStep4Tmpl' } --><!-- /ko -->
+                            <!-- ko foreach: payment -->
+                                <!-- ko template: { name: 'rowTableOrderFormStep4Tmpl' } --><!-- /ko -->
+                            <!-- /ko -->
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table align="center">
+                        <tr>
+                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="headerTableOrderFormStep4Tmpl">
+    <tr class="listTableHeader">
+        <td width="80">Система</td>
+        <td>&nbsp;</td>
+        <td width="20%">К оплате</td>
+        <td>&nbsp;</td>
+        <td>Выбрать</td>
+    </tr>
+</script>
+
+<script type="text/html" id="rowTableOrderFormStep4Tmpl">
+    <tr class="listTableRow"  data-bind="click: ClickItem, css: cssActive()">
+        <td style="border-right:none">
+            <img src="" width="80" height="80" data-bind="attr: {src: logoPayment }">
+        </td>
+        <td style="border-left:none">
+            <strong data-bind="text: namePayment"></strong>
+        </td>
+        <td>
+            <!-- ko text: costPayment --><!-- /ko -->
+            <div class="popupTip">
+                <img title="" alt="" src="images/ico_11.png" />
+                <div class="popup" style="display: none;">
+                    <span data-bind="text: instrPayment"></span>
+                </div>
+            </div>
+        </td>
+        <td>
+            <!-- ko text: namePayment --><!-- /ko -->
+        </td>
+        <td align="center">
+            <!-- ko if: isActive()-->
+                <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id" >
+            <!-- /ko -->
+            <!-- ko ifnot: isActive()-->
+                <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+            <!-- /ko -->
+        </td>
+    </tr>
+</script>
+
+<script type="text/html" id="orderFormStep5Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep3">3</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep4">4</a></div>
+                                    <div class="step active"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">    
+                    <h1>Подтвердите заказ</h1>
+                    <div class="listBox">
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <tr class="listTableHeader">
+                                <td colspan="2">Купленные товары</td>
+                                <td width="20%">Цена</td>
+                                <td>Количество</td>
+                                <td>Сумма</td>
+                            </tr>
+                            <!-- ko foreach: goods -->
+                            <tr class="listTableRow">
+                                <td width="80" style="border-right:none">
+                                    <img src="" width="80" height="80" data-bind="attr: {src: routeImage}">
+                                </td>
+                                <td style="border-left:none">
+                                    <strong data-bind="text: fullName"></strong>
+                                </td>
+                                <td data-bind="text: sellCost"></td>
+                                <td data-bind="text: count"></td>
+                                <td data-bind="text: itogSellCost"></td>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- ko if: discount -->
+                            <tr class="listTableRow">
+                                <td colspan="4"><strong>Скидка:</strong> <!-- ko text: discount --><!-- /ko --></td>
+                                <td data-bind="text: discountSum"></td>
+                            </tr>
+                            <!-- /ko -->
+                            <!-- ko if: realShipping -->
+                            <tr class="listTableRow">
+                                <td colspan="4">
+                                    <strong>Доставка:</strong> <!-- ko text: methodShipping --><!-- /ko -->
+                                </td>
+                                <td data-bind="text: costShipping"></td>
+                            </tr>
+                            <!-- /ko -->
+                            <tr class="listTableRow">
+                                <td colspan="4"><strong>Способ оплаты:</strong> <!-- ko text: typePayment --><!-- /ko --></td>
+                                <td data-bind="text: costPayment"></td>
+                            </tr>
+                            <tr class="listTableRow">
+                                <td colspan="4"><strong>Всего:</strong></td>
+                                <td><strong class="total" data-bind="text: finalCost()"></strong></td>
+                            </tr>
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                    <div class="listBox">
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <tr class="listTableHeader">
+                                <td>Адрес</td>
+                                <td>Город</td>
+                                <td>Регион</td>
+                                <td>Страна</td>
+                                <td>Почтовый индекс</td>
+                                <td>Получатель</td>
+                                <td>Контактный телефон</td>
+                            </tr>
+                            <tr class="listTableRow">
+                                <td data-bind="text: delivery().address"></td>
+                                <td data-bind="text: delivery().city"></td>
+                                <td data-bind="text: delivery().region"></td>
+                                <td data-bind="text: delivery().country"></td>
+                                <td data-bind="text: delivery().postCode"></td>
+                                <td data-bind="text: delivery().addressee"></td>
+                                <td data-bind="text: delivery().contactPhone"></td>
+                            </tr>
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <br>
+                    <table align="center">
+                        <tr>
+                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:left"><input type="button" class="nextButton size2" value="Подтверждаю" data-bind="click: Submit"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>

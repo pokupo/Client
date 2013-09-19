@@ -18,7 +18,18 @@ var SearchWidget = function(){
         self.SetPosition();
     };
     self.SetInputParameters = function(){
-        self.settings.inputParameters = JSCore.ParserInputParameters(/SearchWidget.js/);
+        var input = {};
+        if(Config.Base.sourceParameters == 'string'){
+            var temp = JSCore.ParserInputParameters(/SearchWidget.js/);
+            if(temp.search){
+                input = temp.search;
+            }
+        }
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.search){
+            input = WParameters.search;
+        }
+        
+        self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
@@ -66,7 +77,7 @@ var SearchWidget = function(){
         var search = new SearchViewModel();
         search.selectedCategory = data.name_category;
         if(Parameters.cache.childrenCategory[data.id])
-            search.AddListCategory(JSON.parse(Parameters.cache.childrenCategory[data.id]), data);
+            search.AddListCategory(Parameters.cache.childrenCategory[data.id], data);
     };
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){

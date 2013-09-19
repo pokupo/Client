@@ -8,6 +8,8 @@ var Config = {
         cartPathApi : "/api/cart/", // префикс API корзины
         favPathApi : "/api/fav/", // префикс API избранное
         geoPathApi : "/api/geo/", // префикс API гео локации
+        shopPathApi : "/api/shop/", // префикс API магазина
+        orderPathApi : "/api/order/", // префикс API заказов
         pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
@@ -26,7 +28,8 @@ var Config = {
         timeMessage : 3000, //время посе которого скрывать сообщение
         containerIdConfirmWindow : 'dialogConfirm', // id модального окна с предупреждением
         conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
-        containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>' // темплейт модального окна с сообщением
+        containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>', // темплейт модального окна с сообщением
+        sourceParameters : 'object' // источник параметров (строка подключения скрипта 'string' или обьект 'object')
     },
     Containers : {  
         catalog : 'catalog', // id контейнера каталога 
@@ -43,7 +46,8 @@ var Config = {
         cartGoods : 'content', // id контейнера реестра товаров корзины
         profile : 'content', // id контейнера меню профиля и содержимого
         menuPersonalCabinet : 'profile_menu',
-        favorites : 'content' // id контейнера избранного
+        favorites : 'content', // id контейнера избранного
+        order : 'content' // id конетейнера оформления заказа
     },
     Goods : {
         tmpl: {
@@ -554,6 +558,137 @@ var Config = {
             clearGoods : 'Выбранные товары удалены из избранного.',
             failClearGoods : 'Произошла ошибка при удалении товара из избранного. Попробуйте еще раз.'
         }, 
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    Order : {
+        tmpl : {
+            path : "order/orderTmpl.html", // файл шаблонов
+            ordFormStep1TmplId : "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
+            ordConfirmFormStep1TmplId : "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
+            ordProfileFormStep1TmplId : 'orderProfileFormStep1Tmpl', // id шаблона формы персоональных данных
+            ordFormStep2TmplId : "orderFormStep2Tmpl", //id шаблона формы заказа шаг 2
+            ordFormStep3TmplId : "orderFormStep3Tmpl", //id шаблона формы заказа шаг 3
+            ordDeliveryFormStep3TmplId : 'orderDeliveryFormStep3Tmpl',
+            ordFormStep4TmplId : "orderFormStep4Tmpl", //id шаблона формы заказа шаг 4
+            ordFormStep5TmplId : "orderFormStep5Tmpl", //id шаблона формы заказа шаг 5
+        },
+        regular : { // регулярные выражения полей
+            username : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
+            email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+            phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/,
+            firstName : /^[a-zёа-яА-ЯЁA-Z]+$/,
+            lastName : /^[a-zа-яёА-ЯЁA-Z]+$/,
+            middleName : /^[a-zа-яёА-ЯЁA-Z]+$/,
+            birthDay : /^[\d]{2}.[\d]{2}.[\d]{4}$/,
+            gender : /^[mw]$/,
+            addressee : /^[a-zа-яёА-ЯЁA-Z\s]+$/
+        },
+        message : {
+            addAddressDelivery : 'Данные успешно сохранены.',
+            failAddAddressDelivery : 'Данные не сохранены. Попробуйте повторить запрос позднее.',
+            deleteAddressDelivery : 'Адрес доставки успешно удален.',
+            confirmDeleteAddressDelivery : "Вы уверены что хотите удалить адрес?",
+            failDeleteAddressDelivery : 'Адрес доставки не удален. Попробуйте повторить запрос позднее.',
+            setDefaultDelivery : 'Данные успешно обновлены.',
+            failSetDefaultDelivery : 'Данные не обновлены.',
+            orderConfirm : 'Ваш заказ подтвержден.',
+            selectMethodPayment : 'Необходимо выбрать способ оплаты.',
+            selectAddress : 'Необходимо выбрать метод доставки.',
+            selectMethodShipping : 'Необходимо выбрать метод доставки.'
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            username : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 4 символа',
+                maxLength : 'Максимум 40 символов',
+                regular : 'Только буквы латинского или русского алфавита',
+                uniq: 'К сожалению это имя уже занято, попробуйте указать другой вариант'
+            },
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                maxLength : 'Максимум 64 символа',
+                regular : 'Строка не является адресом электронной почты',
+                uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
+            },
+            phone : {
+                regular : 'Не верный формат телефона',
+                uniq : 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
+            },
+            password : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Пароль должен быть не менее 6 символов',
+                maxLength : 'Пароль должен быть не более 64 символов',
+                equal : 'Пароль не совпадает с образцом' 
+            },
+            isChecked : {
+                empty : 'Вам необходимо прочитать и принять условия соглашения'
+            },
+            emailToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            phoneToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            confirmLater : {
+                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи',
+            },
+            firstName : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            lastName : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            middleName : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+            birthDay : {
+                empty : 'Поле обязательно для заполнения',
+                minDate : 'Возраст пользователя должен быть не менее 18 лет.',
+                maxDate : 'Возраст пользователя может быть не старше 101 года'
+            },
+            gender : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            country : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            region : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            city : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            address : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            postIndex : {
+                empty : 'Поле обязательно для заполнения'
+            },
+            addressee : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 2 символа',
+                maxLength : 'Максимум 20 символов',
+                regular : 'Только буквы латинского или русского алфавита'
+            },
+        },
         style : {// стиль блока
             'position' : 'absolute', 
             'top' : '0px', 
