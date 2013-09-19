@@ -1,6 +1,6 @@
 var JSSettings = {
     protocolHTTP : 'http://',
-    protocolHTTPS : 'https://',       
+    protocolHTTPS : 'https://',
     host : "dev.pokupo.ru/",
     pathToJS : "server/js/",
     pathToTmpl : "server/tmpl/",
@@ -260,16 +260,16 @@ var XDMTransport = {
         }
         if(JSSettings.sourceData == 'proxy'){
             if(typeof easyXDM !== 'undefined'){
-                var remote = new easyXDM.Rpc({
+            var remote = new easyXDM.Rpc({
                     remote: XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostCore,
                     onReady: function(){
                         data.attr('action', XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostData);
-                        data.submit(); 
+                        data.submit();                          
                     }
                 }, {
                     local: {
                         returnUploadResponse: function(response){
-                            EventDispatcher.DispatchEvent(EventDispatcher.HashCode(data.toString()), response.msg);
+                            EventDispatcher.DispatchEvent(EventDispatcher.HashCode(data.toString()), JSON.parse(response.msg));
                         }
                     }
                 });
@@ -278,7 +278,6 @@ var XDMTransport = {
                 setTimeout(function(){XDMTransport.LoadPost(data, protocol)}, 1000);
             }
         }
-        
     }
 }
 

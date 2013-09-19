@@ -7,9 +7,9 @@ var OrderWidget = function() {
         ordFormStep1TmplId: null,
         ordFormStep1ConfirmTmplId: null,
         ordFormStep1ProfileTmplId: null,
-        ordFormStep2TmplId: null,
         ordFormStep3TmplId: null,
-        ordFormStep3DeliveryTmplId: null,
+        ordFormStep2TmplId: null,
+        ordFormStep2DeliveryTmplId: null,
         ordFormStep4TmplId: null,
         ordFormStep5TmplId: null,
         inputParameters: {},
@@ -32,9 +32,9 @@ var OrderWidget = function() {
         self.settings.ordFormStep1TmplId = Config.Order.tmpl.ordFormStep1TmplId;
         self.settings.ordFormStep1ConfirmTmplId = Config.Order.tmpl.ordConfirmFormStep1TmplId;
         self.settings.ordFormStep1ProfileTmplId = Config.Order.tmpl.ordProfileFormStep1TmplId
-        self.settings.ordFormStep2TmplId = Config.Order.tmpl.ordFormStep2TmplId;
         self.settings.ordFormStep3TmplId = Config.Order.tmpl.ordFormStep3TmplId;
-        self.settings.ordFormStep3DeliveryTmplId = Config.Order.tmpl.ordDeliveryFormStep3TmplId;
+        self.settings.ordFormStep2TmplId = Config.Order.tmpl.ordFormStep2TmplId;
+        self.settings.ordFormStep2DeliveryTmplId = Config.Order.tmpl.ordDeliveryFormStep2TmplId;
         self.settings.ordFormStep4TmplId = Config.Order.tmpl.ordFormStep4TmplId;
         self.settings.ordFormStep5TmplId = Config.Order.tmpl.ordFormStep5TmplId;
         self.settings.style = Config.Order.style;
@@ -71,7 +71,7 @@ var OrderWidget = function() {
                             self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = null;
                             self.order.count = null
-                            
+
                             setTimeout(function() {
                                 Routing.SetHash('order', 'Оформление заказа', {step: 1});
                             }, 1000);
@@ -95,7 +95,7 @@ var OrderWidget = function() {
                             self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = Routing.params.goodsId;
                             self.order.count = Routing.params.count;
-                            
+
                             setTimeout(function() {
                                 Routing.SetHash('order', 'Оформление заказа', {step: 1});
                             }, 1000);
@@ -133,12 +133,12 @@ var OrderWidget = function() {
                     else if (!data.err && Routing.params.step == 1 && Routing.params.block == 'profile' && self.order.id) {
                         self.Step.Step1Profile();
                     }
-                    else if (!data.err && Routing.params.step == 2 && self.order.id)
+                    else if (!data.err && Routing.params.step == 2 && !Routing.params.block && self.order.id)
                         self.Step.Step2();
-                    else if (!data.err && Routing.params.step == 3 && !Routing.params.block && self.order.id)
+                    else if (!data.err && Routing.params.step == 2 && Routing.params.block == 'add' && self.order.id)
+                        self.Step.Step2Form();
+                    else if (!data.err && Routing.params.step == 3 && self.order.id)
                         self.Step.Step3();
-                    else if (!data.err && Routing.params.step == 3 && Routing.params.block == 'add' && self.order.id)
-                        self.Step.Step3Form();
                     else if (!data.err && Routing.params.step == 4 && self.order.id)
                         self.Step.Step4();
                     else if (Routing.params.step == 5)
@@ -169,6 +169,30 @@ var OrderWidget = function() {
             self.CheckRouteOrder();
         });
 
+        EventDispatcher.AddEventListener('UserInformationWidget.click.logout', function() {
+            Parameters.cache.order.step1.login = {};
+            Parameters.cache.order.step1.reg = {};
+            Parameters.cache.order.step1.confirm = {};
+            Parameters.cache.order.step1.profile = {};
+            Parameters.cache.order.step2 = {};
+            Parameters.cache.order.step3 = {};
+            Parameters.cache.order.step4 = {};
+            Parameters.cache.order.step5 = {};
+            Parameters.cache.payment = null;
+            Parameters.cache.shipping = null;
+            Parameters.cache.delivery = null;
+            Parameters.cache.profile.personal = {};
+            self.order.type = null;
+            self.order.id = null;
+            self.order.sellerId = null;
+            self.order.goodsId = null;
+            self.order.count = null;
+            self.order.content = null;
+            self.order.delivery = {};
+            self.order.shipping = {};
+            self.order.payment = {};
+        });
+        
         EventDispatcher.AddEventListener('OrderWidget.step1.authentication', function(data) {
             self.BaseLoad.Login(data.username, data.password, data.rememberMe, function(request) {
                 if (request.err) {
@@ -192,7 +216,7 @@ var OrderWidget = function() {
                                 {create: 'directly', sellerId: self.order.sellerId},
                         function() {
                             self.DataOrder.Cart(function() {
-                                 Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                                Routing.SetHash('order', 'Оформление заказа', {step: 2});
                             });
                         }
                         );
@@ -326,6 +350,7 @@ var OrderWidget = function() {
                     test = false;
 
                 if (test) {
+                    Parameters.cache.profile.personal = {};
                     Parameters.cache.order.step1.profile = step1;
                     Routing.SetHash('order', 'Оформление заказа', {step: 2});
                 }
@@ -334,20 +359,20 @@ var OrderWidget = function() {
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step2.change', function(data) {
+        EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data) {
             self.BaseLoad.EditOrder(self.order.id + '?id_method_shipping=' + data.id(), function(result) {
                 if (self.QueryError(result, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)
+                    EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)
                 }))
                     self.order.shipping = data;
             })
         });
-        
-        EventDispatcher.AddEventListener('OrderWidget.step2.message', function(){
+
+        EventDispatcher.AddEventListener('OrderWidget.step3.message', function() {
             self.ShowMessage(Config.Order.message.selectMethodShipping, false, false);
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step3.add', function(data) {
+        EventDispatcher.AddEventListener('OrderWidget.step2.add', function(data) {
             var str = '?id_country=' + encodeURIComponent($.trim(data.country().id));
             if (data.region())
                 str = str + '&code_region=' + encodeURIComponent($.trim(data.region().regioncode));
@@ -366,37 +391,37 @@ var OrderWidget = function() {
             self.BaseLoad.AddDelivaryAddress(str, function(response) {
                 if (response.result == 'ok') {
                     self.ShowMessage(Config.Order.message.addAddressDelivery, function() {
-                        Parameters.cache.order.step3 = {};
+                        Parameters.cache.order.step2 = {};
                         Parameters.cache.delivery = null;
-                        Routing.SetHash('order', 'Оформление заказа', {step: 3});
+                        Routing.SetHash('order', 'Оформление заказа', {step: 2});
                     }, false);
                 }
                 else {
                     if (!response.err)
                         response.err = Config.Order.message.failAddAddressDelivery;
                     self.QueryError(response, function() {
-                        EventDispatcher.DispatchEvent('OrderWidget.step3.add', data)
+                        EventDispatcher.DispatchEvent('OrderWidget.step2.add', data)
                     })
                 }
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data) {
+        EventDispatcher.AddEventListener('OrderWidget.step2.change', function(data) {
             self.BaseLoad.EditOrder(self.order.id + '?id_shipping_address=' + data.id, function(result) {
                 if (self.QueryError(result, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)
-                })){
+                    EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)
+                })) {
                     Parameters.cache.delivery = null;
                     self.order.delivery = data;
                 }
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step3.delete', function(delivery) {
+        EventDispatcher.AddEventListener('OrderWidget.step2.delete', function(delivery) {
             self.BaseLoad.DeleteDeliveryAddress(delivery.address.id, function(data) {
                 if (data.result == 'ok') {
                     self.ShowMessage(Config.Order.message.deleteAddressDelivery, function() {
-                        Parameters.cache.order.step3 = {};
+                        Parameters.cache.order.step2 = {};
                         Parameters.cache.delivery = null;
                         delivery.list.remove(delivery.address);
                     }, false);
@@ -405,30 +430,34 @@ var OrderWidget = function() {
                     if (!data.err)
                         data.err = Config.Order.message.failDeleteAddressDelivery;
                     self.QueryError(data, function() {
-                        EventDispatcher.DispatchEvent('OrderWidget.step3.delete', delivery)
+                        EventDispatcher.DispatchEvent('OrderWidget.step2.delete', delivery)
                     })
                 }
             });
         });
-        
-        EventDispatcher.AddEventListener('OrderWidget.step3.message', function(){
+
+        EventDispatcher.AddEventListener('OrderWidget.step2.message', function() {
             self.ShowMessage(Config.Order.message.selectAddress, false, false);
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step4.change', function(data) {
             self.BaseLoad.EditOrder(self.order.id + '?id_method_payment=' + data.id(), function(result) {
-                if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)}))
+                if (self.QueryError(result, function() {
+                    EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)
+                }))
                     self.order.payment = data;
             });
         });
-        
-        EventDispatcher.AddEventListener('OrderWidget.step4.message', function(){
+
+        EventDispatcher.AddEventListener('OrderWidget.step4.message', function() {
             self.ShowMessage(Config.Order.message.selectMethodPayment, false, false);
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step5.confirm', function() {
-            self.BaseLoad.ConfirmOrder(self.order.id, function(data){
-                if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.confirm')}))
+            self.BaseLoad.ConfirmOrder(self.order.id, function(data) {
+                if (self.QueryError(data, function() {
+                    EventDispatcher.DispatchEvent('OrderWidget.step5.confirm')
+                }))
                     self.ShowMessage(Config.Order.message.orderConfirm, function() {
                         Routing.SetHash('catalog', 'Домашняя', {});
                     }, false);
@@ -512,7 +541,7 @@ var OrderWidget = function() {
         Create: function(params, callback) {
             var str = params.sellerId;
             if (params.goodsId)
-                str = str + '/' + params.goodsId +'/' + params.count;
+                str = str + '/' + params.goodsId + '/' + params.count;
             self.BaseLoad.NewOrder(str, function(data) {
                 if (self.QueryError(data,
                         function() {
@@ -580,35 +609,37 @@ var OrderWidget = function() {
             self.Fill.Step1Confirm();
         },
         Step1Profile: function() {
-            self.InsertContainer.Step1Profile();
-            self.Fill.Step1Profile();
-        },
-        Step2: function() {
-            if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.Shipping(self.order.id, function(data) {
-                    self.InsertContainer.Step2();
-                    self.Fill.Step2(data);
-                });
-            else
-                Routing.SetHash('order', 'Оформление заказа', {step: 4});
+            self.BaseLoad.Profile(function(data) {
+                self.InsertContainer.Step1Profile();
+                self.Fill.Step1Profile(data);
+            });
         },
         Step3: function() {
             if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.DeliveryAddressList(function(data) {
+                self.BaseLoad.Shipping(self.order.id, function(data) {
                     self.InsertContainer.Step3();
                     self.Fill.Step3(data);
                 });
             else
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
-        Step3Form: function() {
+        Step2: function() {
+            if (self.DataOrder.IsRealGoods())
+                self.BaseLoad.DeliveryAddressList(function(data) {
+                    self.InsertContainer.Step2();
+                    self.Fill.Step2(data);
+                });
+            else
+                Routing.SetHash('order', 'Оформление заказа', {step: 4});
+        },
+        Step2Form: function() {
             if (self.DataOrder.IsRealGoods()) {
-                var form = new OrderDeliveryFormStep3ViewModel();
+                var form = new OrderDeliveryFormStep2ViewModel();
                 var shopId = Parameters.shopId;
 
                 self.BaseLoad.Country(shopId, function(data) {
-                    self.InsertContainer.Step3Form();
-                    self.Fill.Step3Form(form, data);
+                    self.InsertContainer.Step2Form();
+                    self.Fill.Step2Form(form, data);
                 });
             }
             else
@@ -637,14 +668,14 @@ var OrderWidget = function() {
         Step1Profile: function() {
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep1ProfileTmplId).html());
         },
-        Step2: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep2TmplId).html());
-        },
         Step3: function() {
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep3TmplId).html());
         },
-        Step3Form: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep3DeliveryTmplId).html());
+        Step2: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep2TmplId).html());
+        },
+        Step2Form: function() {
+            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep2DeliveryTmplId).html());
         },
         Step4: function() {
             $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordFormStep4TmplId).html());
@@ -656,7 +687,7 @@ var OrderWidget = function() {
     self.Fill = {
         Step1: function() {
             var form = Parameters.cache.order.step1.reg;
-            if ($.isEmptyObject(form)){
+            if ($.isEmptyObject(form)) {
                 form = new OrderFormStep1ViewModel();
                 Parameters.cache.order.step1.reg = form;
             }
@@ -666,30 +697,22 @@ var OrderWidget = function() {
             var form = new OrderConfirmRegistrationFormStep1ViewModel();
             self.Render.Step1Confirm(form);
         },
-        Step1Profile: function() {
+        Step1Profile: function(data) {
             var form = new OrderProfileRegistrationFormStep1ViewModel();
+            form.AddContent(data);
             self.Render.Step1Profile(form);
         },
         Step2: function(data) {
             var form = Parameters.cache.order.step2;
             if ($.isEmptyObject(form)) {
                 form = new OrderFormStep2ViewModel();
-                form.AddShipping(data);
-                Parameters.cache.order.step2 = form;
-            }
-            self.Render.Step2(form);
-        },
-        Step3: function(data) {
-            var form = Parameters.cache.order.step3;
-            if ($.isEmptyObject(form)) {
-                form = new OrderFormStep3ViewModel();
                 form.AddContent(data, self.order);
             }
 
-            self.Render.Step3(form);
-            Parameters.cache.order.step3 = form;
+            self.Render.Step2(form);
+            Parameters.cache.order.step2 = form;
         },
-        Step3Form: function(form, data) {
+        Step2Form: function(form, data) {
             form.AddCountryList(data);
             if (form.idCountry()) {
                 $.grep(form.countryList(), function(data) {
@@ -698,7 +721,16 @@ var OrderWidget = function() {
                     }
                 })
             }
-            self.Render.Step3Form(form);
+            self.Render.Step2Form(form);
+        },
+        Step3: function(data) {
+            var form = Parameters.cache.order.step3;
+            if ($.isEmptyObject(form)) {
+                form = new OrderFormStep3ViewModel();
+                form.AddShipping(data);
+                Parameters.cache.order.step3 = form;
+            }
+            self.Render.Step3(form);
         },
         Step4: function(data) {
             var form = Parameters.cache.order.step4;
@@ -754,19 +786,19 @@ var OrderWidget = function() {
             });
             self.WidgetLoader(true);
         },
-        Step2: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-            }
-            self.WidgetLoader(true);
-        },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
             self.WidgetLoader(true);
         },
-        Step3Form: function(delivery) {
+        Step2: function(form) {
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+            }
+            self.WidgetLoader(true);
+        },
+        Step2Form: function(delivery) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
             }
@@ -1174,6 +1206,15 @@ var OrderProfileRegistrationFormStep1ViewModel = function() {
 
     self.cssRegistrationDataForm = 'order_personal_information';
 
+    self.AddContent = function(data) {
+        if(!data.err){
+            self.gender(data.gender);
+            self.lastName(data.f_name);
+            self.firstName(data.s_name);
+            self.middleName(data.m_name);
+            self.birthDay(data.birth_day);
+        }
+    };
     self.Back = function() {
         EventDispatcher.DispatchEvent('OrderWidget.step1.view2');
     };
@@ -1303,131 +1344,47 @@ var OrderProfileRegistrationFormStep1ViewModel = function() {
 
 var OrderFormStep2ViewModel = function() {
     var self = this;
-    self.shipping = ko.observableArray();
-
-    self.AddShipping = function(data) {
-        self.shipping = ko.observableArray();
-        for (var i = 0; i <= data.length - 1; i++) {
-            var item = new OrderItemFormStep2ViewModel();
-            item.AddContent(data[i], self);
-            self.shipping.push(item);
-        }
-    };
-    self.HasShipping = function(){
-        var test = false;
-        $.each(self.shipping(), function(i){
-            if(self.shipping()[i].isActive()){
-                test = true;
-                return false;
-            }   
-        })
-        return test;
-    };
-    self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-    self.Submit = function() {
-        if(self.HasShipping())
-            Routing.SetHash('order', 'Оформление заказа', {step: 3});
-        else
-            EventDispatcher.DispatchEvent('OrderWidget.step2.message');
-    };
-    self.ClickStep1 = function(){
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-};
-
-var OrderItemFormStep2ViewModel = function() {
-    var self = this;
-    self.nameShippingCompany = ko.observable();
-    self.siteShippingCompany = ko.observable();
-    self.logoShippingCompany = ko.observable();
-    self.id = ko.observable();
-    self.nameMethodShipping = ko.observable();
-    self.descMethodShipping = ko.observable();
-    self.costShipping = ko.observable();
-    self.cssActive = ko.observable('shipping_row');
-    self.isActive = ko.observable(false);
-
-    self.parent = null;
-
-    self.AddContent = function(data, parent) {
-        if (data.hasOwnProperty('name_shipping_company'))
-            self.nameShippingCompany(data.name_shipping_company);
-        if (data.hasOwnProperty('site_shipping_company'))
-            self.siteShippingCompany(data.site_shipping_company);
-        if (data.hasOwnProperty('logo_shipping_company'))
-            self.logoShippingCompany(Config.Base.pathToImages + data.logo_shipping_company);
-        if (data.hasOwnProperty('id'))
-            self.id(data.id);
-        if (data.hasOwnProperty('name_method_shipping'))
-            self.nameMethodShipping(data.name_method_shipping);
-        if (data.hasOwnProperty('desc_method_shipping'))
-            self.descMethodShipping(data.desc_method_shipping);
-        if (data.hasOwnProperty('cost_shipping'))
-            self.costShipping(data.cost_shipping + ' руб.');
-
-        self.parent = parent;
-    };
-    self.ClickItem = function() {
-        $.each(self.parent.shipping(), function(i) {
-            self.parent.shipping()[i].cssActive('shipping_row');
-            self.parent.shipping()[i].isActive(false);
-        });
-
-        self.cssActive('shipping_row active');
-        self.isActive(true);
-
-        EventDispatcher.DispatchEvent('OrderWidget.step2.change', self);
-    }
-};
-
-var OrderFormStep3ViewModel = function() {
-    var self = this;
     self.addressList = ko.observableArray();
     self.cssAddressList = 'delivary_address_list';
 
     self.ClickAddAddress = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 3, block: 'add'});
+        Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
     };
     self.AddContent = function(data, order) {
-        if(!data.err)
+        if (!data.err)
             for (var key in data) {
                 OrderItemFormStep3ViewModel.prototype = new Widget();
-                var address = new OrderItemFormStep3ViewModel(data[key], self.addressList)
+                var address = new OrderItemFormStep2ViewModel(data[key], self.addressList)
                 self.addressList.push(address);
                 if (data[key].is_default == 'yes')
                     order.delivery = address;
             }
     };
-    self.HasAddress = function(){
+    self.HasAddress = function() {
         var test = false;
-        $.each(self.addressList(), function(i){
-            if(self.addressList()[i].isDefault()){
+        $.each(self.addressList(), function(i) {
+            if (self.addressList()[i].isDefault()) {
                 test = true;
                 return false;
-            }   
+            }
         })
         return test;
     };
     self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
-    };
-    self.Submit = function() {
-        if(self.HasAddress())
-            Routing.SetHash('order', 'Оформление заказа', {step: 4});
-        else
-            EventDispatcher.DispatchEvent('OrderWidget.step3.message');
-    };
-    self.ClickStep1 = function(){
         Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
     };
-    self.ClickStep2 = function(){
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
+    self.Submit = function() {
+        if (self.HasAddress())
+            Routing.SetHash('order', 'Оформление заказа', {step: 3});
+        else
+            EventDispatcher.DispatchEvent('OrderWidget.step2.message');
+    };
+    self.ClickStep1 = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
     };
 };
 
-var OrderItemFormStep3ViewModel = function(data, list) {
+var OrderItemFormStep2ViewModel = function(data, list) {
     var self = this;
     if (data.id)
         self.id = data.id;
@@ -1455,7 +1412,7 @@ var OrderItemFormStep3ViewModel = function(data, list) {
         self.isDefault = ko.observable(false);
         self.cssIsDefault = ko.observable('delivery_address_is_default');
     }
-    
+
     self.Delete = function() {
         self.Confirm(Config.Order.message.confirmDeleteAddressDelivery, function() {
             EventDispatcher.DispatchEvent('OrderWidget.step3.delete', {address: self, list: list});
@@ -1471,12 +1428,12 @@ var OrderItemFormStep3ViewModel = function(data, list) {
         self.isDefault(true);
         Parameters.cache.order.delivery = self;
 
-        EventDispatcher.DispatchEvent('OrderWidget.step3.change', self);
+        EventDispatcher.DispatchEvent('OrderWidget.step2.change', self);
     };
 
 };
 
-var OrderDeliveryFormStep3ViewModel = function(data) {
+var OrderDeliveryFormStep2ViewModel = function(data) {
     var self = this;
     self.id = ko.observable();
     self.idCountry = ko.observable();
@@ -1539,7 +1496,7 @@ var OrderDeliveryFormStep3ViewModel = function(data) {
     };
     self.Submit = function() {
         if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('OrderWidget.step3.add', self);
+            EventDispatcher.DispatchEvent('OrderWidget.step2.add', self);
         }
     };
     self.ValidationForm = function() {
@@ -1635,14 +1592,95 @@ var OrderDeliveryFormStep3ViewModel = function(data) {
         return true;
     };
     self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 3});
-    };
-    self.ClickStep1 = function(){
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-    self.ClickStep2 = function(){
         Routing.SetHash('order', 'Оформление заказа', {step: 2});
     };
+    self.ClickStep1 = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
+    };
+};
+
+var OrderFormStep3ViewModel = function() {
+    var self = this;
+    self.shipping = ko.observableArray();
+
+    self.AddShipping = function(data) {
+        self.shipping = ko.observableArray();
+        for (var i = 0; i <= data.length - 1; i++) {
+            var item = new OrderItemFormStep3ViewModel();
+            item.AddContent(data[i], self);
+            self.shipping.push(item);
+        }
+    };
+    self.HasShipping = function() {
+        var test = false;
+        $.each(self.shipping(), function(i) {
+            if (self.shipping()[i].isActive()) {
+                test = true;
+                return false;
+            }
+        })
+        return test;
+    };
+    self.Back = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 2});
+    };
+    self.Submit = function() {
+        if (self.HasShipping())
+            Routing.SetHash('order', 'Оформление заказа', {step: 4});
+        else
+            EventDispatcher.DispatchEvent('OrderWidget.step3.message');
+    };
+    self.ClickStep1 = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
+    };
+    self.ClickStep2 = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 2});
+    };
+};
+
+var OrderItemFormStep3ViewModel = function() {
+    var self = this;
+    self.nameShippingCompany = ko.observable();
+    self.siteShippingCompany = ko.observable();
+    self.logoShippingCompany = ko.observable();
+    self.id = ko.observable();
+    self.nameMethodShipping = ko.observable();
+    self.descMethodShipping = ko.observable();
+    self.costShipping = ko.observable();
+    self.cssActive = ko.observable('shipping_row');
+    self.isActive = ko.observable(false);
+
+    self.parent = null;
+
+    self.AddContent = function(data, parent) {
+        if (data.hasOwnProperty('name_shipping_company'))
+            self.nameShippingCompany(data.name_shipping_company);
+        if (data.hasOwnProperty('site_shipping_company'))
+            self.siteShippingCompany(data.site_shipping_company);
+        if (data.hasOwnProperty('logo_shipping_company'))
+            self.logoShippingCompany(Config.Base.pathToImages + data.logo_shipping_company);
+        if (data.hasOwnProperty('id'))
+            self.id(data.id);
+        if (data.hasOwnProperty('name_method_shipping'))
+            self.nameMethodShipping(data.name_method_shipping);
+        if (data.hasOwnProperty('desc_method_shipping'))
+            self.descMethodShipping(data.desc_method_shipping);
+        if (data.hasOwnProperty('cost_shipping'))
+            self.costShipping(data.cost_shipping + ' руб.');
+
+        self.parent = parent;
+    };
+    self.ClickItem = function() {
+        $.each(self.parent.shipping(), function(i) {
+            self.parent.shipping()[i].cssActive('shipping_row');
+            self.parent.shipping()[i].isActive(false);
+        });
+
+        self.cssActive('shipping_row active');
+        self.isActive(true);
+
+        EventDispatcher.DispatchEvent('OrderWidget.step3.change', self);
+    }
 };
 
 var OrderFormStep4ViewModel = function() {
@@ -1657,13 +1695,13 @@ var OrderFormStep4ViewModel = function() {
             self.payment.push(item);
         }
     };
-    self.HasPayment = function(){
+    self.HasPayment = function() {
         var test = false;
-        $.each(self.payment(), function(i){
-            if(self.payment()[i].isActive()){
+        $.each(self.payment(), function(i) {
+            if (self.payment()[i].isActive()) {
                 test = true;
                 return false;
-            }   
+            }
         })
         return test;
     };
@@ -1671,18 +1709,18 @@ var OrderFormStep4ViewModel = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 3});
     };
     self.Submit = function() {
-        if(self.HasPayment())
+        if (self.HasPayment())
             Routing.SetHash('order', 'Оформление заказа', {step: 5});
         else
             EventDispatcher.DispatchEvent('OrderWidget.step4.message');
     };
-    self.ClickStep1 = function(){
+    self.ClickStep1 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
     };
-    self.ClickStep2 = function(){
+    self.ClickStep2 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 2});
     };
-    self.ClickStep3 = function(){
+    self.ClickStep3 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 3});
     };
 };
@@ -1751,7 +1789,7 @@ var OrderFormStep5ViewModel = function() {
     self.discountSum = ko.observable();
     self.delivery = ko.observable();
     self.goods = ko.observableArray();
-    
+
 
     self.AddContent = function(data) {
         var order = data.order;
@@ -1760,16 +1798,16 @@ var OrderFormStep5ViewModel = function() {
             self.methodShipping(order.method_shipping);
         if (order.hasOwnProperty('shipping_address'))
             self.shippingAddress(order.shipping_address);
-        if (order.hasOwnProperty('type_payment'))
-            self.typePayment(order.type_payment);
+        if (order.hasOwnProperty('method_payment'))
+            self.typePayment(order.method_payment);
         if (order.hasOwnProperty('date_create'))
             self.dateCreate(order.date_create);
         if (order.hasOwnProperty('comment_buyer'))
             self.commentBuyer(order.comment_buyer);
         if (order.hasOwnProperty('comment_operator'))
             self.commentOperator(order.comment_operator);
-        if (order.hasOwnProperty('real_shipping')){
-            if(order.real_shipping == 'yes')
+        if (order.hasOwnProperty('shipping')) {
+            if (order.shipping == 'yes')
                 self.realShipping(true);
             else
                 self.realShipping(false);
@@ -1796,7 +1834,7 @@ var OrderFormStep5ViewModel = function() {
             self.finalCost(order.final_cost + ' руб');
 
         self.goods = ko.observableArray();
-        
+
         var sell = 0;
         var end = 0;
         $.each(data.goods, function(i) {
@@ -1804,12 +1842,12 @@ var OrderFormStep5ViewModel = function() {
             sell = sell + data.goods[i].sell_cost;
             end = end + data.goods[i].final_cost;
         });
-        var diff = sell-end;
-        var d = Math.floor(diff*100/sell);
+        var diff = sell - end;
+        var d = Math.floor(diff * 100 / sell);
         var discount = '';
-        if(d > 0)
+        if (d > 0)
             discount = d + '%';
-        
+
         self.discount = ko.observable(discount);
         self.discountSum = ko.observable(diff + 'руб');
 
@@ -1822,16 +1860,16 @@ var OrderFormStep5ViewModel = function() {
     self.Submit = function() {
         EventDispatcher.DispatchEvent('OrderWidget.step5.confirm');
     };
-    self.ClickStep1 = function(){
+    self.ClickStep1 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
     };
-    self.ClickStep2 = function(){
+    self.ClickStep2 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 2});
     };
-    self.ClickStep3 = function(){
+    self.ClickStep3 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 3});
     };
-    self.ClickStep4 = function(){
+    self.ClickStep4 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 4});
     };
 };
