@@ -573,9 +573,9 @@ var Config = {
             ordFormStep1TmplId : "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
             ordConfirmFormStep1TmplId : "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
             ordProfileFormStep1TmplId : 'orderProfileFormStep1Tmpl', // id шаблона формы персоональных данных
-            ordFormStep2TmplId : "orderFormStep2Tmpl", //id шаблона формы заказа шаг 2
             ordFormStep3TmplId : "orderFormStep3Tmpl", //id шаблона формы заказа шаг 3
-            ordDeliveryFormStep3TmplId : 'orderDeliveryFormStep3Tmpl',
+            ordFormStep2TmplId : "orderFormStep2Tmpl", //id шаблона формы заказа шаг 2
+            ordDeliveryFormStep2TmplId : 'orderDeliveryFormStep2Tmpl',
             ordFormStep4TmplId : "orderFormStep4Tmpl", //id шаблона формы заказа шаг 4
             ordFormStep5TmplId : "orderFormStep5Tmpl", //id шаблона формы заказа шаг 5
         },
@@ -618,6 +618,7 @@ var Config = {
                 uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
             },
             phone : {
+                empty : 'Поле обязательно для заполнения',
                 regular : 'Не верный формат телефона',
                 uniq : 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
             },

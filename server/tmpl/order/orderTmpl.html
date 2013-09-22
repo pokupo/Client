@@ -302,7 +302,7 @@
             </tr>
             <tr>
                 <td valign="top" align="center">
-                    <form  data-bind="attr: {id: cssRegistrationDataForm}">
+                    <form  data-bind="attr: {id: cssRegistrationDataForm}" enctype="multipart/form-data" target="upload_target" method="POST">
                         <h1>Персональные данные</h1>
                         <div class="bottom_description_center">Укажите свои персональные данные</div>
                         <div class="formBox" style="width:380px;">
@@ -416,95 +416,6 @@
             </tr>
             <tr>
                 <td valign="top" align="center">
-                    <h1>Выберите способ доставки</h1>
-                    <div class="listBox" style="width:700px;">
-                        <table cellpadding="0" cellspacing="0" class="listTable">
-                            <tr class="listTableHeader">
-                                <td colspan="2">Способ доставки</td>
-                                <td width="20%">Стоимость</td>
-                                <td>&nbsp;</td>
-                                <td>Выбрать</td>
-                            </tr>
-                            <!-- ko foreach: shipping() -->
-                                <tr class="listTableRow" data-bind="click: ClickItem, css: cssActive()">
-                                    <td width="80" style="border-right:none">
-                                        <img src="" width="80" height="80" data-bind="attr: {src: logoShippingCompany}">
-                                    </td>
-                                    <td style="border-left:none">
-                                        <strong data-bind="text: nameMethodShipping"></strong>
-                                    </td>
-                                    <td>
-                                        <!-- ko if: costShipping -->
-                                            <!-- ko text: costShipping --><!-- /ko --> 
-                                            <div class="popupTip">
-                                                <img title="" alt="" src="images/ico_11.png" />
-                                                <div class="popup" style="display: none;">
-                                                    <span>подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии.</span>
-                                                </div>
-                                            </div>
-                                        <!-- /ko -->
-                                    </td>
-                                    <td data-bind="text: descMethodShipping"></td>
-                                    <td align="center">
-                                        <!-- ko if: isActive()-->
-                                        <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked'}, value: id" >
-                                        <!-- /ko -->
-                                        <!-- ko ifnot: isActive()-->
-                                        <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
-                                        <!-- /ko -->
-                                    </td>
-                                </tr>
-                            <!-- /ko -->
-                        </table>
-                        <div class="clear"></div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td align="center">
-                    <table align="center">
-                        <tr>
-                            <td style="text-align:right">
-                                <input type="button" class="prevButton size2" value="Назад" data-bind="click: Back">
-                            </td>
-                            <td width="50">&nbsp;</td>
-                            <td style="text-align:left">
-                                <input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit">
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <div class="clear"></div>
-    </div>
-</div>
-</script>
-
-<script type="text/html" id="orderFormStep3Tmpl">
-<div class="horizontalSection noborder">
-    <div class="pageWidth">
-        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
-            <tr>
-                <td align="center">
-                    <table cellpadding="0" cellspacing="0" align="center">
-                        <tr>
-                            <td>
-                                <div class="progressStepsBox">
-                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
-                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
-                                    <div class="step active"><div>3</div></div>
-                                    <div class="step"><div>4</div></div>
-                                    <div class="step"><div>5</div></div>
-                                    <div class="clear"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top" align="center">
                     <h1>Выберите адрес доставки</h1>
                     <div class="listBox">
                         <div style="float:left; margin:0px 0px 10px 0px;">
@@ -574,7 +485,7 @@
 </div>
 </script>
 
-<script type="text/html" id="orderDeliveryFormStep3Tmpl">
+<script type="text/html" id="orderDeliveryFormStep2Tmpl">
     <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -585,8 +496,8 @@
                             <td>
                                 <div class="progressStepsBox">
                                     <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
-                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
-                                    <div class="step active"><div>3</div></div>
+                                    <div class="step active"><div>2</div></div>
+                                    <div class="step"><div>3</div></div>
                                     <div class="step"><div>4</div></div>
                                     <div class="step"><div>5</div></div>
                                     <div class="clear"></div>
@@ -718,6 +629,95 @@
                             <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
                             <td width="50">&nbsp;</td>
                             <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+</script>
+
+<script type="text/html" id="orderFormStep3Tmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
+            <tr>
+                <td align="center">
+                    <table cellpadding="0" cellspacing="0" align="center">
+                        <tr>
+                            <td>
+                                <div class="progressStepsBox">
+                                    <div class="step step_1 active"><a href="#" data-bind="click: ClickStep1">1</a></div>
+                                    <div class="step active"><a href="#" data-bind="click: ClickStep2">2</a></div>
+                                    <div class="step active"><div>3</div></div>
+                                    <div class="step"><div>4</div></div>
+                                    <div class="step"><div>5</div></div>
+                                    <div class="clear"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" align="center">
+                    <h1>Выберите способ доставки</h1>
+                    <div class="listBox" style="width:700px;">
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <tr class="listTableHeader">
+                                <td colspan="2">Способ доставки</td>
+                                <td width="20%">Стоимость</td>
+                                <td>&nbsp;</td>
+                                <td>Выбрать</td>
+                            </tr>
+                            <!-- ko foreach: shipping() -->
+                                <tr class="listTableRow" data-bind="click: ClickItem, css: cssActive()">
+                                    <td width="80" style="border-right:none">
+                                        <img src="" width="80" height="80" data-bind="attr: {src: logoShippingCompany}">
+                                    </td>
+                                    <td style="border-left:none">
+                                        <strong data-bind="text: nameMethodShipping"></strong>
+                                    </td>
+                                    <td>
+                                        <!-- ko if: costShipping -->
+                                            <!-- ko text: costShipping --><!-- /ko --> 
+                                            <div class="popupTip">
+                                                <img title="" alt="" src="images/ico_11.png" />
+                                                <div class="popup" style="display: none;">
+                                                    <span>подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии.</span>
+                                                </div>
+                                            </div>
+                                        <!-- /ko -->
+                                    </td>
+                                    <td data-bind="text: descMethodShipping"></td>
+                                    <td align="center">
+                                        <!-- ko if: isActive()-->
+                                        <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked'}, value: id" >
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: isActive()-->
+                                        <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+                                        <!-- /ko -->
+                                    </td>
+                                </tr>
+                            <!-- /ko -->
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td align="center">
+                    <table align="center">
+                        <tr>
+                            <td style="text-align:right">
+                                <input type="button" class="prevButton size2" value="Назад" data-bind="click: Back">
+                            </td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:left">
+                                <input type="button" class="nextButton size2" value="Продолжить" data-bind="click: Submit">
+                            </td>
                         </tr>
                     </table>
                 </td>
