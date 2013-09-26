@@ -211,7 +211,7 @@ var OrderWidget = function() {
                         }
                         );
                     }
-                    if (self.order.type == 'fromCart') {
+                    if (self.order.type == 'cart') {
                         self.DataOrder.Create(
                                 {create: 'directly', sellerId: self.order.sellerId},
                         function() {
@@ -463,6 +463,17 @@ var OrderWidget = function() {
                     }, false);
             });
         });
+        
+        EventDispatcher.AddEventListener('OrderWidget.step5.delete', function(){
+            self.Confirm(Config.Order.message.confirmDeleteOrder, function(){
+                self.BaseLoad.DeleteOrder(self.order.id + '/yes', function(data){
+                    if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.delete')}))
+                        self.ShowMessage(Config.Order.message.deleteOrderConfirm, function() {
+                            Routing.SetHash('catalog', 'Домашняя', {});
+                        }, false);
+                });
+            })
+        });
     };
     self.Validate = {
         Username: function(data, step1) {
@@ -694,7 +705,13 @@ var OrderWidget = function() {
             self.Render.Step1(form);
         },
         Step1Confirm: function() {
+            if (Routing.params.username && Routing.params.mail_token) 
+                Parameters.cache.order.step1.reg.username(Routing.params.username);
             var form = new OrderConfirmRegistrationFormStep1ViewModel();
+            if (Routing.params.username && Routing.params.mail_token) {
+                form.mailToken(Routing.params.mail_token);
+                EventDispatcher.DispatchEvent('OrderWidget.step1.confirm', form);
+            }
             self.Render.Step1Confirm(form);
         },
         Step1Profile: function(data) {
@@ -703,14 +720,18 @@ var OrderWidget = function() {
             self.Render.Step1Profile(form);
         },
         Step2: function(data) {
-            var form = Parameters.cache.order.step2;
-            if ($.isEmptyObject(form)) {
-                form = new OrderFormStep2ViewModel();
-                form.AddContent(data, self.order);
-            }
+            if(!data.err){
+                var form = Parameters.cache.order.step2;
+                if ($.isEmptyObject(form)) {
+                    form = new OrderFormStep2ViewModel();
+                    form.AddContent(data, self.order);
+                }
 
-            self.Render.Step2(form);
-            Parameters.cache.order.step2 = form;
+                self.Render.Step2(form);
+                Parameters.cache.order.step2 = form;
+            }
+            else
+                Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
         },
         Step2Form: function(form, data) {
             form.AddCountryList(data);
@@ -1371,7 +1392,18 @@ var OrderFormStep2ViewModel = function() {
         return test;
     };
     self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
+        if($.isEmptyObject(Parameters.cache.order.step1.profile)){
+            var t = Parameters.cache.history;
+            for(var i = 0; i <= t.length-1; i++){
+                var link = t.pop();
+                if(link.route != 'order'){ 
+                    Routing.SetHash(link.route, link.title, link.data, true);
+                    return false;
+                }
+            }
+        }
+        else
+             Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
     };
     self.Submit = function() {
         if (self.HasAddress())
@@ -1768,9 +1800,9 @@ var OrderItemFormStep4ViewModel = function() {
 var OrderFormStep5ViewModel = function() {
     var self = this;
     self.id = ko.observable();
-    self.methodShipping = ko.observable();
+    self.nameShipping = ko.observable();
     self.shippingAddress = ko.observable();
-    self.typePayment = ko.observable();
+    self.namePayment = ko.observable();
     self.dateCreate = ko.observable();
     self.commentBuyer = ko.observable();
     self.commentOperator = ko.observable();
@@ -1794,12 +1826,16 @@ var OrderFormStep5ViewModel = function() {
     self.AddContent = function(data) {
         var order = data.order;
         self.id(order.id);
-        if (order.hasOwnProperty('method_shipping'))
-            self.methodShipping(order.method_shipping);
+        if (order.hasOwnProperty('method_shipping')){
+            if(order.method_shipping.hasOwnProperty('name_method_shipping'))
+                self.nameShipping(order.method_shipping.name_method_shipping);
+        }
         if (order.hasOwnProperty('shipping_address'))
             self.shippingAddress(order.shipping_address);
-        if (order.hasOwnProperty('method_payment'))
-            self.typePayment(order.method_payment);
+        if (order.hasOwnProperty('method_payment')){
+            if (order.method_payment.hasOwnProperty('name_payment'))
+            self.namePayment(order.method_payment.name_payment);
+        }
         if (order.hasOwnProperty('date_create'))
             self.dateCreate(order.date_create);
         if (order.hasOwnProperty('comment_buyer'))
@@ -1831,7 +1867,7 @@ var OrderFormStep5ViewModel = function() {
         if (order.hasOwnProperty('sell_cost'))
             self.sellCost(order.sell_cost);
         if (order.hasOwnProperty('final_cost'))
-            self.finalCost(order.final_cost + ' руб');
+            self.finalCost((order.final_cost + order.cost_shipping + order.cost_payment) + ' руб');
 
         self.goods = ko.observableArray();
 
@@ -1859,6 +1895,9 @@ var OrderFormStep5ViewModel = function() {
     };
     self.Submit = function() {
         EventDispatcher.DispatchEvent('OrderWidget.step5.confirm');
+    };
+    self.Delete = function(){
+        EventDispatcher.DispatchEvent('OrderWidget.step5.delete');
     };
     self.ClickStep1 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});

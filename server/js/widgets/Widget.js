@@ -823,6 +823,12 @@ function Widget(){
                 if(callback)
                     callback(data);
             }, true);
+        },
+        DeleteOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
         }
     };
 };

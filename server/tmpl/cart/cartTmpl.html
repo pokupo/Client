@@ -16,7 +16,12 @@
                     <span data-bind="text: baseCost"></span> 
                 <!-- /ko -->
                 <!-- ko if: ShowFinalCost() -->
+                    <!-- ko if: ShowBaseCost() -->
                     <s data-bind="text: finalCost"></s>
+                    <!-- /ko -->
+                    <!-- ko ifnot: ShowBaseCost() -->
+                    <span data-bind="text: finalCost"></span>
+                    <!-- /ko -->
                     <span class="unit_cost_cart">руб.</span>
                 <!-- /ko -->
             </span>

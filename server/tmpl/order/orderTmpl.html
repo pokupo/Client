@@ -378,7 +378,7 @@
                         </div><!-- /formBox -->
                         <table align="center">
                             <tr>
-                                <td style="text-align:right"><input type="button" class="prevButton size2" value="Указать позже" data-bind="click: SpecifyLater"></td>
+                                <td style="text-align:right"><input type="button" class="subButtonBig size2" value="Указать позже" data-bind="click: SpecifyLater"></td>
                                 <td width="50">&nbsp;</td>
                                 <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: SubmitForm"></td>
                             </tr>
@@ -668,8 +668,8 @@
                         <table cellpadding="0" cellspacing="0" class="listTable">
                             <tr class="listTableHeader">
                                 <td colspan="2">Способ доставки</td>
-                                <td width="20%">Стоимость</td>
                                 <td>&nbsp;</td>
+                                <td width="20%">Стоимость</td>
                                 <td>Выбрать</td>
                             </tr>
                             <!-- ko foreach: shipping() -->
@@ -679,19 +679,19 @@
                                     </td>
                                     <td style="border-left:none">
                                         <strong data-bind="text: nameMethodShipping"></strong>
+                                        <div class="popupTip">
+                                            <img title="" alt="" src="images/ico_11.png" />
+                                            <div class="popup" style="display: none;">
+                                                <span>подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии.</span>
+                                            </div>
+                                        </div>
                                     </td>
+                                    <td data-bind="text: descMethodShipping"></td>
                                     <td>
                                         <!-- ko if: costShipping -->
                                             <!-- ko text: costShipping --><!-- /ko --> 
-                                            <div class="popupTip">
-                                                <img title="" alt="" src="images/ico_11.png" />
-                                                <div class="popup" style="display: none;">
-                                                    <span>подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии подсказка, время обработки платежа, доп. комиссии.</span>
-                                                </div>
-                                            </div>
                                         <!-- /ko -->
                                     </td>
-                                    <td data-bind="text: descMethodShipping"></td>
                                     <td align="center">
                                         <!-- ko if: isActive()-->
                                         <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked'}, value: id" >
@@ -785,8 +785,8 @@
     <tr class="listTableHeader">
         <td width="80">Система</td>
         <td>&nbsp;</td>
-        <td width="20%">К оплате</td>
         <td>&nbsp;</td>
+        <td width="20%">К оплате</td>
         <td>Выбрать</td>
     </tr>
 </script>
@@ -798,9 +798,6 @@
         </td>
         <td style="border-left:none">
             <strong data-bind="text: namePayment"></strong>
-        </td>
-        <td>
-            <!-- ko text: costPayment --><!-- /ko -->
             <div class="popupTip">
                 <img title="" alt="" src="images/ico_11.png" />
                 <div class="popup" style="display: none;">
@@ -809,7 +806,10 @@
             </div>
         </td>
         <td>
-            <!-- ko text: namePayment --><!-- /ko -->
+            <!-- ko text: descPayment --><!-- /ko -->
+        </td>
+        <td>
+            <!-- ko text: costPayment --><!-- /ko -->
         </td>
         <td align="center">
             <!-- ko if: isActive()-->
@@ -877,13 +877,13 @@
                             <!-- ko if: realShipping -->
                             <tr class="listTableRow">
                                 <td colspan="4">
-                                    <strong>Доставка:</strong> <!-- ko text: methodShipping --><!-- /ko -->
+                                    <strong>Доставка:</strong> <!-- ko text: nameShipping --><!-- /ko -->
                                 </td>
                                 <td data-bind="text: costShipping"></td>
                             </tr>
                             <!-- /ko -->
                             <tr class="listTableRow">
-                                <td colspan="4"><strong>Способ оплаты:</strong> <!-- ko text: typePayment --><!-- /ko --></td>
+                                <td colspan="4"><strong>Способ оплаты:</strong> <!-- ko text: namePayment --><!-- /ko --></td>
                                 <td data-bind="text: costPayment"></td>
                             </tr>
                             <tr class="listTableRow">
@@ -924,6 +924,8 @@
                     <table align="center">
                         <tr>
                             <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
+                            <td width="50">&nbsp;</td>
+                            <td style="text-align:right"><input type="button" class="subButtonBig size2" value="Отменить заказ" data-bind="click: Delete"></td>
                             <td width="50">&nbsp;</td>
                             <td style="text-align:left"><input type="button" class="nextButton size2" value="Подтверждаю" data-bind="click: Submit"></td>
                         </tr>

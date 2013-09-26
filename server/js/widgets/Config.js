@@ -61,7 +61,7 @@ var Config = {
             opinion : 'Отзывы покупателей' // заголовок блока "Отзывы покупателей"
         },
         message : {
-            maxIsReached : "Достигнут максисум" // сообщение о том что достигнут максимум при выборе кол-ва товара
+            maxIsReached : "Достигнут максимум" // сообщение о том что достигнут максимум при выборе кол-ва товара
         },
         share : {
             element: 'share',  // id блока в котором будут размещены ссылки на соц сети
@@ -399,7 +399,7 @@ var Config = {
             addAddressDelivery : 'Данные успешно сохранены.',
             failAddAddressDelivery : 'Данные не сохранены. Попробуйте повторить запрос позднее.',
             deleteAddressDelivery : 'Адрес доставки успешно удален.',
-            confirmDeleteAddressDelivery : "Вы уверены что хотите удалить адрес?",
+            confirmDeleteAddressDelivery : "Вы уверены, что хотите удалить адрес?",
             failDeleteAddressDelivery : 'Адрес доставки не удален. Попробуйте повторить запрос позднее.',
             setDefaultDelivery : 'Данные успешно обновлены.',
             failSetDefaultDelivery : 'Данные не обновлены.'
@@ -594,14 +594,16 @@ var Config = {
             addAddressDelivery : 'Данные успешно сохранены.',
             failAddAddressDelivery : 'Данные не сохранены. Попробуйте повторить запрос позднее.',
             deleteAddressDelivery : 'Адрес доставки успешно удален.',
-            confirmDeleteAddressDelivery : "Вы уверены что хотите удалить адрес?",
+            confirmDeleteAddressDelivery : "Вы уверены, что хотите удалить адрес?",
             failDeleteAddressDelivery : 'Адрес доставки не удален. Попробуйте повторить запрос позднее.',
             setDefaultDelivery : 'Данные успешно обновлены.',
             failSetDefaultDelivery : 'Данные не обновлены.',
             orderConfirm : 'Ваш заказ подтвержден.',
             selectMethodPayment : 'Необходимо выбрать способ оплаты.',
             selectAddress : 'Необходимо выбрать метод доставки.',
-            selectMethodShipping : 'Необходимо выбрать метод доставки.'
+            selectMethodShipping : 'Необходимо выбрать метод доставки.',
+            confirmDeleteOrder : 'Вы уверны, что хотите удалить заказ?',
+            deleteOrderConfirm : 'Ваш заказ удален.'
         },
         error : { // сообщения об ошибках при валидации формы регистрации
             username : {
