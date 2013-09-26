@@ -97,7 +97,7 @@ var GoodsWidget = function(){
     };
     self.InsertContainer = {
         Content : function(){
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
+            $("#" + self.settings.containerId).html($('script#' + self.settings.tmplId).html());
         }
     };
     self.Fill = {
@@ -329,7 +329,7 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-
+         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.sellerId, goodsId: self.id, count: self.ordered()});
     };
     self.ReportAvailability = function(){
 

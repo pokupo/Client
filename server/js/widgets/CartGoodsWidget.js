@@ -286,7 +286,7 @@ var BlockGoodsForSellerViewModel = function(content){
             Routing.SetHash('catalog', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
-
+        Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
     };
     self.ClickClearCurt = function(){
         var count = self.goods().length-1;

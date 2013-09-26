@@ -212,7 +212,7 @@ var XDMTransport = {
     },
     Load : function(data, callback, protocol){
         var hash = EventDispatcher.HashCode(data + callback.toString());
-        
+
         if(XDMTransport.event[hash] == undefined)
             XDMTransport.event[hash] = [];
         XDMTransport.event[hash].push(callback);
@@ -260,25 +260,24 @@ var XDMTransport = {
         }
         if(JSSettings.sourceData == 'proxy'){
             if(typeof easyXDM !== 'undefined'){
-                var remote = new easyXDM.Rpc({
+            var remote = new easyXDM.Rpc({
                     remote: XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostCore,
                     onReady: function(){
                         data.attr('action', XDMTransport.GetProtocol(protocol) + JSSettings.host + JSSettings.pathToPostData);
-                        data.submit(); 
+                        data.submit();                          
                     }
                 }, {
                     local: {
                         returnUploadResponse: function(response){
-                            EventDispatcher.DispatchEvent(EventDispatcher.HashCode(data.toString()), response.msg);
+                            EventDispatcher.DispatchEvent(EventDispatcher.HashCode(data.toString()), JSON.parse(response.msg));
                         }
                     }
                 });
             }
             else{
-                setTimeout(function(){XDMTransport.LoadPost(data, callback)}, 1000);
+                setTimeout(function(){XDMTransport.LoadPost(data, protocol)}, 1000);
             }
         }
-        
     }
 }
 

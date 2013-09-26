@@ -37,6 +37,18 @@ Parameters = {
             step3 : {},
             step4 : {}
         },
+        order : {
+            step1 : {
+                login : {},
+                reg : {},
+                confirm : {},
+                profile : {}
+            },
+            step2 : {},
+            step3 : {},
+            step4 : {},
+            step5 : {}
+        },
         profile : {
             personal : {},
             delivery : {},
@@ -46,7 +58,9 @@ Parameters = {
         lastPage : {},
         https : null,
         userInformation : null,
-        country : null
+        country : null,
+        payment : null,
+        shipping : null
     },
     filter : {},
     catalog : {
@@ -138,6 +152,8 @@ function Widget(){
         cartPathApi : null,
         favPathApi : null,
         geoPathApi : null,
+        shopPathApi : null,
+        orderPathApi : null,
         containerIdForTmpl : null
     };
     this.Init = function(widget, noindicate){
@@ -166,6 +182,8 @@ function Widget(){
                 cartPathApi : Config.Base.cartPathApi,
                 favPathApi : Config.Base.favPathApi,
                 geoPathApi : Config.Base.geoPathApi,
+                shopPathApi : Config.Base.shopPathApi,
+                orderPathApi : Config.Base.orderPathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
@@ -261,7 +279,13 @@ function Widget(){
                 $('body').append(Config.Base.errorWindow);
             }
             
-            $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(data.err);
+            var text = '';
+            if(data.msg)
+                text = data.msg;
+            else
+                text = data.err;
+            
+            $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(text);
             
             $( "#" + Config.Base.containerIdErrorWindow ).dialog({
                 modal: true,
@@ -279,6 +303,7 @@ function Widget(){
                 ]
             });
             $('.ui-dialog-titlebar-close').hide();
+            self.WidgetLoader(true);
             return false;
         }
         return true;
@@ -749,6 +774,58 @@ function Widget(){
         },
         DeleteDeliveryAddress : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/del/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        Shipping : function(str, callback){
+            if(!Parameters.cache.shipping){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + Parameters.shopId + '/' + str), function(data){
+                    Parameters.cache.shipping = data;
+                    if(callback)
+                        callback(data);
+                }, true);
+            }
+            else
+                callback(Parameters.cache.shipping);
+        },
+        NewOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'add/' + Parameters.shopId + '/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        EditOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'edit/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        Payment : function(str, callback){
+            if(!Parameters.cache.payment){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
+                    Parameters.cache.payment = data;
+                    if(callback)
+                        callback(data);
+                }, true);
+            }
+            else
+                callback(Parameters.cache.payment);
+        },
+        OrderInfo : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'info/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        ConfirmOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        DeleteOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
                 if(callback)
                     callback(data);
             }, true);

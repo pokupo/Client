@@ -1,4 +1,4 @@
-var ProfileWidget = function() {
+ var ProfileWidget = function() {
     var self = this;
     self.widgetName = 'ProfileWidget';
     self.settings = {
@@ -311,7 +311,7 @@ var ProfileWidget = function() {
                 else{
                     if(!data.err)
                         data.err = Config.Profile.message.failDeleteAddressDelivery;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.add', data)})
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.delete', delivery)})
                 }
             });
         });
@@ -320,6 +320,19 @@ var ProfileWidget = function() {
              var form = new DeliveryAddressFormViewModel();
              form.AddContent(data);
              self.Fill.DeliveryForm(form);
+         });
+         
+         EventDispatcher.AddEventListener('ProfileWidget.delivery.sedDefault', function(data){
+             var str = '?id_address=' + data.id +
+                        '&is_default=yes';
+                self.BaseLoad.SetDefaultDelivaryAddress(str, function(result){
+                    if(result.result == 'ok'){
+                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
+                    }
+                    else{
+                        self.QueryError(result, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', data)})
+                    }
+                });
          });
     };
     self.Validate = {
@@ -636,20 +649,6 @@ var ProfileWidget = function() {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
             }
-            
-            $('input#delivery_address_is_default').change(function(){
-                var id = $('input#delivery_address_is_default').val();
-                var str = '?id_address=' + id +
-                        '&is_default=yes';
-                self.BaseLoad.SetDefaultDelivaryAddress(str, function(data){
-                    if(data.result = 'ok'){
-                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, fasle, false);
-                    }
-                    else{
-                        self.ShowMessage(Config.Profile.message.failSetDefaultDelivery, fasle, false);
-                    }
-                });
-            })
             
             self.WidgetLoader(true);
         },
@@ -1313,11 +1312,14 @@ var DeliveryAddressViewModel = function(data, list){
     self.postCode = data.post_code;
     self.address = data.address;
     self.addressee = data.addressee;
-    self.cssIsDefault = 'delivery_address_is_default';
-    if(data.is_default == 'yes')
+    if(data.is_default == 'yes'){
         self.isDefault = ko.observable(true);
-    else
+        self.cssIsDefault = ko.observable('delivery_address_is_default active');
+    }
+    else{
         self.isDefault = ko.observable(false);
+        self.cssIsDefault = ko.observable('delivery_address_is_default');
+    }
     
     self.contactPhone = data.contact_phone;
             
@@ -1331,6 +1333,17 @@ var DeliveryAddressViewModel = function(data, list){
         self.Confirm(Config.Profile.message.confirmDeleteAddressDelivery, function(){
             EventDispatcher.DispatchEvent('ProfileWidget.delivery.delete', {address : self, list : list});
         }, false);
+    };
+    self.ClickItem = function(){
+        $.each(list(), function(i){
+            list()[i].cssIsDefault('delivery_address_is_default');
+            list()[i].isDefault(false);
+        });
+        
+        self.cssIsDefault('delivery_address_is_default active');
+        self.isDefault(true);
+        
+        EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', self);
     };
 };
 

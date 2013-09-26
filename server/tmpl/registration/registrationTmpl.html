@@ -108,7 +108,7 @@
                                     </td>
                                 </tr>
                             </div>
-                        </div><!-- /formBox -->
+                        </div>
                                           
                         <table align="center">
                             <tr>
@@ -120,7 +120,7 @@
                    </form>
                </td>
            </tr>
-       </table><!-- /checkoutStep -->
+       </table>
        <div class="clear"></div>
        </div>
 </script>
@@ -212,7 +212,7 @@
                                 <!-- /ko -->
                            </table>
                        </div>
-                   </div><!-- /formBox -->
+                   </div>
                    <br>
                    <table align="center">
                        <tr>
@@ -224,7 +224,7 @@
                </form>
            </td>
        </tr>
-    </table><!-- /checkoutStep -->
+    </table>
     <div class="clear"></div>
     </div>
 </script>
@@ -251,7 +251,7 @@
          </tr>
          <tr>
             <td valign="top" align="center">
-                <form  data-bind="attr: {id: cssRegistrationDataForm}">
+                <form  data-bind="attr: {id: cssRegistrationDataForm}" enctype="multipart/form-data" target="upload_target" method="POST">
                     <h1>Персональные данные</h1>
                     <div class="bottom_description_center">Укажите свои персональные данные</div>
                     <div class="formBox" style="width:380px;">
@@ -324,10 +324,10 @@
                                 </tr>
                             </table>
                         </div>
-                    </div><!-- /formBox -->
+                    </div>
                     <table align="center">
                         <tr>
-                            <td style="text-align:right"><input type="button" class="prevButton size2" value="Указать позже" data-bind="click: SpecifyLater"></td>
+                            <td style="text-align:right"><input type="button" class="subButtonBig size2" value="Указать позже" data-bind="click: SpecifyLater"></td>
                             <td width="50">&nbsp;</td>
                             <td style="text-align:left"><input type="button" class="nextButton size2" value="Продолжить" data-bind="click: SubmitForm"></td>
                         </tr>
@@ -335,7 +335,7 @@
                 </form>
             </td>
         </tr>
-    </table><!-- /checkoutStep -->
+    </table>
     <div class="clear"></div>
     </div>
 </script>
@@ -436,7 +436,7 @@
                             </tr>
                         </table>
                         </div>
-                    </div><!-- /formBox -->
+                    </div>
                     <table align="center">
                         <tr>
                             <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
@@ -447,7 +447,7 @@
                 </form>
             </td>
         </tr>
-    </table><!-- /checkoutStep -->
+    </table>
     <div class="clear"></div>
     </div>
 </script>
