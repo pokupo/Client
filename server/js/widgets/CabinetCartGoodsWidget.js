@@ -117,7 +117,7 @@ var CabinetCartGoodsWidget = function(){
             self.WidgetLoader(false);
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
-                    Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
+                    Loader.Indicator('MenuPersonalCabinetWidget', false);
                     $("#" + self.settings.containerId).html('');
                     self.BaseLoad.InfoFavorite('no', function(data){
                         Parameters.cache.favorite = data;
@@ -135,7 +135,7 @@ var CabinetCartGoodsWidget = function(){
             });
         },
         Menu : function(){
-            Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
+            Loader.Indicator('MenuPersonalCabinetWidget', false);
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });

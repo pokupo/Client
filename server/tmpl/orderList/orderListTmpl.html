@@ -1,0 +1,153 @@
+<script type="text/html" id="orderListTmpl">
+<div class="horizontalSection"> 
+    <div class="tabsContent active" id="tabContent_2">
+        <div class="horizontalSection noborder">
+            <div class="pageWidth">
+                <div class="itemsListTableRow orderList">
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tr>
+                            <td class="itemsListTableCell col_1">Номер</td>
+                            <td class="itemsListTableCell col_2">Дата</td>
+                            <td class="itemsListTableCell col_3">Магазин</td>
+                            <td class="itemsListTableCell col_4">Статус заказа</td>
+                            <td class="itemsListTableCell col_5">Оплата</td>
+                            <td class="itemsListTableCell col_6">Стоимость</td>
+                            <td class="itemsListTableCell col_7">Действия</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ko foreach: list -->
+            <!-- ko template: { name: 'orderListItemTmpl' }--><!-- /ko -->
+        <!-- /ko -->
+
+        <!-- ko template: { name: 'orderListPagenationTmpl' }--><!-- /ko -->
+    </div>
+</div>
+<div class="clear"></div>
+</script>
+
+<script type="text/html" id="orderListItemTmpl">
+    <div class="horizontalSection activeHoverElement">
+        <!-- ko if: commentBuyer || commentOperator -->
+            <div class="floatPopup">
+                <span>
+                    <!-- ko if: commentBuyer -->
+                    <strong>Примечание покупателя:</strong><!-- ko text: commentBuyer --><!-- /ko -->
+                    <br>
+                    <!-- /ko -->
+                    <!-- ko if: commentOperator -->
+                    <strong>Примечание продавца:</strong><!-- ko text: commentOperator --><!-- /ko -->
+                    <!-- /ko -->
+                </span>
+            </div>
+        <!-- /ko -->
+        <div class="pageWidth">
+            <div class="itemsListTableRow orderList">
+                <table cellpadding="0" cellspacing="0" width="100%" class="textInfoBlock">
+                    <tr>
+                        <td class="itemsListTableCell col_1">
+                            <!-- ko text: id --><!-- /ko -->
+                            <!-- ko if: commentBuyer || commentOperator -->
+                                <span class="total">*</span>
+                            <!-- /ko -->
+                        </td>
+                        <td class="itemsListTableCell col_2">
+                            <!-- ko text: dateCreate --><!-- /ko -->
+                        </td>
+                        <td class="itemsListTableCell col_3">
+                            <!-- ko text: nameShop --><!-- /ko -->
+                        </td>
+                        <td class="itemsListTableCell col_4">
+                            <span class="statusDetail">
+                                <img src="" width="16" height="16" align="absmiddle" data-bind="attr: {src: statusOrderIcon}"><!-- ko text: statusOrderName --><!-- /ko -->
+                            </span>
+                        </td>
+                        <td class="itemsListTableCell col_5">
+                            <span class="statusDetail">
+                                <img src="" width="16" height="16" align="absmiddle" data-bind="attr: {src: statusPayIcon}"><!-- ko text: statusPayName --><!-- /ko -->
+                            </span>
+                        </td>
+                        <td class="itemsListTableCell col_6">
+                            <!-- ko text: finalCost --> <!-- /ko -->
+                        </td>
+                        
+                        <!-- ko if: viewShow-->
+                            <td class="itemsListTableCell col_ico">
+                                <a href="#" data-bind="click: Show" title="Просмотр">
+                                    <img src="images/ico_16.png" alt="Просмотр" title=""></img>
+                                </a>
+                            </td>
+                        <!-- /ko -->
+                        <!-- ko if: viewEdit-->
+                            <td class="itemsListTableCell col_ico">
+                                <a href="#" data-bind="click: Edit" title="Редактировать">
+                                    <img src="images/ico_25.png" alt="Редактировать" title=""></img>
+                                </a>
+                            </td>
+                        <!-- /ko -->
+                        <!-- ko if: viewToCart-->
+                            <td class="itemsListTableCell col_ico">
+                                <a href="#" data-bind="click: ToCart" title="Скопировать в корзину">
+                                    <img src="images/ico_49.png" alt="Скопировать в корзину" title=""></img>
+                                </a>
+                            </td>
+                        <!-- /ko -->
+                        <!-- ko if: viewCheck-->
+                            <td class="itemsListTableCell col_ico">
+                                <a href="#" data-bind="click: Check" title="Подтвердить">
+                                    <img src="images/ico_14.png" alt="Подтвердить" title=""></img>
+                                </a>
+                            </td>
+                        <!-- /ko -->
+                        <!-- ko if: viewCanсel-->
+                            <td class="itemsListTableCell col_ico">
+                                <a href="#" data-bind="click: Cancel" title="Отменить">
+                                    <img src="images/ico_15.png" alt="Отменить" title=""></img>
+                                </a>
+                            </td>
+                        <!-- /ko -->
+                        <!-- ko if: viewPay-->
+                            <td class="itemsListTableCell col_ico">
+                                <a href="#" data-bind="click: Pay" title="Оплатить">
+                                    <img src="images/ico_41.png" alt="Оплатить" title=""></img>
+                                </a>
+                            </td>
+                        <!-- /ko -->	
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="orderListPagenationTmpl">
+    <!-- ko if: paging().length > 1 -->
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <div class="pagination">
+                <ul >
+                    <!-- ko foreach: paging -->
+                    <li data-bind="css: cssLink">
+                        <!-- ko ifnot: current -->
+                        <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                        <!-- /ko -->
+                        <!-- ko text: current ? title : '' --><!-- /ko -->
+                    </li>
+                    <!-- /ko-->
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+</script>
+
+<script type="text/html" id="ordEmptyListTmpl">
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <p>У Вас нет ни одной покупки.</p>
+        </div>
+    </div>
+</script>
