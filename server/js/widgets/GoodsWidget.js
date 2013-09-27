@@ -97,7 +97,7 @@ var GoodsWidget = function(){
     };
     self.InsertContainer = {
         Content : function(){
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
+            $("#" + self.settings.containerId).html($('script#' + self.settings.tmplId).html());
         }
     };
     self.Fill = {
