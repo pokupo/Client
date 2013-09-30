@@ -76,43 +76,50 @@
                         
                         <!-- ko if: viewShow-->
                             <td class="itemsListTableCell col_ico">
-                                <a href="#" data-bind="click: Show" title="Просмотр">
-                                    <img src="images/ico_16.png" alt="Просмотр" title=""></img>
+                                <a href="#" data-bind="click: ClickShow" title="Просмотр">
+                                    <img src="http://pokupo-server.asmsoft.ru/images/ico_16.png" alt="Просмотр" title=""></img>
                                 </a>
                             </td>
                         <!-- /ko -->
                         <!-- ko if: viewEdit-->
                             <td class="itemsListTableCell col_ico">
-                                <a href="#" data-bind="click: Edit" title="Редактировать">
-                                    <img src="images/ico_25.png" alt="Редактировать" title=""></img>
+                                <a href="#" data-bind="click: ClickEdit" title="Редактировать">
+                                    <img src="http://pokupo-server.asmsoft.ru/images/ico_25.png" alt="Редактировать" title=""></img>
                                 </a>
                             </td>
                         <!-- /ko -->
-                        <!-- ko if: viewToCart-->
+                        <!-- ko if: viewReturn-->
                             <td class="itemsListTableCell col_ico">
-                                <a href="#" data-bind="click: ToCart" title="Скопировать в корзину">
-                                    <img src="images/ico_49.png" alt="Скопировать в корзину" title=""></img>
+                                <a href="#" data-bind="click: ClickReturn" title="Скопировать в корзину">
+                                    <img src="http://pokupo-server.asmsoft.ru/images/ico_49.png" alt="Скопировать в корзину" title=""></img>
+                                </a>
+                            </td>
+                        <!-- /ko -->
+                        <!-- ko if: viewRepeat-->
+                            <td class="itemsListTableCell col_ico">
+                                <a href="#" data-bind="click: ClickRepeat" title="Скопировать в корзину">
+                                    <img src="http://pokupo-server.asmsoft.ru/images/ico_49.png" alt="Скопировать в корзину" title=""></img>
                                 </a>
                             </td>
                         <!-- /ko -->
                         <!-- ko if: viewCheck-->
                             <td class="itemsListTableCell col_ico">
-                                <a href="#" data-bind="click: Check" title="Подтвердить">
-                                    <img src="images/ico_14.png" alt="Подтвердить" title=""></img>
+                                <a href="#" data-bind="click: ClickCheck" title="Подтвердить">
+                                    <img src="http://pokupo-server.asmsoft.ru/images/ico_14.png" alt="Подтвердить" title=""></img>
                                 </a>
                             </td>
                         <!-- /ko -->
                         <!-- ko if: viewCanсel-->
                             <td class="itemsListTableCell col_ico">
-                                <a href="#" data-bind="click: Cancel" title="Отменить">
-                                    <img src="images/ico_15.png" alt="Отменить" title=""></img>
+                                <a href="#" data-bind="click: ClickCancel" title="Отменить">
+                                    <img src="http://pokupo-server.asmsoft.ru/images/ico_15.png" alt="Отменить" title=""></img>
                                 </a>
                             </td>
                         <!-- /ko -->
                         <!-- ko if: viewPay-->
                             <td class="itemsListTableCell col_ico">
-                                <a href="#" data-bind="click: Pay" title="Оплатить">
-                                    <img src="images/ico_41.png" alt="Оплатить" title=""></img>
+                                <a href="#" data-bind="click: ClickPay" title="Оплатить">
+                                    <img src="http://pokupo-server.asmsoft.ru/images/ico_41.png" alt="Оплатить" title=""></img>
                                 </a>
                             </td>
                         <!-- /ko -->	
@@ -144,10 +151,254 @@
     <!-- /ko -->
 </script>
 
-<script type="text/html" id="ordEmptyListTmpl">
+<script type="text/html" id="orderEmptyListTmpl">
     <div class="horizontalSection">
         <div class="pageWidth">
             <p>У Вас нет ни одной покупки.</p>
         </div>
     </div>
+</script>
+
+<script type="text/html" id="orderDetailTmpl">
+<div class="horizontalSection">
+    <div class="tabsContent active" id="tabContent_2">
+        <div class="horizontalSection noborder">
+            <div class="pageWidth">
+                <div class="tabsSubnav">
+                    <a href="#" data-bind="click: Back">
+                        <img src="http://pokupo-server.asmsoft.ru/images/_back_icon.png" align="absmiddle" height="16" width="16">Вернуться к списку заказов
+                    </a>
+                </div>
+
+                <h1>Информация о заказе № <!-- ko text: id --><!-- /ko --></h1>
+                <div class="listBox">
+                    <table cellpadding="0" cellspacing="0" class="listTable">
+                        <tr class="listTableHeader">
+                            <td>Номер заказа</td>
+                            <td>Дата создания</td>
+                            <td>Продавец</td>
+                            <td>Статус заказа</td>
+                        </tr>
+                        <tr class="listTableRow">
+                            <td data-bind="text: id"></td>
+                            <td data-bind="text: dateCreate"></td>
+                            <td data-bind="text: nameOwnShop"></td>
+                            <td width="200">
+                                <!-- ko if: statusOrder() == "init" --> 
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_bricks.png" width="16" height="16" align="absmiddle">Формируется</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusOrder() == "new" --> 
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_check.png" width="16" height="16" align="absmiddle">Новый</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusOrder() == "process" --> 
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_hourglass.png" width="16" height="16" align="absmiddle">В просессе обработки</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusOrder() == "send" -->
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_delivery.png" width="16" height="16" align="absmiddle">Отправлен</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusOrder() == "delivered" -->
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_box_receive.png" width="16" height="16" align="absmiddle">Получен покупателем</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusOrder() == "cancel" -->
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_cancel_icon.png" width="16" height="16" align="absmiddle">Отменен</strong>
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="clear"></div>
+                </div>
+
+                <h2>Товары</h2>
+                <div class="listBox">
+                    <table cellpadding="0" cellspacing="0" class="listTable">
+                        <tr class="listTableHeader">
+                            <td colspan="2">Наименование</td>
+                            <td width="20%">Цена</td>
+                            <td>Количество</td>
+                            <td>Сумма</td>
+                        </tr>
+                
+                        <!-- ko foreach: goods -->
+                        <tr class="listTableRow">
+                            <td width="80" style="border-right:none">
+                                <img src="" width="80" height="80" data-bind="attr: {src: routeImage}">
+                            </td>
+                            <td style="border-left:none">
+                                <strong data-bind="text: fullName"></strong>
+                            </td>
+                            <td data-bind="text: sellCost"></td>
+                            <td data-bind="text: count"></td>
+                            <td data-bind="text: itogSellCost"></td>
+                        </tr>
+                        <!-- /ko -->
+
+                        <tr class="listTableRow">
+                            <td colspan="4"><strong>Цена с учетом скидки:</strong> <!-- ko text: discount --><!-- /ko --></td>
+                            <td data-bind="text: finalCost"></td>
+                        </tr>
+                        <tr class="listTableRow">
+                            <td colspan="4"><strong>Стоимость доставки:</strong></td>
+                            <td data-bind="text: costShipping"></td>
+                        </tr>
+                        <tr class="listTableRow">
+                            <td colspan="4"><strong>Комиссия платежной системы:</strong></td>
+                            <td data-bind="text: costPayment"></td>
+                        </tr>
+                        <tr class="listTableRow">
+                            <td colspan="4"><strong>Итого к оплате:</strong></td>
+                            <td><strong class="total" data-bind="text: itog"></strong></td>
+                        </tr>
+                    </table>
+                    <div class="clear"></div>
+                </div>
+
+                <!-- ko if: commentBuyer() || commentOperator() -->
+                <h2>Заметки</h2>
+                <div class="listBox">
+                     <!-- ko if: commentBuyer() -->
+                         <table cellpadding="0" cellspacing="0" class="listTable">
+                            <tr class="listTableHeader">
+                               <td>Примечание продавца</td>
+                            </tr>
+                            <tr class="listTableRow">
+                               <td data-bind="text: commentBuyer()"></td>
+                            </tr>
+                         </table>
+                     <!-- /ko -->
+                     <!-- ko if: commentOperator() -->
+                        <table cellpadding="0" cellspacing="0" class="listTable">
+                            <tr class="listTableHeader">
+                                <td>Примечание продавца</td>
+                            </tr>
+                            <tr class="listTableRow">
+                                <td data-bind="text: commentOperator()"></td>
+                            </tr>
+                        </table>
+                    <!-- /ko -->
+                    <div class="clear"></div>
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if: realShipping -->
+                <h2>Доставка</h2>
+                <div class="listBox">
+                    <table cellpadding="0" cellspacing="0" class="listTable">
+                        <tr class="listTableHeader">
+                            <td>Компания</td>
+                            <td>Почтовый индекс</td>
+                            <td>Страна</td>
+                            <td>Регион</td>
+                            <td>Город</td>
+                            <td>Адрес</td>
+                            <td>Получатель</td>
+                            <td>Контактный телефон</td>
+                        </tr>
+                        <tr class="listTableRow">
+                            <td><img src="" width="40" height="40" align="absmiddle" data-bind="attr: {src: logoMethodShipping}"> <!-- ko text: nameMethodShipping --><!-- /ko --></td>
+                            <td data-bind="text: shippingPostCode"></td>
+                            <td data-bind="text: shippingCountry"></td>
+                            <td data-bind="text: shippingRegion"></td>
+                            <td data-bind="text: shippingCity"></td>
+                            <td data-bind="text: shippingAddress"></td>
+                            <td data-bind="text: shippingAddressee"></td>
+                            <td data-bind="text: shippingContactPhone"></td>
+                        </tr>
+                    </table>
+                    <div class="clear"></div>
+                </div>
+                <!-- /ko -->
+
+                <h2>Оплата</h2>
+                <div class="listBox">
+                    <table cellpadding="0" cellspacing="0" class="listTable">
+                        <tr class="listTableHeader">
+                            <td>Способ оплаты</td>
+                            <td>Описание</td>
+                            <td>Время обработки</td>
+                            <td>Комиссия</td>
+                            <td>Номер чека</td>
+                            <td>Статус</td>
+                        </tr>
+                        <tr class="listTableRow">
+                            <td><img src="" width="40" height="40" align="absmiddle" data-bind="attr: {src: logoPayment}"/> <!-- ko text: namePayment --><!-- /ko --></td>
+                            <td data-bind="text: descPayment"></td>
+                            <td data-bind="text: timePayment"></td>
+                            <td data-bind="text: costPayment"></td>
+                            <td data-bind="text: invoicePayment"></td>
+                            <td>
+                                <!-- ko if: statusPay() == "wait_check" -->
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/ico_45.png" width="16" height="16" align="absmiddle">На проверке</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusPay() == "wait_pay" --> 
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_receipt_invoice.png" width="16" height="16" align="absmiddle">Ожидает оплаты</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusPay() == "paid" -->
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_coins.png" width="16" height="16" align="absmiddle">Оплачен</strong>
+                                <!-- /ko -->
+                                <!-- ko if: statusPay() == "cancel" -->
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_cancel_icon.png" width="16" height="16" align="absmiddle">Отменен</strong>                                  
+                                <!-- /ko -->
+                                <!-- ko if: statusPay() == "back" -->
+                                    <strong class="statusDetail"><img src="http://pokupo-server.asmsoft.ru/images/_arrow_return.png" width="16" height="16" align="absmiddle">Возвращен</strong>                                                               
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="clear"></div>
+                </div>
+
+                <!-- ko if: statusOrder() == "init" -->
+                <div class="listBox" align="center">
+                    <table>
+                        <tr>
+                            <td><button class="addButton edit" data-bind="click: ClickEdit"><span></span>Изменить заказ</button></td>
+                            <td width="50">&nbsp;</td>
+                            <td ><button class="addButton cartcopy" data-bind="click: ClickReturn"><span></span>Скопировать в корзину</button></td>
+                            <td width="50">&nbsp;</td>
+                            <td><button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить заказ</button></td>
+                            <td width="50">&nbsp;</td>
+                            <td><button class="goButton approve" data-bind="click: ClickCheck"><span></span>Подтвердить заказ</button></td>
+                        </tr>
+                    </table>
+                    <div class="clear"></div>
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if: statusOrder() == "new" -->
+                <div class="listBox" align="center">
+                    <table>
+                        <tr>
+                            <td><button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить заказ</button></td>
+                            <!-- ko if: statusPay() == "wait_pay" -->
+                                <td width="50">&nbsp;</td>
+                                <td><button class="goButton pay" data-bind="click: ClickPay"><span></span>Оплатить заказ</button></td>
+                            <!-- /ko -->
+                        </tr>
+                    </table>
+                    <div class="clear"></div>
+                </div>
+                <!-- /ko -->
+
+                <!-- ko if: statusOrder() == "delivered" || statusOrder() == "cancel" || statusOrder() == "send" -->
+                <div class="listBox" align="center">
+                    <table>
+                        <tr>
+                            <td><button class="goButton repeat" data-bind="click: ClickRepeat"><span></span>Повторить заказ</button></td>
+                        </tr>
+                    </table>
+                    <div class="clear"></div>
+                </div>
+                <!-- /ko -->
+                
+                <div class="tabsSubnav">
+                    <a href="#" data-bind="click: Back">
+                        <img src="http://pokupo-server.asmsoft.ru/images/_back_icon.png" align="absmiddle" height="16" width="16">Вернуться к списку заказов
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
 </script>

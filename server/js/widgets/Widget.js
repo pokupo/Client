@@ -316,24 +316,26 @@ function Widget(){
         $('#' + Config.Base.containerIdMessageWindow + ' #' + Config.Base.conteinerIdTextMessageWindow).text(message);
             
         var button = [];
-        if(!hide)
+        if(!hide){
             button.push({ text: "Закрыть", click: function() { 
                     $( this ).dialog( "close" );
                     if(callback)
                         callback();
                 }});
+        }
+        else{
+            setTimeout(function() {
+                $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
+                if(callback)
+                    callback();
+            }, Config.Base.timeMessage);
+        }
         
         $( "#" + Config.Base.containerIdMessageWindow ).dialog({
             modal: false,
             buttons: button
         });
         $('.ui-dialog-titlebar-close').hide();
-        
-        setTimeout(function() {
-            $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
-            if(callback)
-                callback();
-        }, Config.Base.timeMessage);
     },
     this.Confirm = function(message, callbackOk, callbackFail){
         if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
@@ -845,6 +847,27 @@ function Widget(){
             }
             else
                 callback(Parameters.cache.orderList);
+        },
+        RepeatOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        ReturnOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        CancelOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
         }
     };
 };

@@ -706,8 +706,15 @@ var Config = {
         tmpl : {
             path : "orderList/orderListTmpl.html", // файл шаблонов
             ordListTmplId : "orderListTmpl", //id шаблона списка заказов
-            ordEmptyListTmplId : 'ordEmptyListTmpl', //id шаблона пустого списка
+            ordEmptyListTmplId : 'orderEmptyListTmpl', //id шаблона пустого списка
             ordDetailTmplId : "orderDetailTmpl", //id шаблона списка заказов
+        },
+        message : {
+            orderConfirm : 'Ваш заказ подтвержден.',
+            orderRepeat : "Ваш заказ повторен.",
+            orderReturn : "Ваш заказ скопирован в корзину.",
+            orderDelete : "Ваш заказ удален.",
+            orderCancel : "Ваш заказ отменен.",
         },
         style : {// стиль блока
             'position' : 'absolute', 

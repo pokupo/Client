@@ -121,6 +121,9 @@ var OrderWidget = function() {
             }
             if (Routing.params.step) {
                 self.BaseLoad.Login(false, false, false, function(data) {
+                    if(Routing.params.id)
+                        self.order.id = Routing.params.id;
+                
                     if (Routing.params.step == 1 && !Routing.params.block) {
                         if (data.err)
                             self.Step.Step1();
@@ -626,6 +629,17 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step2: function() {
+            if(Routing.params.id){
+                self.BaseLoad.OrderInfo(self.order.id + '/yes', function(data) {
+                    self.order.content = {};
+                    self.order.content.main = data.goods;
+                    self.Step.Step2Getdata();
+                });
+            }
+            else
+                self.Step.Step2Getdata();
+        },
+        Step2Getdata: function(){
             if (self.DataOrder.IsRealGoods())
                 self.BaseLoad.DeliveryAddressList(function(data) {
                     self.InsertContainer.Step2();
