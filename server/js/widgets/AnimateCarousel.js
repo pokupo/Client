@@ -4,6 +4,8 @@ function AnimateCarousel(cssCarouselContainer){
             jQuery(this).find(".block_front_carusel").css({'width':carouselWidth+'px'});
     });
     
+    $(".productCarousel a").colorbox();
+    
     jQuery('.' + cssCarouselContainer).jcarousel({
         wrap: 'circular', 
         scroll: 1

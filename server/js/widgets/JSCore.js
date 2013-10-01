@@ -23,7 +23,7 @@ var JSSettings = {
         'jquery.maskedinput.min.js',
         'jquery.textchange.min.js',
         'jquery.hoverIntent.minified.js',
-        'lightbox.js',
+        'jquery.colorbox-min.js',
         'widgets/Config.js',
         'widgets/Routing.js',
         'widgets/Paging.js',
