@@ -47,7 +47,8 @@ Parameters = {
             step2 : {},
             step3 : {},
             step4 : {},
-            step5 : {}
+            step5 : {},
+            list : {}
         },
         profile : {
             personal : {},
@@ -91,7 +92,7 @@ var Loader = {
         this.widgets[widget] = isReady;
         this.countAll = 0;
         this.readyCount = 0;
-        
+
         for(var key in this.widgets){
             this.RegisterReady(key);
         }
@@ -206,8 +207,8 @@ function Widget(){
         });
         
         EventDispatcher.AddEventListener('widget.onload.menuPersonalCabinet', function(opt){
-            MenuPersonalCabinetWidgetWidget.prototype = new Widget();
-            var menu = new MenuPersonalCabinetWidgetWidget();
+            MenuPersonalCabinetWidget.prototype = new Widget();
+            var menu = new MenuPersonalCabinetWidget();
             menu.Init(menu);
             menu.AddMenu(opt);
         });
@@ -315,24 +316,26 @@ function Widget(){
         $('#' + Config.Base.containerIdMessageWindow + ' #' + Config.Base.conteinerIdTextMessageWindow).text(message);
             
         var button = [];
-        if(!hide)
+        if(!hide){
             button.push({ text: "Закрыть", click: function() { 
                     $( this ).dialog( "close" );
                     if(callback)
                         callback();
                 }});
+        }
+        else{
+            setTimeout(function() {
+                $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
+                if(callback)
+                    callback();
+            }, Config.Base.timeMessage);
+        }
         
         $( "#" + Config.Base.containerIdMessageWindow ).dialog({
             modal: false,
             buttons: button
         });
         $('.ui-dialog-titlebar-close').hide();
-        
-        setTimeout(function() {
-            $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
-            if(callback)
-                callback();
-        }, Config.Base.timeMessage);
     },
     this.Confirm = function(message, callbackOk, callbackFail){
         if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
@@ -791,12 +794,14 @@ function Widget(){
         },
         NewOrder : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'add/' + Parameters.shopId + '/' + str), function(data){
+                Parameters.cache.orderList = null;
                 if(callback)
                     callback(data);
             }, true);
         },
         EditOrder : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'edit/' + str), function(data){
+                Parameters.cache.orderList = null;
                 if(callback)
                     callback(data);
             }, true);
@@ -820,12 +825,46 @@ function Widget(){
         },
         ConfirmOrder : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str), function(data){
+                Parameters.cache.orderList = null;
                 if(callback)
                     callback(data);
             }, true);
         },
         DeleteOrder : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        OrderList : function(callback){
+            if(!Parameters.cache.orderList){
+                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId), function(data){
+                    Parameters.cache.orderList = data;
+                    if(callback)
+                        callback(data);
+                }, true);
+            }
+            else
+                callback(Parameters.cache.orderList);
+        },
+        RepeatOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        ReturnOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        CancelOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
+                Parameters.cache.orderList = null;
                 if(callback)
                     callback(data);
             }, true);

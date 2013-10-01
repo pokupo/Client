@@ -49,7 +49,7 @@
             self.WidgetLoader(false);
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
-                    Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
+                    Loader.Indicator('MenuPersonalCabinetWidget', false);
                     if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
                         self.Info.Personal();
                     if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix)

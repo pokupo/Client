@@ -152,7 +152,7 @@ var FavoritesWidget = function() {
             });
         },
         Menu : function(){
-            Loader.Indicator('MenuPersonalCabinetWidgetWidget', false);
+            Loader.Indicator('MenuPersonalCabinetWidget', false);
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });

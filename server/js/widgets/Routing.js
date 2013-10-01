@@ -3,6 +3,7 @@ var Routing = {
     title : '',
     params : {},
     more : {},
+    page : 1,
     SetHash : function(route, title, data, ret){
         this.route = route;
         this.more = {};
@@ -15,6 +16,8 @@ var Routing = {
                     params.push(key + '=' + decodeURIComponent(data[key]));
                 else if(data[key] != 1)
                     params.push(key + '=' + data[key]);
+                if(key == 'page')
+                    Routing.page = data[key];
             }
         }
         var href = '/' + route + '/' + params.join("&");
@@ -156,9 +159,12 @@ var Routing = {
         return '';
     },
     GetCurrentPage : function(){
-        if(this.params.page)
+        if(typeof this.params.page != 'undefined')
             return parseInt(this.params.page);
         return 1;
+    },
+    GetLastPageNumber : function(){
+        return this.page;
     }
 }
 

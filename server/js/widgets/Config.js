@@ -47,7 +47,8 @@ var Config = {
         profile : 'content', // id контейнера меню профиля и содержимого
         menuPersonalCabinet : 'profile_menu',
         favorites : 'content', // id контейнера избранного
-        order : 'content' // id конетейнера оформления заказа
+        order : 'content', // id конетейнера оформления заказа
+        orderList : 'content' // id конетейнера списка заказов
     },
     Goods : {
         tmpl: {
@@ -691,6 +692,29 @@ var Config = {
                 maxLength : 'Максимум 20 символов',
                 regular : 'Только буквы латинского или русского алфавита'
             },
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    OrderList : {
+        tmpl : {
+            path : "orderList/orderListTmpl.html", // файл шаблонов
+            ordListTmplId : "orderListTmpl", //id шаблона списка заказов
+            ordEmptyListTmplId : 'orderEmptyListTmpl', //id шаблона пустого списка
+            ordDetailTmplId : "orderDetailTmpl", //id шаблона списка заказов
+        },
+        message : {
+            orderConfirm : 'Ваш заказ подтвержден.',
+            orderRepeat : "Ваш заказ повторен.",
+            orderReturn : "Ваш заказ скопирован в корзину.",
+            orderDelete : "Ваш заказ удален.",
+            orderCancel : "Ваш заказ отменен.",
         },
         style : {// стиль блока
             'position' : 'absolute', 

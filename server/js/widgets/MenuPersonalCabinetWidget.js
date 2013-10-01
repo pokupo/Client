@@ -1,6 +1,6 @@
-var MenuPersonalCabinetWidgetWidget = function(){
+var MenuPersonalCabinetWidget = function(){
     var self = this;
-    self.widgetName = 'MenuPersonalCabinetWidgetWidget';
+    self.widgetName = 'MenuPersonalCabinetWidget';
     self.settings = {
         containerMenuId: null,
         tmplPath : null,
@@ -24,7 +24,7 @@ var MenuPersonalCabinetWidgetWidget = function(){
         }
     };
     self.CheckRoute = function() {
-        if(Routing.route == 'profile' || Routing.route == 'favorites' || Routing.route == 'cabinet_cart'){
+        if(Routing.route == 'profile' || Routing.route == 'favorites' || Routing.route == 'cabinet_cart' || Routing.route == 'purchases'){
             self.InsertContainer();
             self.Fill();
         }
@@ -93,7 +93,7 @@ var MenuPersonalCabinetViewModel = function(){
         return '';
     }, this);
     self.ClickPurchases = function(){
-        
+        Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
     };
     self.activeAuction = ko.computed(function(){
         if(Routing.route == 'auction')
