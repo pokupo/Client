@@ -205,7 +205,7 @@ var BreadCrumbViewModel = function(){
                 if(Routing.params.step == 5)
                     self.lastItem('Шаг 5');
             } 
-            if(Routing.route == 'profile' || Routing.route == 'favorites'){
+            if(Routing.route == 'profile' || Routing.route == 'favorites' || Routing.route == 'purchases' || Routing.route == 'cabinet_cart'){
                 self.crumbs = ko.observableArray();
                 
                 self.lastItem('Личный кабинет');

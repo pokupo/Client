@@ -121,6 +121,9 @@ var OrderWidget = function() {
             }
             if (Routing.params.step) {
                 self.BaseLoad.Login(false, false, false, function(data) {
+                    if(Routing.params.id)
+                        self.order.id = Routing.params.id;
+                
                     if (Routing.params.step == 1 && !Routing.params.block) {
                         if (data.err)
                             self.Step.Step1();
@@ -361,10 +364,9 @@ var OrderWidget = function() {
 
         EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data) {
             self.BaseLoad.EditOrder(self.order.id + '?id_method_shipping=' + data.id(), function(result) {
-                if (self.QueryError(result, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)
-                }))
+                if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)})){
                     self.order.shipping = data;
+                }
             })
         });
 
@@ -408,9 +410,7 @@ var OrderWidget = function() {
 
         EventDispatcher.AddEventListener('OrderWidget.step2.change', function(data) {
             self.BaseLoad.EditOrder(self.order.id + '?id_shipping_address=' + data.id, function(result) {
-                if (self.QueryError(result, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)
-                })) {
+                if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)})) {
                     Parameters.cache.delivery = null;
                     self.order.delivery = data;
                 }
@@ -442,10 +442,9 @@ var OrderWidget = function() {
 
         EventDispatcher.AddEventListener('OrderWidget.step4.change', function(data) {
             self.BaseLoad.EditOrder(self.order.id + '?id_method_payment=' + data.id(), function(result) {
-                if (self.QueryError(result, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)
-                }))
+                if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)})){
                     self.order.payment = data;
+                }
             });
         });
 
@@ -455,22 +454,22 @@ var OrderWidget = function() {
 
         EventDispatcher.AddEventListener('OrderWidget.step5.confirm', function() {
             self.BaseLoad.ConfirmOrder(self.order.id, function(data) {
-                if (self.QueryError(data, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step5.confirm')
-                }))
+                if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.confirm')})){
                     self.ShowMessage(Config.Order.message.orderConfirm, function() {
                         Routing.SetHash('catalog', 'Домашняя', {});
                     }, false);
+                }
             });
         });
         
         EventDispatcher.AddEventListener('OrderWidget.step5.delete', function(){
             self.Confirm(Config.Order.message.confirmDeleteOrder, function(){
                 self.BaseLoad.DeleteOrder(self.order.id + '/yes', function(data){
-                    if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.delete')}))
+                    if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.delete')})){
                         self.ShowMessage(Config.Order.message.deleteOrderConfirm, function() {
                             Routing.SetHash('catalog', 'Домашняя', {});
                         }, false);
+                    }
                 });
             })
         });
@@ -555,13 +554,8 @@ var OrderWidget = function() {
                 str = str + '/' + params.goodsId + '/' + params.count;
             self.BaseLoad.NewOrder(str, function(data) {
                 if (self.QueryError(data,
-                        function() {
-                            Routing.SetHash('order', 'Оформление заказа', params);
-                        },
-                        function() {
-                            var last = Parameters.cache.lastPage;
-                            Routing.SetHash(last.route, last.title, last.data)
-                        }))
+                        function() {Routing.SetHash('order', 'Оформление заказа', params);},
+                        function() {var last = Parameters.cache.lastPage; Routing.SetHash(last.route, last.title, last.data)}))
                 {
                     if (data.msg) {
                         self.ShowMessage(data.msg,
@@ -635,6 +629,17 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step2: function() {
+            if(Routing.params.id){
+                self.BaseLoad.OrderInfo(self.order.id + '/yes', function(data) {
+                    self.order.content = {};
+                    self.order.content.main = data.goods;
+                    self.Step.Step2Getdata();
+                });
+            }
+            else
+                self.Step.Step2Getdata();
+        },
+        Step2Getdata: function(){
             if (self.DataOrder.IsRealGoods())
                 self.BaseLoad.DeliveryAddressList(function(data) {
                     self.InsertContainer.Step2();
