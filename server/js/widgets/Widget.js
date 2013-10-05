@@ -20,6 +20,7 @@ Parameters = {
         content : {},
         favorite : [],
         searchContent : {},
+        searchWidget : {},
         roots: [],
         infoCategory : {},
         infoSeller : {},
@@ -221,6 +222,7 @@ function Widget(){
                     if(data.result == 'ok'){
                         inputDate.data.IsFavorite(true);
                         self.ShowMessage(Config.CartGoods.message.addFavorites, false, false);
+                        inputDate.data.Remove();
                     }
                     else{
                         self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, false);

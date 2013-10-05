@@ -29,8 +29,8 @@ var OrderViewModel = function(){
     self.nameShop = ko.observable();
     self.nameOwnShop = ko.observable();
     
-    self.costShipping = ko.observable();
-    self.costPayment = ko.observable();
+    self.costShipping = ko.observable('0 руб.');
+    self.costPayment = ko.observable('0 руб.');
     self.sellCost = ko.observable();
     self.finalCost = ko.observable();
     self.discount = ko.observable();
@@ -153,6 +153,10 @@ var OrderGoodsViewModel = function(data) {
         self.isEgoods = true;
     else
         self.isEgoods = false;
+    
+    self.ClickGoods = function(){
+        Routing.SetHash('goods', self.chortName, {id : self.id});
+    }
 };
 
 

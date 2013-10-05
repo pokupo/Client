@@ -73,8 +73,12 @@ var SearchWidget = function(){
         });
     };
     self.Fill = function(data){
-        SearchViewModel.prototype = new Widget();
-        var search = new SearchViewModel();
+        var search = Parameters.cache.searchWidget;
+        if ($.isEmptyObject(search)) {
+            SearchViewModel.prototype = new Widget();
+            search = new SearchViewModel();
+            Parameters.cache.searchWidget = search;
+        }
         search.selectedCategory = data.name_category;
         if(Parameters.cache.childrenCategory[data.id])
             search.AddListCategory(Parameters.cache.childrenCategory[data.id], data);
@@ -110,10 +114,10 @@ var SearchWidget = function(){
     };
 }
 
-var SearchCategoryItem = function(data){
+var SearchCategoryItem = function(data, level){
     var self = this;
     self.id = data.id;
-    self.title = data.name_category;
+    self.title = Array(level).join(" - ") + data.name_category;
     self.typeCategory = data.type_category;
 }
 
@@ -131,16 +135,22 @@ var SearchViewModel = function(){
         EventDispatcher.DispatchEvent('searchResultWidget.show.form');
     };
     self.AddListCategory = function(data, parent){
+        self.categories =  ko.observableArray();
+        self.typeCategories = [];
+
         self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
+        
         self.typeCategories[parent.id] = parent.type_category;
-        self.categories.push(new SearchCategoryItem(parent));
+        self.categories.push(new SearchCategoryItem(parent, 0));
+        
         for(var i = 0; i <= data.length - 1; i++){
-            self.categories.push(new SearchCategoryItem(data[i]))
+            self.categories.push(new SearchCategoryItem(data[i], 1))
             self.typeCategories[data[i].id] = data[i].type_category;
             if(data[i].children){
                 for(var j = 0; j <= data[i].children.length - 1; j++){
-                    data[i].children[j].name_category = " - " + data[i].children[j].name_category;
-                    self.categories.push(new SearchCategoryItem(data[i].children[j]));
+                    //data[i].children[j].name_category = " - " + data[i].children[j].name_category;
+                    
+                    self.categories.push(new SearchCategoryItem(data[i].children[j], 2));
                     self.typeCategories[data[i].id] = data[i].type_category;
                 }
             }

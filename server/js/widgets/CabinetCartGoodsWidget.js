@@ -153,7 +153,8 @@ var CabinetCartGoodsWidget = function(){
         Content : function(data){
             var content = new CartGoodsViewModel();
             for(var j in data){
-                self.cart = new BlockGoodsForSellerViewModel(content);
+                BlockCabinetGoodsForSellerViewModel.prototype = new Widget();
+                self.cart = new BlockCabinetGoodsForSellerViewModel(content);
                 for(var key in data[j]){
                     if(typeof self.Fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()] == 'function')
                         self.Fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()](data[j][key]);
@@ -212,7 +213,7 @@ var CartGoodsViewModel = function(){
     };
 };
 
-var BlockGoodsForSellerViewModel = function(content){
+var BlockCabinetGoodsForSellerViewModel = function(content){
     var self = this;
 
     self.sellerInfo = {};
@@ -246,8 +247,8 @@ var BlockGoodsForSellerViewModel = function(content){
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
-           BlockCartGoodsSellersViewModel.prototype = new Widget();
-           self.goods.push(new BlockCartGoodsSellersViewModel(data[i], self, content));
+           BlockCabinetCartGoodsSellersViewModel.prototype = new Widget();
+           self.goods.push(new BlockCabinetCartGoodsSellersViewModel(data[i], self, content));
         }
         self.finalCost = data.final_cost;
     };
@@ -269,7 +270,7 @@ var BlockGoodsForSellerViewModel = function(content){
             modal: true,
             buttons: {
                 "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:checkedGoods.join(','), comment: self.comment()});
+                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:checkedGoods.join(','), comment: self.comment(), data: self});
                      $( this ).dialog( "close" );
                 }
             }
@@ -277,6 +278,11 @@ var BlockGoodsForSellerViewModel = function(content){
         
     };
     self.ClickButchRemove = function(){
+        self.Confirm(Config.CartGoods.message.confirmButchRemove, function(){
+            self.Remove();
+        });
+    };
+    self.Remove = function(){
         var checkedGoods = [];
         var removedGoods = [];
         var count = self.goods().length-1;
@@ -291,12 +297,15 @@ var BlockGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
 
-        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
-        
+        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+
         if(self.goods().length == 0)
             content.content.remove(self);
         if(content.content().length == 0)
-            EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
+            EventDispatcher.DispatchEvent('CartGoods.empty.cart');
+    };
+    self.IsFavorite = function(){
+        
     };
     self.ClickProceed = function(){
         Routing.SetHash('catalog', 'Домашняя', {});
@@ -305,18 +314,20 @@ var BlockGoodsForSellerViewModel = function(content){
          Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
     };
     self.ClickClearCurt = function(){
-        var count = self.goods().length-1;
-        var removedGoods = [];
-        for(var i = 0; i <= count; i++) {
-              removedGoods.push(self.goods()[i]);
-        };
-        for(var i in removedGoods){
-            self.goods.remove(removedGoods[i]);
-        }
-        content.content.remove(self);
-        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.seller.id});
-        if(content.content().length == 0)
-            EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
+        self.Confirm(Config.CabinetCartGoods.message.confirmClearCart, function(){
+            var count = self.goods().length-1;
+            var removedGoods = [];
+            for(var i = 0; i <= count; i++) {
+                  removedGoods.push(self.goods()[i]);
+            };
+            for(var i in removedGoods){
+                self.goods.remove(removedGoods[i]);
+            }
+            content.content.remove(self);
+            EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.seller.id});
+            if(content.content().length == 0)
+                EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
+        });
     };
     self.ClickSelectAll = function(block){
         var check = $('#' + self.cssSelectAll).is(':checked');
@@ -338,7 +349,7 @@ var BlockGoodsForSellerViewModel = function(content){
     }, this);
 };
 
-var BlockCartGoodsSellersViewModel = function(data, block, content){
+var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
     var self = this;
     self.sellerId = block.sellerInfo.seller.id;
     self.id = data.id;
@@ -384,12 +395,17 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         
     };
     self.ClickRemove = function(){
-        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
+        self.Confirm(Config.CartGoods.message.confirmRemove, function(){
+            self.Remove();
+        });
+    };
+    self.Remove = function(){
+        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
         block.goods.remove(self);
         if(block.goods().length == 0){
             content.content.remove(block);
             if(content.content().length == 0){
-                EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
+                EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
             }
         }
     };

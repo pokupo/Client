@@ -170,6 +170,7 @@ var FavoritesWidget = function() {
         Content : function(data){
             var content = new FavoritesViewModel();
             for(var j in data){
+                BlockFavoritesForSellerViewModel.prototype = new Widget();
                 self.favorites = new BlockFavoritesForSellerViewModel(content);
                 for(var key in data[j]){
                     if(typeof self.Fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()] == 'function')
@@ -252,30 +253,34 @@ var BlockFavoritesForSellerViewModel = function(content){
         self.finalCost = data.final_cost;
     };
     self.ClickButchRemove = function(){
-        var checkedGoods = [];
-        var removedGoods = [];
-        var count = self.goods().length-1;
+        self.Confirm(Config.Favorites.message.confirmButchRemove, function(){
+            var checkedGoods = [];
+            var removedGoods = [];
+            var count = self.goods().length-1;
 
-        for(var i = 0; i <= count; i++) {
-            if(self.goods()[i].isSelected()){
-              checkedGoods.push(self.goods()[i].id);
-              removedGoods.push(self.goods()[i]);
-            }
-        };
-        
-        EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:checkedGoods, goods:removedGoods, content:content, block:self});
+            for(var i = 0; i <= count; i++) {
+                if(self.goods()[i].isSelected()){
+                  checkedGoods.push(self.goods()[i].id);
+                  removedGoods.push(self.goods()[i]);
+                }
+            };
+
+            EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:checkedGoods, goods:removedGoods, content:content, block:self});
+        })
     };
     self.ClickClearFavorites = function(){
-        var count = self.goods().length-1;
-        var removedGoods = [];
-        var removedGoodsIds = [];
-        for(var i = 0; i <= count; i++) {
-              removedGoods.push(self.goods()[i]);
-              removedGoodsIds.push(self.goods()[i].id);
-        };
-        var ids = removedGoodsIds.join(',');
-        
-        EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:ids, goods:removedGoods, content:content, block:self});
+        self.Confirm(Config.Favorites.message.confirmClearFavorites, function(){
+            var count = self.goods().length-1;
+            var removedGoods = [];
+            var removedGoodsIds = [];
+            for(var i = 0; i <= count; i++) {
+                  removedGoods.push(self.goods()[i]);
+                  removedGoodsIds.push(self.goods()[i].id);
+            };
+            var ids = removedGoodsIds.join(',');
+
+            EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:ids, goods:removedGoods, content:content, block:self});
+        });
     };
     self.ClickSelectAll = function(block){
         var check = $('#' + self.cssSelectAll).is(':checked');
@@ -330,7 +335,9 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
     self.ClickRemove = function(){
-        EventDispatcher.DispatchEvent('Favorites.clear.one', {goods:self, block:block, content:content});
+        self.Confirm(Config.Favorites.message.confirmRemove, function(){
+            EventDispatcher.DispatchEvent('Favorites.clear.one', {goods:self, block:block, content:content});
+        });
     };
 };
 
