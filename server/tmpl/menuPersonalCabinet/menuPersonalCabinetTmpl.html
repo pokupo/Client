@@ -18,17 +18,17 @@
         <div class="tabsBox">
             <ul class="tabsTitles">
                 <li class="first" data-bind="css: activeProfile"><a href="#" data-bind="click: ClickProfile"><span>Профиль</span></a></li>
-                <li data-bind="css: activePurchases "><a href="#" data-bind="click: ClickPurchases"><span>Мои покупки</span></a></li>
                 <!--<li data-bind="css: activeAuction"><a href="#" data-bind="click: ClickAuction"><span>Аукционы</span></a></li>-->
                 <li data-bind="css: activeFavorites"><a href="#" data-bind="click: ClickFavorites"><span>Избранное</span></a></li>
                 <li data-bind="css: activeCart"><a href="#" data-bind="click: ClickCart"><span>Корзина</span></a></li>
+                <li data-bind="css: activePurchases "><a href="#" data-bind="click: ClickPurchases"><span>Заказы</span></a></li>
                 <li class="rightLink" ><a href="#" class="link" data-bind="click: ClickBecomeSeller">Стать продавцом</a></li>
                 <div class="clear"></div>
             </ul>
         </div>
     </div>
-    <!-- ko if: subMenu().length > 0 -->
     <div class="horizontalSection">
+    <!-- ko if: subMenu().length > 0 -->
         <div class="pageWidth">
             <div class="tabsContent active">
                 <div class="tabsSubnav">
@@ -38,6 +38,6 @@
                 </div>
             </div>
         </div>
-    </div>
     <!-- /ko -->
+    </div>
 </script>

@@ -4,17 +4,27 @@
             <!-- ko if: showReturn -->
                 <td class="previous">
                     <div>
-                        <a href="#" data-bind="click: Return">&lt;Назад</a>&nbsp;&nbsp;
+                        <a href="#" data-bind="click: Return">Назад</a>
+                    </div>
+                </td>
+                <td class="base">
+                    <div>
+                        <a href="#" data-bind="click: ToHomepage">
+                            <img title="" alt="" src="https://dev.pokupo.ru/images/br_fon_5.png" />
+                        </a>
                     </div>
                 </td>
             <!-- /ko -->
-            <td class="base">
-                <div>
-                    <a href="#" data-bind="click: ToHomepage">
-                        <img title="" alt="" src="https://dev.pokupo.ru/images/br_fon_5.png" />
-                    </a>
-                </div>
-            </td>
+            <!-- ko ifnot: showReturn -->
+                <td class="first">
+                    <div>
+                        <a href="#" data-bind="click: ToHomepage">
+                            <img title="" alt="" src="https://dev.pokupo.ru/images/br_fon_5.png" />
+                        </a>
+                    </div>
+                </td>
+            <!-- /ko -->
+            
             <!-- ko foreach: crumbs -->
             <td class="second">
                 <!-- ko if: selectList().length > 0 -->

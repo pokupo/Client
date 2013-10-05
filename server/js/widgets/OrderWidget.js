@@ -456,7 +456,7 @@ var OrderWidget = function() {
             self.BaseLoad.ConfirmOrder(self.order.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.confirm')})){
                     self.ShowMessage(Config.Order.message.orderConfirm, function() {
-                        Routing.SetHash('catalog', 'Домашняя', {});
+                        Routing.SetHash('purchases', 'Мои покупки', {block: 'detail', id: self.order.id});
                     }, false);
                 }
             });
@@ -472,6 +472,19 @@ var OrderWidget = function() {
                     }
                 });
             })
+        });
+        
+        EventDispatcher.AddEventListener('OrderWidget.send.token', function(type){
+            self.BaseLoad.SendToken(type, function(data){
+                if(data.result == 'ok'){
+                    self.ShowMessage(Config.Order.message.sendToken, false, false);
+                }
+                else{
+                    if(!data.err)
+                        data.err = Config.Order.message.failSendToken;
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('OrderWidget.send.token', type)})
+                }
+            });
         });
     };
     self.Validate = {
@@ -713,6 +726,8 @@ var OrderWidget = function() {
             if (Routing.params.username && Routing.params.mail_token) 
                 Parameters.cache.order.step1.reg.username(Routing.params.username);
             var form = new OrderConfirmRegistrationFormStep1ViewModel();
+            form.ShowButtonSendToken();
+            
             if (Routing.params.username && Routing.params.mail_token) {
                 form.mailToken(Routing.params.mail_token);
                 EventDispatcher.DispatchEvent('OrderWidget.step1.confirm', form);
@@ -1208,6 +1223,21 @@ var OrderConfirmRegistrationFormStep1ViewModel = function() {
             self.errorConfirmLater(null);
 
         return true;
+    };
+    self.viewButtonSendToken = ko.observable(false);
+    self.ShowButtonSendToken = function(){
+        self.viewButtonSendToken(false);
+        setTimeout(function() {
+            self.viewButtonSendToken(true);
+        }, 60000);
+    };
+    self.ClickSendPhoneToken = function(){
+        self.ShowButtonSendToken();
+        EventDispatcher.DispatchEvent('OrderWidget.send.token', 'sms')
+    };
+    self.ClickSendMailToken = function(){
+        self.ShowButtonSendToken();
+        EventDispatcher.DispatchEvent('OrderWidget.send.token', 'mail')
     };
 };
 
@@ -1818,8 +1848,8 @@ var OrderFormStep5ViewModel = function() {
     self.idUser = ko.observable();
     self.idShop = ko.observable();
     self.idOwnShop = ko.observable();
-    self.costShipping = ko.observable();
-    self.costPayment = ko.observable();
+    self.costShipping = ko.observable('0 руб.');
+    self.costPayment = ko.observable('0 руб.');
     self.sellCost = ko.observable();
     self.finalCost = ko.observable();
     self.discount = ko.observable();
@@ -1931,6 +1961,10 @@ var OrderItemFormStep5ViewModel = function(data) {
         self.isEgoods = true;
     else
         self.isEgoods = false;
+    
+    self.ClickGoods = function(){
+        Routing.SetHash('goods', self.chortName, {id : self.id});
+    }
 };
 
 var TestOrder = {
