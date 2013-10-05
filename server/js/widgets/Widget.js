@@ -20,6 +20,7 @@ Parameters = {
         content : {},
         favorite : [],
         searchContent : {},
+        searchWidget : {},
         roots: [],
         infoCategory : {},
         infoSeller : {},
