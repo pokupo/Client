@@ -35,8 +35,7 @@ var Config = {
         catalog : 'catalog', // id контейнера каталога 
         search  : 'search_block', // id контейнера формы поиска 
         breadCrumbs : ['breadCrumb_1','breadCrumb_2'], // id контейнеров хлебных крошек
-        content : 'content', // id контейнера контента
-        block : 'block',
+        content : ['content', 'block'], // id контейнера контента
         searchResult : ['advanced_search', 'content'], // id контейнеров расширенной формы и результатов поиска
         goods : 'content', // id контейнера информации о товаре
         userInformation : 'user_information', // id контейнера информации о пользователе
@@ -44,6 +43,7 @@ var Config = {
         registration : 'content', // id контейнера регистрации
         cart : 'cart_information', // id контейнера корзины
         cartGoods : 'content', // id контейнера реестра товаров корзины
+        cabinetCartGoods : 'content',
         profile : 'content', // id контейнера меню профиля и содержимого
         menuPersonalCabinet : 'profile_menu',
         favorites : 'content', // id контейнера избранного

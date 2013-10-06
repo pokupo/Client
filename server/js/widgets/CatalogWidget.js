@@ -31,6 +31,10 @@ var CatalogWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.catalog){
             input = WParameters.catalog;
         }
+        if(!$.isEmptyObject(input)){
+            if(input.container)
+                self.settings.containerId = input.container;
+        }
         self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){

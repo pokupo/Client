@@ -5,7 +5,7 @@ var AuthenticationWidget = function(){
         containerFormId : null,
         tmplPath : null,
         authFormTmplId : null,
-        authSidebarTmplId : null,
+        containerSidebarId : null,
         inputParameters : {},
         https : null,
         style : null
@@ -39,6 +39,10 @@ var AuthenticationWidget = function(){
             if(input.https){
                 self.settings.https = input.https;
                 Parameters.cache.https = input.https;
+            }
+            if(input.container){
+                self.settings.containerFormId = input.container[0]; 
+                self.settings.containerSidebarId = input.container[1];
             }
         }
         self.settings.inputParameters = input;
