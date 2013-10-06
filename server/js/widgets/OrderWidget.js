@@ -1406,6 +1406,7 @@ var OrderFormStep2ViewModel = function() {
     var self = this;
     self.addressList = ko.observableArray();
     self.cssAddressList = 'delivary_address_list';
+    self.checked = ko.observable();
 
     self.ClickAddAddress = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
@@ -1413,11 +1414,12 @@ var OrderFormStep2ViewModel = function() {
     self.AddContent = function(data, order) {
         if (!data.err)
             for (var key in data) {
-                OrderItemFormStep3ViewModel.prototype = new Widget();
-                var address = new OrderItemFormStep2ViewModel(data[key], self.addressList)
+                OrderItemFormStep2ViewModel.prototype = new Widget();
+                var address = new OrderItemFormStep2ViewModel(data[key], self)
                 self.addressList.push(address);
-                if (data[key].is_default == 'yes')
+                if (data[key].is_default == 'yes'){
                     order.delivery = address;
+                }
             }
     };
     self.HasAddress = function() {
@@ -1472,12 +1474,13 @@ var OrderItemFormStep2ViewModel = function(data, list) {
     self.addressee = data.addressee;
 
     self.contactPhone = data.contact_phone;
-    self.list = list;
+    self.list = list.addressList();
 
     if (data.is_default == 'yes') {
         self.isDefault = ko.observable(true);
         self.cssIsDefault = ko.observable('delivery_address_is_default active');
         Parameters.cache.order.delivery = self;
+        list.checked(self.id);
     }
     else {
         self.isDefault = ko.observable(false);
@@ -1490,13 +1493,14 @@ var OrderItemFormStep2ViewModel = function(data, list) {
         }, false);
     };
     self.ClickItem = function() {
-        $.each(list(), function(i) {
-            list()[i].cssIsDefault('delivery_address_is_default');
-            list()[i].isDefault(false);
+        $.each(self.list, function(i) {
+            self.list[i].cssIsDefault('delivery_address_is_default');
+            self.list[i].isDefault(false);
         });
 
         self.cssIsDefault('delivery_address_is_default active');
         self.isDefault(true);
+        list.checked(self.id);
         Parameters.cache.order.delivery = self;
 
         EventDispatcher.DispatchEvent('OrderWidget.step2.change', self);
@@ -1673,12 +1677,13 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
 var OrderFormStep3ViewModel = function() {
     var self = this;
     self.shipping = ko.observableArray();
+    self.checked = ko.observable();
 
     self.AddShipping = function(data) {
         self.shipping = ko.observableArray();
         for (var i = 0; i <= data.length - 1; i++) {
-            var item = new OrderItemFormStep3ViewModel();
-            item.AddContent(data[i], self);
+            var item = new OrderItemFormStep3ViewModel(self);
+            item.AddContent(data[i]);
             self.shipping.push(item);
         }
     };
@@ -1709,7 +1714,7 @@ var OrderFormStep3ViewModel = function() {
     };
 };
 
-var OrderItemFormStep3ViewModel = function() {
+var OrderItemFormStep3ViewModel = function(parent) {
     var self = this;
     self.nameShippingCompany = ko.observable();
     self.siteShippingCompany = ko.observable();
@@ -1721,9 +1726,7 @@ var OrderItemFormStep3ViewModel = function() {
     self.cssActive = ko.observable('shipping_row');
     self.isActive = ko.observable(false);
 
-    self.parent = null;
-
-    self.AddContent = function(data, parent) {
+    self.AddContent = function(data ) {
         if (data.hasOwnProperty('name_shipping_company'))
             self.nameShippingCompany(data.name_shipping_company);
         if (data.hasOwnProperty('site_shipping_company'))
@@ -1738,17 +1741,16 @@ var OrderItemFormStep3ViewModel = function() {
             self.descMethodShipping(data.desc_method_shipping);
         if (data.hasOwnProperty('cost_shipping'))
             self.costShipping(data.cost_shipping + ' руб.');
-
-        self.parent = parent;
     };
     self.ClickItem = function() {
-        $.each(self.parent.shipping(), function(i) {
-            self.parent.shipping()[i].cssActive('shipping_row');
-            self.parent.shipping()[i].isActive(false);
+        $.each(parent.shipping(), function(i) {
+            parent.shipping()[i].cssActive('shipping_row');
+            parent.shipping()[i].isActive(false);
         });
 
         self.cssActive('shipping_row active');
         self.isActive(true);
+        parent.checked(self.id());
 
         EventDispatcher.DispatchEvent('OrderWidget.step3.change', self);
     }
@@ -1757,12 +1759,13 @@ var OrderItemFormStep3ViewModel = function() {
 var OrderFormStep4ViewModel = function() {
     var self = this;
     self.payment = ko.observableArray();
+    self.checked = ko.observable();
 
     self.AddPayment = function(data) {
         self.payment = ko.observableArray();
         for (var i = 0; i <= data.length - 1; i++) {
-            var item = new OrderItemFormStep4ViewModel();
-            item.AddContent(data[i], self);
+            var item = new OrderItemFormStep4ViewModel(self);
+            item.AddContent(data[i]);
             self.payment.push(item);
         }
     };
@@ -1796,7 +1799,7 @@ var OrderFormStep4ViewModel = function() {
     };
 };
 
-var OrderItemFormStep4ViewModel = function() {
+var OrderItemFormStep4ViewModel = function(parent) {
     var self = this;
     self.id = ko.observable();
     self.logoPayment = ko.observable();
@@ -1806,7 +1809,6 @@ var OrderItemFormStep4ViewModel = function() {
     self.costPayment = ko.observable();
     self.cssActive = ko.observable('payment_row');
     self.isActive = ko.observable(false);
-    self.parent = null;
 
     self.AddContent = function(data, parent) {
         self.id(data.id);
@@ -1820,17 +1822,16 @@ var OrderItemFormStep4ViewModel = function() {
             self.namePayment(data.name_payment);
         if (data.hasOwnProperty('cost_payment'))
             self.costPayment(data.cost_payment + ' руб.');
-
-        self.parent = parent;
     };
     self.ClickItem = function() {
-        $.each(self.parent.payment(), function(i) {
-            self.parent.payment()[i].cssActive('payment_row');
-            self.parent.payment()[i].isActive(false);
+        $.each(parent.payment(), function(i) {
+            parent.payment()[i].cssActive('payment_row');
+            parent.payment()[i].isActive(false);
         });
 
         self.cssActive('payment_row active');
         self.isActive(true);
+        parent.checked(self.id());
 
         EventDispatcher.DispatchEvent('OrderWidget.step4.change', self);
     };
@@ -1860,6 +1861,7 @@ var OrderFormStep5ViewModel = function() {
     self.discountSum = ko.observable();
     self.delivery = ko.observable();
     self.goods = ko.observableArray();
+    
 
 
     self.AddContent = function(data) {

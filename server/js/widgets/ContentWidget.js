@@ -248,10 +248,14 @@ var ContentWidget = function(){
                 if(Loader.IsReady()){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
-                        if(b[i].type == 'slider')
-                            new AnimateSlider(b[i].css);
-                        if(b[i].type == 'carousel')
-                            new AnimateCarousel(b[i].css);
+                        $('#' + b[i].data.cssBlock).show();
+                        if(b[i].type == 'slider'){
+                            new AnimateSlider(b[i].data.cssBlockContainer);
+                            
+                        }
+                        if(b[i].type == 'carousel'){
+                            new AnimateCarousel(b[i].data.cssBlockContainer);
+                        }                        
                     })
                 }
                 else{
@@ -271,7 +275,7 @@ var ContentWidget = function(){
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
                 ko.applyBindings(data, $('#' + data.cssBlock)[0]);
-                self.Render.Animate.block.push({type: data.typeView, css : data.cssBlockContainer})
+                self.Render.Animate.block.push({type: data.typeView, data : data})
                 self.testBlock.ready = self.testBlock.ready + 1;
 
                 if(self.testBlock.IsReady()){

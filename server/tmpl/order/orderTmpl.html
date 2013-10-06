@@ -462,10 +462,10 @@
                                 <td data-bind="text: contactPhone"></td>
                                 <td align="center" >
                                     <!-- ko if: isDefault()-->
-                                    <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id" >
+                                    <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id, checked: $parent.checked" >
                                     <!-- /ko -->
                                     <!-- ko ifnot: isDefault()-->
-                                    <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+                                    <input class="addrN" type="radio" name="is_default" data-bind="value: id, checked: $parent.checked" >
                                     <!-- /ko -->
                                 </td>
                             </tr>
@@ -706,10 +706,10 @@
                                     </td>
                                     <td align="center">
                                         <!-- ko if: isActive()-->
-                                        <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked'}, value: id" >
+                                        <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked'}, value: id, checked: $parent.checked" >
                                         <!-- /ko -->
                                         <!-- ko ifnot: isActive()-->
-                                        <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+                                        <input class="addrN" type="radio" name="is_default" data-bind="value: id, checked: $parent.checked" >
                                         <!-- /ko -->
                                     </td>
                                 </tr>
@@ -825,10 +825,10 @@
         </td>
         <td align="center">
             <!-- ko if: isActive()-->
-                <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id" >
+                <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id, checked: $parent.checked" >
             <!-- /ko -->
             <!-- ko ifnot: isActive()-->
-                <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+                <input class="addrN" type="radio" name="is_default" data-bind="value: id, checked: $parent.checked" >
             <!-- /ko -->
         </td>
     </tr>
