@@ -30,6 +30,11 @@ var BreadCrumbWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.breadCrumb){
             input = WParameters.breadCrumb;
         }
+        
+        if(!$.isEmptyObject(input)){
+            if(input.container)
+                self.settings.containerId = input.container;
+        }
         self.settings.inputParameters = input;
     };
     self.GetTmplRoute = function(){

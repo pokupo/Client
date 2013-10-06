@@ -3,6 +3,7 @@ var ContentWidget = function(){
     self.widgetName = 'ContentWidget';
     self.settings = {
         containerId : null,
+        blockContainerId : null,
         tmplForBlock : null,
         tmplForContent : null,
         blockSliderTmpl : null,
@@ -46,19 +47,23 @@ var ContentWidget = function(){
         if(!$.isEmptyObject(input)){
             if(input.block){
                 self.settings.countGoodsInBlock = input.block.count;
+                if(input.block.container)
+                    self.settings.blockContainerId = input.block.container;
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
+                if(input.content.container)
+                    self.settings.containerId = input.content.container;
             }
         }
         self.settings.inputParameters = input;
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.content;
-        self.settings.blockContainerId = Config.Containers.block;
+        self.settings.containerId = Config.Containers.content[0];
+        self.settings.blockContainerId = Config.Containers.content[1];
         self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
         self.settings.tmplForContent = Config.Content.tmpl.pathList;
         self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;

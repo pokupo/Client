@@ -44,6 +44,8 @@ var FavoritesWidget = function() {
             if (input.tmpl) {
                 self.settings.tmplPath = 'favorites/' + input.tmpl + '.html';
             }
+            if(input.container)
+                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };

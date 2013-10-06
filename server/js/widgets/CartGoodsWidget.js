@@ -50,6 +50,8 @@ var CartGoodsWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'cartGoods/' + input.tmpl + '.html';
             }
+            if(input.container)
+                self.settings.containerId = input.container;
         }
     };
     self.CheckRoute = function(){

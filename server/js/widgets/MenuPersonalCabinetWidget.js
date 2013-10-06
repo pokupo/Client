@@ -17,6 +17,17 @@ var MenuPersonalCabinetWidget = function(){
         self.RegisterEvents();
         self.SetPosition();
     };
+     self.SetInputParameters = function(){
+        var input = {};
+        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.menuPersonalCabinet){
+            input = WParameters.menuPersonalCabinet;
+        }
+        
+        if(!$.isEmptyObject(input)){
+            if(input.container)
+                self.settings.containerMenuId = input.container;
+        }
+     };
     self.AddMenu = function(opt){
         if(opt){
             self.active = opt.active;

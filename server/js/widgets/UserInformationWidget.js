@@ -43,6 +43,8 @@ var UserInformationWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'userInformation/' + input.tmpl + '.html';
             }
+            if(input.container)
+                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };

@@ -11,7 +11,7 @@ var CabinetCartGoodsWidget = function(){
         containerId : null,
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.cartGoods;
+        self.settings.containerId = Config.Containers.cabinetCartGoods;
         self.settings.tmplPath = Config.CabinetCartGoods.tmpl.path;
         self.settings.cartTmplId = Config.CabinetCartGoods.tmpl.cartTmplId;
         self.settings.emptyCartTmplId = Config.CabinetCartGoods.tmpl.emptyCartTmplId;
@@ -50,6 +50,8 @@ var CabinetCartGoodsWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'cabinetCartGoods/' + input.tmpl + '.html';
             }
+            if(input.container)
+                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };

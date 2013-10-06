@@ -51,10 +51,18 @@ var SearchResultWidget = function(){
         }
         
         if(!$.isEmptyObject(input)){
-            if(input.defaultCount)
-                self.settings.paging.itemsPerPage = input.defaultCount;
-            if(input.list)
-                self.settings.listPerPage = input.list;
+            if(input.content){
+                if(input.content.defaultCount)
+                    self.settings.paging.itemsPerPage = input.content.defaultCount;
+                if(input.content.list)
+                    self.settings.listPerPage = input.content.list;
+                if(input.content.container)
+                    self.settings.containerIdForSearchResult = input.content.container;
+            }
+            if(input.form){
+                if(input.form.container)
+                    self.settings.containerIdForAdvancedSearch = input.form.container;
+            }
         }
         self.settings.inputParameters = input;
     };
