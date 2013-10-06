@@ -454,14 +454,16 @@ var OrderWidget = function() {
             self.ShowMessage(Config.Order.message.selectMethodPayment, false, false);
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step5.confirm', function() {
-            self.BaseLoad.ConfirmOrder(self.order.id, function(data) {
-                if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.confirm')})){
+
+        EventDispatcher.AddEventListener('OrderWidget.step5.confirm', function(text) {
+            self.BaseLoad.ConfirmOrder(self.order.id + '?comment_buyer=' + text.comment, function(data) {
+                if (self.QueryError(data, function() {
+                    EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', text)
+                }))
                     self.ShowMessage(Config.Order.message.orderConfirm, function() {
                         Routing.SetHash('purchases', 'Мои покупки', {block: 'detail', id: self.order.id});
                     }, false);
-                }
-            });
+                })
         });
         
         EventDispatcher.AddEventListener('OrderWidget.step5.delete', function(){
@@ -1930,8 +1932,8 @@ var OrderFormStep5ViewModel = function() {
     self.Back = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 4});
     };
-    self.Submit = function() {
-        EventDispatcher.DispatchEvent('OrderWidget.step5.confirm');
+    self.ClickConfirm = function() {
+        EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', {comment: self.commentBuyer()});
     };
     self.Delete = function(){
         EventDispatcher.DispatchEvent('OrderWidget.step5.delete');
