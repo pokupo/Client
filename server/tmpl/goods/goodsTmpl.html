@@ -84,9 +84,6 @@
                         </div>
                         <div class="productLinksBox">
                             <span class="available">В наличии: <!-- ko text: count --><!-- /ko --></span>
-                            <!-- ko if: count == 0 -->
-                                <span class="report_me"><a href="#" data-bind="click: ReportAvailability">Сообщить о наличии</a></span>
-                            <!-- /ko -->
                             <span class="favorites">
                                 <!-- ko if: IsFavorite -->
                                     <a href="#" data-bind="click: ClickFavorites">Избранный товар</a>
@@ -95,7 +92,6 @@
                                     <a href="#"  data-bind="click: AddFavorites">В избранное</a>
                                 <!-- /ko -->
                             </span>
-                            <span class="wishlist"><a href="#" data-bind="click: Gift">Хочу в подарок!</a></span>
                             <div style="display: inline" class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="button" data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"></div> 
                             <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
                                 <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
