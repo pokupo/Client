@@ -62,7 +62,8 @@ Parameters = {
         userInformation : null,
         country : null,
         payment : null,
-        shipping : null
+        shipping : null,
+        payment : []
     },
     filter : {},
     catalog : {
@@ -203,6 +204,7 @@ function Widget(){
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
+            data.options.params['uniq'] = EventDispatcher.HashCode(JSON.stringify(data.options));
             embed.SetParameters(data);
             embed.Init(embed, true);
         });

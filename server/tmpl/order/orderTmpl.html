@@ -893,7 +893,7 @@
                             <!-- ko if: realShipping -->
                             <tr class="listTableRow">
                                 <td colspan="4">
-                                    <strong>Доставка:</strong> <!-- ko text: nameShipping --><!-- /ko -->
+                                    <strong>Доставка:</strong> <!-- ko text: nameMethodShipping --><!-- /ko -->
                                 </td>
                                 <td data-bind="text: costShipping"></td>
                             </tr>
@@ -904,51 +904,53 @@
                             </tr>
                             <tr class="listTableRow">
                                 <td colspan="4"><strong>Всего:</strong></td>
-                                <td><strong class="total" data-bind="text: finalCost()"></strong></td>
+                                <td><strong class="total" data-bind="text: itog()"></strong></td>
                             </tr>
                         </table>
                         <div class="clear"></div>
                     </div>
+                    <!-- ko if: realShipping -->
+                    <h2>Доставка</h2>
                     <div class="listBox">
                         <table cellpadding="0" cellspacing="0" class="listTable">
                             <tr class="listTableHeader">
-                                <td>Адрес</td>
-                                <td>Город</td>
-                                <td>Регион</td>
-                                <td>Страна</td>
+                                <td>Компания</td>
                                 <td>Почтовый индекс</td>
+                                <td>Страна</td>
+                                <td>Регион</td>
+                                <td>Город</td>
+                                <td>Адрес</td>
                                 <td>Получатель</td>
                                 <td>Контактный телефон</td>
                             </tr>
                             <tr class="listTableRow">
-                                <td data-bind="text: delivery().address"></td>
-                                <td data-bind="text: delivery().city"></td>
-                                <td data-bind="text: delivery().region"></td>
-                                <td data-bind="text: delivery().country"></td>
-                                <td data-bind="text: delivery().postCode"></td>
-                                <td data-bind="text: delivery().addressee"></td>
-                                <td data-bind="text: delivery().contactPhone"></td>
+                                <td><img src="" width="40" height="40" align="absmiddle" data-bind="attr: {src: logoMethodShipping}"> <!-- ko text: nameMethodShipping --><!-- /ko --></td>
+                                <td data-bind="text: shippingPostCode"></td>
+                                <td data-bind="text: shippingCountry"></td>
+                                <td data-bind="text: shippingRegion"></td>
+                                <td data-bind="text: shippingCity"></td>
+                                <td data-bind="text: shippingAddress"></td>
+                                <td data-bind="text: shippingAddressee"></td>
+                                <td data-bind="text: shippingContactPhone"></td>
                             </tr>
                         </table>
                         <div class="clear"></div>
                     </div>
+                    <!-- /ko -->
                 </td>
             </tr>
             <tr>
                 <td align="center">
                     <div class="listBox">
                         <table cellpadding="0" cellspacing="0" class="listTable">
-                            <tr class="listTableHeader">
-                                <td><label>Комментарий:</label></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="form_item form_item_fio">
-                                        <textarea  data-bind="value: commentBuyer"></textarea>
-                                    </div>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr class="listTableHeader">
+                                        <td>Примечание к заказу</td>
+                                </tr>
+                            </tbody>
                         </table>
+                        <textarea name="textarea" class="fullwidth" style="margin-top:4px;" data-bind="value: commentBuyer()">TEXTAREA во всю ширину</textarea>
+                        <div class="clear"></div>
                     </div>
                 </td>
             </tr>
@@ -959,7 +961,7 @@
                         <tr>
                             <td style="text-align:right"><input type="button" class="prevButton size2" value="Назад" data-bind="click: Back"></td>
                             <td width="50">&nbsp;</td>
-                            <td style="text-align:right"><input type="button" class="subButtonBig size2" value="Отменить заказ" data-bind="click: Delete"></td>
+                            <td style="text-align:right"><input type="button" class="subButtonBig size2" value="Отменить заказ" data-bind="click: ClickDelete"></td>
                             <td width="50">&nbsp;</td>
                             <td style="text-align:left"><input type="button" class="nextButton size2" value="Подтверждаю" data-bind="click: ClickConfirm"></td>
                         </tr>

@@ -167,7 +167,7 @@ var RegistrationWidget = function() {
             Routing.SetHash('registration', 'Регистрация пользователя', {step: 2});
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step3.later', function(data) {
+        EventDispatcher.AddEventListener('RegistrationWidget.step3.later', function() {
             Routing.SetHash('registration', 'Регистрация пользователя', {step: 4});
         });
 
@@ -343,8 +343,18 @@ var RegistrationWidget = function() {
     self.Fill = {
         Step1: function() {
             var form = Parameters.cache.reg.step1;
-            if ($.isEmptyObject(form))
-                var form = new RegistrationFormStep1ViewModel();
+            if ($.isEmptyObject(form)){
+                RegistrationFormViewModel.prototype.Back = function() {
+                    Parameters.cache.history.pop();
+                    var link = Parameters.cache.history.pop();
+                    if (link)
+                        Routing.SetHash(link.route, link.title, link.data, true);
+                    else
+                        Routing.SetHash('catalog', 'Домашняя', {});
+                };
+                form = new RegistrationFormViewModel();
+                form.submitEvent('RegistrationWidget.step1.checking');
+            }
             self.Render.Step1(form);
         },
         Step2: function() {
@@ -352,8 +362,12 @@ var RegistrationWidget = function() {
                 Parameters.cache.reg.step1 = new RegistrationFormStep1ViewModel();
                 Parameters.cache.reg.step1.username(Routing.params.username);
             }
-            
-            var form = new RegistrationFormStep2ViewModel();
+
+            RegistrationConfirmFormViewModel.prototype.Back = function() {
+                EventDispatcher.DispatchEvent('RegistrationWidget.step1.view');
+            };
+            var form = new RegistrationConfirmFormViewModel(Parameters.cache.reg.step1);
+            form.submitEvent('RegistrationWidget.step2.checking');
             
             if (Routing.params.username && Routing.params.mail_token) {
                 form.mailToken(Routing.params.mail_token);
@@ -364,8 +378,16 @@ var RegistrationWidget = function() {
         },
         Step3: function() {
             var form = Parameters.cache.reg.step3;
-            if ($.isEmptyObject(form))
-                var form = new RegistrationFormStep3ViewModel();
+            if ($.isEmptyObject(form)){
+                RegistrationProfileFormViewModel.prototype.Back = function() {
+                    EventDispatcher.DispatchEvent('RegistrationWidget.step2.view');
+                };
+                RegistrationProfileFormViewModel.prototype.SpecifyLater = function() {
+                    EventDispatcher.DispatchEvent('RegistrationWidget.step3.later');
+                };
+                form = new RegistrationProfileFormViewModel();
+                form.submitEvent('RegistrationWidget.step3.checking');
+            }
             self.Render.Step3(form);
         },
         Step4: function() {
@@ -550,372 +572,6 @@ var RegistrationWidget = function() {
                 }
             });
         }
-    };
-};
-
-var RegistrationFormStep1ViewModel = function() {
-    var self = this;
-    self.username = ko.observable(null);
-    self.errorUsername = ko.observable(null);
-    self.email = ko.observable(null);
-    self.errorEmail = ko.observable(null);
-    self.cssPhone = 'phone';
-    self.phone = ko.observable(null);
-    self.errorPhone = ko.observable(null);
-    self.cssFirstPassword = 'firstPassword';
-    self.firstPassword = ko.observable(null);
-    self.errorFirstPassword = ko.observable(null);
-    self.cssSecondPassword = 'secondPassword';
-    self.secondPassword = ko.observable(null);
-    self.errorSecondPassword = ko.observable(null);
-    self.isChecked = ko.observable(false);
-    self.errorIsChecked = ko.observable(null);
-
-
-    self.SubmitForm = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('RegistrationWidget.step1.checking', self);
-        }
-    };
-    self.Back = function() {
-        Parameters.cache.history.pop();
-        var link = Parameters.cache.history.pop();
-        if (link)
-            Routing.SetHash(link.route, link.title, link.data, true);
-        else
-            Routing.SetHash('catalog', 'Домашняя', {});
-    };
-    self.ValidationForm = function() {
-        var test = true;
-        if (!self.UsernameValidation())
-            test = false;
-        if (!self.EmailValidation())
-            test = false;
-        if (!self.PhoneValidation())
-            test = false;
-        if (!self.PasswordValidation())
-            test = false;
-        if (!self.PasswordSecondValidation())
-            test = false;
-        if (!self.IsCheckedValidation())
-            test = false;
-
-        return test;
-    };
-    self.UsernameValidation = function() {
-        if (!self.username()) {
-            self.errorUsername(Config.Registration.error.username.empty);
-            return false;
-        }
-        if (self.username().length < 3) {
-            self.errorUsername(Config.Registration.error.username.minLength);
-            return false;
-        }
-        if (self.username().length > 40) {
-            self.errorUsername(Config.Registration.error.username.maxLength);
-            return false;
-        }
-        if (!Config.Registration.regular.username.test(self.username())) {
-            self.errorUsername(Config.Registration.error.username.regular);
-            return false;
-        }
-        self.errorUsername(null);
-        return true;
-    };
-    self.EmailValidation = function() {
-        if (!self.email()) {
-            self.errorEmail(Config.Registration.error.email.empty);
-            return false;
-        }
-        if (self.email().length > 64) {
-            self.errorUsername(Config.Registration.error.email.maxLength);
-            return false;
-        }
-        if (!Config.Registration.regular.email.test(self.email())) {
-            self.errorEmail(Config.Registration.error.email.regular);
-            return false;
-        }
-        self.errorEmail(null);
-        return true;
-    };
-    self.PhoneValidation = function() {
-        if (self.phone()) {
-            if (!Config.Registration.regular.phone.test($.trim(self.phone()))) {
-                self.errorPhone(Config.Registration.error.phone.regular);
-                return false;
-            }
-        }
-        self.errorPhone(null);
-        return true;
-    };
-    self.PasswordValidation = function() {
-        self.firstPassword($('input#' + self.cssFirstPassword).val());
-        if (!self.firstPassword()) {
-            self.errorFirstPassword(Config.Registration.error.password.empty);
-            return false;
-        }
-        if (self.firstPassword().length < 6) {
-            self.errorFirstPassword(Config.Registration.error.password.minLength);
-            return false;
-        }
-        if (self.firstPassword().length > 64) {
-            self.errorFirstPassword(Config.Registration.error.password.maxLength);
-            return false;
-        }
-
-        self.errorFirstPassword(null);
-        return true;
-    };
-    self.PasswordSecondValidation = function() {
-        self.secondPassword($('input#' + self.cssSecondPassword).val());
-        if (!self.secondPassword()) {
-            self.errorSecondPassword(Config.Registration.error.password.empty);
-            return false;
-        }
-        if (self.firstPassword() != self.secondPassword()) {
-            self.errorSecondPassword(Config.Registration.error.password.equal);
-            return false;
-        }
-        self.errorSecondPassword(null);
-        return true;
-    };
-    self.IsCheckedValidation = function() {
-        if (!self.isChecked()) {
-            self.errorIsChecked(Config.Registration.error.isChecked.empty);
-            return false;
-        }
-
-        self.errorIsChecked(null);
-        return true;
-    };
-    self.RestoreAccess = function() {
- 
-    };
-};
-
-var RegistrationFormStep2ViewModel = function() {
-    var self = this;
-    self.username = Parameters.cache.reg.step1.username;
-
-    self.cssMailToken = 'mail_token_block';
-    self.mailToken = ko.observable();
-    self.mailIsConfirm = ko.observable(false);
-    self.errorEmailConfirm = ko.observable(null);
-    self.mailConfirmLater = ko.observable(false);
-
-    self.cssPhoneToken = 'phone_token_block';
-    self.phoneToken = ko.observable();
-    self.phoneIsConfirm = ko.observable(false);
-    self.errorPhoneConfirm = ko.observable(null);
-    self.phoneConfirmLater = ko.observable(false);
-
-    self.errorConfirmLater = ko.observable(null);
-
-    self.isEmptyPhone = ko.computed(function() {
-        if (!$.isEmptyObject(Parameters.cache.reg.step1) && Parameters.cache.reg.step1.phone())
-            return true;
-        self.phoneConfirmLater(true);
-        return false;
-    }, this);
-
-    self.Back = function() {
-        EventDispatcher.DispatchEvent('RegistrationWidget.step1.view');
-    };
-    self.SubmitForm = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('RegistrationWidget.step2.checking', self);
-        }
-    };
-    self.ValidationForm = function() {
-        var test = true;
-        if (!self.EmailTokenValidation())
-            test = false;
-        if (!self.PhoneTokenValidation())
-            test = false;
-        if (!self.EmptyConfirm())
-            test = false;
-
-        return test;
-    };
-    self.EmailTokenValidation = function() {
-        if (!self.mailConfirmLater()) {
-            if (!self.mailToken()) {
-                self.errorEmailConfirm(Config.Registration.error.emailToken.empty);
-                return false;
-            }
-        }
-
-        self.errorEmailConfirm(null);
-        return true;
-    };
-    self.PhoneTokenValidation = function() {
-        if (!self.phoneConfirmLater()) {
-            if (!self.phoneToken()) {
-                self.errorPhoneConfirm(Config.Registration.error.phoneToken.empty);
-                return false;
-            }
-        }
-
-        self.errorPhoneConfirm(null);
-        return true;
-    };
-    self.EmptyConfirm = function() {
-        if (self.phoneConfirmLater() && self.mailConfirmLater()) {
-            self.errorConfirmLater(Config.Registration.error.confirmLater.empty);
-            return false;
-        }
-        else
-            self.errorConfirmLater(null);
-
-        return true;
-    };
-};
-
-var RegistrationFormStep3ViewModel = function() {
-    var self = this;
-    self.lastName = ko.observable();
-    self.errorLastName = ko.observable(null);
-
-    self.firstName = ko.observable();
-    self.errorFirstName = ko.observable(null);
-
-    self.middleName = ko.observable();
-    self.errorMiddleName = ko.observable(null);
-
-    self.birthDay = ko.observable();
-    self.birthDayHiddenField = ko.observable();
-    self.errorBirthDay = ko.observable(null);
-    self.cssBirthDay = 'birthDay';
-
-    self.gender = ko.observable('m');
-    self.errorGender = ko.observable(null);
-    
-    self.cssRegistrationDataForm = 'registration_personal_information';
-
-    self.Back = function() {
-        EventDispatcher.DispatchEvent('RegistrationWidget.step2.view');
-    };
-    self.SpecifyLater = function() {
-        EventDispatcher.DispatchEvent('RegistrationWidget.step3.later', self);
-    };
-    self.SubmitForm = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('RegistrationWidget.step3.checking', self);
-        }
-    };
-    self.ValidationForm = function() {
-        var test = true;
-        if (!self.FirstNameValidation())
-            test = false;
-        if (!self.LastNameValidation())
-            test = false;
-        if (!self.MiddleNameValidation())
-            test = false;
-        if (!self.BirthDayValidation())
-            test = false;
-        if (!self.GanderValidation())
-            test = false;
-
-        return test;
-    };
-    self.FirstNameValidation = function() {
-        if (!self.firstName()) {
-            self.errorFirstName(Config.Registration.error.firstName.empty);
-            return false;
-        }
-        if (self.firstName().length < 2) {
-            self.errorFirstName(Config.Registration.error.firstName.minLength);
-            return false;
-        }
-        if (self.firstName().length > 20) {
-            self.errorFirstName(Config.Registration.error.firstName.maxLength);
-            return false;
-        }
-        if (!Config.Registration.regular.firstName.test(self.firstName())) {
-            self.errorFirstName(Config.Registration.error.firstName.regular);
-            return false;
-        }
-        self.errorFirstName(null);
-        return true;
-    };
-    self.LastNameValidation = function() {
-        if (!self.lastName()) {
-            self.errorLastName(Config.Registration.error.lastName.empty);
-            return false;
-        }
-        if (self.lastName().length < 2) {
-            self.errorLastName(Config.Registration.error.lastName.minLength);
-            return false;
-        }
-        if (self.lastName().length > 20) {
-            self.errorLastName(Config.Registration.error.lastName.maxLength);
-            return false;
-        }
-        if (!Config.Registration.regular.lastName.test(self.lastName())) {
-            self.errorLastName(Config.Registration.error.lastName.regular);
-            return false;
-        }
-        self.errorLastName(null);
-        return true;
-    };
-    self.MiddleNameValidation = function() {
-        if (self.middleName()) {
-            if (self.middleName().length < 2) {
-                self.errorMiddleName(Config.Registration.error.middleName.minLength);
-                return false;
-            }
-            if (self.middleName().length > 20) {
-                self.errorMiddleName(Config.Registration.error.middleName.maxLength);
-                return false;
-            }
-            if (!Config.Registration.regular.middleName.test(self.middleName())) {
-                self.errorMiddleName(Config.Registration.error.middleName.regular);
-                return false;
-            }
-        }
-        self.errorMiddleName(null);
-        return true;
-    };
-    self.BirthDayValidation = function() {
-        if (!self.birthDay()) {
-            self.errorBirthDay(Config.Registration.error.birthDay.empty);
-            return false;
-        }
-        if (!Config.Registration.regular.birthDay.test(self.birthDay())) {
-            self.errorBirthDay(Config.Registration.error.birthDay.regular);
-            return false;
-        }
-        var dateArray = self.birthDay().split('.');
-        var date = new Date(dateArray[2], dateArray[1]-1, dateArray[0]);
-        
-        var now = new Date();
-        var minDate = new Date(now.getYear() - 18, now.getMonth(), now.getDate());
-        if(minDate < date){
-            self.errorBirthDay(Config.Registration.error.birthDay.minDate);
-            return false;
-        }
-        
-        var now = new Date();
-        var maxDate = new Date(now.getYear() - 101, now.getMonth(), now.getDate());
-        if(maxDate > date){
-            self.errorBirthDay(Config.Registration.error.birthDay.maxDate);
-            return false;
-        }
-        
-        self.errorBirthDay(null);
-        return true;
-    };
-    self.GanderValidation = function() {
-        if (!self.gender()) {
-            self.errorGender(Config.Registration.error.gender.empty);
-            return false;
-        }
-        if (!Config.Registration.regular.gender.test(self.gender())) {
-            self.errorGender(Config.Registration.error.gender.regular);
-            return false;
-        }
-        self.errorGender(null);
-        return true;
     };
 };
 

@@ -748,7 +748,6 @@
             });
             $('#' + delivery.cssCountryList).change(function() {
                 var v = $('#' + delivery.cssCountryList + ' option:selected').val();
-//                var v = $(this).getSetSSValue();
                 $.grep(delivery.countryList(), function(data) {
                     if (data.id == v){
                         delivery.country(data);
