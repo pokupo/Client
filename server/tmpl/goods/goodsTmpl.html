@@ -60,6 +60,7 @@
                                             <!-- ko if: showBuy --> 
                                                 <a href="#" class="addToCartButton" data-bind="click: Buy">Купить</a>
                                             <!-- /ko -->
+                                            <div data-bind="embedWidget :{ widget : 'ButtonPaymentWidget', params : { title: 'Оплатить заказ', goodsId: id}}"></div>
                                         </div>
                                     </td>
                                 </tr>

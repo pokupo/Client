@@ -180,6 +180,10 @@ var BreadCrumbViewModel = function(){
                 self.crumbs = ko.observableArray();
                 self.lastItem('Моя корзина');
             }
+            if(Routing.route == 'payment'){
+                self.crumbs = ko.observableArray();
+                self.lastItem('Оплата заказа');
+            }
             if(Routing.route == 'registration'){
                 self.crumbs = ko.observableArray();
                 

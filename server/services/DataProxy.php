@@ -22,7 +22,7 @@ class DataProxy implements IProxy {
     
     public function Query(){
         $this->Route();
-        print $this->responseData;
+            print $this->responseData;
     }
 
     private function GetData($url) {

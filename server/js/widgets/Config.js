@@ -10,6 +10,7 @@ var Config = {
         geoPathApi : "/api/geo/", // префикс API гео локации
         shopPathApi : "/api/shop/", // префикс API магазина
         orderPathApi : "/api/order/", // префикс API заказов
+        paymentPathApi : "/api/payment/", // префикс API оплаты
         pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
@@ -48,7 +49,8 @@ var Config = {
         menuPersonalCabinet : 'profile_menu',
         favorites : 'content', // id контейнера избранного
         order : 'content', // id конетейнера оформления заказа
-        orderList : 'content' // id конетейнера списка заказов
+        orderList : 'content', // id конетейнера списка заказов
+        payment : 'content' // id контейнера страницы оплаты
     },
     Goods : {
         tmpl: {
@@ -678,7 +680,7 @@ var Config = {
         title : "Оплатить", // заголовок кнопки
         tmpl : {
             path : 'buttonPayment/buttonPaymentTmpl.html', // файл шаблонов
-            contentTmpl : 'paymentPage', //id шаблона страницы оплаты
+            contentTmpl : 'paymentPageTmpl', //id шаблона страницы оплаты
             skin : 'buttonPaymentImpl' //id шаблона кнопки
         }
     },

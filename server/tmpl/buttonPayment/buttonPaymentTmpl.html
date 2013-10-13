@@ -4,3 +4,184 @@
         <!-- ko text: title --><!-- /ko -->
     </button>
 </script>
+
+<script type="text/html" id="paymentPageTmpl">
+<div class="horizontalSection noborder">
+    <div class="pageWidth">
+        <h1>Оплата заказа</h1>
+        <div class="listBox">
+            <table cellpadding="0" cellspacing="0" class="listTable narrow" style="width:75%">
+                <col width="50%" />
+                <col width="50%" />
+                <tr class="listTableHeader">
+                    <td colspan="2">Данные счета</td>
+                </tr>
+                <!-- ko foreach: outData -->
+                <tr class="listTableRow">
+                    <td><strong data-bind="text: label"></strong><br/><!-- ko text: help --><!-- /ko --></td>
+                    <td data-bind="text: value"></td>
+                </tr>
+                <!-- /ko -->
+            </table>
+
+            <div class="clear"></div>
+        </div>
+
+        <div class="listBox">
+            <table cellpadding="0" cellspacing="0"  class="listTable narrow" style="width:75%">
+                <tr class="listTableHeader">
+                    <td>Инструкция</td>
+                </tr>
+                <tr class="listTableRow">
+                    <td>
+                        <div data-bind="html: instruction, attr: {id: cssInstruction }"></div>
+                        <div class="centerButton">
+                            <button class="addButton print" data-bind="click: ClickPrintInstruction "><span></span>Распечатать инструкцию</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="clear"></div>
+        </div>
+
+        <!-- ko if: isInData() -->
+        <div class="listBox">
+            <table cellpadding="0" cellspacing="0"  class="listTable narrow" style="width:75%">
+                <col width="50%" />
+                <col width="50%" />
+                <tr class="listTableHeader">
+                    <td colspan="2">Укажите данные</td>
+                </tr>
+                <tr class="listTableRow">
+                    <td>
+                        <strong>Параметр 1
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
+                        </strong>
+                    </td>
+                    <td>
+                        <div class="cssSelect" style="width:250px">    
+                            <select name="select">
+                                <option value="value1" selected="selected">значение 1</option>
+                                <option value="value2">значение 2</option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="listTableRow">
+                    <td><strong>Параметр 2
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
+                        </strong></td>
+                    <td><input type="text" value="79121234566" /></td>
+                </tr>
+                <tr class="listTableRow">
+                    <td><strong>Параметр 3
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
+                        </strong></td>
+                    <td>      <label>
+                            <input type="radio" name="RadioGroup1" value="radio" />
+                            Вариант 0 
+                        </label>
+                        <label>
+                            <br />
+                            <input type="radio" name="RadioGroup1" value="radio" />
+                            Вариант 1 
+                        </label>
+                        <br />
+                        <label>
+                            <input name="RadioGroup1" type="radio" value="radio" checked="checked" /> 
+                            Вариант 2
+                        </label></td>
+                </tr>
+                <tr class="listTableRow">
+                    <td><strong>Параметр 4
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
+                        </strong></td>
+                    <td>
+                        <label>
+                            <input type="checkbox" name="checkbox" value="checkbox" /> Согласен
+                        </label>
+                    </td>
+                </tr>
+                <tr class="listTableRow">
+                    <td><strong>Параметр 5
+                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
+                        </strong></td>
+                    <td>
+                        <textarea name="textarea" class="fullwidth" style="margin-top:4px;">Начальные данные</textarea>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="clear"></div>
+        </div>
+
+        <div class="listBox">
+            <table align="center" style="margin:auto">
+                <tr>
+                    <td><button class="subButton back" ><span></span>Назад</button></td>
+                    <td width="50">&nbsp;</td>
+                    <td><button class="goButton approve" ><span></span>Сохранить</button></td>
+                </tr>
+            </table>
+            <div class="clear"></div>
+        </div>
+        <!-- /ko -->
+        
+        <!-- ko if: urlInvoice() -->
+        <div class="listBox">
+            <table cellpadding="0" cellspacing="0" class="listTable narrow" style="width:75%">
+                <tr class="listTableHeader">
+                    <td>Квитанция для оплаты</td>
+                </tr>
+                <tr class="listTableRow">
+                    <td align="center">
+                        <img src="" data-bind="attr: {id: cssInvoice, src: urlInvoice}">
+                        <br />
+                        <div class="centerButton">
+                            <button class="addButton print" data-bind="click: ClickPrintInvoice"><span></span>Распечатать квитанцию</button>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="clear"></div>
+        </div>
+        <!-- /ko -->
+
+        <!-- ko ifnot: isPayForm() -->
+        <div class="listBox">
+            <table align="center" style="margin:auto">
+                <tr>
+                    <td><button class="subButton back" data-bind="click: Back"><span></span>Назад</button></td>
+                    <td width="50">&nbsp;</td>
+                    <td><button class="goButton refresh" data-bind="click: ClickRefresh"><span></span>Обновить</button></td>
+                </tr>
+            </table>
+            <div class="clear"></div>
+        </div>
+        <!-- /ko -->
+
+        <!-- ko if: isPayForm() -->
+        <div>
+            <!-- ko with: payForm -->
+                <form action="" method="" data-bind="attr: {method: method, action: action, target: target, id: cssPayForm}">
+                    <!-- ko foreach: field -->
+                        <input type="hidden" name="" value="" data-bind="attr: {name: name}, value: value"/>
+                    <!-- /ko -->
+                </form>
+            <!-- /ko -->
+        </div>
+        <div class="listBox">
+            <table  align="center" style="margin:auto">
+                <tr>
+                    <td><button class="subButton back" data-bind="click: Back"><span></span>Назад</button></td>
+                    <td width="50">&nbsp;</td>
+                    <td><button class="goButton pay" data-bind="click: ClickPay"><span></span>Оплатить</button></td>
+                </tr>
+            </table>
+            <div class="clear"></div>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>
+</script>

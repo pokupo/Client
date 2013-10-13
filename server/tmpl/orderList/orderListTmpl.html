@@ -384,9 +384,7 @@
                             <td><button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить заказ</button></td>
                             <!-- ko if: statusPay() == "wait_pay" -->
                                 <td width="50">&nbsp;</td>
-                                <td data-bind="embedWidget :{ widget : 'ButtonPaymentWidget', params : { title: 'Оплатить заказ'}}"></td>
-                                <td width="50">&nbsp;</td>
-                                <td data-bind="embedWidget :{ widget : 'ButtonPaymentWidget', params : { title: 'Оплатить'}}"></td>
+                                <td data-bind="embedWidget :{ widget : 'ButtonPaymentWidget', params : { title: 'Оплатить заказ', orderId: id()}}"></td>
                             <!-- /ko -->
                         </tr>
                     </table>

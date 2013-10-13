@@ -804,9 +804,6 @@ var OrderWidget = function() {
                 OrderViewModel.prototype.Back = function(){
                     Routing.SetHash('order', 'Оформление заказа', {step: 4});
                 };
-                OrderViewModel.prototype.ClickConfirm = function(){
-                    EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', {comment: data.commentBuyer()});
-                };
                 OrderViewModel.prototype.ClickDelete = function(){
                     EventDispatcher.DispatchEvent('OrderWidget.step5.delete');
                 };

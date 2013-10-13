@@ -137,6 +137,10 @@ var OrderViewModel = function(){
 
         self.discount = ko.observable(discount);
         self.discountSum = ko.observable(diff + 'руб');
+        
+        self.ClickConfirm = function(){
+            EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', {comment: self.commentBuyer()});
+        };
     };
 };
 
