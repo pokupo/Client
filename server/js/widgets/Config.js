@@ -682,6 +682,11 @@ var Config = {
             path : 'buttonPayment/buttonPaymentTmpl.html', // файл шаблонов
             contentTmpl : 'paymentPageTmpl', //id шаблона страницы оплаты
             skin : 'buttonPaymentImpl' //id шаблона кнопки
+        },
+        Error : {
+            required : 'Поле обязательно для заполнения.',
+            regExp : 'Не допустимое значение.',
+            maxlength : 'Максимум %s% символов.'
         }
     },
     Paging : {

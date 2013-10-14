@@ -18,7 +18,17 @@
                 </tr>
                 <!-- ko foreach: outData -->
                 <tr class="listTableRow">
-                    <td><strong data-bind="text: label"></strong><br/><!-- ko text: help --><!-- /ko --></td>
+                    <td>
+                    <strong data-bind="text: label"></strong>
+                    <!--  ko if: help -->
+                        <div class="popupTip">
+                            <img title="" alt="" src="images/ico_11.png" />
+                            <div class="popup" style="display: none;">
+                                <span data-bind="text: help"></span>
+                            </div>
+                        </div>
+                    <!-- /ko -->
+                    </td>
                     <td data-bind="text: value"></td>
                 </tr>
                 <!-- /ko -->
@@ -46,83 +56,61 @@
 
         <!-- ko if: isInData() -->
         <div class="listBox">
+            <from data-bind="attr: {id: cssInDataForm}" method="POST" target="upload_target" enctype="multipart/form-data">
             <table cellpadding="0" cellspacing="0"  class="listTable narrow" style="width:75%">
                 <col width="50%" />
                 <col width="50%" />
                 <tr class="listTableHeader">
                     <td colspan="2">Укажите данные</td>
                 </tr>
-                <tr class="listTableRow">
-                    <td>
-                        <strong>Параметр 1
-                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
-                        </strong>
-                    </td>
-                    <td>
-                        <div class="cssSelect" style="width:250px">    
-                            <select name="select">
-                                <option value="value1" selected="selected">значение 1</option>
-                                <option value="value2">значение 2</option>
-                            </select>
-                        </div>
-                    </td>
-                </tr>
-                <tr class="listTableRow">
-                    <td><strong>Параметр 2
-                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
-                        </strong></td>
-                    <td><input type="text" value="79121234566" /></td>
-                </tr>
-                <tr class="listTableRow">
-                    <td><strong>Параметр 3
-                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
-                        </strong></td>
-                    <td>      <label>
-                            <input type="radio" name="RadioGroup1" value="radio" />
-                            Вариант 0 
-                        </label>
-                        <label>
-                            <br />
-                            <input type="radio" name="RadioGroup1" value="radio" />
-                            Вариант 1 
-                        </label>
-                        <br />
-                        <label>
-                            <input name="RadioGroup1" type="radio" value="radio" checked="checked" /> 
-                            Вариант 2
-                        </label></td>
-                </tr>
-                <tr class="listTableRow">
-                    <td><strong>Параметр 4
-                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
-                        </strong></td>
-                    <td>
-                        <label>
-                            <input type="checkbox" name="checkbox" value="checkbox" /> Согласен
-                        </label>
-                    </td>
-                </tr>
-                <tr class="listTableRow">
-                    <td><strong>Параметр 5
-                            <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
-                        </strong></td>
-                    <td>
-                        <textarea name="textarea" class="fullwidth" style="margin-top:4px;">Начальные данные</textarea>
-                    </td>
-                </tr>
+                
+                <!-- ko foreach: inData -->
+                    <!-- ko if: typeField() == "hidden" -->
+                        <!--  ko template: { name: 'paymentTextFieldTmpl' } --><!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko ifnot: typeField() == "hidden" -->
+                        <tr class="listTableRow">
+                            <td>
+                                <strong><span data-bind="html: label()"></span>
+                                    <!-- ko if: required() -->
+                                    <span style="color: #ed710d;">*</span>
+                                    <!-- /ko -->
+                                    <!-- ko if: help() -->
+                                    <div class="popupTip">
+                                        <img title="" alt="" src="images/ico_11.png" />
+                                        <div class="popup" style="display: none;">
+                                            <span data-bind="text: help()"></span>
+                                        </div>
+                                    </div>
+                                    <!-- /ko -->
+                                </strong>
+                            </td>
+                            <td>
+                                <!-- ko if: typeField() == "select" -->
+                                    <!--  ko template: { name: 'paymentSelectFieldTmpl' } --><!-- /ko -->
+                                <!-- /ko -->
+                                <!-- ko if: typeField() == "text" || typeField() == "password" -->
+                                    <!--  ko template: { name: 'paymentTextFieldTmpl' } --><!-- /ko -->
+                                <!-- /ko -->
+                                <!-- ko if: typeField() == "textarea" -->
+                                    <!--  ko template: { name: 'paymentTextareaFieldTmpl' } --><!-- /ko -->
+                                <!-- /ko -->
+                                <!-- ko if: typeField() == "checkbox" -->
+                                    <!--  ko template: { name: 'paymentCheckboxFieldTmpl' } --><!-- /ko -->
+                                <!-- /ko -->
+                                <!-- ko if: typeField() == "radio" -->
+                                    <!--  ko template: { name: 'paymentRadioFieldTmpl' } --><!-- /ko -->
+                                <!-- /ko -->
+                                <!-- ko if: error()-->
+                                    <div class="form_error" data-bind="text: error()"></div>
+                                <!-- /ko -->
+                            </td>
+                        </tr>
+                    <!-- /ko -->
+                <!-- /ko -->
+                
             </table>
-
-            <div class="clear"></div>
-        </div>
-
-        <div class="listBox">
-            <table align="center" style="margin:auto">
-                <tr>
-                    <td><button class="subButton back" ><span></span>Назад</button></td>
-                    <td width="50">&nbsp;</td>
-                    <td><button class="goButton approve" ><span></span>Сохранить</button></td>
-                </tr>
-            </table>
+            </form>
             <div class="clear"></div>
         </div>
         <!-- /ko -->
@@ -148,7 +136,20 @@
         </div>
         <!-- /ko -->
 
-        <!-- ko ifnot: isPayForm() -->
+        <!-- ko ifnot: isPayForm() && isInData() -->
+        <div class="listBox">
+            <table align="center" style="margin:auto">
+                <tr>
+                    <td><button class="subButton back" data-bind="click: Back"><span></span>Назад</button></td>
+                    <td width="50">&nbsp;</td>
+                    <td><button class="goButton approve" data-bind="click: ClickSubmit"><span></span>Сохранить</button></td>
+                </tr>
+            </table>
+            <div class="clear"></div>
+        </div>
+        <!-- /ko -->
+        
+        <!-- ko if: !isPayForm() && !isInData() -->
         <div class="listBox">
             <table align="center" style="margin:auto">
                 <tr>
@@ -184,4 +185,60 @@
         <!-- /ko -->
     </div>
 </div>
+</script>
+
+<script type="text/html" id="paymentSelectFieldTmpl">
+    <div class="cssSelect" style="width:250px">    
+        <select name="" data-bind="attr: { name: name()}">
+            <!-- ko foreach: listSelect() -->
+                <!-- ko if: value == $parent.value() -->
+                    <option value="" data-bind="value: value, text: label" selected="selected"></option>
+                <!-- /ko -->
+                <!-- ko ifnot: value == $parent.value() -->
+                    <option value="" data-bind="value: value, text: label"></option>
+                <!-- /ko -->
+            <!-- /ko -->
+        </select>
+    </div>
+</script>
+
+<script type="text/html" id="paymentTextFieldTmpl">
+    <input type="" value="" data-bind="value: value, attr: {type: typeField(), name: name(), id: cssField()}"/>
+</script>
+
+<script type="text/html" id="paymentTextareaFieldTmpl">
+    <textarea name="" class="fullwidth" style="margin-top:4px;" data-bind="attr: {name: name()}, text: value"></textarea>
+</script>
+
+<script type="text/html" id="paymentCheckboxFieldTmpl">
+    <!-- ko if: listSelect().length > 0 -->
+        <!-- ko foreach: listSelect -->
+            <label>
+                <!-- ko if: value == $parent.value() -->
+                    <input type="checkbox" checked="checked" name="" value="" data-bind="value: value, attr: { name: $parent.name()}"/>
+                <!-- /ko -->
+                <!-- ko ifnot: value == $parent.value() -->
+                    <input type="checkbox" name="" value="" data-bind="value: value, attr: { name: $parent.name()}"/>
+                <!-- /ko -->
+                <!-- ko text: label --><!-- /ko -->
+            </label>
+        <!-- /ko -->
+    <!-- /ko -->
+    <!-- ko if: listSelect().length == 0 -->
+        <input type="checkbox" name="" value="" data-bind="value: value(), attr: { name: name()}"/>
+    <!-- /ko -->
+</script>
+
+<script type="text/html" id="paymentRadioFieldTmpl">
+    <!-- ko foreach: listSelect -->
+    <label>
+        <!-- ko if: value == $parent.value() -->
+            <input type="radio" name="" value="" checked="checked" data-bind="value: value, attr: { name: $parent.name()}"/>
+        <!-- /ko -->
+        <!-- ko ifnot: value == $parent.value() -->
+            <input type="radio" name="" value="" data-bind="value: value, attr: { name: $parent.name()}"/>
+        <!-- /ko -->
+        <!-- ko text: label --><!-- /ko --> 
+    </label>
+    <!-- /ko -->
 </script>

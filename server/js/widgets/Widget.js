@@ -892,11 +892,11 @@ function Widget(){
             }, true);
         },
         InvoicesAmount : function(str, callback){
-            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'amount/' + str + '/' + Parameters.shopId), function(data){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'amount/' + str), function(data){
                 Parameters.cache.orderList = null;
                 if(callback)
                     callback(data);
             }, true);
-        },
+        }
     };
 };

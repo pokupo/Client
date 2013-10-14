@@ -114,6 +114,29 @@ window.ButtonPaymentWidget = function(){
         EventDispatcher.AddEventListener('widget.change.route', function (){
             self.CheckRouteButtonPayment();
         });
+        
+        EventDispatcher.AddEventListener('ButtonPaymentWidget.form.submit', function(form){
+            self.WidgetLoader(false);
+            self.InsertContainer.Content();
+            var dataStr = [];
+            $.each(form.inData(), function(i){
+                dataStr.push(form.inData()[i].name() + '=' + form.inData()[i].value());
+            });
+            var str = dataStr.join('&');
+            
+            if(Routing.params.orderId){
+                str = Routing.params.orderId + '?' + str;
+                self.GetData.Order(str);
+            }
+            if(Routing.params.goodsId){
+                str = Routing.params.goodsId + '?' + str;
+                self.GetData.Goods(str);
+            }
+            if(Routing.params.amount){
+                str = Routing.params.amount + '/' + Parameters.shopId + '?' + str;
+                self.GetData.Amount(str);
+            }
+        });
     };
     self.GetData = {
         Order : function(id){
@@ -127,7 +150,7 @@ window.ButtonPaymentWidget = function(){
             });
         },
         Amount : function(sum){
-            self.BaseLoad.InvoicesAmount(sum, function(data){
+            self.BaseLoad.InvoicesAmount(sum + '/' + Parameters.shopId, function(data){
                 self.Fill.Content(data);
             });
         }
@@ -158,6 +181,11 @@ window.ButtonPaymentWidget = function(){
         Content : function(data){
             if ($("#" + self.settings.containerId).length > 0) {
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                 $.each(data.inData(), function(i){
+                    if(data.inData()[i].mask()){
+                        $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
+                    }
+                });
             }
             self.WidgetLoader(true);
         }
@@ -187,6 +215,7 @@ var PaymentViewModel = function(){
     
     self.inData = ko.observableArray();
     self.isInData = ko.observable(false);
+    self.cssInDataForm = 'in_data_block';
     
     self.payForm = {
         action : ko.observable(),
@@ -228,14 +257,40 @@ var PaymentViewModel = function(){
     self.ClickRefresh = function(){
         Routing.SetHash(Routing.route, Routing.title, Routing.params, true);
     };
+    self.ClickSubmit = function(){
+        if(self.ValidationFrom()){
+            EventDispatcher.DispatchEvent('ButtonPaymentWidget.form.submit', self);
+        }
+    };
+    self.ValidationFrom = function(){
+        var test = true;
+        $.each(self.inData(), function(i){
+            if(!self.inData()[i].ValidateField()){
+                test = false;
+                return false;
+            }
+        })
+        return test;
+    };
     self.AddContent = function(data){
+        self.instruction(null);
         if (data.hasOwnProperty('instruction'))
             self.instruction(data.instruction);
+        self.outData = ko.observableArray();
         if (data.hasOwnProperty('out_data')){
             $.each(data.out_data, function(i){
                 self.outData.push(data.out_data[i]);
             });
         }
+        self.isPayForm(false);
+        self.payForm = {
+            action : ko.observable(),
+            method : ko.observable(),
+            target : ko.observable('_self'),
+            cssPayForm : 'payform_block',
+            field : ko.observableArray()
+        };
+        self.isPayForm(false);
         if(data.hasOwnProperty('pay_form')){
             self.isPayForm(true);
             self.payForm.action(data.pay_form.action);
@@ -247,14 +302,88 @@ var PaymentViewModel = function(){
                 self.payForm.field.push(data.pay_form.hidden_field[i]);
             });
         }
+        self.isInData(false);
+        self.inData = ko.observableArray();
         if(data.hasOwnProperty('in_data')){
             self.isInData(true);
-            $.each(data.out_data, function(i){
-                self.inData.push(data.out_data[i]);
+            $.each(data.in_data, function(i){
+                var field = new PaymentFieldViewModel();
+                field.AddContent(data.in_data[i])
+                self.inData.push(field);
             });
         }
+        self.urlInvoice(null);
         if(data.hasOwnProperty('url_invoice')){
             self.urlInvoice(data.url_invoice);
         }
     };
 };
+
+var PaymentFieldViewModel = function(){
+    var self = this;
+    self.label = ko.observable();
+    self.help  = ko.observable();
+    self.error = ko.observable();
+    self.name = ko.observable();
+    self.value = ko.observable();
+    self.required = ko.observable(false);
+    self.typeField = ko.observable();
+    self.listSelect = ko.observableArray();
+    self.regExp = ko.observable();
+    self.mask = ko.observable();
+    self.maxlength = ko.observable();
+    self.cssField = ko.observable();
+    
+    self.AddContent = function(data){
+        if(data.hasOwnProperty('label'))
+            self.label(data.label);
+        if(data.hasOwnProperty('help'))
+            self.help(data.help);
+        if(data.hasOwnProperty('error'))
+            self.error(data.error);
+        if(data.hasOwnProperty('name')){
+            self.name(data.name);
+            self.cssField('field_' + data.name);
+        }
+        if(data.hasOwnProperty('value'))
+            self.value(data.value);
+        if(data.hasOwnProperty('required'))
+            if(data.required == 'yes')
+               self.required(true);
+        if(data.hasOwnProperty('type_field'))
+            self.typeField(data.type_field)
+        if(data.hasOwnProperty('list_select')){
+            $.each(data.list_select, function(i){
+                self.listSelect.push(data.list_select[i]);
+            })
+        }
+        if(data.hasOwnProperty('reg_exp'))
+            self.regExp(data.reg_exp);
+        if(data.hasOwnProperty('mask'))
+            self.mask(data.mask);
+        if(data.hasOwnProperty('maxlength'))
+            self.maxlength(data.maxlength);
+    };
+    self.ValidateField = function(){
+        if(self.required()){
+            if(!self.value()){
+                self.error(Config.ButtonPayment.Error.required);
+                return false;
+            }
+        }
+        if(self.regExp()){
+            var reg = new RegExp(self.regExp(), 'gi');
+            if(! reg.test(self.value())){
+                self.error(Config.ButtonPayment.Error.regExp);
+                return false;
+            }
+        }
+        if(self.maxlength()){
+            if(self.value().length > self.maxlength()){
+                self.error(Config.ButtonPayment.Error.maxlength.replace('%s%', self.maxlength()));
+                return false;
+            }
+        }
+        return true;
+    };
+}
