@@ -120,7 +120,10 @@ window.ButtonPaymentWidget = function(){
             self.InsertContainer.Content();
             var dataStr = [];
             $.each(form.inData(), function(i){
-                dataStr.push(form.inData()[i].name() + '=' + form.inData()[i].value());
+                if(form.inData()[i].name() == 'MOBILE_PHONE')
+                    dataStr.push(form.inData()[i].name() + '=' + encodeURIComponent(form.inData()[i].value().replace(/\s/g, '').replace(/-/g, '')));
+                else
+                    dataStr.push(form.inData()[i].name() + '=' + encodeURIComponent(form.inData()[i].value()));
             });
             var str = dataStr.join('&');
             
@@ -160,7 +163,7 @@ window.ButtonPaymentWidget = function(){
             $(self.settings.containerButton).empty().append($('script#' + self.settings.skin).html());
         },
         Content : function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.contentTmpl).html());
+            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.contentTmpl).html()).hide();
         }
     };
     self.Fill = {
@@ -181,12 +184,13 @@ window.ButtonPaymentWidget = function(){
         Content : function(data){
             if ($("#" + self.settings.containerId).length > 0) {
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                 $.each(data.inData(), function(i){
+                $.each(data.inData(), function(i){
                     if(data.inData()[i].mask()){
                         $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
                     }
                 });
             }
+            $("#" + self.settings.containerId).show();
             self.WidgetLoader(true);
         }
     };
@@ -197,6 +201,7 @@ var ButtonPaymentViewModel = function(opt){
     self.title = opt.title;
     
     self.ClickPay = function(){
+        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
         if(opt.source == 'order')
             Routing.SetHash('payment', 'Оплата заказа', { orderId: opt.sourceVal});
         if(opt.source == 'goods')
@@ -242,14 +247,11 @@ var PaymentViewModel = function(){
         self.Print(self.cssInvoice);
     };
     self.Back = function(){
-        var t = Parameters.cache.history;
-        for(var i = 0; i <= t.length-1; i++){
-            var link = t.pop();
-            if(link.route != 'payment'){ 
-                Routing.SetHash(link.route, link.title, link.data, true);
-                return false;
-            }
-        }
+        var last = Parameters.cache.lastPage;
+        if(last.route == 'payment' || !last.route)
+            Routing.SetHash('catalog', 'Домашняя', {});
+        else
+            Routing.SetHash(last.route, last.title, last.data);
     };
     self.ClickPay = function(){
         $('#' + self.payForm.cssPayForm).submit();
@@ -371,13 +373,13 @@ var PaymentFieldViewModel = function(){
                 return false;
             }
         }
-        if(self.regExp()){
-            var reg = new RegExp(self.regExp(), 'gi');
-            if(! reg.test(self.value())){
-                self.error(Config.ButtonPayment.Error.regExp);
-                return false;
-            }
-        }
+//        if(self.regExp()){
+//            var reg = new RegExp(self.regExp(), 'gi');
+//            if(! reg.test(self.value())){
+//                self.error(Config.ButtonPayment.Error.regExp);
+//                return false;
+//            }
+//        }
         if(self.maxlength()){
             if(self.value().length > self.maxlength()){
                 self.error(Config.ButtonPayment.Error.maxlength.replace('%s%', self.maxlength()));
