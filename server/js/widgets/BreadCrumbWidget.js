@@ -10,7 +10,7 @@ var BreadCrumbWidget = function(){
         styleBreadCrumb : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.breadCrumbs; 
+        self.settings.containerId = Config.Containers.breadCrumbs.widget; 
         self.settings.tmplPath = Config.BreadCrumbs.tmpl.path;
         self.settings.tmplId = Config.BreadCrumbs.tmpl.tmplId;
         self.settings.tmplSelectListId = Config.BreadCrumbs.tmpl.tmplSelectListId;
@@ -150,7 +150,7 @@ var BreadCrumbViewModel = function(){
     self.cssItem = 'breadcrumbs_item';
     
     self.ToHomepage = function(){
-        Routing.SetHash('catalog', 'Домашняя', {});
+        Routing.SetHash('default', 'Домашняя', {});
     };
     self.showReturn = ko.computed(function(){
         if(Parameters.cache.history.length > 1)

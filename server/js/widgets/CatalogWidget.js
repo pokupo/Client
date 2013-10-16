@@ -9,8 +9,8 @@ var CatalogWidget = function(){
         styleCatalog : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.content;
-        self.settings.catalogContainerId = Config.Containers.catalog;
+        self.settings.containerId = Config.Containers.content.widget[0];
+        self.settings.catalogContainerId = Config.Containers.catalog.widget;
         self.settings.tmplPath = Config.Catalog.tmpl.path;
         self.settings.mainTmplPath = Config.Catalog.tmpl.mainPath;
         self.settings.tmplId = Config.Catalog.tmpl.tmplId;
@@ -57,7 +57,7 @@ var CatalogWidget = function(){
         }
         
         EventDispatcher.AddEventListener('catalogWidget.onload.tmpl', function (data){
-            if(Routing.IsSection()){
+            if(Routing.IsSection() || Routing.IsDefault()){
                 self.Update();
             }
             else{
@@ -70,7 +70,7 @@ var CatalogWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'catalog'){
+            if(Routing.route == 'catalog' || Routing.IsDefault()){
                 if(Routing.IsSection()){
                     self.WidgetLoader(false);
                 }

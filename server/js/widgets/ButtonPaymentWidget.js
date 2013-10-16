@@ -22,7 +22,7 @@ window.ButtonPaymentWidget = function(){
         Loader.InsertContainer(self.settings.containerButton);
     };
     self.SetParameters = function(data){
-        self.settings.containerId = Config.Containers.payment;
+        self.settings.containerId = Config.Containers.payment.widget;
         self.settings.tmplPath = Config.ButtonPayment.tmpl.path;
         self.settings.contentTmpl = Config.ButtonPayment.tmpl.contentTmpl;
         self.settings.title = Config.ButtonPayment.title;

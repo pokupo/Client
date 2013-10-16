@@ -13,7 +13,7 @@
         style: null
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.profile;
+        self.settings.containerFormId = Config.Containers.profile.widget;
         self.settings.tmplPath = Config.Profile.tmpl.path;
         self.settings.personalInformationTmplId = Config.Profile.tmpl.personalInformationTmpl;
         self.settings.deliveryAddressTmpl = Config.Profile.tmpl.deliveryAddressTmpl;

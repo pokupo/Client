@@ -11,7 +11,7 @@ var CabinetCartGoodsWidget = function(){
         containerId : null,
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.cabinetCartGoods;
+        self.settings.containerId = Config.Containers.cabinetCartGoods.widget;
         self.settings.tmplPath = Config.CabinetCartGoods.tmpl.path;
         self.settings.cartTmplId = Config.CabinetCartGoods.tmpl.cartTmplId;
         self.settings.emptyCartTmplId = Config.CabinetCartGoods.tmpl.emptyCartTmplId;

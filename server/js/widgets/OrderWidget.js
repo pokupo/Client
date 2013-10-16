@@ -27,7 +27,7 @@ var OrderWidget = function() {
         payment: {}
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.order;
+        self.settings.containerFormId = Config.Containers.order.widget;
         self.settings.tmplPath = Config.Order.tmpl.path;
         self.settings.ordFormStep1TmplId = Config.Order.tmpl.ordFormStep1TmplId;
         self.settings.ordFormStep1ConfirmTmplId = Config.Order.tmpl.ordConfirmFormStep1TmplId;

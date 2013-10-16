@@ -9,7 +9,7 @@ var SearchWidget = function(){
         style : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.search; 
+        self.settings.containerId = Config.Containers.search.widget; 
         self.settings.tmplPath = Config.Search.tmpl.path;
         self.settings.tmplId = Config.Search.tmpl.tmplId;
         self.settings.style = Config.Search.style;

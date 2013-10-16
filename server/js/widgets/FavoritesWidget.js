@@ -12,7 +12,7 @@ var FavoritesWidget = function() {
         containerId: null,
     };
     self.InitWidget = function() {
-        self.settings.containerId = Config.Containers.favorites;
+        self.settings.containerId = Config.Containers.favorites.widget;
         self.settings.tmplPath = Config.Favorites.tmpl.path;
         self.settings.favTmplId = Config.Favorites.tmpl.cartTmplId;
         self.settings.emptyFavTmplId = Config.Favorites.tmpl.emptyCartTmplId;

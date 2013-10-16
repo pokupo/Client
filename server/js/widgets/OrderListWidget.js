@@ -12,7 +12,7 @@ var OrderListWidget = function() {
         style: null
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.orderList;
+        self.settings.containerFormId = Config.Containers.orderList.widget;
         self.settings.tmplPath = Config.OrderList.tmpl.path;
         self.settings.ordListTmplId = Config.OrderList.tmpl.ordListTmplId;
         self.settings.ordEmptyListTmplId = Config.OrderList.tmpl.ordEmptyListTmplId;

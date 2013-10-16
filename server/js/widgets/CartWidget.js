@@ -11,7 +11,7 @@ var CartWidget = function(){
         style : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.cart;
+        self.settings.containerId = Config.Containers.cart.widget;
         self.settings.title = Config.Cart.title;
         self.settings.tmplPath = Config.Cart.tmpl.path;
         self.settings.tmplId = Config.Cart.tmpl.tmplId;
@@ -90,7 +90,7 @@ var CartWidget = function(){
         info.AddContent(data);
         self.Render(info);
     };
-    self.Render = function(data){
+    self.Render = function(data){ 
         $('#' + self.settings.containerId).empty().append($('script#' + self.settings.tmplId).html());
         ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
         self.WidgetLoader(true);

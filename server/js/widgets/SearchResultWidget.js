@@ -20,8 +20,8 @@ var SearchResultWidget = function(){
         paging : null
     };
     self.InitWidget = function(){
-        self.settings.containerIdForSearchResult = Config.Containers.searchResult[1];
-        self.settings.containerIdForAdvancedSearch = Config.Containers.searchResult[0];
+        self.settings.containerIdForSearchResult = Config.Containers.searchResult.widget[1];
+        self.settings.containerIdForAdvancedSearch = Config.Containers.searchResult.widget[0];
         self.settings.tmplPath = Config.SearchResult.tmpl.path;
         self.settings.advancedSearchFormTmpl = Config.SearchResult.tmpl.advancedSearchFormTmpl;
         self.settings.contentTableTmpl = Config.SearchResult.tmpl.contentTableTmpl;

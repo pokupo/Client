@@ -11,7 +11,7 @@ var MenuPersonalCabinetWidget = function(){
     self.subMenu = [];
     self.InitWidget = function(){
         self.settings.tmplPath = Config.MenuPersonalCabinet.tmpl.path;
-        self.settings.containerMenuId = Config.Containers.menuPersonalCabinet;
+        self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
         self.settings.menuTmpl = Config.MenuPersonalCabinet.tmpl.menuPersonalCabinet;
         self.settings.style = Config.MenuPersonalCabinet.style;
         self.RegisterEvents();

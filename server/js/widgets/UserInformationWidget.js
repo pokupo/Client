@@ -11,7 +11,7 @@ var UserInformationWidget = function(){
         style : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.userInformation; 
+        self.settings.containerId = Config.Containers.userInformation.widget; 
         self.settings.tmplPath = Config.UserInformation.tmpl.path;
         self.settings.infoTmplId = Config.UserInformation.tmpl.infoTmplId;
         self.settings.authTmplId = Config.UserInformation.tmpl.authTmplId;

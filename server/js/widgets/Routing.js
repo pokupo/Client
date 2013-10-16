@@ -20,7 +20,13 @@ var Routing = {
                     Routing.page = data[key];
             }
         }
-        var href = '/' + route + '/' + params.join("&");
+        var href = '/'
+        if(route != 'default'){
+            href = '/' + route + '/' + params.join("&");
+            this.HideDefaultContent();
+        }
+        else
+            this.ViewDefaultContent();
 
         window.location.hash = href;
         document.title = this.GetTitle();
@@ -35,7 +41,7 @@ var Routing = {
         if(hash[1])
            this.route = hash[1];
         else
-           this.route = 'catalog';
+           this.route = 'default';
        
         this.params = {};
             
@@ -110,6 +116,12 @@ var Routing = {
         }
         return false;
     },
+    IsDefault : function(){
+        if(this.route == 'default'){
+            return true;
+        }
+        return false;
+    },
     GetSection : function(){
         if(this.route == 'catalog'){
             if(this.params.section)
@@ -165,6 +177,42 @@ var Routing = {
     },
     GetLastPageNumber : function(){
         return this.page;
+    },
+    ViewDefaultContent : function(){
+        for(var key in Config.Containers){
+            if($.isArray(Config.Containers[key].def)){
+                for(var i in Config.Containers[key].def){
+                    if($("#" + Config.Containers[key].def[i]).length > 0){
+                        $("#" + Config.Containers[key].def[i]).show();
+                        $("#" + Config.Containers[key].widget[i]).hide();
+                    }
+                }
+            }
+            else{
+                if($("#" + Config.Containers[key].def)){
+                    $("#" + Config.Containers[key].def).show();
+                    $("#" + Config.Containers[key].widget).hide();
+                }
+            }
+        }
+    },
+    HideDefaultContent : function(){
+        for(var key in Config.Containers){
+            if($.isArray(Config.Containers[key].def)){
+                for(var i in Config.Containers[key].def){
+                    if($("#" + Config.Containers[key].def[i]).length > 0){
+                        $("#" + Config.Containers[key].def[i]).hide();
+                        $("#" + Config.Containers[key].widget[i]).show();
+                    }
+                }
+            }
+            else{
+                if($("#" + Config.Containers[key].def)){
+                    $("#" + Config.Containers[key].def).hide();
+                    $("#" + Config.Containers[key].widget).show();
+                }
+            }
+        }
     }
 }
 

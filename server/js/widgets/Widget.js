@@ -97,7 +97,8 @@ var Loader = {
         for(var key in this.widgets){
             this.RegisterReady(key);
         }
-        this.ShowLoading();
+        if(!Routing.IsDefault())
+             this.ShowLoading();
     },
     RegisterReady : function(key){
         this.countAll++;
@@ -126,18 +127,24 @@ var Loader = {
     },
     HideContent : function(){
         for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key])){
-                for(var i in Config.Containers[key]){
-                    $("#" + Config.Containers[key][i]).children().hide();
+            if($.isArray(Config.Containers[key].widget)){
+                for(var i in Config.Containers[key].widget){
+                    $("#" + Config.Containers[key].widget[i]).children().hide();
                 }
             }
             else
-                $("#" + Config.Containers[key]).children().hide();
+                $("#" + Config.Containers[key].widget).children().hide();
         }
     },
     ShowContent : function(){
         for(var key in Config.Containers){
-            $("#" + Config.Containers[key]).children().show();
+            if($.isArray(Config.Containers[key].widget)){
+                for(var i in Config.Containers[key].widget){
+                    $("#" + Config.Containers[key].widget[i]).children().show();
+                }
+            }
+            else
+                $("#" + Config.Containers[key].widget).children().show();
         }
     }
 };

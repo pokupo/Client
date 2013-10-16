@@ -13,7 +13,7 @@ var RegistrationWidget = function() {
         style: null
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.registration;
+        self.settings.containerFormId = Config.Containers.registration.widget;
         self.settings.tmplPath = Config.Registration.tmpl.path;
         self.settings.regFormStep1TmplId = Config.Registration.tmpl.regFormStep1TmplId;
         self.settings.regFormStep2TmplId = Config.Registration.tmpl.regFormStep2TmplId;

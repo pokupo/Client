@@ -62,8 +62,8 @@ var ContentWidget = function(){
         self.settings.inputParameters = input;
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.content[0];
-        self.settings.blockContainerId = Config.Containers.content[1];
+        self.settings.containerId = Config.Containers.content.widget[0];
+        self.settings.blockContainerId = Config.Containers.content.widget[1];
         self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
         self.settings.tmplForContent = Config.Content.tmpl.pathList;
         self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;

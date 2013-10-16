@@ -11,7 +11,7 @@ var GoodsWidget = function(){
         styleGoods : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.goods; 
+        self.settings.containerId = Config.Containers.goods.widget; 
         self.settings.tmplPath = Config.Goods.tmpl.path;
         self.settings.tmplId = Config.Goods.tmpl.tmplId;
         self.settings.showBlocks = Config.Goods.showBlocks;
