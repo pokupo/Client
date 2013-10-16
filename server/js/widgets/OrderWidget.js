@@ -338,7 +338,7 @@ var OrderWidget = function() {
             Routing.SetHash('order', 'Оформление заказа', {step: 1});
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step1.later', function(data) {
+        EventDispatcher.AddEventListener('OrderWidget.step1.later', function() {
             Routing.SetHash('order', 'Оформление заказа', {step: 2});
         });
 
@@ -729,7 +729,12 @@ var OrderWidget = function() {
         Step1Confirm: function() {
             if (Routing.params.username && Routing.params.mail_token) 
                 Parameters.cache.order.step1.reg.username(Routing.params.username);
-            var form = new OrderConfirmRegistrationFormStep1ViewModel();
+
+            RegistrationConfirmFormViewModel.prototype.Back = function() {
+                EventDispatcher.DispatchEvent('OrderWidget.step1.view1');
+            };
+            var form = new RegistrationConfirmFormViewModel(Parameters.cache.order.step1.reg);
+            form.submitEvent('OrderWidget.step1.confirm');
             form.ShowButtonSendToken();
             
             if (Routing.params.username && Routing.params.mail_token) {
@@ -739,7 +744,14 @@ var OrderWidget = function() {
             self.Render.Step1Confirm(form);
         },
         Step1Profile: function(data) {
-            var form = new OrderProfileRegistrationFormStep1ViewModel();
+            RegistrationProfileFormViewModel.prototype.Back = function() {
+                EventDispatcher.DispatchEvent('OrderWidget.step1.view2');
+            };
+            RegistrationProfileFormViewModel.prototype.SpecifyLater = function() {
+                EventDispatcher.DispatchEvent('OrderWidget.step1.later');
+            };
+            var form = new RegistrationProfileFormViewModel();
+            form.submitEvent('OrderWidget.step1.profile');
             form.AddContent(data);
             self.Render.Step1Profile(form);
         },
@@ -789,7 +801,26 @@ var OrderWidget = function() {
         Step5: function(data) {
             var form = Parameters.cache.order.step5;
             if ($.isEmptyObject(form)) {
-                form = new OrderFormStep5ViewModel();
+                OrderViewModel.prototype.Back = function(){
+                    Routing.SetHash('order', 'Оформление заказа', {step: 4});
+                };
+                OrderViewModel.prototype.ClickDelete = function(){
+                    EventDispatcher.DispatchEvent('OrderWidget.step5.delete');
+                };
+                OrderViewModel.prototype.ClickStep1 = function(){
+                    Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
+                };
+                OrderViewModel.prototype.ClickStep2 = function() {
+                    Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                };
+                OrderViewModel.prototype.ClickStep3 = function() {
+                    Routing.SetHash('order', 'Оформление заказа', {step: 3});
+                };
+                OrderViewModel.prototype.ClickStep4 = function() {
+                    Routing.SetHash('order', 'Оформление заказа', {step: 4});
+                };
+                form = new OrderViewModel();
+                
                 Parameters.cache.order.step5 = form;
             }
             form.AddContent(data);
@@ -1000,7 +1031,8 @@ var OrderWidget = function() {
 var OrderFormStep1ViewModel = function() {
     var self = this;
     self.loginForm = new OrderLoginFormStep1ViewModel();
-    self.registrationForm = new OrderRegistrationFormStep1ViewModel();
+    self.registrationForm = new RegistrationFormViewModel();
+    self.registrationForm.submitEvent('OrderWidget.step1.registration');
 };
 
 var OrderLoginFormStep1ViewModel = function() {
@@ -1018,387 +1050,6 @@ var OrderLoginFormStep1ViewModel = function() {
     };
     self.ForgotPassword = function() {
 
-    };
-};
-
-var OrderRegistrationFormStep1ViewModel = function() {
-    var self = this;
-    self.username = ko.observable(null);
-    self.errorUsername = ko.observable(null);
-    self.email = ko.observable(null);
-    self.errorEmail = ko.observable(null);
-    self.cssPhone = 'phone';
-    self.phone = ko.observable(null);
-    self.errorPhone = ko.observable(null);
-    self.cssFirstPassword = 'firstPassword';
-    self.firstPassword = ko.observable(null);
-    self.errorFirstPassword = ko.observable(null);
-    self.cssSecondPassword = 'secondPassword';
-    self.secondPassword = ko.observable(null);
-    self.errorSecondPassword = ko.observable(null);
-    self.isChecked = ko.observable(false);
-    self.errorIsChecked = ko.observable(null);
-
-
-    self.SubmitForm = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('OrderWidget.step1.registration', self);
-        }
-    };
-    self.ValidationForm = function() {
-        var test = true;
-        if (!self.UsernameValidation())
-            test = false;
-        if (!self.EmailValidation())
-            test = false;
-        if (!self.PhoneValidation())
-            test = false;
-        if (!self.PasswordValidation())
-            test = false;
-        if (!self.PasswordSecondValidation())
-            test = false;
-        if (!self.IsCheckedValidation())
-            test = false;
-
-        return test;
-    };
-    self.UsernameValidation = function() {
-        if (!self.username()) {
-            self.errorUsername(Config.Order.error.username.empty);
-            return false;
-        }
-        if (self.username().length < 3) {
-            self.errorUsername(Config.Order.error.username.minLength);
-            return false;
-        }
-        if (self.username().length > 40) {
-            self.errorUsername(Config.Order.error.username.maxLength);
-            return false;
-        }
-        if (!Config.Order.regular.username.test(self.username())) {
-            self.errorUsername(Config.Order.error.username.regular);
-            return false;
-        }
-        self.errorUsername(null);
-        return true;
-    };
-    self.EmailValidation = function() {
-        if (!self.email()) {
-            self.errorEmail(Config.Order.error.email.empty);
-            return false;
-        }
-        if (self.email().length > 64) {
-            self.errorUsername(Config.Order.error.email.maxLength);
-            return false;
-        }
-        if (!Config.Order.regular.email.test(self.email())) {
-            self.errorEmail(Config.Order.error.email.regular);
-            return false;
-        }
-        self.errorEmail(null);
-        return true;
-    };
-    self.PhoneValidation = function() {
-        if (self.phone()) {
-            if (!Config.Order.regular.phone.test($.trim(self.phone()))) {
-                self.errorPhone(Config.Order.error.phone.regular);
-                return false;
-            }
-        }
-        self.errorPhone(null);
-        return true;
-    };
-    self.PasswordValidation = function() {
-        self.firstPassword($('input#' + self.cssFirstPassword).val());
-        if (!self.firstPassword()) {
-            self.errorFirstPassword(Config.Order.error.password.empty);
-            return false;
-        }
-        if (self.firstPassword().length < 6) {
-            self.errorFirstPassword(Config.Order.error.password.minLength);
-            return false;
-        }
-        if (self.firstPassword().length > 64) {
-            self.errorFirstPassword(Config.Order.error.password.maxLength);
-            return false;
-        }
-
-        self.errorFirstPassword(null);
-        return true;
-    };
-    self.PasswordSecondValidation = function() {
-        self.secondPassword($('input#' + self.cssSecondPassword).val());
-        if (!self.secondPassword()) {
-            self.errorSecondPassword(Config.Order.error.password.empty);
-            return false;
-        }
-        if (self.firstPassword() != self.secondPassword()) {
-            self.errorSecondPassword(Config.Order.error.password.equal);
-            return false;
-        }
-        self.errorSecondPassword(null);
-        return true;
-    };
-    self.IsCheckedValidation = function() {
-        if (!self.isChecked()) {
-            self.errorIsChecked(Config.Order.error.isChecked.empty);
-            return false;
-        }
-
-        self.errorIsChecked(null);
-        return true;
-    };
-    self.RestoreAccess = function() {
-
-    };
-};
-
-var OrderConfirmRegistrationFormStep1ViewModel = function() {
-    var self = this;
-    self.username = Parameters.cache.order.step1.reg.username();
-
-    self.cssMailToken = 'mail_token_block';
-    self.mailToken = ko.observable();
-    self.mailIsConfirm = ko.observable(false);
-    self.errorEmailConfirm = ko.observable(null);
-    self.mailConfirmLater = ko.observable(false);
-
-    self.cssPhoneToken = 'phone_token_block';
-    self.phoneToken = ko.observable();
-    self.phoneIsConfirm = ko.observable(false);
-    self.errorPhoneConfirm = ko.observable(null);
-    self.phoneConfirmLater = ko.observable(false);
-
-    self.errorConfirmLater = ko.observable(null);
-
-    self.isEmptyPhone = ko.computed(function() {
-        if (!$.isEmptyObject(Parameters.cache.order.step1.reg) && Parameters.cache.order.step1.reg.phone())
-            return true;
-        self.phoneConfirmLater(true);
-        return false;
-    }, this);
-    self.SubmitForm = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('OrderWidget.step1.confirm', self);
-        }
-    };
-    self.Back = function() {
-        EventDispatcher.DispatchEvent('OrderWidget.step1.view1');
-    };
-    self.ValidationForm = function() {
-        var test = true;
-        if (!self.EmailTokenValidation())
-            test = false;
-        if (!self.PhoneTokenValidation())
-            test = false;
-        if (!self.EmptyConfirm())
-            test = false;
-
-        return test;
-    };
-    self.EmailTokenValidation = function() {
-        if (!self.mailConfirmLater()) {
-            if (!self.mailToken()) {
-                self.errorEmailConfirm(Config.Order.error.emailToken.empty);
-                return false;
-            }
-        }
-
-        self.errorEmailConfirm(null);
-        return true;
-    };
-    self.PhoneTokenValidation = function() {
-        if (!self.phoneConfirmLater()) {
-            if (!self.phoneToken()) {
-                self.errorPhoneConfirm(Config.Order.error.phoneToken.empty);
-                return false;
-            }
-        }
-
-        self.errorPhoneConfirm(null);
-        return true;
-    };
-    self.EmptyConfirm = function() {
-        if (self.phoneConfirmLater() && self.mailConfirmLater()) {
-            self.errorConfirmLater(Config.Order.error.confirmLater.empty);
-            return false;
-        }
-        else
-            self.errorConfirmLater(null);
-
-        return true;
-    };
-    self.viewButtonSendToken = ko.observable(false);
-    self.ShowButtonSendToken = function(){
-        self.viewButtonSendToken(false);
-        setTimeout(function() {
-            self.viewButtonSendToken(true);
-        }, 60000);
-    };
-    self.ClickSendPhoneToken = function(){
-        self.ShowButtonSendToken();
-        EventDispatcher.DispatchEvent('OrderWidget.send.token', 'sms')
-    };
-    self.ClickSendMailToken = function(){
-        self.ShowButtonSendToken();
-        EventDispatcher.DispatchEvent('OrderWidget.send.token', 'mail')
-    };
-};
-
-var OrderProfileRegistrationFormStep1ViewModel = function() {
-    var self = this;
-    self.lastName = ko.observable();
-    self.errorLastName = ko.observable(null);
-
-    self.firstName = ko.observable();
-    self.errorFirstName = ko.observable(null);
-
-    self.middleName = ko.observable();
-    self.errorMiddleName = ko.observable(null);
-
-    self.birthDay = ko.observable();
-    self.birthDayHiddenField = ko.observable();
-    self.errorBirthDay = ko.observable(null);
-    self.cssBirthDay = 'birthDay';
-
-    self.gender = ko.observable('m');
-    self.errorGender = ko.observable(null);
-
-    self.cssRegistrationDataForm = 'order_personal_information';
-
-    self.AddContent = function(data) {
-        if(!data.err){
-            self.gender(data.gender);
-            self.lastName(data.f_name);
-            self.firstName(data.s_name);
-            self.middleName(data.m_name);
-            self.birthDay(data.birth_day);
-        }
-    };
-    self.Back = function() {
-        EventDispatcher.DispatchEvent('OrderWidget.step1.view2');
-    };
-    self.SpecifyLater = function() {
-        EventDispatcher.DispatchEvent('OrderWidget.step1.later', self);
-    };
-    self.SubmitForm = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('OrderWidget.step1.profile', self);
-        }
-    };
-    self.ValidationForm = function() {
-        var test = true;
-        if (!self.FirstNameValidation())
-            test = false;
-        if (!self.LastNameValidation())
-            test = false;
-        if (!self.MiddleNameValidation())
-            test = false;
-        if (!self.BirthDayValidation())
-            test = false;
-        if (!self.GanderValidation())
-            test = false;
-
-        return test;
-    };
-    self.FirstNameValidation = function() {
-        if (!self.firstName()) {
-            self.errorFirstName(Config.Order.error.firstName.empty);
-            return false;
-        }
-        if (self.firstName().length < 2) {
-            self.errorFirstName(Config.Order.error.firstName.minLength);
-            return false;
-        }
-        if (self.firstName().length > 20) {
-            self.errorFirstName(Config.Order.error.firstName.maxLength);
-            return false;
-        }
-        if (!Config.Registration.regular.firstName.test(self.firstName())) {
-            self.errorFirstName(Config.Order.error.firstName.regular);
-            return false;
-        }
-        self.errorFirstName(null);
-        return true;
-    };
-    self.LastNameValidation = function() {
-        if (!self.lastName()) {
-            self.errorLastName(Config.Order.error.lastName.empty);
-            return false;
-        }
-        if (self.lastName().length < 2) {
-            self.errorLastName(Config.Order.error.lastName.minLength);
-            return false;
-        }
-        if (self.lastName().length > 20) {
-            self.errorLastName(Config.Order.error.lastName.maxLength);
-            return false;
-        }
-        if (!Config.Registration.regular.lastName.test(self.lastName())) {
-            self.errorLastName(Config.Order.error.lastName.regular);
-            return false;
-        }
-        self.errorLastName(null);
-        return true;
-    };
-    self.MiddleNameValidation = function() {
-        if (self.middleName()) {
-            if (self.middleName().length < 2) {
-                self.errorMiddleName(Config.Order.error.middleName.minLength);
-                return false;
-            }
-            if (self.middleName().length > 20) {
-                self.errorMiddleName(Config.Order.error.middleName.maxLength);
-                return false;
-            }
-            if (!Config.Order.regular.middleName.test(self.middleName())) {
-                self.errorMiddleName(Config.Order.error.middleName.regular);
-                return false;
-            }
-        }
-        self.errorMiddleName(null);
-        return true;
-    };
-    self.BirthDayValidation = function() {
-        if (!self.birthDay()) {
-            self.errorBirthDay(Config.Order.error.birthDay.empty);
-            return false;
-        }
-        if (!Config.Order.regular.birthDay.test(self.birthDay())) {
-            self.errorBirthDay(Config.Order.error.birthDay.regular);
-            return false;
-        }
-        var dateArray = self.birthDay().split('.');
-        var date = new Date(dateArray[2], dateArray[1] - 1, dateArray[0]);
-
-        var now = new Date();
-        var minDate = new Date(now.getYear() - 18, now.getMonth(), now.getDate());
-        if (minDate < date) {
-            self.errorBirthDay(Config.Order.error.birthDay.minDate);
-            return false;
-        }
-
-        var now = new Date();
-        var maxDate = new Date(now.getYear() - 101, now.getMonth(), now.getDate());
-        if (maxDate > date) {
-            self.errorBirthDay(Config.Order.error.birthDay.maxDate);
-            return false;
-        }
-
-        self.errorBirthDay(null);
-        return true;
-    };
-    self.GanderValidation = function() {
-        if (!self.gender()) {
-            self.errorGender(Config.Order.error.gender.empty);
-            return false;
-        }
-        if (!Config.Order.regular.gender.test(self.gender())) {
-            self.errorGender(Config.Order.error.gender.regular);
-            return false;
-        }
-        self.errorGender(null);
-        return true;
     };
 };
 
@@ -1835,142 +1486,6 @@ var OrderItemFormStep4ViewModel = function(parent) {
 
         EventDispatcher.DispatchEvent('OrderWidget.step4.change', self);
     };
-};
-
-var OrderFormStep5ViewModel = function() {
-    var self = this;
-    self.id = ko.observable();
-    self.nameShipping = ko.observable();
-    self.shippingAddress = ko.observable();
-    self.namePayment = ko.observable();
-    self.dateCreate = ko.observable();
-    self.commentBuyer = ko.observable();
-    self.commentOperator = ko.observable();
-    self.realShipping = ko.observable();
-    self.statusPay = ko.observable();
-    self.statusOrder = ko.observable();
-    self.trackNumber = ko.observable();
-    self.idUser = ko.observable();
-    self.idShop = ko.observable();
-    self.idOwnShop = ko.observable();
-    self.costShipping = ko.observable('0 руб.');
-    self.costPayment = ko.observable('0 руб.');
-    self.sellCost = ko.observable();
-    self.finalCost = ko.observable();
-    self.discount = ko.observable();
-    self.discountSum = ko.observable();
-    self.delivery = ko.observable();
-    self.goods = ko.observableArray();
-    
-
-
-    self.AddContent = function(data) {
-        var order = data.order;
-        self.id(order.id);
-        if (order.hasOwnProperty('method_shipping')){
-            if(order.method_shipping.hasOwnProperty('name_method_shipping'))
-                self.nameShipping(order.method_shipping.name_method_shipping);
-        }
-        if (order.hasOwnProperty('shipping_address'))
-            self.shippingAddress(order.shipping_address);
-        if (order.hasOwnProperty('method_payment')){
-            if (order.method_payment.hasOwnProperty('name_payment'))
-            self.namePayment(order.method_payment.name_payment);
-        }
-        if (order.hasOwnProperty('date_create'))
-            self.dateCreate(order.date_create);
-        if (order.hasOwnProperty('comment_buyer'))
-            self.commentBuyer(order.comment_buyer);
-        if (order.hasOwnProperty('comment_operator'))
-            self.commentOperator(order.comment_operator);
-        if (order.hasOwnProperty('shipping')) {
-            if (order.shipping == 'yes')
-                self.realShipping(true);
-            else
-                self.realShipping(false);
-        }
-        if (order.hasOwnProperty('status_pay'))
-            self.statusPay(order.status_pay);
-        if (order.hasOwnProperty('status_order'))
-            self.statusOrder(order.status_order);
-        if (order.hasOwnProperty('track_number'))
-            self.trackNumber(order.track_number);
-        if (order.hasOwnProperty('id_user'))
-            self.idUser(order.id_user);
-        if (order.hasOwnProperty('id_shop'))
-            self.idShop(order.id_shop);
-        if (order.hasOwnProperty('id_own_shop'))
-            self.idOwnShop(order.id_own_shop);
-        if (order.hasOwnProperty('cost_shipping'))
-            self.costShipping(order.cost_shipping + ' руб');
-        if (order.hasOwnProperty('cost_payment'))
-            self.costPayment(order.cost_payment + ' руб');
-        if (order.hasOwnProperty('sell_cost'))
-            self.sellCost(order.sell_cost);
-        if (order.hasOwnProperty('final_cost'))
-            self.finalCost((order.final_cost + order.cost_shipping + order.cost_payment) + ' руб');
-
-        self.goods = ko.observableArray();
-
-        var sell = 0;
-        var end = 0;
-        $.each(data.goods, function(i) {
-            self.goods.push(new OrderItemFormStep5ViewModel(data.goods[i]))
-            sell = sell + data.goods[i].sell_cost;
-            end = end + data.goods[i].final_cost;
-        });
-        var diff = sell - end;
-        var d = Math.floor(diff * 100 / sell);
-        var discount = '';
-        if (d > 0)
-            discount = d + '%';
-
-        self.discount = ko.observable(discount);
-        self.discountSum = ko.observable(diff + 'руб');
-
-        self.delivery(Parameters.cache.order.delivery);
-    };
-
-    self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 4});
-    };
-    self.ClickConfirm = function() {
-        EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', {comment: self.commentBuyer()});
-    };
-    self.Delete = function(){
-        EventDispatcher.DispatchEvent('OrderWidget.step5.delete');
-    };
-    self.ClickStep1 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-    self.ClickStep2 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
-    };
-    self.ClickStep3 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 3});
-    };
-    self.ClickStep4 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 4});
-    };
-};
-
-var OrderItemFormStep5ViewModel = function(data) {
-    var self = this;
-    self.id = data.id;
-    self.fullName = data.full_name;
-    self.sellCost = data.sell_cost + ' руб';
-    self.itogSellCost = (data.sell_cost * data.count) + ' руб';
-    self.finalCost = data.final_cost + ' руб';
-    self.count = data.count + ' шт';
-    self.routeImage = Config.Base.pathToImages + data.route_image;
-    if (data.is_egoods == 'yes')
-        self.isEgoods = true;
-    else
-        self.isEgoods = false;
-    
-    self.ClickGoods = function(){
-        Routing.SetHash('goods', self.chortName, {id : self.id});
-    }
 };
 
 var TestOrder = {

@@ -156,6 +156,7 @@ function Widget(){
         geoPathApi : null,
         shopPathApi : null,
         orderPathApi : null,
+        paymentPathApi : null,
         containerIdForTmpl : null
     };
     this.Init = function(widget, noindicate){
@@ -186,6 +187,7 @@ function Widget(){
                 geoPathApi : Config.Base.geoPathApi,
                 shopPathApi : Config.Base.shopPathApi,
                 orderPathApi : Config.Base.orderPathApi,
+                paymentPathApi : Config.Base.paymentPathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
@@ -203,6 +205,7 @@ function Widget(){
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
+            data.options.params['uniq'] = EventDispatcher.HashCode(JSON.stringify(data.options));
             embed.SetParameters(data);
             embed.Init(embed, true);
         });
@@ -810,14 +813,17 @@ function Widget(){
         },
         Payment : function(str, callback){
             if(!Parameters.cache.payment){
+                console.log('gg');
                 XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
                     Parameters.cache.payment = data;
                     if(callback)
                         callback(data);
                 }, true);
             }
-            else
+            else{
+                console.log(Parameters.cache.payment);
                 callback(Parameters.cache.payment);
+            }
         },
         OrderInfo : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'info/' + str), function(data){
@@ -866,6 +872,27 @@ function Widget(){
         },
         CancelOrder : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        InvoicesOrder : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'order/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        InvoicesGoods : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'goods/' + str), function(data){
+                Parameters.cache.orderList = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        InvoicesAmount : function(str, callback){
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'amount/' + str), function(data){
                 Parameters.cache.orderList = null;
                 if(callback)
                     callback(data);

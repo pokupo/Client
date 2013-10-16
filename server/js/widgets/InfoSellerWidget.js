@@ -22,7 +22,6 @@ window.InfoSellerWidget = function(){
         self.settings.tmplPath = Config.InfoSeller.tmpl.path;
         self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
         self.settings.container = data.element;
-        self.settings.hash = EventDispatcher.HashCode(JSON.stringify(data.options).toString());
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
                 if(data.options.params['tmpl']['path'])
@@ -30,6 +29,8 @@ window.InfoSellerWidget = function(){
                 if(data.options.params['tmpl']['id'])
                     self.settings.tmplId = data.options.params['tmpl']['id'];
             }
+            else if(key == 'uniq' && data.options.params['uniq'])
+                    self.settings.hash = data.options.params['uniq'];
             else
                 self.settings.infoSeller[key] = data.options.params[key];
         }

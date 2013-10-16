@@ -17,7 +17,8 @@ window.RelatedGoodsWidget = function(){
             typeView : null,
             orderBy : null,
             start : null
-        }
+        },
+        uniq : null
     };
     self.InitWidget = function(){
         self.settings.tmplPath = Config.RelatedGoods.tmpl.path;
@@ -44,6 +45,8 @@ window.RelatedGoodsWidget = function(){
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl'])
                 self.settings.tmplPath = 'relatedGoods/' + data.options.params['tmpl'] + '.html';
+            else if (key = 'uniq' && data.options.params['uniq'])
+                self.settings.uniq = data.options.params['uniq'];
             else
                 self.settings.relatedGoods[key] = data.options.params[key];
         }
@@ -51,25 +54,25 @@ window.RelatedGoodsWidget = function(){
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl')
+                EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
                 self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl')
+                    EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
                 });
             });
         }
         
-        EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl', function (data){
+        EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq, function (data){
             var query = self.settings.relatedGoods.start + '/' + self.settings.relatedGoods.count + '/' + self.settings.relatedGoods.orderBy;
             self.BaseLoad.RelatedGoods(self.settings.relatedGoods.id, query, function(data){
                 self.CheckData(data);
             })
         });
         
-        EventDispatcher.AddEventListener('RelatedGoodsWidget.fill.block', function (data){
+        EventDispatcher.AddEventListener('RelatedGoodsWidget.fill.block_' + self.settings.uniq, function (data){
             self.Render(data);
         });
     };
@@ -143,7 +146,7 @@ var RelatedGoodsViewModel = function(settings, data){
             }
             self.cssBlockContainer  = self.cssBlockContainer + EventDispatcher.HashCode(data.toString());
         }
-        EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block', self);
+        EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block_' + settings.uniq, self);
     }
 }
 

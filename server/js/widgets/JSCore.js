@@ -29,6 +29,7 @@ var JSSettings = {
         'widgets/Paging.js',
         'widgets/ContentViewModel.js',
         'widgets/OrderViewModel.js',
+        'widgets/RegistrationViewModel.js',
         'widgets/Widget.js',
         'widgets/AnimateSlider.js',
         'widgets/AnimateCarousel.js',
