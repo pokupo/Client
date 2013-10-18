@@ -11,7 +11,7 @@ var GoodsWidget = function(){
         styleGoods : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.goods; 
+        self.settings.containerId = Config.Containers.goods.widget; 
         self.settings.tmplPath = Config.Goods.tmpl.path;
         self.settings.tmplId = Config.Goods.tmpl.tmplId;
         self.settings.showBlocks = Config.Goods.showBlocks;
@@ -50,8 +50,6 @@ var GoodsWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'goods/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };
@@ -59,9 +57,8 @@ var GoodsWidget = function(){
         if(Routing.route == 'goods'){
             self.Update();
         }
-        else{
+        else
             self.WidgetLoader(true);
-        }
     };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
@@ -78,9 +75,7 @@ var GoodsWidget = function(){
         }
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'goods'){
-                self.Update();
-            }
+            self.CheckRoute();
         });
         
         EventDispatcher.AddEventListener('GoodsWidget.onload.info', function (data){
@@ -89,7 +84,6 @@ var GoodsWidget = function(){
     };
     self.Update = function(){
         self.WidgetLoader(false);
-        $("#" + self.settings.containerId).html('');
         self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
             self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
@@ -154,8 +148,6 @@ var GoodsWidget = function(){
         Goods: function(data){
             if($("#" + self.settings.containerId).length > 0){
                 self.InsertContainer.Content();
-                if(Config.Containers.catalog)
-                   $("#" + Config.Containers.catalog).hide();
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
                 new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
@@ -166,7 +158,7 @@ var GoodsWidget = function(){
             self.AddGoodsInCookie(data);
             delete data;
 
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
             if(Ya != undefined){
                 Config.Goods.share.element = data.blocks.main.cssShareBlock
                 new Ya.share(Config.Goods.share);

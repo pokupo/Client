@@ -11,7 +11,7 @@ var CartWidget = function(){
         style : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.cart;
+        self.settings.containerId = Config.Containers.cart.widget;
         self.settings.title = Config.Cart.title;
         self.settings.tmplPath = Config.Cart.tmpl.path;
         self.settings.tmplId = Config.Cart.tmpl.tmplId;
@@ -42,10 +42,21 @@ var CartWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'cart/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
+    };
+    self.InsertContainer = function(){
+        $('#' + self.settings.containerId).empty().append($('script#' + self.settings.tmplId).html());
+    };
+    self.CheckRoute = function(){
+        if(Routing.IsDefault() && self.HasDefaultContent()){
+            self.WidgetLoader(true);
+        }
+        else{
+            self.BaseLoad.CartInfo('', function(data){
+                EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
+            });
+        }
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
@@ -62,12 +73,11 @@ var CartWidget = function(){
         }
         
         EventDispatcher.AddEventListener('CartWidget.onload.tmpl', function (){
-            self.BaseLoad.CartInfo('', function(data){
-                EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
-            });
+            self.CheckRoute();
         });
         
         EventDispatcher.AddEventListener('CartWidget.onload.info', function(data){
+            self.InsertContainer();
             self.Fill(data);
         })
         
@@ -90,10 +100,9 @@ var CartWidget = function(){
         info.AddContent(data);
         self.Render(info);
     };
-    self.Render = function(data){
-        $('#' + self.settings.containerId).empty().append($('script#' + self.settings.tmplId).html());
+    self.Render = function(data){ 
         ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
-        self.WidgetLoader(true);
+        self.WidgetLoader(true, self.settings.containerId);
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters['position'] == 'absolute'){

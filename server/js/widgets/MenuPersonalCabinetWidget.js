@@ -11,7 +11,7 @@ var MenuPersonalCabinetWidget = function(){
     self.subMenu = [];
     self.InitWidget = function(){
         self.settings.tmplPath = Config.MenuPersonalCabinet.tmpl.path;
-        self.settings.containerMenuId = Config.Containers.menuPersonalCabinet;
+        self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
         self.settings.menuTmpl = Config.MenuPersonalCabinet.tmpl.menuPersonalCabinet;
         self.settings.style = Config.MenuPersonalCabinet.style;
         self.RegisterEvents();
@@ -21,11 +21,6 @@ var MenuPersonalCabinetWidget = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.menuPersonalCabinet){
             input = WParameters.menuPersonalCabinet;
-        }
-        
-        if(!$.isEmptyObject(input)){
-            if(input.container)
-                self.settings.containerMenuId = input.container;
         }
      };
     self.AddMenu = function(opt){
@@ -41,6 +36,7 @@ var MenuPersonalCabinetWidget = function(){
         }
         else{
             $("#" + self.settings.containerMenuId).empty()
+            self.WidgetLoader(true);
         }
     };
     self.RegisterEvents = function() {
@@ -65,7 +61,7 @@ var MenuPersonalCabinetWidget = function(){
         if ($("#" + self.settings.containerMenuId).length > 0) {
             ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
         }
-        self.WidgetLoader(true);
+        self.WidgetLoader(true, self.settings.containerMenuId);
     };
     self.SetPosition = function() {
         if (self.settings.style.position == 'absolute') {

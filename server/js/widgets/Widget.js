@@ -88,8 +88,10 @@ Parameters = {
 var Loader = {
     readyCount : 0,
     countAll : 0,
+    containers : [],
     widgets : {},
-    Indicator : function(widget, isReady){
+    action : null,
+    Indicator : function(widget, isReady, container){
         this.widgets[widget] = isReady;
         this.countAll = 0;
         this.readyCount = 0;
@@ -97,6 +99,9 @@ var Loader = {
         for(var key in this.widgets){
             this.RegisterReady(key);
         }
+        if(container)
+            this.containers.push(container);
+        
         this.ShowLoading();
     },
     RegisterReady : function(key){
@@ -110,11 +115,17 @@ var Loader = {
             return true;
         return false;
     },
+    SetNotReady : function(){
+        for(var key in this.widgets){
+            this.widgets[key] = false;
+        }
+    },
     ShowLoading : function(){
         if(!this.IsReady()){
             this.HideContent();
-            if($('#loadingContainer').length == 0)
-                $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+            if(!Routing.IsDefault())
+                if($('#loadingContainer').length == 0)
+                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
         }
         else{
             this.ShowContent();
@@ -125,19 +136,70 @@ var Loader = {
         $(container).append('<div style="width: 100%;text-align: center;padding: 15px 0;"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
     },
     HideContent : function(){
-        for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key])){
-                for(var i in Config.Containers[key]){
-                    $("#" + Config.Containers[key][i]).children().hide();
+        if(this.action != 'hide'){
+            this.action = 'hide';
+            for(var key in Config.Containers){
+                if(!Config.Containers[key].widget){
+                    for(var i in Config.Containers[key]){
+                        $("#" + Config.Containers[key][i].widget).children().hide();
+                        $("#" + Config.Containers[key][i].def).children().hide();
+                    }
+                }
+                else{
+                    $("#" + Config.Containers[key].widget).children().hide();
+                    $("#" + Config.Containers[key].def).children().hide();
                 }
             }
-            else
-                $("#" + Config.Containers[key]).children().hide();
         }
     },
     ShowContent : function(){
+        $.each(this.containers, function(i){
+            $('#' + Loader.containers[i]).children().show();
+        });
+        this.containers = [];
+        this.action = 'show';
+    },
+    AddShowContainer : function(id){
+        this.containers.push(id);
+    },
+    ViewDefaultContent : function(){
         for(var key in Config.Containers){
-            $("#" + Config.Containers[key]).children().show();
+            if(!Config.Containers[key].def){
+                for(var key2 in Config.Containers[key]){
+                    if(Config.Containers[key][key2].def){
+                        if($("#" + Config.Containers[key][key2].def).length > 0){
+                            $("#" + Config.Containers[key][key2].def).children().show();
+                            $("#" + Config.Containers[key][key2].widget).children().hide();
+                        }
+                    }
+                }
+            }
+            else{
+                if($("#" + Config.Containers[key].def).length > 0){
+                    $("#" + Config.Containers[key].def).children().show();
+                    $("#" + Config.Containers[key].widget).children().hide();
+                }
+            }
+        }
+    },
+    HideDefaultContent : function(){
+        for(var key in Config.Containers){
+            if(!Config.Containers[key].widget){
+                for(var key2 in Config.Containers[key]){    
+                    if(Config.Containers[key][key2].widget){
+                        if($("#" + Config.Containers[key][key2].widget).length > 0){
+                            $("#" + Config.Containers[key][key2].def).children().hide();
+                            $("#" + Config.Containers[key][key2].widget).children().show();
+                        }
+                    }
+                }
+            }
+            else{
+                if($("#" + Config.Containers[key].def).length > 0){
+                    $("#" + Config.Containers[key].def).children().hide();
+                    $("#" + Config.Containers[key].widget).children().show();
+                }
+            }
         }
     }
 };
@@ -196,9 +258,32 @@ function Widget(){
             Parameters.loading = Config.Base.loading;
             
             this.RegistrCustomBindings();
+            this.UpdateSettingsContainer();
             Routing.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId'];
+        }
+    };
+    this.UpdateSettingsContainer = function(){
+        if(typeof WParameters !== 'undefined'){
+            for(var key in WParameters){
+                if(WParameters[key].hasOwnProperty('container')){
+                    if(WParameters[key].container.widget)
+                        Config.Containers[key].widget = WParameters[key].container.widget;
+                    if(WParameters[key].container.def)
+                        Config.Containers[key].def = WParameters[key].container.def;
+                }
+                else{
+                    for(var key2 in WParameters[key]){
+                        if(WParameters[key][key2].hasOwnProperty('container')){
+                            if(WParameters[key][key2].container.widget)
+                                Config.Containers[key][key2].widget = WParameters[key][key2].container.widget;
+                            if(WParameters[key][key2].container.def)
+                                Config.Containers[key][key2].def = WParameters[key][key2].container.def;
+                        }
+                    }
+                }
+            }
         }
     };
     this.Events = function(){       
@@ -268,8 +353,28 @@ function Widget(){
             }
         };
     };
-    this.WidgetLoader = function(test){
-        Loader.Indicator(this.widgetName, test);
+    this.WidgetLoader = function(test, container){
+        Loader.Indicator(this.widgetName, test, container);
+    };
+    this.ShowContainer = function(id){
+        Loader.AddShowContainer(id);
+    };
+    this.HasDefaultContent = function(){
+        var name = this.widgetName.charAt(0).toLowerCase() + this.widgetName.slice(1);
+        name = name.replace(/Widget/, '');
+        if(!Config.Containers[name].def){
+            for(var i in Config.Containers[name]){
+                if($('#' + Config.Containers[name][i].def).length > 0){
+                    return true;
+                    break;
+                }
+            }
+        }
+        else{
+            if($('#' + Config.Containers[name].def).length > 0)
+                return true;
+        }
+        return false;
     };
     this.ScrollTop = function(elementId, speed){
         if(Loader.countAll == Loader.readyCount){
@@ -813,7 +918,6 @@ function Widget(){
         },
         Payment : function(str, callback){
             if(!Parameters.cache.payment){
-                console.log('gg');
                 XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
                     Parameters.cache.payment = data;
                     if(callback)

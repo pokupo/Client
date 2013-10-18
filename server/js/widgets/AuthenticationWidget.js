@@ -11,8 +11,7 @@ var AuthenticationWidget = function(){
         style : null
     };
     self.InitWidget = function(){
-        self.settings.containerFormId = Config.Containers.authentication[0]; 
-        self.settings.containerSidebarId = Config.Containers.authentication[1]; 
+        self.settings.containerFormId = Config.Containers.authentication.widget; 
         self.settings.tmplPath = Config.Authentication.tmpl.path;
         self.settings.authFormTmplId = Config.Authentication.tmpl.authFormTmplId;
         self.settings.https = Config.Authentication.https;
@@ -40,37 +39,35 @@ var AuthenticationWidget = function(){
                 self.settings.https = input.https;
                 Parameters.cache.https = input.https;
             }
-            if(input.container){
-                self.settings.containerFormId = input.container[0]; 
-                self.settings.containerSidebarId = input.container[1];
+            if(input.container && input.container.widget){
+                self.settings.containerFormId = input.container.widget; 
             }
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRoute = function(){
+    self.CheckAuthenticationRoute = function(){
         if(Routing.route == 'login'){
             self.SelectTypeContent();
         }
-        else{
+        else
             self.WidgetLoader(true);
-        }
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckRoute();
+                 self.CheckAuthenticationRoute();
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
                 self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckRoute();
+                     self.CheckAuthenticationRoute();
                 });
             });
         }
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            self.CheckRoute();
+            self.CheckAuthenticationRoute();
         });
         
         EventDispatcher.AddEventListener('AuthenticationWidget.authentication.submit', function (data){
@@ -108,9 +105,7 @@ var AuthenticationWidget = function(){
     };
     self.InsertContainer = {
         Authentication : function(){
-            if(Config.Containers.catalog)
-                 $("#" + Config.Containers.catalog).show();
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.authFormTmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.authFormTmplId).html());
         }
     };
     self.Fill = {
@@ -125,10 +120,7 @@ var AuthenticationWidget = function(){
             if($("#" + self.settings.containerFormId).length > 0){
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            if($("#" + self.settings.containerSidebarId).length > 0){
-                ko.applyBindings(sidebar, $("#" + self.settings.containerSidebarId)[0]);
-            }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function(){

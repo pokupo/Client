@@ -9,7 +9,7 @@ var SearchWidget = function(){
         style : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.search; 
+        self.settings.containerId = Config.Containers.search.widget; 
         self.settings.tmplPath = Config.Search.tmpl.path;
         self.settings.tmplId = Config.Search.tmpl.tmplId;
         self.settings.style = Config.Search.style;
@@ -28,12 +28,21 @@ var SearchWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.search){
             input = WParameters.search;
         }
-        
-        if(!$.isEmptyObject(input)){
-            if(input.container)
-                self.settings.containerId = input.container;
-        }
+
         self.settings.inputParameters = input;
+    };
+    self.InsertContainer = function(){
+        $("#" + self.settings.containerId).html($('script#' + self.settings.tmplId).html()).show();
+    };
+    self.CheckRoute = function(){
+        if(Routing.IsDefault() && self.HasDefaultContent()){
+            self.WidgetLoader(true);
+        }
+        else{
+            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
+                EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+            });
+        }
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
@@ -50,9 +59,7 @@ var SearchWidget = function(){
         }
         
         EventDispatcher.AddEventListener('searchWidget.onload.tmpl', function (data){
-            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
-            });
+            self.CheckRoute();
         });
         
         EventDispatcher.AddEventListener('searchWidget.onload.section', function (data){
@@ -66,14 +73,12 @@ var SearchWidget = function(){
         });
         
         EventDispatcher.AddEventListener('searchWidget.fill.listCategory', function (data){
+            self.InsertContainer();
             self.Render(data);
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            self.WidgetLoader(false);
-            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
-            }); 
+            self.CheckRoute(); 
         });
     };
     self.Fill = function(data){
@@ -89,8 +94,6 @@ var SearchWidget = function(){
     };
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){
-            $("#" + self.settings.containerId).html("");
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html()).show();
             ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
             $('.' + data.cssSelectList).sSelect({
@@ -102,8 +105,7 @@ var SearchWidget = function(){
             });
             $('.' + data.cssSelectList).getSetSSValue(data.id);
         }
-        self.WidgetLoader(true);
-        delete data;
+        self.WidgetLoader(true, self.settings.containerId);
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters.position == 'absolute'){
@@ -152,8 +154,6 @@ var SearchViewModel = function(){
             self.typeCategories[data[i].id] = data[i].type_category;
             if(data[i].children){
                 for(var j = 0; j <= data[i].children.length - 1; j++){
-                    //data[i].children[j].name_category = " - " + data[i].children[j].name_category;
-                    
                     self.categories.push(new SearchCategoryItem(data[i].children[j], 2));
                     self.typeCategories[data[i].id] = data[i].type_category;
                 }
@@ -180,7 +180,7 @@ var SearchViewModel = function(){
 
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
             
-            EventDispatcher.DispatchEvent('widget.route.change.breadCrumbs', selected);
+            EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
             $(data.text).val('');
         }
         else{

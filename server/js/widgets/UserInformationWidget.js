@@ -11,7 +11,7 @@ var UserInformationWidget = function(){
         style : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.userInformation; 
+        self.settings.containerId = Config.Containers.userInformation.widget; 
         self.settings.tmplPath = Config.UserInformation.tmpl.path;
         self.settings.infoTmplId = Config.UserInformation.tmpl.infoTmplId;
         self.settings.authTmplId = Config.UserInformation.tmpl.authTmplId;
@@ -43,8 +43,6 @@ var UserInformationWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'userInformation/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };
@@ -88,13 +86,18 @@ var UserInformationWidget = function(){
         });
     };
     self.CheckAuthorization = function(data){
-        if(!data.err){
-            self.InsertContainer.InfoBlock();
-            self.Fill.InfoBlock(data);
+        if(Routing.IsDefault() && self.HasDefaultContent()){
+            self.WidgetLoader(true);
         }
         else{
-            self.InsertContainer.AuthBlock();
-            self.Fill.AuthBlock();
+            if(!data.err){
+                self.InsertContainer.InfoBlock();
+                self.Fill.InfoBlock(data);
+            }
+            else{
+                self.InsertContainer.AuthBlock();
+                self.Fill.AuthBlock();
+            }
         }
     };
     self.InsertContainer = {
@@ -121,13 +124,13 @@ var UserInformationWidget = function(){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         InfoBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     }
     self.SetPosition = function(){

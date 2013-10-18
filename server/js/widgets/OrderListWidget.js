@@ -12,7 +12,7 @@ var OrderListWidget = function() {
         style: null
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.orderList;
+        self.settings.containerFormId = Config.Containers.orderList.widget;
         self.settings.tmplPath = Config.OrderList.tmpl.path;
         self.settings.ordListTmplId = Config.OrderList.tmpl.ordListTmplId;
         self.settings.ordEmptyListTmplId = Config.OrderList.tmpl.ordEmptyListTmplId;
@@ -37,8 +37,6 @@ var OrderListWidget = function() {
         if (!$.isEmptyObject(input)) {
             if (input.tmpl)
                 self.settings.tmplPath = 'orderList/' + input.tmpl + '.html';
-            if(input.container)
-                self.settings.containerFormId = input.container;
         }
         self.settings.inputParameters = input;
     };
@@ -243,16 +241,16 @@ var OrderListWidget = function() {
                 ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
             }
             new AnimateOrderList();
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         EmptyList: function() {
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {
