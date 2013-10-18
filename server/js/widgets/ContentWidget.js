@@ -47,16 +47,16 @@ var ContentWidget = function(){
         if(!$.isEmptyObject(input)){
             if(input.block){
                 self.settings.countGoodsInBlock = input.block.count;
-                if(input.block.container)
-                    self.settings.blockContainerId = input.block.container;
+                if(input.block.container && input.block.container.widget)
+                    self.settings.blockContainerId = input.block.container.widget;
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if(input.content.container)
-                    self.settings.containerId = input.content.container;
+                if(input.content.container && input.content.container.widget)
+                    self.settings.containerId = input.content.container.widget;
             }
         }
         self.settings.inputParameters = input;
@@ -88,12 +88,11 @@ var ContentWidget = function(){
         if(Routing.route == 'catalog'){
             self.SelectTypeContent();
         }
-        else{
+        else
             self.WidgetLoader(true);
-        }
     };
     self.SelectTypeContent = function(){
-        if(Routing.IsCategory()){  
+        if(Routing.IsCategory()){ 
             self.BaseLoad.Tmpl(self.settings.tmplForContent, function(){
                 EventDispatcher.DispatchEvent('onload.content.tmpl')
             });
@@ -135,10 +134,7 @@ var ContentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            if(Routing.route == 'catalog'){
-                self.WidgetLoader(false);
-                self.SelectTypeContent();
-            }
+            self.CheckRouting();
         });
     
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
@@ -182,9 +178,6 @@ var ContentWidget = function(){
     };
     self.InsertContainer = {
         Main : function(){
-            if($('#' + self.settings.blockContainerId).length == 0)
-                $("#" + self.settings.containerId).html($('script#' + self.settings.blockMainTmpl).html());
-            else
                 $('#' + self.settings.blockContainerId).empty();
         },
         Block : function(sort, type){
@@ -270,7 +263,7 @@ var ContentWidget = function(){
                 new AnimateSelectList(f.sort.cssSortList);
             }
             delete data;
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
@@ -279,7 +272,7 @@ var ContentWidget = function(){
                 self.testBlock.ready = self.testBlock.ready + 1;
 
                 if(self.testBlock.IsReady()){
-                    self.WidgetLoader(true); 
+                    self.WidgetLoader(true, self.settings.blockContainerId); 
                     self.Render.Animate.Do();
                 }
             }
@@ -289,7 +282,7 @@ var ContentWidget = function(){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){

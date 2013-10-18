@@ -50,11 +50,11 @@ var CartGoodsWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'cartGoods/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerId = input.container.widget;
         }
     };
-    self.CheckRoute = function(){
+    self.CheckCartGoodsRoute = function(){
         if(Routing.route == 'cart'){
             self.Update();
         }
@@ -65,21 +65,19 @@ var CartGoodsWidget = function(){
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckRoute();
+                 self.CheckCartGoodsRoute();
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
                 self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckRoute();
+                     self.CheckCartGoodsRoute();
                 });
             });
         }
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'cart'){
-                self.Update();
-            }
+            self.CheckCartGoodsRoute();
         });
         
         EventDispatcher.AddEventListener('CartGoods.onload.info', function (data){
@@ -167,10 +165,10 @@ var CartGoodsWidget = function(){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         EmptyCart : function(){
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){

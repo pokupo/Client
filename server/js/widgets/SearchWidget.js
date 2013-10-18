@@ -30,10 +30,13 @@ var SearchWidget = function(){
         }
         
         if(!$.isEmptyObject(input)){
-            if(input.container)
-                self.settings.containerId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
+    };
+    self.InsertContainer = function(){
+        $("#" + self.settings.containerId).html($('script#' + self.settings.tmplId).html()).show();
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
@@ -66,6 +69,7 @@ var SearchWidget = function(){
         });
         
         EventDispatcher.AddEventListener('searchWidget.fill.listCategory', function (data){
+            self.InsertContainer();
             self.Render(data);
         });
         
@@ -89,8 +93,6 @@ var SearchWidget = function(){
     };
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){
-            $("#" + self.settings.containerId).html("");
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html()).show();
             ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
             $('.' + data.cssSelectList).sSelect({
@@ -102,8 +104,7 @@ var SearchWidget = function(){
             });
             $('.' + data.cssSelectList).getSetSSValue(data.id);
         }
-        self.WidgetLoader(true);
-        delete data;
+        self.WidgetLoader(true, self.settings.containerId);
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters.position == 'absolute'){
@@ -152,8 +153,6 @@ var SearchViewModel = function(){
             self.typeCategories[data[i].id] = data[i].type_category;
             if(data[i].children){
                 for(var j = 0; j <= data[i].children.length - 1; j++){
-                    //data[i].children[j].name_category = " - " + data[i].children[j].name_category;
-                    
                     self.categories.push(new SearchCategoryItem(data[i].children[j], 2));
                     self.typeCategories[data[i].id] = data[i].type_category;
                 }

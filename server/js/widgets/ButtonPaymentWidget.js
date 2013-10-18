@@ -43,8 +43,8 @@ window.ButtonPaymentWidget = function(){
             }
             if(input.title)
                 self.settings.title = input.title;
-            if(input.container)
-                self.settings.containerId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
         
@@ -91,6 +91,8 @@ window.ButtonPaymentWidget = function(){
             if(Routing.params.amount)
                 self.GetData.Amount(Routing.params.amount);
         }
+        else
+            self.WidgetLoader(true);
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
@@ -116,7 +118,6 @@ window.ButtonPaymentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('ButtonPaymentWidget.form.submit', function(form){
-            self.WidgetLoader(false);
             self.InsertContainer.Content();
             var dataStr = [];
             $.each(form.inData(), function(i){
@@ -191,7 +192,7 @@ window.ButtonPaymentWidget = function(){
                 });
             }
             $("#" + self.settings.containerId).show();
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
 };

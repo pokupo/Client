@@ -32,8 +32,8 @@ var CatalogWidget = function(){
             input = WParameters.catalog;
         }
         if(!$.isEmptyObject(input)){
-            if(input.container)
-                self.settings.containerId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
@@ -74,18 +74,21 @@ var CatalogWidget = function(){
                 if(Routing.IsSection()){
                     self.WidgetLoader(false);
                 }
-                else
+                else if(Routing.IsDefault()){
+                    self.WidgetLoader(false);
+                }
+                else{
                     self.WidgetLoader(true);
-
+                }
                 self.Update();
             }
+            else
+                self.WidgetLoader(true);
         });
     };
     self.InsertContainer = {
         Main : function(){
-            if($("#" + self.settings.catalogContainerId).length == 0){
-                $("#" + self.settings.containerId).html($('script#' + self.settings.blockMainTmpl).html());
-            }
+            $("#" + self.settings.catalogContainerId).empty().append($('script#' + self.settings.tmplId).html());
         }
     },
     self.Update = function(){
@@ -131,11 +134,10 @@ var CatalogWidget = function(){
     self.Render = {
         Tree : function(data){ 
             if($("#" + self.settings.catalogContainerId).length > 0){
-                $("#" + self.settings.catalogContainerId).empty();
-                $("#" + self.settings.catalogContainerId).append($('script#' + self.settings.tmplId).html());
                 ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
+                
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.catalogContainerId );
         }
     }
     self.SetPosition = function(){

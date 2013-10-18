@@ -57,8 +57,8 @@ var OrderWidget = function() {
         if (!$.isEmptyObject(input)) {
             if (input.tmpl)
                 self.settings.tmplPath = 'order/' + input.tmpl + '.html';
-            if(input.container)
-                self.settings.containerId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
@@ -836,13 +836,13 @@ var OrderWidget = function() {
             $('input#' + form.registrationForm.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
 
             delete form;
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step1Confirm: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true,  self.settings.containerFormId);
         },
         Step1Profile: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -860,19 +860,19 @@ var OrderWidget = function() {
                     form.birthDay(dateText);
                 }
             });
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2Form: function(delivery) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -998,19 +998,19 @@ var OrderWidget = function() {
                 delivery.postCode(null);
             });
 
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step5: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {

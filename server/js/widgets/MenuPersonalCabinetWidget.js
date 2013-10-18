@@ -24,8 +24,8 @@ var MenuPersonalCabinetWidget = function(){
         }
         
         if(!$.isEmptyObject(input)){
-            if(input.container)
-                self.settings.containerMenuId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerMenuId = input.container.widget;
         }
      };
     self.AddMenu = function(opt){
@@ -41,6 +41,7 @@ var MenuPersonalCabinetWidget = function(){
         }
         else{
             $("#" + self.settings.containerMenuId).empty()
+            self.WidgetLoader(true);
         }
     };
     self.RegisterEvents = function() {
@@ -65,7 +66,7 @@ var MenuPersonalCabinetWidget = function(){
         if ($("#" + self.settings.containerMenuId).length > 0) {
             ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
         }
-        self.WidgetLoader(true);
+        self.WidgetLoader(true, self.settings.containerMenuId);
     };
     self.SetPosition = function() {
         if (self.settings.style.position == 'absolute') {

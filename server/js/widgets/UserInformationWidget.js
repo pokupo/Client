@@ -43,8 +43,8 @@ var UserInformationWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'userInformation/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
@@ -121,13 +121,13 @@ var UserInformationWidget = function(){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         InfoBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     }
     self.SetPosition = function(){

@@ -1,6 +1,7 @@
 var Routing = {
     route : '',
     title : '',
+    defaultTitle : '',
     params : {},
     more : {},
     page : 1,
@@ -21,28 +22,32 @@ var Routing = {
             }
         }
         var href = '/'
-        if(route != 'default'){
-            href = '/' + route + '/' + params.join("&");
-            this.HideDefaultContent();
-        }
+        if(this.route != 'default')
+            href = '/' + this.route + '/' + params.join("&");
         else
-            this.ViewDefaultContent();
+            this.title = this.defaultTitle;
 
         window.location.hash = href;
         document.title = this.GetTitle();
         
         this.ParserHash();
+        
+        Loader.SetNotReady();
         EventDispatcher.DispatchEvent('widget.change.route');
     },
     ParserHash: function(init){
         var hash = window.location.hash;
         hash = hash.split("/");
         
-        if(hash[1])
+        if(hash[1]){
            this.route = hash[1];
-        else
+           Loader.HideDefaultContent();
+        }
+        else{
            this.route = 'default';
-       
+           Loader.ViewDefaultContent();
+        }
+
         this.params = {};
             
         if(hash[2]){
@@ -52,8 +57,11 @@ var Routing = {
                 this.params[parameter[0]] = parameter[1];
             }
         }
-        if(init)
+        if(init){
+            if(!this.defaultTitle )
+                this.defaultTitle = this.GetDefaultTitle()
             this.InitHistory();
+        }
         else 
             this.AddHistory()
     },
@@ -71,6 +79,11 @@ var Routing = {
     },
     SetTitle : function(title){
         this.title = title;
+    },
+    GetDefaultTitle : function(){
+        if(document.title)
+            return document.title;
+        return Config.Base.title;
     },
     GetActiveCategory : function(){
         if(this.route == 'catalog' || this.route == 'goods'){
@@ -177,43 +190,7 @@ var Routing = {
     },
     GetLastPageNumber : function(){
         return this.page;
-    },
-    ViewDefaultContent : function(){
-        for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key].def)){
-                for(var i in Config.Containers[key].def){
-                    if($("#" + Config.Containers[key].def[i]).length > 0){
-                        $("#" + Config.Containers[key].def[i]).show();
-                        $("#" + Config.Containers[key].widget[i]).hide();
-                    }
-                }
-            }
-            else{
-                if($("#" + Config.Containers[key].def)){
-                    $("#" + Config.Containers[key].def).show();
-                    $("#" + Config.Containers[key].widget).hide();
-                }
-            }
-        }
-    },
-    HideDefaultContent : function(){
-        for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key].def)){
-                for(var i in Config.Containers[key].def){
-                    if($("#" + Config.Containers[key].def[i]).length > 0){
-                        $("#" + Config.Containers[key].def[i]).hide();
-                        $("#" + Config.Containers[key].widget[i]).show();
-                    }
-                }
-            }
-            else{
-                if($("#" + Config.Containers[key].def)){
-                    $("#" + Config.Containers[key].def).hide();
-                    $("#" + Config.Containers[key].widget).show();
-                }
-            }
-        }
     }
-}
+};
 
 

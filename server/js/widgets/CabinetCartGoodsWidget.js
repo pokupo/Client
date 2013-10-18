@@ -50,37 +50,34 @@ var CabinetCartGoodsWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'cabinetCartGoods/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRoute = function(){
+    self.CheckCabinetCartGoodsRoute = function(){
         if(Routing.route == 'cabinet_cart'){
             self.Update.Content();
         }
-        else{
+        else
             self.WidgetLoader(true);
-        }
     };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckRoute();
+                 self.CheckCabinetCartGoodsRoute();
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
                 self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckRoute();
+                     self.CheckCabinetCartGoodsRoute();
                 });
             });
         }
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'cabinet_cart'){
-                self.Update.Content();
-            }
+            self.CheckCabinetCartGoodsRoute();
         });
         
         EventDispatcher.AddEventListener('CabinetCartGoods.onload.info', function (data){
@@ -187,10 +184,10 @@ var CabinetCartGoodsWidget = function(){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         EmptyCart : function(){
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){

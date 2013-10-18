@@ -40,7 +40,7 @@ var Config = {
         searchResult : {widget: ['advanced_search', 'content'], def: ['default_advanced_search', 'default_content']}, // id контейнеров расширенной формы и результатов поиска
         goods : {widget: 'content', def: 'default_content'}, // id контейнера информации о товаре
         userInformation : {widget: 'user_information', def: 'default_user_information'}, // id контейнера информации о пользователе
-        authentication : {widget: ['content', 'catalog'], def: ['default_content', 'default_catalog']}, //id контейнеров авторизации
+        authentication : {widget: 'content', def: 'default_content'}, //id контейнеров авторизации
         registration : {widget: 'content', def: 'default_content'}, // id контейнера регистрации
         cart : {widget: 'cart_information', def: 'default_cart_information'}, // id контейнера корзины
         cartGoods : {widget: 'content', def: 'default_content'}, // id контейнера реестра товаров корзины

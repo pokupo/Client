@@ -41,8 +41,8 @@ var RegistrationWidget = function() {
                 self.settings.tmplPath = 'registration/' + input.tmpl + '.html';
             if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
-            if(input.container)
-                self.settings.containerFormId = input.container;
+            if(input.container && input.container.widget)
+                self.settings.containerFormId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
@@ -121,7 +121,7 @@ var RegistrationWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -159,7 +159,7 @@ var RegistrationWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -186,7 +186,7 @@ var RegistrationWidget = function() {
                     Routing.SetHash('registration', 'Регистрация пользователя', {step: 4});
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -231,7 +231,7 @@ var RegistrationWidget = function() {
                     EventDispatcher.DispatchEvent('RegistrationWidget.step4.later');
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
     };
@@ -407,13 +407,13 @@ var RegistrationWidget = function() {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
             $('input#' + form.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -431,7 +431,7 @@ var RegistrationWidget = function() {
                     form.birthDay(dateText);
                 }
             });
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -557,7 +557,7 @@ var RegistrationWidget = function() {
                 form.postIndex(null);
             });
 
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {

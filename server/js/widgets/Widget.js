@@ -88,8 +88,10 @@ Parameters = {
 var Loader = {
     readyCount : 0,
     countAll : 0,
+    containers : [],
     widgets : {},
-    Indicator : function(widget, isReady){
+    action : null,
+    Indicator : function(widget, isReady, container){
         this.widgets[widget] = isReady;
         this.countAll = 0;
         this.readyCount = 0;
@@ -97,8 +99,10 @@ var Loader = {
         for(var key in this.widgets){
             this.RegisterReady(key);
         }
-        if(!Routing.IsDefault())
-             this.ShowLoading();
+        if(container)
+            this.containers.push(container);
+        
+        this.ShowLoading();
     },
     RegisterReady : function(key){
         this.countAll++;
@@ -111,11 +115,17 @@ var Loader = {
             return true;
         return false;
     },
+    SetNotReady : function(){
+        for(var key in this.widgets){
+            this.widgets[key] = false;
+        }
+    },
     ShowLoading : function(){
         if(!this.IsReady()){
             this.HideContent();
-            if($('#loadingContainer').length == 0)
-                $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+            if(!Routing.IsDefault())
+                if($('#loadingContainer').length == 0)
+                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
         }
         else{
             this.ShowContent();
@@ -126,25 +136,64 @@ var Loader = {
         $(container).append('<div style="width: 100%;text-align: center;padding: 15px 0;"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
     },
     HideContent : function(){
-        for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key].widget)){
-                for(var i in Config.Containers[key].widget){
-                    $("#" + Config.Containers[key].widget[i]).children().hide();
+        if(this.action != 'hide'){
+            this.action = 'hide';
+            for(var key in Config.Containers){
+                if($.isArray(Config.Containers[key].widget)){
+                    for(var i in Config.Containers[key].widget){
+                        $("#" + Config.Containers[key].widget[i]).children().hide();
+                    }
+                }
+                else{
+                    $("#" + Config.Containers[key].widget).children().hide();
                 }
             }
-            else
-                $("#" + Config.Containers[key].widget).children().hide();
         }
     },
     ShowContent : function(){
+        $.each(this.containers, function(i){
+            $('#' + Loader.containers[i]).children().show();
+        });
+        this.containers = [];
+        this.action = 'show';
+    },
+    AddShowContainer : function(id){
+        this.containers.push(id);
+    },
+    ViewDefaultContent : function(){
         for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key].widget)){
-                for(var i in Config.Containers[key].widget){
-                    $("#" + Config.Containers[key].widget[i]).children().show();
+            if($.isArray(Config.Containers[key].def)){
+                for(var i in Config.Containers[key].def){
+                    if($("#" + Config.Containers[key].def[i]).length > 0){
+                        $("#" + Config.Containers[key].def[i]).children().show();
+                        $("#" + Config.Containers[key].widget[i]).children().hide();
+                    }
                 }
             }
-            else
-                $("#" + Config.Containers[key].widget).children().show();
+            else{
+                if($("#" + Config.Containers[key].def).length > 0){
+                    $("#" + Config.Containers[key].def).children().show();
+                    $("#" + Config.Containers[key].widget).children().hide();
+                }
+            }
+        }
+    },
+    HideDefaultContent : function(){
+        for(var key in Config.Containers){
+            if($.isArray(Config.Containers[key].def)){
+                for(var i in Config.Containers[key].def){
+                    if($("#" + Config.Containers[key].def[i]).length > 0){
+                        $("#" + Config.Containers[key].def[i]).children().hide();
+                        $("#" + Config.Containers[key].widget[i]).children().show();
+                    }
+                }
+            }
+            else{
+                if($("#" + Config.Containers[key].def).length > 0){
+                    $("#" + Config.Containers[key].def).children().hide();
+                    $("#" + Config.Containers[key].widget).children().show();
+                }
+            }
         }
     }
 };
@@ -275,9 +324,12 @@ function Widget(){
             }
         };
     };
-    this.WidgetLoader = function(test){
-        Loader.Indicator(this.widgetName, test);
+    this.WidgetLoader = function(test, container){
+        Loader.Indicator(this.widgetName, test, container);
     };
+    this.ShowContainer = function(id){
+        Loader.AddShowContainer(id);
+    }
     this.ScrollTop = function(elementId, speed){
         if(Loader.countAll == Loader.readyCount){
             $('html, body').animate({scrollTop: $("#" + elementId).offset().top}, speed); 
@@ -820,7 +872,6 @@ function Widget(){
         },
         Payment : function(str, callback){
             if(!Parameters.cache.payment){
-                console.log('gg');
                 XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
                     Parameters.cache.payment = data;
                     if(callback)

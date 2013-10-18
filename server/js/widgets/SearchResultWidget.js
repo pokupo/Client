@@ -56,12 +56,12 @@ var SearchResultWidget = function(){
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if(input.content.container)
-                    self.settings.containerIdForSearchResult = input.content.container;
+                if(input.content.container && input.content.container.widget)
+                    self.settings.containerIdForSearchResult = input.content.container.widget;
             }
             if(input.form){
-                if(input.form.container)
-                    self.settings.containerIdForAdvancedSearch = input.form.container;
+                if(input.form.container && input.form.container.widget)
+                    self.settings.containerIdForAdvancedSearch = input.form.container.widget;
             }
         }
         self.settings.inputParameters = input;
@@ -115,7 +115,6 @@ var SearchResultWidget = function(){
         
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
             if($("#" + self.settings.containerIdForAdvancedSearch).text() == ""){
-                self.WidgetLoader(false);
                 self.BaseLoad.Roots(function(){
                     EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
                 })
@@ -130,7 +129,7 @@ var SearchResultWidget = function(){
             if(Routing.route != 'search')
                 Parameters.SetDefaultFilterParameters();
             self.Fill.AdvancedSearchForm();
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.submit.form', function (data){
@@ -165,7 +164,6 @@ var SearchResultWidget = function(){
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
             if(Routing.route == 'search'){
-                self.WidgetLoader(false);
                 self.InsertContainer.AdvancedSearchForm();
                 self.Fill.AdvancedSearchForm();
 
@@ -179,22 +177,20 @@ var SearchResultWidget = function(){
     };
     self.InsertContainer = {
         AdvancedSearchForm : function(){
-            $("#" + self.settings.containerIdForAdvancedSearch).html("");
-            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.advancedSearchFormTmpl).html()).children().hide();
+            $("#" + self.settings.containerIdForAdvancedSearch).html($('script#' + self.settings.advancedSearchFormTmpl).html()).children().hide();
         },
         SearchResult : function(type){
-            $("#" + self.settings.containerIdForSearchResult).html('');
             if(type == 'table'){ 
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTableTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.contentTableTmpl).html());
             }
             if(type == 'list'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentListTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.contentListTmpl).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTileTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.contentTileTmpl).html());
             }
             if(type == 'error'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.noResultsTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.noResultsTmpl).html());
             }
         }
     };
@@ -243,6 +239,7 @@ var SearchResultWidget = function(){
                     $('.' + data.cssTypeSeller + ' option[value=' + id + ']').attr('selected', true);
                     $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
                 });
+                $("#" + self.settings.containerIdForAdvancedSearch).show();
             }
         },
         SearchResult : function(data){
@@ -252,7 +249,7 @@ var SearchResultWidget = function(){
                 new AnimateSelectList(f.sort.cssSortList);
             }
             delete data;
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerIdForSearchResult);
         }
     };
     self.SetPosition = function(){
