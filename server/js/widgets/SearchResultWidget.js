@@ -20,8 +20,8 @@ var SearchResultWidget = function(){
         paging : null
     };
     self.InitWidget = function(){
-        self.settings.containerIdForSearchResult = Config.Containers.searchResult.widget[1];
-        self.settings.containerIdForAdvancedSearch = Config.Containers.searchResult.widget[0];
+        self.settings.containerIdForSearchResult = Config.Containers.searchResult.content.widget;
+        self.settings.containerIdForAdvancedSearch = Config.Containers.searchResult.form.widget;
         self.settings.tmplPath = Config.SearchResult.tmpl.path;
         self.settings.advancedSearchFormTmpl = Config.SearchResult.tmpl.advancedSearchFormTmpl;
         self.settings.contentTableTmpl = Config.SearchResult.tmpl.contentTableTmpl;
@@ -56,12 +56,6 @@ var SearchResultWidget = function(){
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if(input.content.container && input.content.container.widget)
-                    self.settings.containerIdForSearchResult = input.content.container.widget;
-            }
-            if(input.form){
-                if(input.form.container && input.form.container.widget)
-                    self.settings.containerIdForAdvancedSearch = input.form.container.widget;
             }
         }
         self.settings.inputParameters = input;

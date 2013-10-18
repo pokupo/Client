@@ -43,8 +43,6 @@ window.ButtonPaymentWidget = function(){
             }
             if(input.title)
                 self.settings.title = input.title;
-            if(input.container && input.container.widget)
-                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
         

@@ -37,8 +37,6 @@ var OrderListWidget = function() {
         if (!$.isEmptyObject(input)) {
             if (input.tmpl)
                 self.settings.tmplPath = 'orderList/' + input.tmpl + '.html';
-            if(input.container.widget)
-                self.settings.containerFormId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };

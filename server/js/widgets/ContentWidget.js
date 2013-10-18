@@ -240,7 +240,6 @@ var ContentWidget = function(){
                         $('#' + b[i].data.cssBlock).show();
                         if(b[i].type == 'slider'){
                             new AnimateSlider(b[i].data.cssBlockContainer);
-                            
                         }
                         if(b[i].type == 'carousel'){
                             new AnimateCarousel(b[i].data.cssBlockContainer);

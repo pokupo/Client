@@ -57,8 +57,6 @@ var OrderWidget = function() {
         if (!$.isEmptyObject(input)) {
             if (input.tmpl)
                 self.settings.tmplPath = 'order/' + input.tmpl + '.html';
-            if(input.container && input.container.widget)
-                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };

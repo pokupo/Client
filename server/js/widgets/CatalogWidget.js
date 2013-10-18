@@ -54,7 +54,10 @@ var CatalogWidget = function(){
         
         EventDispatcher.AddEventListener('catalogWidget.onload.tmpl', function (data){
             if(Routing.IsSection() || Routing.IsDefault()){
-                self.Update();
+                if(Routing.IsDefault() && !self.HasDefaultContent())
+                    self.Update();
+                else
+                    self.WidgetLoader(true);
             }
             else{
                 self.WidgetLoader(true);
@@ -67,10 +70,7 @@ var CatalogWidget = function(){
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
             if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
-                if(Routing.IsSection()){
-                    self.WidgetLoader(false);
-                }
-                else if(Routing.IsDefault()){
+                if(Routing.IsSection() || (Routing.IsDefault() && !self.HasDefaultContent())){
                     self.WidgetLoader(false);
                 }
                 else{

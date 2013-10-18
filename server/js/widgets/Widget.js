@@ -139,13 +139,15 @@ var Loader = {
         if(this.action != 'hide'){
             this.action = 'hide';
             for(var key in Config.Containers){
-                if($.isArray(Config.Containers[key].widget)){
-                    for(var i in Config.Containers[key].widget){
-                        $("#" + Config.Containers[key].widget[i]).children().hide();
+                if(!Config.Containers[key].widget){
+                    for(var i in Config.Containers[key]){
+                        $("#" + Config.Containers[key][i].widget).children().hide();
+                        $("#" + Config.Containers[key][i].def).children().hide();
                     }
                 }
                 else{
                     $("#" + Config.Containers[key].widget).children().hide();
+                    $("#" + Config.Containers[key].def).children().hide();
                 }
             }
         }
@@ -256,7 +258,7 @@ function Widget(){
             Parameters.loading = Config.Base.loading;
             
             this.RegistrCustomBindings();
-            //this.UpdateSettingsContainer();
+            this.UpdateSettingsContainer();
             Routing.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId'];

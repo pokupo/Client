@@ -36,8 +36,14 @@ var Config = {
         catalog : {widget: 'catalog', def: 'default_catalog'}, // id контейнера каталога 
         search  : {widget: 'search_block', def: 'default_search_block'}, // id контейнера формы поиска 
         breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2']}, // id контейнеров хлебных крошек
-        content : {content : {widget: 'content', def: 'default_content'}, block: {widget: 'block', def: 'default_block'}}, // id контейнера контента
-        searchResult : {widget: ['advanced_search', 'content'], def: ['default_advanced_search', 'default_content']}, // id контейнеров расширенной формы и результатов поиска
+        content : {
+            content : {widget: 'content', def: 'default_content'}, 
+            block: {widget: 'block', def: 'default_block'}
+        }, // id контейнера контента
+        searchResult : {
+            form: {widget: 'advanced_search', def: 'default_advanced_search'},
+            content:{widget: 'content', def: 'default_content'}
+        }, // id контейнеров расширенной формы и результатов поиска
         goods : {widget: 'content', def: 'default_content'}, // id контейнера информации о товаре
         userInformation : {widget: 'user_information', def: 'default_user_information'}, // id контейнера информации о пользователе
         authentication : {widget: 'content', def: 'default_content'}, //id контейнеров авторизации

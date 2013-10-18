@@ -41,8 +41,6 @@ var RegistrationWidget = function() {
                 self.settings.tmplPath = 'registration/' + input.tmpl + '.html';
             if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
-            if(input.container && input.container.widget)
-                self.settings.containerFormId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };

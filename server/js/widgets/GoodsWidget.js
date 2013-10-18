@@ -50,13 +50,11 @@ var GoodsWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'goods/' + input.tmpl + '.html';
             }
-            if(input.container && input.container.widget)
-                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
     self.CheckRoute = function(){
-        if(Routing.route == 'goods' || (!Routing.IsDefault() && self.HasDefaultContent())){
+        if(Routing.route == 'goods'){
             self.Update();
         }
         else

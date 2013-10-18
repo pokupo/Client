@@ -38,9 +38,15 @@
                 core : { shopId: 1 },
                 catalog: {},
                 breadCrumb : {},
-                content : { block : {count: 6, container: {def: 'default_block1'}}, content: {list: [10, 20, 50], defaultCount: 20} },
+                content : { 
+                    block : {count: 6, container: {def: 'default_block1'}}, 
+                    content: {list: [10, 20, 50], defaultCount: 20} 
+                },
                 search : {},
-                searchResult : { content: {list: [10, 20, 50], defaultCount: 20} },
+                searchResult : { 
+                    content: {list: [10, 20, 50], defaultCount: 20},
+                    form : {}
+                },
                 goods : { infoBlock: 1111111, show: ["selectionCount","addToCart","buy","gallery","shipping","opinion"] },
                 userInformation : { show: ["icon","raiting"] },
                 cart : {show:{title:"always",count:true,baseCost:true,finalCost:true}},
@@ -140,7 +146,7 @@
                                 <td width="20">&nbsp;</td>
                                 <td valign="top">
                                     <div id="block"></div>
-                                    <div id="default_block">
+                                    <div id="default_block1">
                                         <div class="pageWidth">
                                             <div class="textPage">
                                                 <div class="block_title"><h1>О проекте</h1></div>

@@ -41,8 +41,6 @@
                 self.settings.tmplPath = 'profile/' + input.tmpl + '.html';
             if (input.geoShop)
                 self.settings.geoShop = input.geoShop;
-            if(input.container.widget)
-                self.settings.containerFormId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
