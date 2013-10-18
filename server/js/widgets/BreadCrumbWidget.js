@@ -10,7 +10,7 @@ var BreadCrumbWidget = function(){
         styleBreadCrumb : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.breadCrumbs.widget; 
+        self.settings.containerId = Config.Containers.breadCrumb.widget; 
         self.settings.tmplPath = Config.BreadCrumbs.tmpl.path;
         self.settings.tmplId = Config.BreadCrumbs.tmpl.tmplId;
         self.settings.tmplSelectListId = Config.BreadCrumbs.tmpl.tmplSelectListId;
@@ -47,6 +47,17 @@ var BreadCrumbWidget = function(){
             }
         }
     };
+    self.CheckRoute = function(id){
+        if(Routing.IsDefault() && self.HasDefaultContent()){
+            self.WidgetLoader(true);
+        }
+        else{
+            self.WidgetLoader(false);
+            self.BaseLoad.Path(id, function(data){
+                self.Fill.BreadCrumb(data);
+            });
+        }
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
@@ -62,25 +73,15 @@ var BreadCrumbWidget = function(){
         }
         
         EventDispatcher.AddEventListener('onload.breadCrumb.tmpl', function (data){
-            self.BaseLoad.Path(Routing.GetActiveCategory(), function(data){
-                self.Fill.BreadCrumb(data);
-            });
+            self.CheckRoute(Routing.GetActiveCategory());
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            self.WidgetLoader(false );
-
-            self.BaseLoad.Path(Routing.GetActiveCategory(), function(data){
-                self.Fill.BreadCrumb(data);
-            }); 
+            self.CheckRoute(Routing.GetActiveCategory()); 
         });
         
-        EventDispatcher.AddEventListener('widget.route.change.breadCrumbs', function(id){
-            self.WidgetLoader(false );
-
-            self.BaseLoad.Path(id, function(data){
-                self.Fill.BreadCrumb(data);
-            });
+        EventDispatcher.AddEventListener('widget.route.change.breadCrumb', function(id){
+            self.CheckRoute(id);
         })
         
         EventDispatcher.AddEventListener('breadCrumbWidget.fill.item', function (data){ 

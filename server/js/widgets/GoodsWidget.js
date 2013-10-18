@@ -56,7 +56,7 @@ var GoodsWidget = function(){
         self.settings.inputParameters = input;
     };
     self.CheckRoute = function(){
-        if(Routing.route == 'goods'){
+        if(Routing.route == 'goods' || (!Routing.IsDefault() && self.HasDefaultContent())){
             self.Update();
         }
         else

@@ -81,8 +81,7 @@ window.ButtonPaymentWidget = function(){
         }
     };
     self.CheckRouteButtonPayment = function(){
-        if(Routing.route == 'payment'){
-            self.WidgetLoader(false);
+        if(Routing.route == 'payment' || (Routing.IsDefault() && !self.HasDefaultContent())){
             self.InsertContainer.Content();
             if(Routing.params.orderId)
                 self.GetData.Order(Routing.params.orderId);

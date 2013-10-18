@@ -162,11 +162,13 @@ var Loader = {
     },
     ViewDefaultContent : function(){
         for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key].def)){
-                for(var i in Config.Containers[key].def){
-                    if($("#" + Config.Containers[key].def[i]).length > 0){
-                        $("#" + Config.Containers[key].def[i]).children().show();
-                        $("#" + Config.Containers[key].widget[i]).children().hide();
+            if(!Config.Containers[key].def){
+                for(var key2 in Config.Containers[key]){
+                    if(Config.Containers[key][key2].def){
+                        if($("#" + Config.Containers[key][key2].def).length > 0){
+                            $("#" + Config.Containers[key][key2].def).children().show();
+                            $("#" + Config.Containers[key][key2].widget).children().hide();
+                        }
                     }
                 }
             }
@@ -180,11 +182,13 @@ var Loader = {
     },
     HideDefaultContent : function(){
         for(var key in Config.Containers){
-            if($.isArray(Config.Containers[key].def)){
-                for(var i in Config.Containers[key].def){
-                    if($("#" + Config.Containers[key].def[i]).length > 0){
-                        $("#" + Config.Containers[key].def[i]).children().hide();
-                        $("#" + Config.Containers[key].widget[i]).children().show();
+            if(!Config.Containers[key].widget){
+                for(var key2 in Config.Containers[key]){    
+                    if(Config.Containers[key][key2].widget){
+                        if($("#" + Config.Containers[key][key2].widget).length > 0){
+                            $("#" + Config.Containers[key][key2].def).children().hide();
+                            $("#" + Config.Containers[key][key2].widget).children().show();
+                        }
                     }
                 }
             }
@@ -252,9 +256,32 @@ function Widget(){
             Parameters.loading = Config.Base.loading;
             
             this.RegistrCustomBindings();
+            //this.UpdateSettingsContainer();
             Routing.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId'];
+        }
+    };
+    this.UpdateSettingsContainer = function(){
+        if(typeof WParameters !== 'undefined'){
+            for(var key in WParameters){
+                if(WParameters[key].hasOwnProperty('container')){
+                    if(WParameters[key].container.widget)
+                        Config.Containers[key].widget = WParameters[key].container.widget;
+                    if(WParameters[key].container.def)
+                        Config.Containers[key].def = WParameters[key].container.def;
+                }
+                else{
+                    for(var key2 in WParameters[key]){
+                        if(WParameters[key][key2].hasOwnProperty('container')){
+                            if(WParameters[key][key2].container.widget)
+                                Config.Containers[key][key2].widget = WParameters[key][key2].container.widget;
+                            if(WParameters[key][key2].container.def)
+                                Config.Containers[key][key2].def = WParameters[key][key2].container.def;
+                        }
+                    }
+                }
+            }
         }
     };
     this.Events = function(){       
@@ -329,7 +356,24 @@ function Widget(){
     };
     this.ShowContainer = function(id){
         Loader.AddShowContainer(id);
-    }
+    };
+    this.HasDefaultContent = function(){
+        var name = this.widgetName.charAt(0).toLowerCase() + this.widgetName.slice(1);
+        name = name.replace(/Widget/, '');
+        if(!Config.Containers[name].def){
+            for(var i in Config.Containers[name]){
+                if($('#' + Config.Containers[name][i].def).length > 0){
+                    return true;
+                    break;
+                }
+            }
+        }
+        else{
+            if($('#' + Config.Containers[name].def).length > 0)
+                return true;
+        }
+        return false;
+    };
     this.ScrollTop = function(elementId, speed){
         if(Loader.countAll == Loader.readyCount){
             $('html, body').animate({scrollTop: $("#" + elementId).offset().top}, speed); 

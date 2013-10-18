@@ -9,7 +9,7 @@ var CatalogWidget = function(){
         styleCatalog : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.content.widget[0];
+        self.settings.containerId = Config.Containers.content.content.widget;
         self.settings.catalogContainerId = Config.Containers.catalog.widget;
         self.settings.tmplPath = Config.Catalog.tmpl.path;
         self.settings.mainTmplPath = Config.Catalog.tmpl.mainPath;
@@ -30,10 +30,6 @@ var CatalogWidget = function(){
         }
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.catalog){
             input = WParameters.catalog;
-        }
-        if(!$.isEmptyObject(input)){
-            if(input.container && input.container.widget)
-                self.settings.containerId = input.container.widget;
         }
         self.settings.inputParameters = input;
     };
@@ -70,7 +66,7 @@ var CatalogWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'catalog' || Routing.IsDefault()){
+            if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
                 if(Routing.IsSection()){
                     self.WidgetLoader(false);
                 }

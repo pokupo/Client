@@ -47,23 +47,19 @@ var ContentWidget = function(){
         if(!$.isEmptyObject(input)){
             if(input.block){
                 self.settings.countGoodsInBlock = input.block.count;
-                if(input.block.container && input.block.container.widget)
-                    self.settings.blockContainerId = input.block.container.widget;
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if(input.content.container && input.content.container.widget)
-                    self.settings.containerId = input.content.container.widget;
             }
         }
         self.settings.inputParameters = input;
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.content.widget[0];
-        self.settings.blockContainerId = Config.Containers.content.widget[1];
+        self.settings.containerId = Config.Containers.content.content.widget;
+        self.settings.blockContainerId = Config.Containers.content.block.widget;
         self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
         self.settings.tmplForContent = Config.Content.tmpl.pathList;
         self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;
@@ -85,7 +81,7 @@ var ContentWidget = function(){
         self.SetPosition();
     };
     self.CheckRouting = function(){
-        if(Routing.route == 'catalog'){
+        if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
             self.SelectTypeContent();
         }
         else

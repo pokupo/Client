@@ -33,14 +33,12 @@
         
         <script type="text/javascript">
             var WParameters = {
-                defaultContainer : {content : 'default_content'},
-                
                 authentication : { https: 'login' },
                 registration : { geoShop: 0 },
                 core : { shopId: 1 },
                 catalog: {},
                 breadCrumb : {},
-                content : { block : {count: 6}, content: {list: [10, 20, 50], defaultCount: 20} },
+                content : { block : {count: 6, container: {def: 'default_block1'}}, content: {list: [10, 20, 50], defaultCount: 20} },
                 search : {},
                 searchResult : { content: {list: [10, 20, 50], defaultCount: 20} },
                 goods : { infoBlock: 1111111, show: ["selectionCount","addToCart","buy","gallery","shipping","opinion"] },
@@ -96,9 +94,9 @@
                                     </ul>
                                 </td>
                                 <td>&nbsp;</td>
-                                <td width="300" id="cart_information"></td>
+                                <td width="200" id="cart_information"></td>
                                 <td>&nbsp;</td>
-                                <td width="300" id="user_information"></td>
+                                <td width="200" id="user_information"></td>
                             </tr>
                         </table>
                     </div><!-- /pageWidth -->

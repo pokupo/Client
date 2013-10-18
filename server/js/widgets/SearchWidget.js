@@ -38,6 +38,16 @@ var SearchWidget = function(){
     self.InsertContainer = function(){
         $("#" + self.settings.containerId).html($('script#' + self.settings.tmplId).html()).show();
     };
+    self.CheckRoute = function(){
+        if(Routing.IsDefault() && self.HasDefaultContent()){
+            self.WidgetLoader(true);
+        }
+        else{
+            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
+                EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+            });
+        }
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
@@ -53,9 +63,7 @@ var SearchWidget = function(){
         }
         
         EventDispatcher.AddEventListener('searchWidget.onload.tmpl', function (data){
-            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
-            });
+            self.CheckRoute();
         });
         
         EventDispatcher.AddEventListener('searchWidget.onload.section', function (data){
@@ -74,10 +82,7 @@ var SearchWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            self.WidgetLoader(false);
-            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
-            }); 
+            self.CheckRoute(); 
         });
     };
     self.Fill = function(data){
@@ -179,7 +184,7 @@ var SearchViewModel = function(){
 
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
             
-            EventDispatcher.DispatchEvent('widget.route.change.breadCrumbs', selected);
+            EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
             $(data.text).val('');
         }
         else{

@@ -88,13 +88,18 @@ var UserInformationWidget = function(){
         });
     };
     self.CheckAuthorization = function(data){
-        if(!data.err){
-            self.InsertContainer.InfoBlock();
-            self.Fill.InfoBlock(data);
+        if(Routing.IsDefault() && self.HasDefaultContent()){
+            self.WidgetLoader(true);
         }
         else{
-            self.InsertContainer.AuthBlock();
-            self.Fill.AuthBlock();
+            if(!data.err){
+                self.InsertContainer.InfoBlock();
+                self.Fill.InfoBlock(data);
+            }
+            else{
+                self.InsertContainer.AuthBlock();
+                self.Fill.AuthBlock();
+            }
         }
     };
     self.InsertContainer = {

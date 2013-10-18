@@ -50,6 +50,16 @@ var CartWidget = function(){
     self.InsertContainer = function(){
         $('#' + self.settings.containerId).empty().append($('script#' + self.settings.tmplId).html());
     };
+    self.CheckRoute = function(){
+        if(Routing.IsDefault() && self.HasDefaultContent()){
+            self.WidgetLoader(true);
+        }
+        else{
+            self.BaseLoad.CartInfo('', function(data){
+                EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
+            });
+        }
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
@@ -65,9 +75,7 @@ var CartWidget = function(){
         }
         
         EventDispatcher.AddEventListener('CartWidget.onload.tmpl', function (){
-            self.BaseLoad.CartInfo('', function(data){
-                EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
-            });
+            self.CheckRoute();
         });
         
         EventDispatcher.AddEventListener('CartWidget.onload.info', function(data){
