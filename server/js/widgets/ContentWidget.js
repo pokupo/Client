@@ -234,7 +234,7 @@ var ContentWidget = function(){
         Animate : {
             block : ko.observableArray(),
             Do : function(){
-                if(Loader.IsReady()){
+                if(Loader.IsReady() && Loader.action == 'show'){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
                         $('#' + b[i].data.cssBlock).show();

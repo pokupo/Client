@@ -308,7 +308,7 @@
             <td></td>
         </tr>
         <!-- ko foreach: addressList -->
-        <tr class="listTableRow" data-bind="css: cssIsDefault()">
+        <tr class="listTableRow" data-bind="click: ClickItem, css: cssIsDefault()">
             <td data-bind="text: address"></td>
             <td data-bind="text: postCode"></td>
             <td data-bind="text: country"></td>
@@ -318,12 +318,12 @@
                 <p data-bind="text: addressee"></p>
                 <p data-bind="text: contactPhone"></p>
             </td>
-            <td align="center" data-bind="click: ClickItem">
+            <td align="center">
                 <!-- ko if: isDefault()-->
-                <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id" >
+                <input class="addrN" type="radio" name="is_default" data-bind="attr : {checked: 'checked' }, value: id, checked: $parent.checked" >
                 <!-- /ko -->
                 <!-- ko ifnot: isDefault()-->
-                <input class="addrN" type="radio" name="is_default" data-bind="value: id" >
+                <input class="addrN" type="radio" name="is_default" data-bind="value: id, checked: $parent.checked" >
                 <!-- /ko -->
             </td>
             <td align="center" >

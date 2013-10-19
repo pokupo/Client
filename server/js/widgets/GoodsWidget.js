@@ -369,6 +369,9 @@ var GoodsMainBlockViewModel = function(data){
     self.Gift = function(){
 
     };
+    self.Remove = function(){
+        
+    };
 }
 
 var GalleryBlockViewModel = function(data){

@@ -23,10 +23,18 @@
                 <td>
                     <div class="productSellerTextBlock">
                         <div><b>Поддержка</b></div>
-                        <div>Телефоны: <span class="highLighted" data-bind="text: phonesSupportShop"></span></div>
-                        <div>Skype: <span class="highLighted" data-bind="text: skypeSupportShop"></span></div>
-                        <div>ICQ: <span class="highLighted" data-bind="text: icqSupportShop"></span></div>
-                        <div>Сайт: <a href="" target="_blank" data-bind="text: siteSupportShop, attr: {href : siteSupportShop}"></a></div>
+                        <!-- ko if: phonesSupportShop() -->
+                            <div>Телефоны: <span class="highLighted" data-bind="text: phonesSupportShop()"></span></div>
+                        <!-- /ko -->
+                        <!-- ko if: skypeSupportShop() -->
+                            <div>Skype: <span class="highLighted" data-bind="text: skypeSupportShop"></span></div>
+                        <!-- /ko -->
+                        <!-- ko if: icqSupportShop() -->
+                            <div>ICQ: <span class="highLighted" data-bind="text: icqSupportShop"></span></div>
+                        <!-- /ko -->
+                        <!-- ko if: siteSupportShop() -->
+                            <div>Сайт: <a href="" target="_blank" data-bind="text: siteSupportShop, attr: {href : siteSupportShop}"></a></div>
+                        <!-- /ko -->
                     </div>
                 </td>
                 <td>

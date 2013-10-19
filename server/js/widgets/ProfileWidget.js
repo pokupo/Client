@@ -324,7 +324,7 @@
                         '&is_default=yes';
                 self.BaseLoad.SetDefaultDelivaryAddress(str, function(result){
                     if(result.result == 'ok'){
-                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
+//                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
                     }
                     else{
                         self.QueryError(result, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', data)})
@@ -1286,6 +1286,7 @@ var ProfileDeliveryAddressViewModel = function(){
     var self = this;
     self.addressList = ko.observableArray();
     self.cssAddressList = 'delivary_address_list';
+    self.checked = ko.observable();
     
     self.ClickAddAddress = function(){
         Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery', form: 'add'})
@@ -1294,7 +1295,7 @@ var ProfileDeliveryAddressViewModel = function(){
     self.AddContent = function(data){
         for(var key in data){
             DeliveryAddressViewModel.prototype = new Widget();
-            self.addressList.push(new DeliveryAddressViewModel(data[key], self.addressList));
+            self.addressList.push(new DeliveryAddressViewModel(data[key], self));
         }
     }
 };
@@ -1311,9 +1312,13 @@ var DeliveryAddressViewModel = function(data, list){
     self.postCode = data.post_code;
     self.address = data.address;
     self.addressee = data.addressee;
+    
+    self.list = list.addressList();
+    
     if(data.is_default == 'yes'){
         self.isDefault = ko.observable(true);
         self.cssIsDefault = ko.observable('delivery_address_is_default active');
+        list.checked(self.id);
     }
     else{
         self.isDefault = ko.observable(false);
@@ -1334,13 +1339,14 @@ var DeliveryAddressViewModel = function(data, list){
         }, false);
     };
     self.ClickItem = function(){
-        $.each(list(), function(i){
-            list()[i].cssIsDefault('delivery_address_is_default');
-            list()[i].isDefault(false);
+        $.each(self.list, function(i){
+            self.list[i].cssIsDefault('delivery_address_is_default');
+            self.list[i].isDefault(false);
         });
         
         self.cssIsDefault('delivery_address_is_default active');
         self.isDefault(true);
+        list.checked(self.id);
         
         EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', self);
     };

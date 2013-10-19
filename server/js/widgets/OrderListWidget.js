@@ -449,6 +449,26 @@ var OrderListDetailViewModel = function(data) {
     self.ClickPay = function() {
         EventDispatcher.DispatchEvent('OrderList.order.pay', {id: self.id, fn: function(){}})
     };
+    self.emptyTd = ko.observableArray();
+    self.countEmptyTd = function() {
+        var count = 0;
+        if(self.viewShow())
+            count++;
+        if(self.viewEdit())
+            count++;
+        if(self.viewRepeat())
+            count++;
+        if(self.viewReturn())
+            count++;
+        if(self.viewCanсel())
+            count++;
+        if(self.viewDelete())
+            count++;
+        for(var i = 1; i <=5 - count; i++){
+           self.emptyTd.push({id: i}); 
+        }
+    };
+    self.countEmptyTd();
 };
 
 var TestOrderList = {
