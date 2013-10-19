@@ -389,7 +389,7 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
             self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
     };
     self.ClickFavorites = function(){
-        
+        Routing.SetHash('favorites', 'Избранное', {});
     };
     self.ClickRemove = function(){
         self.Confirm(Config.CartGoods.message.confirmRemove, function(){

@@ -61,7 +61,7 @@ var SearchResultWidget = function(){
         self.settings.inputParameters = input;
     };
     self.CheckRouting = function(){
-        if(Routing.route == 'search' || (Routing.IsDefault() && !self.HasDefaultContent())){
+        if(Routing.route == 'search'){
             for(var key in Routing.params){
                 if(key == 'idSelectCategories'){
                     var categories = [];
@@ -82,6 +82,9 @@ var SearchResultWidget = function(){
                     Parameters.filter[key] = decodeURIComponent(Routing.params[key]);
             }
             EventDispatcher.DispatchEvent('widget.change.route')
+        }
+        else if(Routing.IsDefault() && !self.HasDefaultContent()){
+            self.WidgetLoader(true);
         }
         else
             self.WidgetLoader(true);  

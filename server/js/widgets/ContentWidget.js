@@ -77,10 +77,10 @@ var ContentWidget = function(){
         self.settings.styleContent = Config.Content.style;
         self.SetInputParameters();
         self.RegisterEvents();
-        self.CheckRouting();
+        self.CheckContentRouting();
         self.SetPosition();
     };
-    self.CheckRouting = function(){
+    self.CheckContentRouting = function(){
         if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
             self.SelectTypeContent();
         }
@@ -130,7 +130,8 @@ var ContentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            self.CheckRouting();
+            console.log('jjj');
+            self.CheckContentRouting();
         });
     
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){

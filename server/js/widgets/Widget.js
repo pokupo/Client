@@ -184,12 +184,11 @@ var Loader = {
     },
     HideDefaultContent : function(){
         for(var key in Config.Containers){
-            if(!Config.Containers[key].widget){
+            if(!Config.Containers[key].def){
                 for(var key2 in Config.Containers[key]){    
-                    if(Config.Containers[key][key2].widget){
+                    if(Config.Containers[key][key2].def){
                         if($("#" + Config.Containers[key][key2].widget).length > 0){
                             $("#" + Config.Containers[key][key2].def).children().hide();
-                            $("#" + Config.Containers[key][key2].widget).children().show();
                         }
                     }
                 }
@@ -197,7 +196,6 @@ var Loader = {
             else{
                 if($("#" + Config.Containers[key].def).length > 0){
                     $("#" + Config.Containers[key].def).children().hide();
-                    $("#" + Config.Containers[key].widget).children().show();
                 }
             }
         }
