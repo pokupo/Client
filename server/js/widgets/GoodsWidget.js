@@ -83,7 +83,6 @@ var GoodsWidget = function(){
         });
     };
     self.Update = function(){
-        self.WidgetLoader(false);
         self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
             self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
