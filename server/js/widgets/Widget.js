@@ -142,12 +142,10 @@ var Loader = {
                 if(!Config.Containers[key].widget){
                     for(var i in Config.Containers[key]){
                         $("#" + Config.Containers[key][i].widget).children().hide();
-                        $("#" + Config.Containers[key][i].def).children().hide();
                     }
                 }
                 else{
                     $("#" + Config.Containers[key].widget).children().hide();
-                    $("#" + Config.Containers[key].def).children().hide();
                 }
             }
         }

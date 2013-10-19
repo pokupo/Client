@@ -130,7 +130,6 @@ var ContentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            console.log('jjj');
             self.CheckContentRouting();
         });
     
@@ -235,7 +234,7 @@ var ContentWidget = function(){
         Animate : {
             block : ko.observableArray(),
             Do : function(){
-                if(Loader.IsReady() && Loader.action == 'show'){
+                if(Loader.IsReady()){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
                         $('#' + b[i].data.cssBlock).show();
