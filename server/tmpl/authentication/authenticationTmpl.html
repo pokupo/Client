@@ -10,7 +10,7 @@
                        <li><span>Общайтесь с единомышленниками</span></li>
                        <li><span>Будьте уверены в безопасности сделок</span></li>
                    </ul>
-                   <a href="#" class="hiButton">Регистрация</a>
+                   <a href="#" class="hiButton" data-bind="click: ClickRegistration">Регистрация</a>
                </div>
            </td>
 
@@ -24,7 +24,7 @@
                                     <td>
                                         <div class="form_item">
                                             <label>Логин:</label>
-                                            <input type="text" id="username" name="username" value="" required="required" data-bind="value: username">
+                                            <input type="text" id="username" name="username" value="" tabindex="1" required="required" data-bind="value: username">
                                         </div>
                                     </td>
                                 </tr>
@@ -33,15 +33,15 @@
                                         <div class="form_item">
                                             <a href="#" data-bind="click: ForgotPassword">Забыли пароль</a>
                                             <label>Пароль:</label>
-                                            <input type="password" id="password" name="password" required="required" data-bind="value: password">
+                                            <input type="password" id="password" tabindex="2" name="password" required="required" data-bind="value: password">
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <div class="form_item">
-                                            <label style="float:left;"><input type="checkbox" name="text" data-bind="value: rememberMe"/>Запомнить меня</label>
-                                            <input class="form_submit" type="submit" value="Войти" style="float:right" />
+                                            <label style="float:left;"><input type="checkbox" tabindex="3" name="text" data-bind="value: rememberMe"/>Запомнить меня</label>
+                                            <input class="form_submit" tabindex="4" type="submit" value="Войти" style="float:right" />
                                         </div>
                                     </td>
                                 </tr>

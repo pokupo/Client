@@ -1,8 +1,15 @@
 <script type="text/html" id="catalogTmpl">
     <div class="sidebar_block_menu">
         <div class="top_tabs">
-            <!-- ko foreach: children -->
-            <span data-bind="text: title, css: tabClass, click: ClickSection"></span>
+            <!-- ko if: children().length == 1 -->
+                <!-- ko foreach: children -->
+                <span class="single" data-bind="text: title, css: tabClass, click: ClickSection"></span>
+                <!-- /ko -->
+            <!-- /ko -->
+            <!-- ko if: children().length > 1 -->
+                <!-- ko foreach: children -->
+                <span data-bind="text: title, css: tabClass, click: ClickSection"></span>
+                <!-- /ko -->
             <!-- /ko -->
         </div>
         <!-- ko foreach: children -->

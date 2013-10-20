@@ -89,7 +89,7 @@ var InfoSellerViewModel = function(data){
     self.siteSupportShop = ko.observable();
     if(data.shop.site_support)
         self.siteSupportShop(data.shop.site_support);
-    console.log(self.siteSupportShop());
+
     self.skypeSupportShop = ko.observable();
     if(data.shop.skype_support)
         self.skypeSupportShop(data.shop.skype_support);

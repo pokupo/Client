@@ -31,7 +31,7 @@
                                                     <a href="#" data-bind="click: Login"><!-- ko text: nameGroupUser --><!-- /ko --></a>
                                                     <!-- /ko -->
                                                     <!-- ko ifnot: nameGroupUser -->
-                                                    <a href="#" data-bind="click: Login">Авторизация покупателя/Регистрация покупателя"</a>
+                                                    <a href="#" data-bind="click: Login">Вход</a> / <a href="#" data-bind="click: Registration">Регистрация</a>
                                                     <!-- /ko -->
                                                 </span> 
                                             </div>
@@ -92,7 +92,7 @@
                                     <a href="#"  data-bind="click: AddFavorites">В избранное</a>
                                 <!-- /ko -->
                             </span>
-                            <div style="display: inline" class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="button" data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"></div> 
+                            <div style="display: inline" id="share" class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="none" data-yashareQuickServices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"></div>
                             <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
                                 <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
                             </div>
@@ -120,7 +120,9 @@
 <script type="text/html" id="goodsGalleryBlockTmpl">
     <div class="productImageBox">
         <div class="productBigImage">
-            <img title="" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }"/>
+            <a href="" rel="lightbox-gallery" title="" data-bind="attr: {href: main.routeBigImages, title: main.chortName }">
+                <img title="" alt="" src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }"/>
+            </a>
             <!-- ko if: ($parent.blocks.main.sellCost && $parent.blocks.main.sellEndCost != $parent.blocks.main.sellCost ) -->
             <div class="productSaveLabel"><span>Скидка</span><!-- ko text: $parent.blocks.main.discount --><!-- /ko --></div>
             <!-- /ko -->
@@ -131,7 +133,7 @@
                 <!-- ko foreach: gallery -->
                     <li>
                        <div class="p">
-                          <a href="" title="" data-bind="attr: {href: image, title: title }">
+                          <a href="" rel="lightbox-gallery" title="" data-bind="attr: {href: image, title: title }">
                              <img title="" alt="" src="" data-bind="attr: {src: thumb, title: title }" />
                           </a>
                        </div>
