@@ -251,8 +251,15 @@ var GoodsMainBlockViewModel = function(data){
     self.description = data.description;
     self.weight = data.weight;
     self.count = data.count;
+    self.isEgoods = ko.computed(function(){
+        if(data.is_egoods =='yes')
+            return true;
+        return false;
+    }, this);
     self.inStock = ko.computed(function(){
-        if(self.count && self.count != 0){
+        if(self.isEgoods())
+            return 'Есть';
+        else if(!self.isEgoods() && self.count && self.count != 0){
             if(self.count > 1)
                 return self.count;
             return "Да";
@@ -262,7 +269,6 @@ var GoodsMainBlockViewModel = function(data){
     },this);
     self.sellCost = data.sell_cost;
     self.keyWords = data.key_words;
-    self.isEgoods = data.is_egoods;
     self.ratingGoods = data.rating_goods;
     self.sellEndCost = data.sell_end_cost;
     self.discount = ko.computed(function(){
@@ -273,6 +279,7 @@ var GoodsMainBlockViewModel = function(data){
             return 'Нет';
     }, this);
     self.routeImages = Parameters.pathToImages + data.route_image;
+    self.routeBigImages = Parameters.pathToImages + '/big' + data.route_image
     self.idAuction = data.id_auction;
     self.auctionPrice = data.last_cost;
     self.nameGroupUser = ko.computed(function(){
@@ -287,10 +294,15 @@ var GoodsMainBlockViewModel = function(data){
     self.cssTitleToCart = 'goodsTilteToCart_' + self.uniq;
     self.cssShareBlock = 'share';
     self.Login = function(){ 
-        Routing.SetHash('profile', 'Личный кабинет', {});
+        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+        Routing.SetHash('login', 'Авторизация пользователя', {});
+    };
+    self.Registration = function(){
+        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+        Routing.SetHash('registration', 'Регистрация пользователя', {step: 1});
     };
     self.showSelectionCount = ko.computed(function(){
-        if($.inArray('selectionCount', Config.Goods.showBlocks) >= 0 && self.count != 0)  
+        if($.inArray('selectionCount', Config.Goods.showBlocks) >= 0 && self.count && self.count != 0)  
             return true;
         return false;
     }, this);

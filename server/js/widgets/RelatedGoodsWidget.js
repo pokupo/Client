@@ -87,11 +87,16 @@ window.RelatedGoodsWidget = function(){
                 $(self.settings.container).html($('script#' + self.settings.contentTableTmpl).html());
             if(type == 'list')
                 $(self.settings.container).html($('script#' + self.settings.contentListTmpl).html());
+            if(type == 'empty')
+                $(self.settings.container).html('');
     };
     self.CheckData = function(data){ 
         if(!data.err ){
             self.InsertContainer(self.settings.relatedGoods.typeView);
             self.Fill(self.settings.relatedGoods, data)
+        }
+        else{
+            self.InsertContainer('empty');
         }
     };
     self.Fill = function(settings, data){
