@@ -247,7 +247,7 @@ var PaymentViewModel = function(){
     self.Back = function(){
         var last = Parameters.cache.lastPage;
         if(last.route == 'payment' || !last.route)
-            Routing.SetHash('catalog', 'Домашняя', {});
+            Routing.SetHash('default', 'Домашняя', {});
         else
             Routing.SetHash(last.route, last.title, last.data);
     };

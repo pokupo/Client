@@ -164,11 +164,12 @@ var OrderGoodsViewModel = function(data) {
         return false;
     }, this);
     if(self.isEgoodsPaid()){
-        self.uploadFile = 'https://' + window.location.hostname + data.egoods.upload_file;
-        self.sizeFile = data.egoods.size_file;
-        self.countUpload = data.egoods.count_upload;
-        self.expiration = data.egoods.expiration;
-        self.maxUpload = data.egoods.max_upload;
+        var egoods = data.egoods[0];
+        self.uploadFile = 'https://' + window.location.hostname + egoods.upload_file;
+        self.sizeFile = egoods.size_file;
+        self.countUpload = egoods.count_upload;
+        self.expiration = egoods.expiration;
+        self.maxUpload = egoods.max_upload;
     }
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.chortName, {id : self.id});

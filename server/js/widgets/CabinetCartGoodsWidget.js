@@ -305,7 +305,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
         
     };
     self.ClickProceed = function(){
-        Routing.SetHash('catalog', 'Домашняя', {});
+        Routing.SetHash('default', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
          Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});

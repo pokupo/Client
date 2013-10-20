@@ -116,7 +116,7 @@ var OrderWidget = function() {
                         }
                     }
                     else
-                        Routing.SetHash('catalog', 'Домашняя', {});
+                        Routing.SetHash('default', 'Домашняя', {});
                 });
             }
             if (Routing.params.step) {
@@ -147,7 +147,7 @@ var OrderWidget = function() {
                     else if (Routing.params.step == 5)
                         self.Step.Step5();
                     else
-                        Routing.SetHash('catalog', 'Домашняя', {});
+                        Routing.SetHash('default', 'Домашняя', {});
                 });
             }
         }
@@ -469,7 +469,7 @@ var OrderWidget = function() {
                 self.BaseLoad.DeleteOrder(self.order.id + '/yes', function(data){
                     if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.delete')})){
                         self.ShowMessage(Config.Order.message.deleteOrderConfirm, function() {
-                            Routing.SetHash('catalog', 'Домашняя', {});
+                            Routing.SetHash('default', 'Домашняя', {});
                         }, false);
                     }
                 });

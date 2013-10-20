@@ -91,7 +91,7 @@ var AuthenticationWidget = function(){
             if(Routing.route != 'registration'){
                 var last = Parameters.cache.lastPage;
                 if(last.route == 'login' || !last.route)
-                    Routing.SetHash('catalog', 'Домашняя', {});
+                    Routing.SetHash('default', 'Домашняя', {});
                 else
                     Routing.SetHash(last.route, last.title, last.data);
             }

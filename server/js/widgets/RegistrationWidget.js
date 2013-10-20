@@ -203,7 +203,7 @@ var RegistrationWidget = function() {
             if (!$.isEmptyObject(link))
                 Routing.SetHash(link.route, link.title, link.data, true);
             else
-                Routing.SetHash('catalog', 'Домашняя', {});
+                Routing.SetHash('default', 'Домашняя', {});
         });
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
@@ -348,7 +348,7 @@ var RegistrationWidget = function() {
                     if (link)
                         Routing.SetHash(link.route, link.title, link.data, true);
                     else
-                        Routing.SetHash('catalog', 'Домашняя', {});
+                        Routing.SetHash('default', 'Домашняя', {});
                 };
                 form = new RegistrationFormViewModel();
                 form.submitEvent('RegistrationWidget.step1.checking');

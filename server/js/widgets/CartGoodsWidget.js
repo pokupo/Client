@@ -290,7 +290,7 @@ var BlockGoodsForSellerViewModel = function(content){
         if(last.route != 'cart')
             Routing.SetHash(last.route, last.title, last.data);
         else
-            Routing.SetHash('catalog', 'Домашняя', {});
+            Routing.SetHash('default', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
         Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
