@@ -158,6 +158,19 @@ var OrderGoodsViewModel = function(data) {
     else
         self.isEgoods = false;
     
+    self.isEgoodsPaid = ko.computed(function() {
+        if(data.hasOwnProperty('egoods'))
+            return true;
+        return false;
+    }, this);
+    if(self.isEgoodsPaid()){
+        var egoods = data.egoods[0];
+        self.uploadFile = 'https://' + window.location.hostname + egoods.upload_file;
+        self.sizeFile = egoods.size_file;
+        self.countUpload = egoods.count_upload;
+        self.expiration = egoods.expiration;
+        self.maxUpload = egoods.max_upload;
+    }
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.chortName, {id : self.id});
     }

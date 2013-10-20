@@ -2,7 +2,7 @@
 <html class="stylish-select" lang="ru">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-        <title>Title</title>
+        <title>Новости</title>
         <meta name="keywords" content="">
         <meta name="description" content="">
 
@@ -36,11 +36,17 @@
                 authentication : { https: 'login' },
                 registration : { geoShop: 0 },
                 core : { shopId: 1 },
-                catalog: {},
+                catalog: {container: {def: 'default_catalog'}},
                 breadCrumb : {},
-                content : { block : {count: 6}, content: {list: [10, 20, 50], defaultCount: 20} },
+                content : { 
+                    block : {count: 6}, 
+                    content: {list: [10, 20, 50], defaultCount: 20, container: {def: 'default_content'}} 
+                },
                 search : {},
-                searchResult : { content: {list: [10, 20, 50], defaultCount: 20} },
+                searchResult : { 
+                    content: {list: [10, 20, 50], defaultCount: 20},
+                    form : {}
+                },
                 goods : { infoBlock: 1111111, show: ["selectionCount","addToCart","buy","gallery","shipping","opinion"] },
                 userInformation : { show: ["icon","raiting"] },
                 cart : {show:{title:"always",count:true,baseCost:true,finalCost:true}},
@@ -87,6 +93,13 @@
                     <div class="pageWidth">
                         <table cellpadding="0" cellspacing="0" width="100%">
                             <tr>
+                                <td width="500">
+                                    <ul class="top_menu">
+                                        <li class="first"><a href="/about.html">Главная</a></li>
+                                        <li><a href="/news.html">Новости</a></li>
+                                    </ul>
+                                </td>
+                                <td>&nbsp;</td>
                                 <td width="300" id="cart_information"></td>
                                 <td>&nbsp;</td>
                                 <td width="300" id="user_information"></td>
@@ -129,17 +142,52 @@
                    <div class="pageWidth">
                         <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
-                                <td width="260" class="sidebarTab" valign="top" id="catalog"></td>
+                                <td width="260" class="sidebarTab" valign="top">
+                                    <div id="catalog"></div>
+                                    <div id="default_catalog"></div>
+                                </td>
                                 <td width="20">&nbsp;</td>
                                 <td valign="top">
                                     <div id="block"></div>
+<!--                                    <div id="default_block">
+                                        <div class="pageWidth">
+                                            <div class="textPage">
+                                                <div class="block_title"><h1>Новости</h1></div>
+                                                <div class="block_content">
+
+                                                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+                                                    <br/>
+                                                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+                                                    <br/>
+                                                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+                                                    <br/>
+                                                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+
+                                                    <div class="clear"></div>
+                                                    <script type="text/javascript" src="//yandex.st/share/share.js" charset="utf-8"></script>
+                                                    <div style="display: inline" class="yashare-auto-init" data-yasharel10n="ru" data-yasharetype="button" data-yasharequickservices="yaru,vkontakte,facebook,twitter,odnoklassniki,moimir"><span class="b-share"><a class="b-share__handle" id="ya-share-0.8046530727297068-1381907640446" data-hdirection="" data-vdirection=""><span class="b-share-form-button b-share-form-button_share"><i class="b-share-form-button__before"></i><i class="b-share-form-button__icon"></i>Поделиться…<i class="b-share-form-button__after"></i></span></a><a rel="nofollow" target="_blank" title="Я.ру" class="b-share__handle b-share__link b-share-btn__yaru" href="http://share.yandex.ru/go.xml?service=yaru&amp;url=http%3A%2F%2Fdev.pokupo.ru%2Fabout&amp;title=" data-service="yaru"><span class="b-share-icon b-share-icon_yaru"></span></a><a rel="nofollow" target="_blank" title="ВКонтакте" class="b-share__handle b-share__link b-share-btn__vkontakte" href="http://share.yandex.ru/go.xml?service=vkontakte&amp;url=http%3A%2F%2Fdev.pokupo.ru%2Fabout&amp;title=" data-service="vkontakte"><span class="b-share-icon b-share-icon_vkontakte"></span></a><a rel="nofollow" target="_blank" title="Facebook" class="b-share__handle b-share__link b-share-btn__facebook" href="http://share.yandex.ru/go.xml?service=facebook&amp;url=http%3A%2F%2Fdev.pokupo.ru%2Fabout&amp;title=" data-service="facebook"><span class="b-share-icon b-share-icon_facebook"></span></a><a rel="nofollow" target="_blank" title="Twitter" class="b-share__handle b-share__link b-share-btn__twitter" href="http://share.yandex.ru/go.xml?service=twitter&amp;url=http%3A%2F%2Fdev.pokupo.ru%2Fabout&amp;title=" data-service="twitter"><span class="b-share-icon b-share-icon_twitter"></span></a><a rel="nofollow" target="_blank" title="Одноклассники" class="b-share__handle b-share__link b-share-btn__odnoklassniki" href="http://share.yandex.ru/go.xml?service=odnoklassniki&amp;url=http%3A%2F%2Fdev.pokupo.ru%2Fabout&amp;title=" data-service="odnoklassniki"><span class="b-share-icon b-share-icon_odnoklassniki"></span></a><a rel="nofollow" target="_blank" title="Мой Мир" class="b-share__handle b-share__link b-share-btn__moimir" href="http://share.yandex.ru/go.xml?service=moimir&amp;url=http%3A%2F%2Fdev.pokupo.ru%2Fabout&amp;title=" data-service="moimir"><span class="b-share-icon b-share-icon_moimir"></span></a></span></div> 
+
+                                                    <div class="clear"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>-->
                                 </td>
                             </tr>
                         </table>
-                   </div>
+                       </div>
+                </div><!-- /horizontalSection --> 
+                <div id="content"></div>
+                <div id="default_content">
+                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+                    <br/>
+                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+                    <br/>
+                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+                    <br/>
+                    <p>Согласно последним исследованиям, конкурент спонтанно трансформирует мониторинг активности, опираясь на опыт западных коллег. Такое понимание ситуации восходит к Эл Райс, при этом сущность и концепция маркетинговой программы спонтанно консолидирует конвергентный анализ зарубежного опыта, отвоевывая свою долю рынка. В общем, производство однообразно масштабирует конструктивный бюджет на размещение, осознав маркетинг как часть производства. Сущность и концепция маркетинговой программы, анализируя результаты рекламной кампании, ускоряет стратегический рыночный план, признавая определенные рыночные тенденции.</p>
+
                 </div>
-                <div id="content"></div><!-- /horizontalSection -->      
-         
             </div><!-- /pageBottomGap -->
         </div><!-- /pageHeight -->
 

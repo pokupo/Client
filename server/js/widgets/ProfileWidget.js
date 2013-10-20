@@ -13,7 +13,7 @@
         style: null
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.profile;
+        self.settings.containerFormId = Config.Containers.profile.widget;
         self.settings.tmplPath = Config.Profile.tmpl.path;
         self.settings.personalInformationTmplId = Config.Profile.tmpl.personalInformationTmpl;
         self.settings.deliveryAddressTmpl = Config.Profile.tmpl.deliveryAddressTmpl;
@@ -41,8 +41,6 @@
                 self.settings.tmplPath = 'profile/' + input.tmpl + '.html';
             if (input.geoShop)
                 self.settings.geoShop = input.geoShop;
-            if(input.container)
-                self.settings.containerFormId = input.container;
         }
         self.settings.inputParameters = input;
     };
@@ -54,8 +52,10 @@
                     Loader.Indicator('MenuPersonalCabinetWidget', false);
                     if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
                         self.Info.Personal();
-                    if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix)
+                    if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && !Routing.params.form)
                         self.Info.Delivery();
+                    if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && Routing.params.form == 'add')
+                        self.Info.DeliveryForm();
                     if (Routing.params.info == Config.Profile.menu.security.prefix)
                         self.Info.Security();
                     self.Info.Menu();
@@ -232,11 +232,6 @@
             });
         });
         
-        EventDispatcher.AddEventListener('ProfileWidget.delivery.form', function(){
-             var form = new DeliveryAddressFormViewModel();
-             self.Fill.DeliveryForm(form);
-        });
-        
         EventDispatcher.AddEventListener('ProfileWidget.delivery.add', function(data){
             
             var str = '?id_country=' + encodeURIComponent($.trim(data.country().id));
@@ -329,7 +324,7 @@
                         '&is_default=yes';
                 self.BaseLoad.SetDefaultDelivaryAddress(str, function(result){
                     if(result.result == 'ok'){
-                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
+//                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
                     }
                     else{
                         self.QueryError(result, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', data)})
@@ -435,6 +430,10 @@
                 self.Fill.Delivery(data);
             });
         },
+        DeliveryForm : function(){
+            var form = new DeliveryAddressFormViewModel();
+            self.Fill.DeliveryForm(form);
+        },
         Security : function(){
             self.InsertContainer.Security();
             self.Fill.Security();
@@ -480,7 +479,6 @@
             self.Render.DeliveryList(delivery);
         },
         DeliveryForm : function(form){
-            self.WidgetLoader(false);
             var shopId = Parameters.shopId;
             if (self.settings.geoShop == 0)
                 shopId = 0;
@@ -641,7 +639,7 @@
                 form.postalAddress.postIndex(null);
             });
    
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
             
             if(Routing.params.edit == 'postal_address'){
                 self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
@@ -652,7 +650,7 @@
                 ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
             }
             
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         DeliveryForm : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -778,13 +776,13 @@
                 delivery.postCode(null);
             });
             
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Security : function(sequrity){
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {
@@ -1288,15 +1286,16 @@ var ProfileDeliveryAddressViewModel = function(){
     var self = this;
     self.addressList = ko.observableArray();
     self.cssAddressList = 'delivary_address_list';
+    self.checked = ko.observable();
     
     self.ClickAddAddress = function(){
-         EventDispatcher.DispatchEvent('ProfileWidget.delivery.form');
+        Routing.SetHash('profile', 'Личный кабинет', {info: 'delivery', form: 'add'})
     };
     
     self.AddContent = function(data){
         for(var key in data){
             DeliveryAddressViewModel.prototype = new Widget();
-            self.addressList.push(new DeliveryAddressViewModel(data[key], self.addressList));
+            self.addressList.push(new DeliveryAddressViewModel(data[key], self));
         }
     }
 };
@@ -1313,9 +1312,13 @@ var DeliveryAddressViewModel = function(data, list){
     self.postCode = data.post_code;
     self.address = data.address;
     self.addressee = data.addressee;
+    
+    self.list = list.addressList();
+    
     if(data.is_default == 'yes'){
         self.isDefault = ko.observable(true);
         self.cssIsDefault = ko.observable('delivery_address_is_default active');
+        list.checked(self.id);
     }
     else{
         self.isDefault = ko.observable(false);
@@ -1336,13 +1339,14 @@ var DeliveryAddressViewModel = function(data, list){
         }, false);
     };
     self.ClickItem = function(){
-        $.each(list(), function(i){
-            list()[i].cssIsDefault('delivery_address_is_default');
-            list()[i].isDefault(false);
+        $.each(self.list, function(i){
+            self.list[i].cssIsDefault('delivery_address_is_default');
+            self.list[i].isDefault(false);
         });
         
         self.cssIsDefault('delivery_address_is_default active');
         self.isDefault(true);
+        list.checked(self.id);
         
         EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', self);
     };

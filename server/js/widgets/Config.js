@@ -33,24 +33,30 @@ var Config = {
         sourceParameters : 'object' // источник параметров (строка подключения скрипта 'string' или обьект 'object')
     },
     Containers : {  
-        catalog : 'catalog', // id контейнера каталога 
-        search  : 'search_block', // id контейнера формы поиска 
-        breadCrumbs : ['breadCrumb_1','breadCrumb_2'], // id контейнеров хлебных крошек
-        content : ['content', 'block'], // id контейнера контента
-        searchResult : ['advanced_search', 'content'], // id контейнеров расширенной формы и результатов поиска
-        goods : 'content', // id контейнера информации о товаре
-        userInformation : 'user_information', // id контейнера информации о пользователе
-        authentication : ['content', 'catalog'], //id контейнеров авторизации
-        registration : 'content', // id контейнера регистрации
-        cart : 'cart_information', // id контейнера корзины
-        cartGoods : 'content', // id контейнера реестра товаров корзины
-        cabinetCartGoods : 'content',
-        profile : 'content', // id контейнера меню профиля и содержимого
-        menuPersonalCabinet : 'profile_menu',
-        favorites : 'content', // id контейнера избранного
-        order : 'content', // id конетейнера оформления заказа
-        orderList : 'content', // id конетейнера списка заказов
-        payment : 'content' // id контейнера страницы оплаты
+        catalog : {widget: 'catalog', def: 'default_catalog'}, // id контейнера каталога 
+        search  : {widget: 'search_block', def: 'default_search_block'}, // id контейнера формы поиска 
+        breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2']}, // id контейнеров хлебных крошек
+        content : {
+            content : {widget: 'content', def: 'default_content'}, 
+            block: {widget: 'block', def: 'default_block'}
+        }, // id контейнера контента
+        searchResult : {
+            form: {widget: 'advanced_search', def: 'default_advanced_search'},
+            content:{widget: 'content', def: 'default_content'}
+        }, // id контейнеров расширенной формы и результатов поиска
+        goods : {widget: 'content', def: 'default_content'}, // id контейнера информации о товаре
+        userInformation : {widget: 'user_information', def: 'default_user_information'}, // id контейнера информации о пользователе
+        authentication : {widget: 'content', def: 'default_content'}, //id контейнеров авторизации
+        registration : {widget: 'content', def: 'default_content'}, // id контейнера регистрации
+        cart : {widget: 'cart_information', def: 'default_cart_information'}, // id контейнера корзины
+        cartGoods : {widget: 'content', def: 'default_content'}, // id контейнера реестра товаров корзины
+        cabinetCartGoods : {widget: 'content', def: 'default_content'},
+        profile : {widget: 'content', def: 'default_content'}, // id контейнера меню профиля и содержимого
+        menuPersonalCabinet : {widget: 'profile_menu', def: 'default_profile_menu'},
+        favorites : {widget: 'content', def: 'default_content'}, // id контейнера избранного
+        order : {widget: 'content', def: 'default_content'}, // id конетейнера оформления заказа
+        orderList : {widget: 'content', def: 'default_content'}, // id конетейнера списка заказов
+        payment : {widget: 'content', def: 'default_content'} // id контейнера страницы оплаты
     },
     Goods : {
         tmpl: {

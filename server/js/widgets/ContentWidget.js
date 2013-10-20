@@ -47,23 +47,19 @@ var ContentWidget = function(){
         if(!$.isEmptyObject(input)){
             if(input.block){
                 self.settings.countGoodsInBlock = input.block.count;
-                if(input.block.container)
-                    self.settings.blockContainerId = input.block.container;
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if(input.content.container)
-                    self.settings.containerId = input.content.container;
             }
         }
         self.settings.inputParameters = input;
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.content[0];
-        self.settings.blockContainerId = Config.Containers.content[1];
+        self.settings.containerId = Config.Containers.content.content.widget;
+        self.settings.blockContainerId = Config.Containers.content.block.widget;
         self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
         self.settings.tmplForContent = Config.Content.tmpl.pathList;
         self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;
@@ -81,19 +77,18 @@ var ContentWidget = function(){
         self.settings.styleContent = Config.Content.style;
         self.SetInputParameters();
         self.RegisterEvents();
-        self.CheckRouting();
+        self.CheckContentRouting();
         self.SetPosition();
     };
-    self.CheckRouting = function(){
-        if(Routing.route == 'catalog'){
+    self.CheckContentRouting = function(){
+        if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
             self.SelectTypeContent();
         }
-        else{
+        else
             self.WidgetLoader(true);
-        }
     };
     self.SelectTypeContent = function(){
-        if(Routing.IsCategory()){  
+        if(Routing.IsCategory()){ 
             self.BaseLoad.Tmpl(self.settings.tmplForContent, function(){
                 EventDispatcher.DispatchEvent('onload.content.tmpl')
             });
@@ -135,10 +130,7 @@ var ContentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            if(Routing.route == 'catalog'){
-                self.WidgetLoader(false);
-                self.SelectTypeContent();
-            }
+            self.CheckContentRouting();
         });
     
         EventDispatcher.AddEventListener('contentWidget.click.category', function(data){
@@ -182,9 +174,6 @@ var ContentWidget = function(){
     };
     self.InsertContainer = {
         Main : function(){
-            if($('#' + self.settings.blockContainerId).length == 0)
-                $("#" + self.settings.containerId).html($('script#' + self.settings.blockMainTmpl).html());
-            else
                 $('#' + self.settings.blockContainerId).empty();
         },
         Block : function(sort, type){
@@ -251,7 +240,6 @@ var ContentWidget = function(){
                         $('#' + b[i].data.cssBlock).show();
                         if(b[i].type == 'slider'){
                             new AnimateSlider(b[i].data.cssBlockContainer);
-                            
                         }
                         if(b[i].type == 'carousel'){
                             new AnimateCarousel(b[i].data.cssBlockContainer);
@@ -270,7 +258,7 @@ var ContentWidget = function(){
                 new AnimateSelectList(f.sort.cssSortList);
             }
             delete data;
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
@@ -279,7 +267,7 @@ var ContentWidget = function(){
                 self.testBlock.ready = self.testBlock.ready + 1;
 
                 if(self.testBlock.IsReady()){
-                    self.WidgetLoader(true); 
+                    self.WidgetLoader(true, self.settings.blockContainerId); 
                     self.Render.Animate.Do();
                 }
             }
@@ -289,7 +277,7 @@ var ContentWidget = function(){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){

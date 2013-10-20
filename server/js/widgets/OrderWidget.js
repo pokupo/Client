@@ -27,7 +27,7 @@ var OrderWidget = function() {
         payment: {}
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.order;
+        self.settings.containerFormId = Config.Containers.order.widget;
         self.settings.tmplPath = Config.Order.tmpl.path;
         self.settings.ordFormStep1TmplId = Config.Order.tmpl.ordFormStep1TmplId;
         self.settings.ordFormStep1ConfirmTmplId = Config.Order.tmpl.ordConfirmFormStep1TmplId;
@@ -57,8 +57,6 @@ var OrderWidget = function() {
         if (!$.isEmptyObject(input)) {
             if (input.tmpl)
                 self.settings.tmplPath = 'order/' + input.tmpl + '.html';
-            if(input.container)
-                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };
@@ -118,7 +116,7 @@ var OrderWidget = function() {
                         }
                     }
                     else
-                        Routing.SetHash('catalog', 'Домашняя', {});
+                        Routing.SetHash('default', 'Домашняя', {});
                 });
             }
             if (Routing.params.step) {
@@ -149,7 +147,7 @@ var OrderWidget = function() {
                     else if (Routing.params.step == 5)
                         self.Step.Step5();
                     else
-                        Routing.SetHash('catalog', 'Домашняя', {});
+                        Routing.SetHash('default', 'Домашняя', {});
                 });
             }
         }
@@ -471,7 +469,7 @@ var OrderWidget = function() {
                 self.BaseLoad.DeleteOrder(self.order.id + '/yes', function(data){
                     if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.delete')})){
                         self.ShowMessage(Config.Order.message.deleteOrderConfirm, function() {
-                            Routing.SetHash('catalog', 'Домашняя', {});
+                            Routing.SetHash('default', 'Домашняя', {});
                         }, false);
                     }
                 });
@@ -836,13 +834,13 @@ var OrderWidget = function() {
             $('input#' + form.registrationForm.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
 
             delete form;
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step1Confirm: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true,  self.settings.containerFormId);
         },
         Step1Profile: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -860,19 +858,19 @@ var OrderWidget = function() {
                     form.birthDay(dateText);
                 }
             });
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2Form: function(delivery) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -998,19 +996,19 @@ var OrderWidget = function() {
                 delivery.postCode(null);
             });
 
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step5: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {

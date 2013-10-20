@@ -13,7 +13,7 @@ var RegistrationWidget = function() {
         style: null
     };
     self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.registration;
+        self.settings.containerFormId = Config.Containers.registration.widget;
         self.settings.tmplPath = Config.Registration.tmpl.path;
         self.settings.regFormStep1TmplId = Config.Registration.tmpl.regFormStep1TmplId;
         self.settings.regFormStep2TmplId = Config.Registration.tmpl.regFormStep2TmplId;
@@ -41,8 +41,6 @@ var RegistrationWidget = function() {
                 self.settings.tmplPath = 'registration/' + input.tmpl + '.html';
             if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
-            if(input.container)
-                self.settings.containerFormId = input.container;
         }
         self.settings.inputParameters = input;
     };
@@ -121,7 +119,7 @@ var RegistrationWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -159,7 +157,7 @@ var RegistrationWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -186,7 +184,7 @@ var RegistrationWidget = function() {
                     Routing.SetHash('registration', 'Регистрация пользователя', {step: 4});
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -205,7 +203,7 @@ var RegistrationWidget = function() {
             if (!$.isEmptyObject(link))
                 Routing.SetHash(link.route, link.title, link.data, true);
             else
-                Routing.SetHash('catalog', 'Домашняя', {});
+                Routing.SetHash('default', 'Домашняя', {});
         });
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
@@ -231,7 +229,7 @@ var RegistrationWidget = function() {
                     EventDispatcher.DispatchEvent('RegistrationWidget.step4.later');
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
     };
@@ -350,7 +348,7 @@ var RegistrationWidget = function() {
                     if (link)
                         Routing.SetHash(link.route, link.title, link.data, true);
                     else
-                        Routing.SetHash('catalog', 'Домашняя', {});
+                        Routing.SetHash('default', 'Домашняя', {});
                 };
                 form = new RegistrationFormViewModel();
                 form.submitEvent('RegistrationWidget.step1.checking');
@@ -407,13 +405,13 @@ var RegistrationWidget = function() {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
             $('input#' + form.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -431,7 +429,7 @@ var RegistrationWidget = function() {
                     form.birthDay(dateText);
                 }
             });
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -557,7 +555,7 @@ var RegistrationWidget = function() {
                 form.postIndex(null);
             });
 
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {

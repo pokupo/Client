@@ -12,7 +12,7 @@ var FavoritesWidget = function() {
         containerId: null,
     };
     self.InitWidget = function() {
-        self.settings.containerId = Config.Containers.favorites;
+        self.settings.containerId = Config.Containers.favorites.widget;
         self.settings.tmplPath = Config.Favorites.tmpl.path;
         self.settings.favTmplId = Config.Favorites.tmpl.cartTmplId;
         self.settings.emptyFavTmplId = Config.Favorites.tmpl.emptyCartTmplId;
@@ -44,8 +44,6 @@ var FavoritesWidget = function() {
             if (input.tmpl) {
                 self.settings.tmplPath = 'favorites/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };
@@ -86,6 +84,8 @@ var FavoritesWidget = function() {
                 self.Update.Menu();
                 self.Update.Content();
             }
+            else
+                self.WidgetLoader(true);
         });
         
         EventDispatcher.AddEventListener('Favorites.empty', function() {
@@ -204,10 +204,10 @@ var FavoritesWidget = function() {
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         EmptyFaforites : function(){
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function() {

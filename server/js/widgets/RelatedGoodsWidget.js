@@ -11,7 +11,7 @@ window.RelatedGoodsWidget = function(){
         inputParameters : {},
         container : null,
         relatedGoods : {
-            id : 0,
+            id : null,
             count : null,
             countTile : null,
             typeView : null,
@@ -41,14 +41,14 @@ window.RelatedGoodsWidget = function(){
     };
     self.SetParameters = function(data){
         self.settings.container = data.element;
-        
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl'])
                 self.settings.tmplPath = 'relatedGoods/' + data.options.params['tmpl'] + '.html';
-            else if (key = 'uniq' && data.options.params['uniq'])
+            else if (key == 'uniq' && data.options.params['uniq'])
                 self.settings.uniq = data.options.params['uniq'];
-            else
-                self.settings.relatedGoods[key] = data.options.params[key];
+            else if(key == 'id')
+                self.settings.relatedGoods.id = data.options.params['id'];
+            self.settings.relatedGoods[key] = data.options.params[key];
         }
     };
     self.RegisterEvents = function(){
@@ -78,15 +78,15 @@ window.RelatedGoodsWidget = function(){
     };
     self.InsertContainer = function(type){
             if(type == 'slider')
-                $(self.settings.container).empty().append($('script#' + self.settings.contentSliderTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.contentSliderTmpl).html());
             if(type == 'carousel')
-                $(self.settings.container).empty().append($('script#' + self.settings.contentCaruselTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.contentCaruselTmpl).html());
             if(type == 'tile')
-                $(self.settings.container).empty().append($('script#' + self.settings.contentTileTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.contentTileTmpl).html());
             if(type == 'table') 
-                $(self.settings.container).empty().append($('script#' + self.settings.contentTableTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.contentTableTmpl).html());
             if(type == 'list')
-                $(self.settings.container).empty().append($('script#' + self.settings.contentListTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.contentListTmpl).html());
     };
     self.CheckData = function(data){ 
         if(!data.err ){

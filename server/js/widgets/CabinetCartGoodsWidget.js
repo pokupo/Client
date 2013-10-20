@@ -11,7 +11,7 @@ var CabinetCartGoodsWidget = function(){
         containerId : null,
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.cabinetCartGoods;
+        self.settings.containerId = Config.Containers.cabinetCartGoods.widget;
         self.settings.tmplPath = Config.CabinetCartGoods.tmpl.path;
         self.settings.cartTmplId = Config.CabinetCartGoods.tmpl.cartTmplId;
         self.settings.emptyCartTmplId = Config.CabinetCartGoods.tmpl.emptyCartTmplId;
@@ -50,37 +50,32 @@ var CabinetCartGoodsWidget = function(){
             if(input.tmpl){
                 self.settings.tmplPath = 'cabinetCartGoods/' + input.tmpl + '.html';
             }
-            if(input.container)
-                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRoute = function(){
+    self.CheckCabinetCartGoodsRoute = function(){
         if(Routing.route == 'cabinet_cart'){
             self.Update.Content();
         }
-        else{
+        else
             self.WidgetLoader(true);
-        }
     };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
             self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckRoute();
+                 self.CheckCabinetCartGoodsRoute();
             });
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
                 self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckRoute();
+                     self.CheckCabinetCartGoodsRoute();
                 });
             });
         }
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'cabinet_cart'){
-                self.Update.Content();
-            }
+            self.CheckCabinetCartGoodsRoute();
         });
         
         EventDispatcher.AddEventListener('CabinetCartGoods.onload.info', function (data){
@@ -187,10 +182,10 @@ var CabinetCartGoodsWidget = function(){
             if($("#" + self.settings.containerId).length > 0){
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
             }
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         },
         EmptyCart : function(){
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){
@@ -310,7 +305,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
         
     };
     self.ClickProceed = function(){
-        Routing.SetHash('catalog', 'Домашняя', {});
+        Routing.SetHash('default', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
          Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
@@ -394,7 +389,7 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
             self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
     };
     self.ClickFavorites = function(){
-        
+        Routing.SetHash('favorites', 'Избранное', {});
     };
     self.ClickRemove = function(){
         self.Confirm(Config.CartGoods.message.confirmRemove, function(){

@@ -22,7 +22,7 @@ window.ButtonPaymentWidget = function(){
         Loader.InsertContainer(self.settings.containerButton);
     };
     self.SetParameters = function(data){
-        self.settings.containerId = Config.Containers.payment;
+        self.settings.containerId = Config.Containers.payment.widget;
         self.settings.tmplPath = Config.ButtonPayment.tmpl.path;
         self.settings.contentTmpl = Config.ButtonPayment.tmpl.contentTmpl;
         self.settings.title = Config.ButtonPayment.title;
@@ -43,8 +43,6 @@ window.ButtonPaymentWidget = function(){
             }
             if(input.title)
                 self.settings.title = input.title;
-            if(input.container)
-                self.settings.containerId = input.container;
         }
         self.settings.inputParameters = input;
         
@@ -81,8 +79,7 @@ window.ButtonPaymentWidget = function(){
         }
     };
     self.CheckRouteButtonPayment = function(){
-        if(Routing.route == 'payment'){
-            self.WidgetLoader(false);
+        if(Routing.route == 'payment' || (Routing.IsDefault() && !self.HasDefaultContent())){
             self.InsertContainer.Content();
             if(Routing.params.orderId)
                 self.GetData.Order(Routing.params.orderId);
@@ -91,6 +88,8 @@ window.ButtonPaymentWidget = function(){
             if(Routing.params.amount)
                 self.GetData.Amount(Routing.params.amount);
         }
+        else
+            self.WidgetLoader(true);
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
@@ -116,7 +115,6 @@ window.ButtonPaymentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('ButtonPaymentWidget.form.submit', function(form){
-            self.WidgetLoader(false);
             self.InsertContainer.Content();
             var dataStr = [];
             $.each(form.inData(), function(i){
@@ -191,7 +189,7 @@ window.ButtonPaymentWidget = function(){
                 });
             }
             $("#" + self.settings.containerId).show();
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
 };
@@ -249,7 +247,7 @@ var PaymentViewModel = function(){
     self.Back = function(){
         var last = Parameters.cache.lastPage;
         if(last.route == 'payment' || !last.route)
-            Routing.SetHash('catalog', 'Домашняя', {});
+            Routing.SetHash('default', 'Домашняя', {});
         else
             Routing.SetHash(last.route, last.title, last.data);
     };

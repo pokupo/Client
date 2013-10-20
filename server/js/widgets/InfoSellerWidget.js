@@ -81,10 +81,23 @@ var InfoSellerViewModel = function(data){
     self.nameShop = data.shop.name_shop;
     self.emailSupportShop = data.shop.email_support;
     self.mailtoShop = 'mailto:' + self.emailSupportShop;
-    self.phonesSupportShop = data.shop.phones_support;
-    self.siteSupportShop = data.shop.site_support;
-    self.skypeSupportShop = data.shop.skype_support;
-    self.icqSupportShop = data.shop.icq_support;
+    
+    self.phonesSupportShop = ko.observable();
+    if(data.shop.phones_support)
+        self.phonesSupportShop(data.shop.phones_support);
+    
+    self.siteSupportShop = ko.observable();
+    if(data.shop.site_support)
+        self.siteSupportShop(data.shop.site_support);
+    console.log(self.siteSupportShop());
+    self.skypeSupportShop = ko.observable();
+    if(data.shop.skype_support)
+        self.skypeSupportShop(data.shop.skype_support);
+    
+    self.icqSupportShop = ko.observable();
+    if(data.shop.icq_support)
+        self.icqSupportShop(data.shop.icq_support);
+    
     self.ratingShop = data.shop.rating_shop;
     self.positiveOpinion = data.shop.positive_opinion;
     self.negativeOpinion = data.shop.negative_opinion;
