@@ -56,6 +56,12 @@ var SearchResultWidget = function(){
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
+                if (input.content.tmpl)
+                    self.settings.tmplPath = 'searchResult/' + input.content.tmpl + '.html';
+            }
+            if(input.form){
+                if (input.form.tmpl)
+                    self.settings.tmplPath = 'searchResult/' + input.form.tmpl + '.html';
             }
         }
         self.settings.inputParameters = input;

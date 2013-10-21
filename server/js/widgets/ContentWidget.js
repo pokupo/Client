@@ -47,12 +47,16 @@ var ContentWidget = function(){
         if(!$.isEmptyObject(input)){
             if(input.block){
                 self.settings.countGoodsInBlock = input.block.count;
+                if (input.block.tmpl)
+                    self.settings.tmplPath = 'content/' + input.block.tmpl + '.html';
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
+                if (input.content.tmpl)
+                    self.settings.tmplPath = 'content/' + input.content.tmpl + '.html';
             }
         }
         self.settings.inputParameters = input;

@@ -31,6 +31,11 @@ var BreadCrumbWidget = function(){
             input = WParameters.breadCrumb;
         }
 
+        if(!$.isEmptyObject(input)){
+            if (input.tmpl) {
+                self.settings.tmplPath = 'breadCrumb/' + input.tmpl + '.html';
+            }
+        }
         self.settings.inputParameters = input;
     };
     self.GetTmplRoute = function(){

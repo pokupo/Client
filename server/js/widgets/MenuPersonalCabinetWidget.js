@@ -22,6 +22,12 @@ var MenuPersonalCabinetWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.menuPersonalCabinet){
             input = WParameters.menuPersonalCabinet;
         }
+        
+        if(!$.isEmptyObject(input)){
+            if (input.tmpl) {
+                self.settings.tmplPath = 'menuPersonalCabinet/' + input.tmpl + '.html';
+            }
+        }
      };
     self.AddMenu = function(opt){
         if(opt){

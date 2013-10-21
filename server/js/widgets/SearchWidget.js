@@ -28,6 +28,10 @@ var SearchWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.search){
             input = WParameters.search;
         }
+        if(!$.isEmptyObject(input)){
+            if (input.tmpl)
+                self.settings.tmplPath = 'search/' + input.tmpl + '.html';
+        }
 
         self.settings.inputParameters = input;
     };
