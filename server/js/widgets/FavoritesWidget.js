@@ -331,7 +331,7 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
         return false;
     }, this);
     self.Buy = function(){
-        
+        Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.sellerId, goodsId: self.id, count: 1});
     };
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.fullName, {id : self.id});
