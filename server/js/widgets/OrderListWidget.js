@@ -297,6 +297,10 @@ var OrderListViewModel = function() {
 
         self.paging = Paging.GetPaging(self.count, {paging: Config.Paging}, ClickLinkPage);
     }
+    self.ClickRefresh = function(){
+        Parameters.cache.orderList = null;
+        Routing.SetHash('purchases', 'Мои покупки', {block:'list'})
+    };
 };
 
 var OrderListDetailViewModel = function(data) {

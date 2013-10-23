@@ -348,9 +348,7 @@ var BlockViewModel = function(data, countGoodsInContent){
         }
     };
     self.ClickCategory = function(){
-        Loader.Indicator('ContentWidget', false);
-        Routing.UpdateHash({category:data.block.id});
-        Routing.SetHash('catalog', self.titleBlock, Routing.params);
+        Routing.SetHash('catalog', self.titleBlock, {category:data.block.id});
     };
 }
 

@@ -454,7 +454,10 @@ var OrderWidget = function() {
 
 
         EventDispatcher.AddEventListener('OrderWidget.step5.confirm', function(text) {
-            self.BaseLoad.ConfirmOrder(self.order.id + '?comment_buyer=' + encodeURIComponent(text.comment), function(data) {
+            var str = self.order.id;
+            if(text.comment)
+                str = str + '?comment_buyer=' + encodeURIComponent(text.comment);
+            self.BaseLoad.ConfirmOrder(str, function(data) {
                 if (self.QueryError(data, function() {
                     EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', text)
                 }))
