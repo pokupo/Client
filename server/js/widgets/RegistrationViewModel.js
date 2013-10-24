@@ -129,6 +129,7 @@ var RegistrationFormViewModel = function() {
     self.RestoreAccess = function() {
 
     };
+    self.agreement = 'http://' + window.location.hostname + '/rules';
 };
 
 var RegistrationConfirmFormViewModel = function(cache) {

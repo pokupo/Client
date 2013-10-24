@@ -832,6 +832,7 @@ var ProfileDataRegistrationViewModel = function(){
         else
             return 'женский';
     }, this);;
+    self.errorGender = ko.observable(null);
     self.lastName = ko.observable();
     self.firstName = ko.observable();
     self.middleName = ko.observable();

@@ -649,9 +649,26 @@ var OrderWidget = function() {
         Step2: function() {
             if(Routing.params.id){
                 self.BaseLoad.OrderInfo(self.order.id + '/yes', function(data) {
-                    self.order.content = {};
-                    self.order.content.main = data.goods;
-                    self.Step.Step2Getdata();
+                    if (self.QueryError(data,
+                        function() {Routing.SetHash('order', 'Оформление заказа', Routing.params);},
+                        function() {var last = Parameters.cache.lastPage; Routing.SetHash(last.route, last.title, last.data)}))
+                    {
+                        if (data.msg) {
+                            self.ShowMessage(data.msg,
+                                function() {
+                                    var last = Parameters.cache.lastPage;
+                                    if(last)
+                                        Routing.SetHash(last.route, last.title, last.data);
+                                    else
+                                        Routing.SetHash('default', Routing.defaultTitle, {});
+                                }, false);
+                        }
+                        else{
+                            self.order.content = {};
+                            self.order.content.main = data.goods;
+                            self.Step.Step2Getdata();
+                        }
+                    }
                 });
             }
             else
@@ -1432,7 +1449,18 @@ var OrderFormStep4ViewModel = function() {
         return test;
     };
     self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 3});
+        if($.isEmptyObject(Parameters.cache.order.step1.profile)){
+            var t = Parameters.cache.history;
+            for(var i = 0; i <= t.length-1; i++){
+                var link = t.pop();
+                if(link.route != 'order'){ 
+                    Routing.SetHash(link.route, link.title, link.data, true);
+                    return false;
+                }
+            }
+        }
+        else
+             Routing.SetHash('order', 'Оформление заказа', {step: 3});
     };
     self.Submit = function() {
         if (self.HasPayment())

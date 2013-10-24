@@ -228,6 +228,7 @@ var OrderListWidget = function() {
                     self.Render.Detail(order);
                 }
                 else{
+                    self.WidgetLoader(true, self.settings.containerFormId);
                     self.ShowMessage(data.msg, function(){
                         Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1});
                     });
@@ -281,7 +282,7 @@ var OrderListViewModel = function() {
         self.count = data.count_order;
         if (end > self.count - 1)
             end = self.count - 1;
-        if (start < self.count - 1) {
+        if (start <= self.count - 1) {
             for (var i = start; i <= end; i++) {
                 self.list.push(new OrderListDetailViewModel(data[i]));
             }
@@ -413,7 +414,7 @@ var OrderListDetailViewModel = function(data) {
     };
     self.viewCanсel = ko.computed(function() {
         var s = data.status_order;
-        if (s == 'init' || s == 'new')
+        if ((s == 'init' || s == 'new') && data.status_pay != 'paid')
             return true;
         return false;
     }, this);

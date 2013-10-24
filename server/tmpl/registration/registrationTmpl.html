@@ -99,7 +99,7 @@
                                     <td>
                                         <div class="form_item form_item_rule">
                                             <label>
-                                                <input type="checkbox" name="text" value="1" data-bind="checked: isChecked"/>Я принимаю условия <a href="#" target="_blank">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> 
+                                                <input type="checkbox" name="text" value="1" data-bind="checked: isChecked"/>Я принимаю условия <a href="#" target="_blank" data-bind="attr:{href: agreement}">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> 
                                             </label>
                                             <!-- ko if: errorIsChecked-->
                                                 <div class="form_error" data-bind="text: errorIsChecked"></div>

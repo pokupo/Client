@@ -92,17 +92,19 @@ var Loader = {
     widgets : {},
     action : null,
     Indicator : function(widget, isReady, container){
-        this.widgets[widget] = isReady;
-        this.countAll = 0;
-        this.readyCount = 0;
+        if(widget){
+            this.widgets[widget] = isReady;
+            this.countAll = 0;
+            this.readyCount = 0;
 
-        for(var key in this.widgets){
-            this.RegisterReady(key);
+            for(var key in this.widgets){
+                this.RegisterReady(key);
+            }
+            if(container)
+                this.containers.push(container);
+
+            this.ShowLoading();
         }
-        if(container)
-            this.containers.push(container);
-        
-        this.ShowLoading();
     },
     RegisterReady : function(key){
         this.countAll++;

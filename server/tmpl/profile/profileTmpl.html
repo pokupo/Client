@@ -98,6 +98,16 @@
                         <div class="form_error" data-bind="text: errorBirthDay"></div>
                     <!-- /ko -->
                 </div>
+                <!-- ko ifnot: gender() -->
+                <div class="formItem">
+                    <label>Ваш пол:</label>
+                    <label><input name="gender" type="radio" value="m" data-bind="checked: gender"/>Мужчина</label> 
+                    <label><input name="gender" type="radio" value="w" data-bind="checked: gender"/>Женщина</label>
+                    <!-- ko if: errorGender-->
+                        <div class="form_error" data-bind="text: errorGender"></div>
+                    <!-- /ko -->
+                </div>
+                <!-- /ko -->
                 <div class="formItem">
                     <label>Аватар:</label>
                     <input name="avatar" type="file" id="textfield" />

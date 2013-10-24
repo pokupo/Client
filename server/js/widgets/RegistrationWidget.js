@@ -130,7 +130,7 @@ var RegistrationWidget = function() {
         EventDispatcher.AddEventListener('RegistrationWidget.step2.checking', function(step2) {
             self.WidgetLoader(false);
             var params = [];
-            params.push('username=' + encodeURIComponent(step2.username()));
+            params.push('username=' + encodeURIComponent(step2.username));
             if (!step2.mailConfirmLater())
                 params.push('mail_token=' + step2.mailToken());
             if (!step2.phoneConfirmLater())
@@ -357,8 +357,18 @@ var RegistrationWidget = function() {
         },
         Step2: function() {
             if (Routing.params.username && Routing.params.mail_token) {
-                Parameters.cache.reg.step1 = new RegistrationFormStep1ViewModel();
-                Parameters.cache.reg.step1.username(Routing.params.username);
+                RegistrationFormViewModel.prototype.Back = function() {
+                    Parameters.cache.history.pop();
+                    var link = Parameters.cache.history.pop();
+                    if (link)
+                        Routing.SetHash(link.route, link.title, link.data, true);
+                    else
+                        Routing.SetHash('default', 'Домашняя', {});
+                };
+                var step1 = new RegistrationFormViewModel();
+                step1.username(Routing.params.username);
+                step1.submitEvent('RegistrationWidget.step1.checking');
+                Parameters.cache.reg.step1 = step1;
             }
 
             RegistrationConfirmFormViewModel.prototype.Back = function() {
