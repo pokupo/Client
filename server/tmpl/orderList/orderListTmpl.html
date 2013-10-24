@@ -258,14 +258,16 @@
                                     </a>
                                 </p>
                                 <!-- ko if: isEgoodsPaid() -->
-                                    <a href="#" class="goButton download" target="_blank" data-bind="attr: {href: uploadFile}">
-                                        <span></span>
-                                        <strong>Загрузить</strong> <!-- ko text: sizeFile --><!-- /ko --> <i>(Осталось <!-- ko text: maxUpload --><!-- /ko --> скачиваний)</i>
-                                    </a>
-                                    <div class="alreadyDownloadCounter">товрар "<!-- ko text: fullName --><!-- /ko -->" уже скачан Вами <!-- ko text: countUpload --><!-- /ko --> раз</div>
-                                    <div class="productAttantion">
-                                        <img src="images/_urgent.png" width="16" height="16" align="middle"> Товар доступен для скачивания до <strong data-bind="text: expiration"></strong>.
-                                    </div>
+                                    <!-- ko foreach: EGoods -->
+                                        <a href="#" class="goButton download" target="_blank" data-bind="attr: {href: uploadFile}">
+                                            <span></span>
+                                            <strong>Загрузить</strong> <!-- ko text: sizeFile --><!-- /ko --> <i>(Осталось <!-- ko text: maxUpload --><!-- /ko --> скачиваний)</i>
+                                        </a>
+                                        <div class="alreadyDownloadCounter">товрар "<!-- ko text: $parent.fullName --><!-- /ko -->" уже скачан Вами <!-- ko text: countUpload --><!-- /ko --> раз</div>
+                                        <div class="productAttantion">
+                                            <img src="images/_urgent.png" width="16" height="16" align="middle"> Товар доступен для скачивания до <strong data-bind="text: expiration"></strong>.
+                                        </div>
+                                    <!-- /ko -->
                                 <!-- /ko -->
                             </td>
                             <td data-bind="text: sellCost"></td>
@@ -418,7 +420,9 @@
                 <div class="listBox" align="center">
                     <table>
                         <tr>
-                            <td><button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить заказ</button></td>
+                            <!-- ko ifnot: statusPay() == "paid" -->
+                                <td><button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить заказ</button></td>
+                            <!-- /ko -->
                             <!-- ko if: statusPay() == "wait_pay" -->
                                 <td width="50">&nbsp;</td>
                                 <td data-bind="embedWidget :{ widget : 'ButtonPaymentWidget', params : { title: 'Оплатить заказ', orderId: id()}}"></td>

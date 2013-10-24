@@ -167,16 +167,23 @@ var OrderGoodsViewModel = function(data) {
         return false;
     }, this);
     if(self.isEgoodsPaid()){
-        var egoods = data.egoods[0];
-        self.uploadFile = 'https://' + window.location.hostname + egoods.upload_file;
-        self.sizeFile = egoods.size_file;
-        self.countUpload = egoods.count_upload;
-        self.expiration = egoods.expiration;
-        self.maxUpload = egoods.max_upload;
+        self.EGoods = ko.observableArray();
+        $.each(data.egoods, function(i){
+            self.EGoods.push(new OrderEGoodsViewModel(data.egoods[i]));
+        })
     }
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.chortName, {id : self.id});
     }
 };
+
+var OrderEGoodsViewModel = function(data) {
+    var self = this;
+    self.uploadFile = 'https://' + window.location.hostname + data.upload_file;
+    self.sizeFile = data.size_file;
+    self.countUpload = data.count_upload;
+    self.expiration = data.expiration;
+    self.maxUpload = data.max_upload;
+}
 
 

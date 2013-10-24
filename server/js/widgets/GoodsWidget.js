@@ -251,15 +251,18 @@ var GoodsMainBlockViewModel = function(data){
     self.description = data.description;
     self.weight = data.weight;
     self.count = data.count;
+    if(data.count_reserve)
+        self.count = data.count - data.count_reserve;
     self.isEgoods = ko.computed(function(){
         if(data.is_egoods =='yes')
             return true;
         return false;
     }, this);
     self.inStock = ko.computed(function(){
-        if(self.isEgoods())
+        if(self.isEgoods() && !self.count && self.count != 0){
             return 'Есть';
-        else if(!self.isEgoods() && self.count && self.count != 0){
+        }
+        else if(self.count && self.count != 0){
             if(self.count > 1)
                 return self.count;
             return "Да";
