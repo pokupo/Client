@@ -276,10 +276,12 @@
                         </tr>
                         <!-- /ko -->
 
+                        <!-- ko if: discount > 0 -->
                         <tr class="listTableRow">
                             <td colspan="4"><strong>Цена с учетом скидки:</strong> <!-- ko text: discount --><!-- /ko --></td>
                             <td data-bind="text: finalCost"></td>
                         </tr>
+                        <!-- /ko -->
                         <tr class="listTableRow">
                             <td colspan="4"><strong>Стоимость доставки:</strong></td>
                             <td data-bind="text: costShipping"></td>

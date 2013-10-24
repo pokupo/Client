@@ -46,7 +46,7 @@ var OrderViewModel = function(){
             if(order.method_shipping.hasOwnProperty('name_method_shipping'))
                 self.nameMethodShipping(order.method_shipping.name_method_shipping);
             if(order.method_shipping.hasOwnProperty('logo_shipping_company'))
-                self.logoMethodShipping(order.method_shipping.logo_shipping_company);
+                self.logoMethodShipping(Parameters.pathToImages + order.method_shipping.logo_shipping_company);
         }
         if (order.hasOwnProperty('shipping')) {
             if (order.shipping == 'yes')
@@ -78,7 +78,7 @@ var OrderViewModel = function(){
             if (order.method_payment.hasOwnProperty('name_payment'))
                 self.namePayment(order.method_payment.name_payment);
             if (order.method_payment.hasOwnProperty('logo_payment'))
-                self.logoPayment(order.method_payment.logo_payment);
+                self.logoPayment(Parameters.pathToImages + order.method_payment.logo_payment);
             if (order.method_payment.hasOwnProperty('time_payment'))
                 self.timePayment(order.method_payment.time_payment);
             if (order.method_payment.hasOwnProperty('desc_payment'))

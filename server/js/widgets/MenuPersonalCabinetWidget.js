@@ -141,7 +141,7 @@ var MenuPersonalCabinetViewModel = function(){
         
     };
     self.ClickBecomeSeller = function(){
-        window.location.href = 'https://' + window.location.hostname + '/seller';
+        window.location.href = 'https://' + window.location.hostname + '/seller/register';
     };
 };
 
