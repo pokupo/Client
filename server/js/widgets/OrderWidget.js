@@ -611,7 +611,10 @@ var OrderWidget = function() {
                 goods = self.order.content[0].goods;
             }
             else {
-                goods[0] = self.order.content.main;
+                if(!$.isArray(self.order.content.main))
+                    goods[0] = self.order.content.main;
+                else
+                    goods = self.order.content.main;
             }
             $.each(goods, function(i) {
                 if (goods[i].is_egoods != 'yes') {
