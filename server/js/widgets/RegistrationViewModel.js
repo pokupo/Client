@@ -130,6 +130,8 @@ var RegistrationFormViewModel = function() {
 
     };
     self.agreement = 'http://' + window.location.hostname + '/rules';
+    self.police = 'http://' + window.location.hostname + '/police';
+    self.refund = 'http://' + window.location.hostname + '/refund';
 };
 
 var RegistrationConfirmFormViewModel = function(cache) {
