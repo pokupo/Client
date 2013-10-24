@@ -251,8 +251,12 @@ var GoodsMainBlockViewModel = function(data){
     self.description = data.description;
     self.weight = data.weight;
     self.count = data.count;
-    if(data.count_reserve)
-        self.count = data.count - data.count_reserve;
+    if(data.count_reserve){
+        if(data.count > data.count_reserve)
+            self.count = data.count - data.count_reserve;
+        else
+            self.count = 0
+    }
     self.isEgoods = ko.computed(function(){
         if(data.is_egoods =='yes')
             return true;
