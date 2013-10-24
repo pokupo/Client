@@ -55,7 +55,7 @@
                 <td>
                     <div class="form_item">
                         <label>Логин:</label>
-                        <input type="text" id="username" name="username" value="" required="required" data-bind="value: username">
+                        <input type="text" id="username" name="username" value="" tabindex="1" required="required" data-bind="value: username">
                     </div>
                 </td>
             </tr>
@@ -64,15 +64,15 @@
                     <div class="form_item">
                         <a href="#" data-bind="click: ForgotPassword">Забыли пароль</a>
                         <label>Пароль:</label>
-                        <input type="password" id="password" name="password" required="required" data-bind="value: password">
+                        <input type="password" id="password" name="password" tabindex="2" required="required" data-bind="value: password">
                     </div>
                 </td>
             </tr>
             <tr>
                 <td>
                     <div class="form_item">
-                        <label style="float:left;"><input type="checkbox" name="text" data-bind="value: rememberMe"/>Запомнить меня</label>
-                        <input class="form_submit" type="submit" value="Войти" style="float:right" />
+                        <label style="float:left;"><input type="checkbox" name="text" tabindex="3" data-bind="value: rememberMe"/>Запомнить меня</label>
+                        <input class="form_submit" type="submit" value="Войти" tabindex="4" style="float:right" />
                     </div>
                 </td>
             </tr>
@@ -89,7 +89,7 @@
                         <label>Псевдоним:
                             <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Псевдоним или никнейм это ваше публичное имя в сети, может использоваться как логин в личный кабинет.</span></div></div>
                         </label>
-                        <input type="text" name="text" value="" maxlength="40" data-bind="value: username"/>
+                        <input type="text" name="text" value="" tabindex="5" maxlength="40" data-bind="value: username"/>
                         <!-- ko if: errorUsername-->
                         <div class="form_error" data-bind="text: errorUsername"></div>
                         <!-- /ko -->
@@ -102,7 +102,7 @@
                         <label>Ваш e-mail:
                             <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он будет логином для входа в личный кабинет, на этот адрес будут приходить уведомления о статусе вашего заказа.</span></div></div>
                         </label>
-                        <input type="text" name="text" value="" maxlength="64" data-bind="value: email"/>
+                        <input type="text" name="text" value="" tabindex="6" maxlength="64" data-bind="value: email"/>
                         <!-- ko if: errorEmail-->
                         <div class="form_error" data-bind="html: errorEmail"></div>
                         <!-- /ko -->
@@ -115,7 +115,7 @@
                         <label>Номер телефона:
                             <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Номер мобильного телефона с кодом страны, используется для восстановления доступа к личному кабинету и для SMS уведомлений о статусе заказа, не обязательное поле для заполнения.</span></div></div>
                         </label>
-                        <input type="text" name="text" value="" maxlength="15" data-bind="value: phone, attr: {id : cssPhone}"/>
+                        <input type="text" name="text" value="" maxlength="15" tabindex="7" data-bind="value: phone, attr: {id : cssPhone}"/>
                         <div class="description">Введите номер сотового телефона, пример: 
                             <span>7 914 123 45 67</span></div>
                         <!-- ko if: errorPhone-->
@@ -130,7 +130,7 @@
                         <label>Пароль:
                             <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Укажите пароль для доступа к личному кабинету покупателя длиной не менее 6 символов.</span></div></div>
                         </label>
-                        <input type="password" name="firstPassword" maxlength="32" data-bind="value: firstPassword, attr : {id: cssFirstPassword}"/>
+                        <input type="password" name="firstPassword" maxlength="32" tabindex="8" data-bind="value: firstPassword, attr : {id: cssFirstPassword}"/>
                         <!-- ko if: errorFirstPassword-->
                         <div class="form_error" data-bind="text: errorFirstPassword"></div>
                         <!-- /ko -->
@@ -143,7 +143,7 @@
                         <label>Повторить пароль:
                             <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Повторите свой пароль, что бы мы могли убедиться, что вы не ошиблись при его вводе.</span></div></div>
                         </label>
-                        <input type="password" name="text" maxlength="32"  data-bind="value: secondPassword, attr : {id: cssSecondPassword}"/>
+                        <input type="password" name="text" maxlength="32" tabindex="9" data-bind="value: secondPassword, attr : {id: cssSecondPassword}"/>
                         <!-- ko if: errorSecondPassword-->
                         <div class="form_error" data-bind="text: errorSecondPassword"></div>
                         <!-- /ko -->
@@ -154,7 +154,10 @@
                 <td>
                     <div class="form_item form_item_rule">
                         <label>
-                            <input type="checkbox" name="text" value="1" data-bind="checked: isChecked"/>Я принимаю условия <a href="#" target="_blank">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> 
+                            <input type="checkbox" name="text" value="1" tabindex="10" data-bind="checked: isChecked"/>
+                            Я принимаю условия <a href="#" target="_blank" data-bind="attr:{href: agreement}">Пользовательского соглашения</a> <span style="color: #ed710d;">*</span> <br/>
+                                                <a href="#" target="_blank" data-bind="attr:{href: police}">Правил конфиденциальности</a> <span style="color: #ed710d;">*</span><br/>
+                                                <a href="#" target="_blank" data-bind="attr:{href: refund}">Политики возврата платежей</a> <span style="color: #ed710d;">*</span><br/>
                         </label>
                         <!-- ko if: errorIsChecked-->
                             <div class="form_error" data-bind="text: errorIsChecked"></div>
@@ -164,7 +167,7 @@
             </tr>
             <tr>
                 <td align="center">
-                    <input class="nextButton size2" type="submit" value="Продолжить" data-bind="click: SubmitForm"/>
+                    <input class="nextButton size2" type="submit" value="Продолжить" tabindex="11" data-bind="click: SubmitForm"/>
                 </td>
             </tr>
         </table>

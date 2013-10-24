@@ -182,7 +182,9 @@ var OrderEGoodsViewModel = function(data) {
     self.uploadFile = 'https://' + window.location.hostname + data.upload_file;
     self.sizeFile = data.size_file;
     self.countUpload = data.count_upload;
-    self.expiration = data.expiration;
+    self.expiration = null;
+    if(data.expiration)
+        self.expiration = data.expiration;
     self.maxUpload = data.max_upload;
 }
 

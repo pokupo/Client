@@ -1070,7 +1070,7 @@ var OrderLoginFormStep1ViewModel = function() {
         EventDispatcher.DispatchEvent('OrderWidget.step1.authentication', self);
     };
     self.ForgotPassword = function() {
-
+        window.location.href = 'https://' + window.location.hostname + '/resetting/request'
     };
 };
 

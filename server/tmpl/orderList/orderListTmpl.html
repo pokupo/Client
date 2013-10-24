@@ -264,9 +264,11 @@
                                             <strong>Загрузить</strong> <!-- ko text: sizeFile --><!-- /ko --> <i>(Осталось <!-- ko text: maxUpload --><!-- /ko --> скачиваний)</i>
                                         </a>
                                         <div class="alreadyDownloadCounter">товрар "<!-- ko text: $parent.fullName --><!-- /ko -->" уже скачан Вами <!-- ko text: countUpload --><!-- /ko --> раз</div>
-                                        <div class="productAttantion">
-                                            <img src="images/_urgent.png" width="16" height="16" align="middle"> Товар доступен для скачивания до <strong data-bind="text: expiration"></strong>.
-                                        </div>
+                                        <!-- ko if: expiration -->
+                                            <div class="productAttantion">
+                                                <img src="images/_urgent.png" width="16" height="16" align="middle"> Товар доступен для скачивания до <strong data-bind="text: expiration"></strong>.
+                                            </div>
+                                        <!-- /ko -->
                                     <!-- /ko -->
                                 <!-- /ko -->
                             </td>
