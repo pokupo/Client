@@ -30,6 +30,7 @@ var JSSettings = {
         'widgets/ContentViewModel.js',
         'widgets/OrderViewModel.js',
         'widgets/RegistrationViewModel.js',
+        'widgets/AuthenticationViewModel.js',
         'widgets/Widget.js',
         'widgets/AnimateSlider.js',
         'widgets/AnimateCarousel.js',

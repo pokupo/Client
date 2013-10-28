@@ -163,13 +163,13 @@ var OrderListWidget = function() {
     };
     self.InsertContainer = {
         List: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordListTmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.ordListTmplId).html());
         },
         Detail: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordDetailTmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.ordDetailTmplId).html());
         },
         EmptyList: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.ordEmptyListTmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.ordEmptyListTmplId).html());
         }
     };
     self.Fill = {

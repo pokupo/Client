@@ -326,16 +326,16 @@ var RegistrationWidget = function() {
     };
     self.InsertContainer = {
         Step1: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep1TmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep1TmplId).html());
         },
         Step2: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep2TmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep2TmplId).html());
         },
         Step3: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep3TmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep3TmplId).html());
         },
         Step4: function() {
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.regFormStep4TmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep4TmplId).html());
         }
     };
     self.Fill = {

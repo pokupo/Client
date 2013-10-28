@@ -79,8 +79,7 @@ var AuthenticationWidget = function(){
         EventDispatcher.AddEventListener('widget.authentication.test', function(data){
             if(data.request.err){
                 data.data.error = "Ошибка в логине или пароле";
-                var sidebar = new AuthenticationSidebarViewModel();
-                self.Render.Authentication(data.data, sidebar);
+                self.Render.Authentication(data.data);
             }
             else{
                 EventDispatcher.DispatchEvent('widget.authentication.ok', data);
@@ -110,13 +109,13 @@ var AuthenticationWidget = function(){
     };
     self.Fill = {
         Authentication : function(){
-            var sidebar = new AuthenticationSidebarViewModel();
-            var form = new AuthenticationFormViewModel();
-            self.Render.Authentication(form, sidebar);
+            var form = new AuthenticationViewModel();
+            form.subminEvent('AuthenticationWidget.authentication.submit');
+            self.Render.Authentication(form);
         }
     };
     self.Render = {
-        Authentication : function(form, sidebar){
+        Authentication : function(form){
             if($("#" + self.settings.containerFormId).length > 0){
                 ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
             }
@@ -135,38 +134,6 @@ var AuthenticationWidget = function(){
                 }
             });
         }
-    };
-};
-
-var AuthenticationSidebarViewModel = function(){
-    var self = this;
-    self.ClickRegistration = function(){
-        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
-        Routing.SetHash('registration', 'Регистрация пользователя', {step: 1});
-    };
-};
-
-var AuthenticationFormViewModel = function(){
-    var self= this;
-    self.username = null;
-    self.password = null;
-    self.rememberMe = null;
-    self.error = null;
-    
-    self.Login = function(data){
-        self.username = $(data.username).val();
-        self.password = $(data.password).val();
-        self.rememberMe = $(data.remember_me).is(':checked') ? 'on' : 'off';
-        EventDispatcher.DispatchEvent('AuthenticationWidget.authentication.submit', self);
-    };
-    self.ClickRegistration = function(){
-        Routing.SetHash('registration', 'Регистрация пользователя', {step:1});
-    };
-    self.ClickZPayment = function(){
-        
-    };
-    self.ForgotPassword = function(){
-        window.location.href = 'https://' + window.location.hostname + '/resetting/request'
     };
 };
 

@@ -56,7 +56,7 @@ var MenuPersonalCabinetWidget = function(){
     };
     self.InsertContainer = function(){
         if($("#" + self.settings.containerMenuId).length > 0)
-            $("#" + self.settings.containerMenuId).empty().append($('script#' + self.settings.menuTmpl).html());
+            $("#" + self.settings.containerMenuId).html($('script#' + self.settings.menuTmpl).html());
     };
     self.Fill = function(){
         var menu = new MenuPersonalCabinetViewModel();

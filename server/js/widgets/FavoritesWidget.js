@@ -162,10 +162,10 @@ var FavoritesWidget = function() {
     };
     self.InsertContainer = {
         Content : function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.favTmplId).html());
+            $("#" + self.settings.containerId).html($('script#' + self.settings.favTmplId).html());
         },
         EmptyFaforites :function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.emptyFavTmplId).html());
+            $("#" + self.settings.containerId).html($('script#' + self.settings.emptyFavTmplId).html());
         }
     };
     self.Fill =  {

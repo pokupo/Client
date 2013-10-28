@@ -441,16 +441,16 @@
     };
     self.InsertContainer = {
         Personal : function(){
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.personalInformationTmplId).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.personalInformationTmplId).html());
         },
         Delivery : function(){
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.deliveryAddressTmpl).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.deliveryAddressTmpl).html());
         },
         DeliveryForm : function(){
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.deliveryAddressFormTmpl).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.deliveryAddressFormTmpl).html());
         },
         Security : function(){
-            $("#" + self.settings.containerFormId).empty().append($('script#' + self.settings.securityTmpl).html());
+            $("#" + self.settings.containerFormId).html($('script#' + self.settings.securityTmpl).html());
         }
     };
     self.Fill = {

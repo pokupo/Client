@@ -158,10 +158,10 @@ window.ButtonPaymentWidget = function(){
     };
     self.InsertContainer = {
         Button : function(){
-            $(self.settings.containerButton).empty().append($('script#' + self.settings.skin).html());
+            $(self.settings.containerButton).html($('script#' + self.settings.skin).html());
         },
         Content : function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.contentTmpl).html()).hide();
+            $("#" + self.settings.containerId).html($('script#' + self.settings.contentTmpl).html()).hide();
         }
     };
     self.Fill = {

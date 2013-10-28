@@ -140,10 +140,10 @@ var CabinetCartGoodsWidget = function(){
     };
     self.InsertContainer = {
         Content : function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.cartTmplId).html());
+            $("#" + self.settings.containerId).html($('script#' + self.settings.cartTmplId).html());
         },
         EmptyCart :function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.emptyCartTmplId).html());
+            $("#" + self.settings.containerId).html($('script#' + self.settings.emptyCartTmplId).html());
         }
     };
     self.Fill =  {
