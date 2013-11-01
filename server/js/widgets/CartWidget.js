@@ -8,10 +8,12 @@ var CartWidget = function(){
         inputParameters : {},
         containerId : null,
         showBlocks : null,
-        style : null
+        style : null,
+        customContainer : null
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cart.widget;
+        self.settings.customContainer = Config.Containers.cart.customClass;
         self.settings.title = Config.Cart.title;
         self.settings.tmplPath = Config.Cart.tmpl.path;
         self.settings.tmplId = Config.Cart.tmpl.tmplId;
@@ -46,7 +48,10 @@ var CartWidget = function(){
         self.settings.inputParameters = input;
     };
     self.InsertContainer = function(){
-        $('#' + self.settings.containerId).empty().append($('script#' + self.settings.tmplId).html());
+        var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+        $("#" + self.settings.containerId).empty().html(temp);
+            
+        $('#' + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){

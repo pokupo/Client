@@ -8,10 +8,12 @@ var GoodsWidget = function(){
         tmplId : null,
         showBlocks : null,
         inputParameters : {},
-        styleGoods : null
+        styleGoods : null,
+        customContainer: null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.goods.widget; 
+        self.settings.containerId = Config.Containers.goods.widget;
+        self.settings.customContainer = Config.Containers.goods.customClass;
         self.settings.tmplPath = Config.Goods.tmpl.path;
         self.settings.tmplId = Config.Goods.tmpl.tmplId;
         self.settings.showBlocks = Config.Goods.showBlocks;
@@ -91,8 +93,13 @@ var GoodsWidget = function(){
         });
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
         Content : function(){
-            $("#" + self.settings.containerId).html($('script#' + self.settings.tmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
         }
     };
     self.Fill = {

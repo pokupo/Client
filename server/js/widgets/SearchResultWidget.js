@@ -4,6 +4,8 @@ var SearchResultWidget = function(){
     self.settings = {
         containerIdForSearchResult : null,
         containerIdForAdvancedSearch : null,
+        customContainerForSearchResult: null,
+        customContainerForAdvancedSearch: null,
         tmplPath : null,
         advancedSearchFormTmpl : null,
         contentTableTmpl : null,
@@ -21,7 +23,9 @@ var SearchResultWidget = function(){
     };
     self.InitWidget = function(){
         self.settings.containerIdForSearchResult = Config.Containers.searchResult.content.widget;
+        self.settings.customContainerForSearchResult = Config.Containers.searchResult.content.customClass;
         self.settings.containerIdForAdvancedSearch = Config.Containers.searchResult.form.widget;
+        self.settings.customContainerForAdvancedSearch = Config.Containers.searchResult.form.customClass;
         self.settings.tmplPath = Config.SearchResult.tmpl.path;
         self.settings.advancedSearchFormTmpl = Config.SearchResult.tmpl.advancedSearchFormTmpl;
         self.settings.contentTableTmpl = Config.SearchResult.tmpl.contentTableTmpl;
@@ -179,20 +183,26 @@ var SearchResultWidget = function(){
     };
     self.InsertContainer = {
         AdvancedSearchForm : function(){
-            $("#" + self.settings.containerIdForAdvancedSearch).html($('script#' + self.settings.advancedSearchFormTmpl).html()).children().hide();
+            var temp = $("#" + self.settings.containerIdForAdvancedSearch).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerIdForAdvancedSearch).empty().html(temp);
+            
+            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.advancedSearchFormTmpl).html()).children().hide();
         },
         SearchResult : function(type){
+            var temp = $("#" + self.settings.containerIdForSearchResult).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerIdForSearchResult).empty().html(temp);
+            
             if(type == 'table'){ 
-                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.contentTableTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTableTmpl).html());
             }
             if(type == 'list'){
-                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.contentListTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentListTmpl).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.contentTileTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTileTmpl).html());
             }
             if(type == 'error'){
-                $("#" + self.settings.containerIdForSearchResult).html($('script#' + self.settings.noResultsTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.noResultsTmpl).html());
             }
         }
     };

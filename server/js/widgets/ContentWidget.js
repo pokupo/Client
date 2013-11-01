@@ -3,7 +3,9 @@ var ContentWidget = function(){
     self.widgetName = 'ContentWidget';
     self.settings = {
         containerId : null,
+        customContainer : null,
         blockContainerId : null,
+        customBlock : null,
         tmplForBlock : null,
         tmplForContent : null,
         blockSliderTmpl : null,
@@ -63,7 +65,9 @@ var ContentWidget = function(){
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content.content.widget;
+        self.settings.customContainer = Config.Containers.content.content.customClass;
         self.settings.blockContainerId = Config.Containers.content.block.widget;
+        self.settings.customBlock = Config.Containers.content.block.customClass;
         self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
         self.settings.tmplForContent = Config.Content.tmpl.pathList;
         self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;
@@ -149,7 +153,7 @@ var ContentWidget = function(){
         });
     };
     self.CheckData = function(data){
-        self.InsertContainer.Main();
+        self.InsertContainer.EmptyBlockWidget();
         if(data.err)
             self.WidgetLoader(true);
         else{
@@ -177,8 +181,9 @@ var ContentWidget = function(){
         }
     };
     self.InsertContainer = {
-        Main : function(){
-                $('#' + self.settings.blockContainerId).empty();
+        EmptyBlockWidget : function(){
+            var temp = $("#" + self.settings.blockContainerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.blockContainerId).empty().html(temp);
         },
         Block : function(sort, type){
             if(type == 'slider'){ 
@@ -193,7 +198,8 @@ var ContentWidget = function(){
             $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
         List : function(type){
-            $("#" + self.settings.containerId).html('');
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
             if(type == 'table'){ 
                 $("#" + self.settings.containerId).append($('script#' + self.settings.contentTableTmpl).html());
             }
@@ -271,7 +277,7 @@ var ContentWidget = function(){
                 self.testBlock.ready = self.testBlock.ready + 1;
 
                 if(self.testBlock.IsReady()){
-                    self.WidgetLoader(true, self.settings.blockContainerId); 
+                    self.WidgetLoader(true, self.settings.blockContainerId);
                     self.Render.Animate.Do();
                 }
             }

@@ -9,9 +9,11 @@ var CartGoodsWidget = function(){
         inputParameters : {},
         style : null,
         containerId : null,
+        customContainer: null
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cartGoods.widget;
+        self.settings.customContainer = Config.Containers.cartGoods.customClass;
         self.settings.tmplPath = Config.CartGoods.tmpl.path;
         self.settings.cartTmplId = Config.CartGoods.tmpl.cartTmplId;
         self.settings.emptyCartTmplId = Config.CartGoods.tmpl.emptyCartTmplId;
@@ -111,7 +113,6 @@ var CartGoodsWidget = function(){
     };
     self.Update = function(){
         self.WidgetLoader(false);
-        $("#" + self.settings.containerId).html('');
         self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
             self.BaseLoad.CartGoods('', function(data){
@@ -120,11 +121,17 @@ var CartGoodsWidget = function(){
         });
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
         Content : function(){
-            $("#" + self.settings.containerId).html($('script#' + self.settings.cartTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.settings.cartTmplId).html());
         },
         EmptyCart :function(){
-            $("#" + self.settings.containerId).html($('script#' + self.settings.emptyCartTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.settings.emptyCartTmplId).html());
         }
     };
     self.Fill =  {

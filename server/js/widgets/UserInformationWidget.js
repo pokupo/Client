@@ -8,10 +8,12 @@ var UserInformationWidget = function(){
         authTmplId : null,
         inputParameters : {},
         showBlocks : null,
-        style : null
+        style : null,
+        customContainer: null
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.userInformation.widget; 
+        self.settings.customContainer = Config.Containers.userInformation.customClass;
         self.settings.tmplPath = Config.UserInformation.tmpl.path;
         self.settings.infoTmplId = Config.UserInformation.tmpl.infoTmplId;
         self.settings.authTmplId = Config.UserInformation.tmpl.authTmplId;
@@ -101,11 +103,17 @@ var UserInformationWidget = function(){
         }
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
         AuthBlock : function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.authTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.settings.authTmplId).html());
         },
         InfoBlock : function(){
-            $("#" + self.settings.containerId).empty().append($('script#' + self.settings.infoTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.settings.infoTmplId).html());
         }
     };
     self.Fill = {

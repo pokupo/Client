@@ -5,13 +5,15 @@ var MenuPersonalCabinetWidget = function(){
         containerMenuId: null,
         tmplPath : null,
         menuTmpl : null,
-        style: null
+        style: null,
+        customContainer: null
     };
     self.active = null;
     self.subMenu = [];
     self.InitWidget = function(){
         self.settings.tmplPath = Config.MenuPersonalCabinet.tmpl.path;
         self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
+        self.settings.customContainer = Config.Containers.menuPersonalCabinet.customClass;
         self.settings.menuTmpl = Config.MenuPersonalCabinet.tmpl.menuPersonalCabinet;
         self.settings.style = Config.MenuPersonalCabinet.style;
         self.RegisterEvents();
@@ -55,8 +57,11 @@ var MenuPersonalCabinetWidget = function(){
         });
     };
     self.InsertContainer = function(){
-        if($("#" + self.settings.containerMenuId).length > 0)
-            $("#" + self.settings.containerMenuId).html($('script#' + self.settings.menuTmpl).html());
+        if($("#" + self.settings.containerMenuId).length > 0){
+            var temp = $("#" + self.settings.containerMenuId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerMenuId).empty().html(temp);
+            $("#" + self.settings.containerMenuId).append($('script#' + self.settings.menuTmpl).html());
+        }
     };
     self.Fill = function(){
         var menu = new MenuPersonalCabinetViewModel();

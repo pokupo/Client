@@ -10,10 +10,12 @@
         securityTmpl: null,
         inputParameters: {},
         geoShop: 0,
-        style: null
+        style: null,
+        customContainer: null
     };
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.profile.widget;
+        self.settings.customContainer = Config.Containers.profile.customClass;
         self.settings.tmplPath = Config.Profile.tmpl.path;
         self.settings.personalInformationTmplId = Config.Profile.tmpl.personalInformationTmpl;
         self.settings.deliveryAddressTmpl = Config.Profile.tmpl.deliveryAddressTmpl;
@@ -440,17 +442,25 @@
         }
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerFormId).empty().html(temp);
+        },
         Personal : function(){
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.personalInformationTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.personalInformationTmplId).html());
         },
         Delivery : function(){
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.deliveryAddressTmpl).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.deliveryAddressTmpl).html());
         },
         DeliveryForm : function(){
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.deliveryAddressFormTmpl).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.deliveryAddressFormTmpl).html());
         },
         Security : function(){
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.securityTmpl).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.securityTmpl).html());
         }
     };
     self.Fill = {

@@ -8,10 +8,12 @@ var AuthenticationWidget = function(){
         containerSidebarId : null,
         inputParameters : {},
         https : null,
-        style : null
+        style : null,
+        customContainer: null
     };
     self.InitWidget = function(){
         self.settings.containerFormId = Config.Containers.authentication.widget; 
+        self.settings.customContainer = Config.Containers.authentication.customClass;
         self.settings.tmplPath = Config.Authentication.tmpl.path;
         self.settings.authFormTmplId = Config.Authentication.tmpl.authFormTmplId;
         self.settings.https = Config.Authentication.https;
@@ -103,8 +105,13 @@ var AuthenticationWidget = function(){
         }
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerFormId).empty().html(temp);
+        },
         Authentication : function(){
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.authFormTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.authFormTmplId).html());
         }
     };
     self.Fill = {

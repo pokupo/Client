@@ -7,10 +7,12 @@ var BreadCrumbWidget = function(){
         tmplId : null,
         tmplSelectListId : null,
         inputParameters : {},
-        styleBreadCrumb : null
+        styleBreadCrumb : null,
+        customContainer : null
     };
     self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.breadCrumb.widget; 
+        self.settings.containerId = Config.Containers.breadCrumb.widget;
+        self.settings.customContainer = Config.Containers.breadCrumb.customClass;
         self.settings.tmplPath = Config.BreadCrumbs.tmpl.path;
         self.settings.tmplId = Config.BreadCrumbs.tmpl.tmplId;
         self.settings.tmplSelectListId = Config.BreadCrumbs.tmpl.tmplSelectListId;
@@ -44,7 +46,10 @@ var BreadCrumbWidget = function(){
     self.InsertContainer = function(){
         for(var i=0; i<=self.settings.containerId.length-1; i++){
             if($("#" + self.settings.containerId[i]).length > 0){
-                $("#" + self.settings.containerId[i]).empty().append($('script#' + self.settings.tmplId).html());
+                var temp = $("#" + self.settings.containerId[i]).find(self.SelectCustomContent().join(', ')).clone();
+                $("#" + self.settings.containerId[i]).empty().html(temp);
+
+                $("#" + self.settings.containerId[i]).append($('script#' + self.settings.tmplId).html());
             }
         }
     };

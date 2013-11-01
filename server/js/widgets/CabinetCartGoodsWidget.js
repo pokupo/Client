@@ -9,9 +9,11 @@ var CabinetCartGoodsWidget = function(){
         inputParameters : {},
         style : null,
         containerId : null,
+        customContainer : null
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cabinetCartGoods.widget;
+        self.settings.customContainer = Config.Containers.cabinetCartGoods.customClass;
         self.settings.tmplPath = Config.CabinetCartGoods.tmpl.path;
         self.settings.cartTmplId = Config.CabinetCartGoods.tmpl.cartTmplId;
         self.settings.emptyCartTmplId = Config.CabinetCartGoods.tmpl.emptyCartTmplId;
@@ -115,7 +117,6 @@ var CabinetCartGoodsWidget = function(){
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
                     Loader.Indicator('MenuPersonalCabinetWidget', false);
-                    $("#" + self.settings.containerId).html('');
                     self.BaseLoad.InfoFavorite('no', function(data){
                         Parameters.cache.favorite = data;
                         self.BaseLoad.CartGoods('', function(data){
@@ -139,11 +140,17 @@ var CabinetCartGoodsWidget = function(){
         },
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
         Content : function(){
-            $("#" + self.settings.containerId).html($('script#' + self.settings.cartTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.settings.cartTmplId).html());
         },
         EmptyCart :function(){
-            $("#" + self.settings.containerId).html($('script#' + self.settings.emptyCartTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.settings.emptyCartTmplId).html());
         }
     };
     self.Fill =  {

@@ -10,10 +10,12 @@ var RegistrationWidget = function() {
         regFormStep4TmplId: null,
         inputParameters: {},
         geoShop: 0,
-        style: null
+        style: null,
+        customContainer: null
     };
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.registration.widget;
+        self.settings.customContainer = Config.Containers.registration.customClass;
         self.settings.tmplPath = Config.Registration.tmpl.path;
         self.settings.regFormStep1TmplId = Config.Registration.tmpl.regFormStep1TmplId;
         self.settings.regFormStep2TmplId = Config.Registration.tmpl.regFormStep2TmplId;
@@ -325,17 +327,25 @@ var RegistrationWidget = function() {
         }
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerFormId).empty().html(temp);
+        },
         Step1: function() {
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep1TmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep1TmplId).html());
         },
         Step2: function() {
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep2TmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep2TmplId).html());
         },
         Step3: function() {
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep3TmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep3TmplId).html());
         },
         Step4: function() {
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.regFormStep4TmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep4TmplId).html());
         }
     };
     self.Fill = {

@@ -9,10 +9,12 @@ var OrderListWidget = function() {
         ordEmptyListTmplId: null,
         ordDetailTmplId: null,
         inputParameters: {},
-        style: null
+        style: null,
+        customContainer: null
     };
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.orderList.widget;
+        self.settings.customContainer = Config.Containers.orderList.customClass;
         self.settings.tmplPath = Config.OrderList.tmpl.path;
         self.settings.ordListTmplId = Config.OrderList.tmpl.ordListTmplId;
         self.settings.ordEmptyListTmplId = Config.OrderList.tmpl.ordEmptyListTmplId;
@@ -162,14 +164,21 @@ var OrderListWidget = function() {
         }
     };
     self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerFormId).empty().html(temp);
+        },
         List: function() {
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.ordListTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordListTmplId).html());
         },
         Detail: function() {
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.ordDetailTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordDetailTmplId).html());
         },
         EmptyList: function() {
-            $("#" + self.settings.containerFormId).html($('script#' + self.settings.ordEmptyListTmplId).html());
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordEmptyListTmplId).html());
         }
     };
     self.Fill = {

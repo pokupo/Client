@@ -33,30 +33,30 @@ var Config = {
         sourceParameters : 'object' // источник параметров (строка подключения скрипта 'string' или обьект 'object')
     },
     Containers : {  
-        catalog : {widget: 'catalog', def: 'default_catalog'}, // id контейнера каталога 
-        search  : {widget: 'search_block', def: 'default_search_block'}, // id контейнера формы поиска 
-        breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2']}, // id контейнеров хлебных крошек
+        catalog : {widget: 'catalog', def: 'default_catalog', customClass: 'custom_block'}, // id контейнера каталога 
+        search  : {widget: 'search_block', def: 'default_search_block', customClass: 'custom_block'}, // id контейнера формы поиска 
+        breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
         content : {
-            content : {widget: 'content', def: 'default_content'}, 
-            block: {widget: 'block', def: 'default_block'}
+            content : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, 
+            block: {widget: 'block', def: 'default_block', customClass: 'custom_block'}
         }, // id контейнера контента
         searchResult : {
-            form: {widget: 'advanced_search', def: 'default_advanced_search'},
-            content:{widget: 'content', def: 'default_content'}
+            form: {widget: 'advanced_search', def: 'default_advanced_search', customClass: 'custom_block'},
+            content:{widget: 'content', def: 'default_content', customClass: 'custom_block'}
         }, // id контейнеров расширенной формы и результатов поиска
-        goods : {widget: 'content', def: 'default_content'}, // id контейнера информации о товаре
-        userInformation : {widget: 'user_information', def: 'default_user_information'}, // id контейнера информации о пользователе
-        authentication : {widget: 'content', def: 'default_content'}, //id контейнеров авторизации
-        registration : {widget: 'content', def: 'default_content'}, // id контейнера регистрации
-        cart : {widget: 'cart_information', def: 'default_cart_information'}, // id контейнера корзины
-        cartGoods : {widget: 'content', def: 'default_content'}, // id контейнера реестра товаров корзины
-        cabinetCartGoods : {widget: 'content', def: 'default_content'},
-        profile : {widget: 'content', def: 'default_content'}, // id контейнера меню профиля и содержимого
-        menuPersonalCabinet : {widget: 'profile_menu', def: 'default_profile_menu'},
-        favorites : {widget: 'content', def: 'default_content'}, // id контейнера избранного
-        order : {widget: 'content', def: 'default_content'}, // id конетейнера оформления заказа
-        orderList : {widget: 'content', def: 'default_content'}, // id конетейнера списка заказов
-        payment : {widget: 'content', def: 'default_content'} // id контейнера страницы оплаты
+        goods : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера информации о товаре
+        userInformation : {widget: 'user_information', def: 'default_user_information', customClass: 'custom_block'}, // id контейнера информации о пользователе
+        authentication : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, //id контейнеров авторизации
+        registration : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации
+        cart : {widget: 'cart_information', def: 'default_cart_information', customClass: 'custom_block'}, // id контейнера корзины
+        cartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера реестра товаров корзины
+        cabinetCartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'},
+        profile : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера меню профиля и содержимого
+        menuPersonalCabinet : {widget: 'profile_menu', def: 'default_profile_menu', customClass: 'custom_block'},
+        favorites : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера избранного
+        order : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера оформления заказа
+        orderList : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера списка заказов
+        payment : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера страницы оплаты
     },
     Goods : {
         tmpl: {

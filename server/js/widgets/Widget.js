@@ -101,8 +101,8 @@ var Loader = {
                 this.RegisterReady(key);
             }
             if(container)
-                this.containers.push(container);
-
+                this.containers.push({container: container, widgetName: widget});
+            
             this.ShowLoading();
         }
     },
@@ -154,13 +154,48 @@ var Loader = {
     },
     ShowContent : function(){
         $.each(this.containers, function(i){
-            $('#' + Loader.containers[i]).children().show();
+            $('#' + Loader.containers[i].container).children().not(Loader.SelectCustomContent().join(', ')).show();
+            Loader.ShowCustomContent(Loader.containers[i]);
         });
         this.containers = [];
         this.action = 'show';
     },
-    AddShowContainer : function(id){
-        this.containers.push(id);
+    AddShowContainer : function(widget, id){
+        this.containers.push({container: id, widgetName: widget});
+    },
+    SelectCustomContent : function(){
+        var customContent = [];
+        for(var name in Config.Containers){
+            if(!Config.Containers[name].customClass){
+                for(var i in Config.Containers[name]){
+                    if($('#' + Config.Containers[name][i].widget).find('.' + Config.Containers[name][i].customClass).length > 0)
+                        customContent[customContent.length] = '.' + Config.Containers[name][i].customClass;
+                }
+            }
+            else{
+                if($('#' + Config.Containers[name].widget).find('.' + Config.Containers[name].customClass).length > 0)
+                    customContent[customContent.length] = '.' + Config.Containers[name].customClass;
+            }
+        }
+        return customContent;
+    },
+    ShowCustomContent : function(block){
+        var name = block.widgetName.charAt(0).toLowerCase() + block.widgetName.slice(1);
+        name = name.replace(/Widget/, '');
+        if(!Config.Containers[name].customClass){
+            for(var i in Config.Containers[name]){
+                var t = $('#' + block.container).find('.' + Config.Containers[name][i].customClass);
+                if(t.length > 0){
+                    t.show();
+                }
+            }
+        }
+        else{
+            var t = $('#' + block.container).find('.' + Config.Containers[name].customClass);
+            if(t.length > 0){
+                t.show();
+            }
+        }
     },
     ViewDefaultContent : function(){
         for(var key in Config.Containers){
@@ -187,7 +222,7 @@ var Loader = {
             if(!Config.Containers[key].def){
                 for(var key2 in Config.Containers[key]){    
                     if(Config.Containers[key][key2].def){
-                        if($("#" + Config.Containers[key][key2].widget).length > 0){
+                        if($("#" + Config.Containers[key][key2].def).length > 0){
                             $("#" + Config.Containers[key][key2].def).children().hide();
                         }
                     }
@@ -196,6 +231,21 @@ var Loader = {
             else{
                 if($("#" + Config.Containers[key].def).length > 0){
                     $("#" + Config.Containers[key].def).children().hide();
+                }
+            }
+            
+            if(!Config.Containers[key].customClass){
+                for(var key2 in Config.Containers[key]){    
+                    if(Config.Containers[key][key2].customClass){
+                        if($("." + Config.Containers[key][key2].customClass).length > 0){
+                            $("." + Config.Containers[key][key2].customClass).hide();
+                        }
+                    }
+                }
+            }
+            else{
+                if($("." + Config.Containers[key].customClass).length > 0){
+                    $("." + Config.Containers[key].customClass).hide();
                 }
             }
         }
@@ -270,6 +320,8 @@ function Widget(){
                         Config.Containers[key].widget = WParameters[key].container.widget;
                     if(WParameters[key].container.def)
                         Config.Containers[key].def = WParameters[key].container.def;
+                    if(WParameters[key].container.customClass)
+                        Config.Containers[key].customClass = WParameters[key].container.customClass;
                 }
                 else{
                     for(var key2 in WParameters[key]){
@@ -278,6 +330,8 @@ function Widget(){
                                 Config.Containers[key][key2].widget = WParameters[key][key2].container.widget;
                             if(WParameters[key][key2].container.def)
                                 Config.Containers[key][key2].def = WParameters[key][key2].container.def;
+                            if(WParameters[key][key2].container.customClass)
+                                Config.Containers[key][key2].customClass = WParameters[key][key2].container.customClass;
                         }
                     }
                 }
@@ -355,7 +409,7 @@ function Widget(){
         Loader.Indicator(this.widgetName, test, container);
     };
     this.ShowContainer = function(id){
-        Loader.AddShowContainer(id);
+        Loader.AddShowContainer(this.widgetName, id);
     };
     this.HasDefaultContent = function(){
         var name = this.widgetName.charAt(0).toLowerCase() + this.widgetName.slice(1);
@@ -373,6 +427,22 @@ function Widget(){
                 return true;
         }
         return false;
+    };
+    this.SelectCustomContent = function(){
+        var customContent = [];
+        for(var name in Config.Containers){
+            if(!Config.Containers[name].customClass){
+                for(var i in Config.Containers[name]){
+                    if($('#' + Config.Containers[name][i].widget).find('.' + Config.Containers[name][i].customClass).length > 0)
+                        customContent[customContent.length] = '.' + Config.Containers[name][i].customClass;
+                }
+            }
+            else{
+                if($('#' + Config.Containers[name].widget).find('.' + Config.Containers[name].customClass).length > 0)
+                    customContent[customContent.length] = '.' + Config.Containers[name].customClass;
+            }
+        }
+        return customContent;
     };
     this.ScrollTop = function(elementId, speed){
         if(Loader.countAll == Loader.readyCount){

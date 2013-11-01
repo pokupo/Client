@@ -6,10 +6,12 @@ var SearchWidget = function(){
         tmplPath : null,
         tmplId : null,
         inputParameters : {},
-        style : null
+        style : null,
+        customContainer: null
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.search.widget; 
+        self.settings.customContainer = Config.Containers.search.customClass;
         self.settings.tmplPath = Config.Search.tmpl.path;
         self.settings.tmplId = Config.Search.tmpl.tmplId;
         self.settings.style = Config.Search.style;
@@ -36,7 +38,9 @@ var SearchWidget = function(){
         self.settings.inputParameters = input;
     };
     self.InsertContainer = function(){
-        $("#" + self.settings.containerId).html($('script#' + self.settings.tmplId).html()).show();
+        var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+        $("#" + self.settings.containerId).empty().html(temp);
+        $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html()).show();
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){

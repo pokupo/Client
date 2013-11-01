@@ -6,11 +6,14 @@ var CatalogWidget = function(){
         tmplPath : null,
         tmplId : null,
         inputParameters : {},
-        styleCatalog : null
+        styleCatalog : null,
+        customContainer: null,
+        catalogContainerId: null
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content.content.widget;
         self.settings.catalogContainerId = Config.Containers.catalog.widget;
+        self.settings.customContainer = Config.Containers.catalog.customClass;
         self.settings.tmplPath = Config.Catalog.tmpl.path;
         self.settings.mainTmplPath = Config.Catalog.tmpl.mainPath;
         self.settings.tmplId = Config.Catalog.tmpl.tmplId;
@@ -89,7 +92,10 @@ var CatalogWidget = function(){
     };
     self.InsertContainer = {
         Main : function(){
-            $("#" + self.settings.catalogContainerId).empty().append($('script#' + self.settings.tmplId).html());
+            var temp = $("#" + self.settings.catalogContainerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.catalogContainerId).empty().html(temp);
+            
+            $("#" + self.settings.catalogContainerId).append($('script#' + self.settings.tmplId).html());
         }
     },
     self.Update = function(){
