@@ -30,7 +30,8 @@ var Config = {
         containerIdConfirmWindow : 'dialogConfirm', // id модального окна с предупреждением
         conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
         containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>', // темплейт модального окна с сообщением
-        sourceParameters : 'object' // источник параметров (строка подключения скрипта 'string' или обьект 'object')
+        sourceParameters : 'object', // источник параметров (строка подключения скрипта 'string' или обьект 'object')
+        showCustomBlockOnDefault : false
     },
     Containers : {  
         catalog : {widget: 'catalog', def: 'default_catalog', customClass: 'custom_block'}, // id контейнера каталога 

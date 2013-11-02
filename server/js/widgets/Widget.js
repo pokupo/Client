@@ -182,18 +182,20 @@ var Loader = {
     ShowCustomContent : function(block){
         var name = block.widgetName.charAt(0).toLowerCase() + block.widgetName.slice(1);
         name = name.replace(/Widget/, '');
-        if(!Config.Containers[name].customClass){
-            for(var i in Config.Containers[name]){
-                var t = $('#' + block.container).find('.' + Config.Containers[name][i].customClass);
+        if(Config.Base.showCustomBlockOnDefault ||  Routing.IsDefault()){
+            if(!Config.Containers[name].customClass){
+                for(var i in Config.Containers[name]){
+                    var t = $('#' + block.container).find('.' + Config.Containers[name][i].customClass);
+                    if(t.length > 0){
+                        t.show();
+                    }
+                }
+            }
+            else{
+                var t = $('#' + block.container).find('.' + Config.Containers[name].customClass);
                 if(t.length > 0){
                     t.show();
                 }
-            }
-        }
-        else{
-            var t = $('#' + block.container).find('.' + Config.Containers[name].customClass);
-            if(t.length > 0){
-                t.show();
             }
         }
     },
