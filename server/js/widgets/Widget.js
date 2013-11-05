@@ -205,8 +205,16 @@ var Loader = {
                 for(var key2 in Config.Containers[key]){
                     if(Config.Containers[key][key2].def){
                         if($("#" + Config.Containers[key][key2].def).length > 0){
-                            $("#" + Config.Containers[key][key2].def).children().show();
-                            $("#" + Config.Containers[key][key2].widget).children().hide();
+                            if(key == 'content'){
+                                for(var key3 in Config.Containers[key]){
+                                    $("#" + Config.Containers[key][key3].def).children().show();
+                                    $("#" + Config.Containers[key][key3].widget).children().hide();
+                                }
+                            }
+                            else{
+                                $("#" + Config.Containers[key][key2].def).children().show();
+                                $("#" + Config.Containers[key][key2].widget).children().hide();
+                            }
                         }
                     }
                 }
@@ -413,15 +421,23 @@ function Widget(){
     this.ShowContainer = function(id){
         Loader.AddShowContainer(this.widgetName, id);
     };
-    this.HasDefaultContent = function(){
-        var name = this.widgetName.charAt(0).toLowerCase() + this.widgetName.slice(1);
-        name = name.replace(/Widget/, '');
+    this.HasDefaultContent = function(name, block){
+        if(!name){
+            name = this.widgetName.charAt(0).toLowerCase() + this.widgetName.slice(1);
+            name = name.replace(/Widget/, '');
+        }
         if(!Config.Containers[name].def){
-            for(var i in Config.Containers[name]){
-                if($('#' + Config.Containers[name][i].def).length > 0){
-                    return true;
-                    break;
+            if(!block){
+                for(var block in Config.Containers[name]){
+                    if($('#' + Config.Containers[name][block].def).length > 0){
+                        return true;
+                        break;
+                    }
                 }
+            }
+            else{
+                if($('#' + Config.Containers[name][block].def).length > 0)
+                return true;
             }
         }
         else{

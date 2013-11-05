@@ -89,7 +89,7 @@ var ContentWidget = function(){
         self.SetPosition();
     };
     self.CheckContentRouting = function(){
-        if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
+        if(Routing.route == 'catalog' || Routing.IsDefault()){
             self.SelectTypeContent();
         }
         else
@@ -97,14 +97,23 @@ var ContentWidget = function(){
     };
     self.SelectTypeContent = function(){
         if(Routing.IsCategory()){ 
-            self.BaseLoad.Tmpl(self.settings.tmplForContent, function(){
-                EventDispatcher.DispatchEvent('onload.content.tmpl')
-            });
+            if(!self.HasDefaultContent('content', 'content') || !Routing.IsDefault()){
+                self.BaseLoad.Tmpl(self.settings.tmplForContent, function(){
+                    EventDispatcher.DispatchEvent('onload.content.tmpl')
+                });
+            }
+            else
+                self.WidgetLoader(true);
         }
         else{
-            self.BaseLoad.Tmpl(self.settings.tmplForBlock, function(){
-                EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
-            });
+            console.log(self.HasDefaultContent('content', 'block'));
+            if(!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()){
+                self.BaseLoad.Tmpl(self.settings.tmplForBlock, function(){
+                    EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
+                });
+            }
+            else
+                self.WidgetLoader(true);
         }
     };
     self.RegisterEvents = function(){
