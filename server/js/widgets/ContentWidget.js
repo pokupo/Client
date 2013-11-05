@@ -106,7 +106,6 @@ var ContentWidget = function(){
                 self.WidgetLoader(true);
         }
         else{
-            console.log(self.HasDefaultContent('content', 'block'));
             if(!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()){
                 self.BaseLoad.Tmpl(self.settings.tmplForBlock, function(){
                     EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
