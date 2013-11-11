@@ -262,7 +262,7 @@ var Loader = {
     }
 };
 
-function Widget(){
+var Widget = function (){
     var self = this;
     this.isReady = false;
     this.settings = {
@@ -316,15 +316,26 @@ function Widget(){
             Parameters.loading = Config.Base.loading;
             
             this.RegistrCustomBindings();
-            this.UpdateSettingsContainer();
+            this.UpdateSettings();
             Routing.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId'];
         }
     };
-    this.UpdateSettingsContainer = function(){
+    this.UpdateSettings = function(){
         if(typeof WParameters !== 'undefined'){
             for(var key in WParameters){
+                if(WParameters[key].hasOwnProperty('tmpl')){
+                    Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl.custom = WParameters[key].tmpl;
+                }
+                else{
+                    for(var key2 in WParameters[key]){
+                        if(WParameters[key][key2].hasOwnProperty('tmpl')){
+                            Config[key.charAt(0).toUpperCase() + key.slice(1)][key2].tmpl.custom = WParameters[key][key2].tmpl;
+                        }
+                    }
+                }
+                
                 if(WParameters[key].hasOwnProperty('container')){
                     if(WParameters[key].container.widget)
                         Config.Containers[key].widget = WParameters[key].container.widget;
@@ -648,15 +659,28 @@ function Widget(){
             }
         },
         Tmpl : function(tmpl, callback){
-            if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl)]){
-                self.CreateContainer();
-                XDMTransport.LoadTmpl(tmpl,function(data){
-                    $("#" + self.settings.containerIdForTmpl).append(data);
-                    if(callback)callback();
-                });
+            if(tmpl.custom && tmpl.custom.path){
+                if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.custom.path)]){
+                    self.CreateContainer();
+                    XDMTransport.LoadTmpl(tmpl.custom.path,function(data){
+                        console.log(self.widgetName);
+
+                        $("#" + self.settings.containerIdForTmpl).append(data);
+                        if(callback)callback();
+                    });
+                }
             }
             else{
-                if(callback)callback();
+                if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.path)]){
+                    self.CreateContainer();
+                    XDMTransport.LoadTmpl(tmpl.path,function(data){
+                        $("#" + self.settings.containerIdForTmpl).append(data);
+                        if(callback)callback();
+                    });
+                }
+                else{
+                    if(callback)callback();
+                }
             }
         },
         Path : function(categoryId, callback){

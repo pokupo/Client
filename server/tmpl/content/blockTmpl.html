@@ -64,24 +64,28 @@
         <div class="block_title" data-bind="text: titleBlock"></div>
         <a href="#" class="all_link" data-bind="click: ClickCategory">Все<span>→</span></a>
         <table cellpadding="0" cellspacing="0" class="topPrTable">
-            <tbody data-bind="foreach: contentBlock"> 
-                <tr data-bind="foreach: str">
-                    <td class="topPrCell">
-                        <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, id : cssToCart}"/></div>
-                        <div class="textInfoBlock">
-                            <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></div>
-                            <div class="category">Магазин: <a href="#" data-bind="text: shopName , click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
-                        </div>
-                        <div class="addToCartBlock">
-                            <table>
-                                <tr>
-                                    <td><!-- ko text: sellCost --><!--/ko--> руб.</td>
-                                    <td><a href="#" class="bay" data-bind="click: ClickBuy">Купить</a></td>
-                                </tr>
-                            </table>
-                        </div>
-                    </td>
-                </tr>
+            <tbody> 
+                <!-- ko foreach: contentBlock -->
+                    <tr>
+                        <!-- ko foreach: str -->
+                            <td class="topPrCell">
+                                <div class="photo"><img title="" alt="" src="" data-bind="attr: {src: routeImage, title: chortName, id : cssToCart}"/></div>
+                                <div class="textInfoBlock">
+                                    <div class="title"><a href="#" data-bind="text: chortName, click: ClickGoods, attr: {id : cssTitleToCart}"></a></div>
+                                    <div class="category">Магазин: <a href="#" data-bind="text: shopName , click: ClickShop"></a> <span class="rating_shop" data-bind="text: ratingShop"></span> (<span data-bind="text: positiveOpinion"></span>/<span data-bind="text: negativeOpinion"></span>)</div>
+                                </div>
+                                <div class="addToCartBlock">
+                                    <table>
+                                        <tr>
+                                            <td><!-- ko text: sellCost --><!--/ko--> руб.</td>
+                                            <td><a href="#" class="bay" data-bind="click: ClickBuy">Купить</a></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        <!-- /ko -->
+                    </tr>
+                <!-- /ko -->
             </tbody>
         </table>
     </div>

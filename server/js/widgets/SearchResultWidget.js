@@ -6,12 +6,16 @@ var SearchResultWidget = function(){
         containerIdForAdvancedSearch : null,
         customContainerForSearchResult: null,
         customContainerForAdvancedSearch: null,
-        tmplPath : null,
-        advancedSearchFormTmpl : null,
-        contentTableTmpl : null,
-        contentListTmpl : null,
-        contentTileTmpl : null,
-        noResultsTmpl : null,
+        tmpl : {
+            path : null,
+            id : {
+                form : null,
+                table : null,
+                list : null,
+                tile : null,
+                empty : null,
+            }
+        },
         idAdvancedSearchForm : null,
         idTreeCategoriesForAdvancedSearchForm : 'tree_categories_for_advanced_search',
         inputParameters : {},
@@ -26,12 +30,7 @@ var SearchResultWidget = function(){
         self.settings.customContainerForSearchResult = Config.Containers.searchResult.content.customClass;
         self.settings.containerIdForAdvancedSearch = Config.Containers.searchResult.form.widget;
         self.settings.customContainerForAdvancedSearch = Config.Containers.searchResult.form.customClass;
-        self.settings.tmplPath = Config.SearchResult.tmpl.path;
-        self.settings.advancedSearchFormTmpl = Config.SearchResult.tmpl.advancedSearchFormTmpl;
-        self.settings.contentTableTmpl = Config.SearchResult.tmpl.contentTableTmpl;
-        self.settings.contentListTmpl = Config.SearchResult.tmpl.contentListTmpl;
-        self.settings.contentTileTmpl = Config.SearchResult.tmpl.contentTileTmpl;
-        self.settings.noResultsTmpl = Config.SearchResult.tmpl.noResultsTmpl;
+        self.settings.tmpl = Config.SearchResult.tmpl;
         self.settings.idAdvancedSearchForm = Config.SearchResult.idAdvancedSearchForm;
         self.settings.listPerPage = Config.SearchResult.listPerPage;
         self.settings.listTypeSearch = Config.SearchResult.listTypeSearch;
@@ -60,12 +59,6 @@ var SearchResultWidget = function(){
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if (input.content.tmpl)
-                    self.settings.tmplPath = 'searchResult/' + input.content.tmpl + '.html';
-            }
-            if(input.form){
-                if (input.form.tmpl)
-                    self.settings.tmplPath = 'searchResult/' + input.form.tmpl + '.html';
             }
         }
         self.settings.inputParameters = input;
@@ -99,19 +92,19 @@ var SearchResultWidget = function(){
         else
             self.WidgetLoader(true);  
     };
+    self.LoadTmpl = function(){
+        new Dyn();
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('searchResultWidget.onload.tmpl')
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            new Dyn();
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('searchResultWidget.onload.tmpl')
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                new Dyn();
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('searchResultWidget.onload.tmpl')
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -186,23 +179,23 @@ var SearchResultWidget = function(){
             var temp = $("#" + self.settings.containerIdForAdvancedSearch).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForAdvancedSearch).empty().html(temp);
             
-            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.advancedSearchFormTmpl).html()).children().hide();
+            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.tmpl.id.form).html()).children().hide();
         },
         SearchResult : function(type){
             var temp = $("#" + self.settings.containerIdForSearchResult).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForSearchResult).empty().html(temp);
             
             if(type == 'table'){ 
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTableTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.table).html());
             }
             if(type == 'list'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentListTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.list).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTileTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.tile).html());
             }
             if(type == 'error'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.noResultsTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.empty).html());
             }
         }
     };

@@ -3,9 +3,13 @@ var FavoritesWidget = function() {
     self.widgetName = 'FavoritesWidget';
     self.favorites = null;
     self.settings = {
-        tmplPath: null,
-        favTmplId: null,
-        emptyFavTmplId: null,
+        tmpl : {
+            path: null,
+            id : {
+                content : null,
+                empty : null
+            }
+        },
         showBlocks : null,
         inputParameters: {},
         style: null,
@@ -15,9 +19,7 @@ var FavoritesWidget = function() {
     self.InitWidget = function() {
         self.settings.containerId = Config.Containers.favorites.widget;
         self.settings.customContainer = Config.Containers.favorites.customClass;
-        self.settings.tmplPath = Config.Favorites.tmpl.path;
-        self.settings.favTmplId = Config.Favorites.tmpl.cartTmplId;
-        self.settings.emptyFavTmplId = Config.Favorites.tmpl.emptyCartTmplId;
+        self.settings.tmpl = Config.Favorites.tmpl;
         self.settings.showBlocks = Config.Favorites.showBlocks;
         self.settings.style = Config.Favorites.style;
         self.RegisterEvents();
@@ -67,17 +69,18 @@ var FavoritesWidget = function() {
             self.WidgetLoader(true);
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckRoute();
+        });
+    };
     self.RegisterEvents = function() {
         if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRoute();
-            });
+            self.LoadTmpl();
         }
         else {
             EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRoute();
-                });
+                self.LoadTmpl();
             });
         }
 
@@ -169,11 +172,11 @@ var FavoritesWidget = function() {
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.favTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.content).html());
         },
         EmptyFaforites :function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.emptyFavTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.empty).html());
         }
     };
     self.Fill =  {

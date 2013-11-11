@@ -6,15 +6,29 @@ var ContentWidget = function(){
         customContainer : null,
         blockContainerId : null,
         customBlock : null,
-        tmplForBlock : null,
-        tmplForContent : null,
-        blockSliderTmpl : null,
-        blockCaruselTmpl : null,
-        blockTileTmpl : null,
-        contentTableTmpl : null,
-        contentListTmpl : null,
-        contentTileTmpl : null,
-        noResultsTmpl : null,
+        tmpl : {
+            content: {
+                path : {
+                    list : null
+                }, 
+                id: {
+                    table : null, 
+                    list : null, 
+                    tile : null,
+                    empty : null
+                }
+            },
+            block : {
+                path : {
+                    block : null
+                }, 
+                id: {
+                    slider : null,
+                    carusel : null,
+                    tile : null
+                }
+            }
+        },
         inputParameters : {},
         styleCatalog : {},
         countGoodsInBlock : null,
@@ -49,16 +63,12 @@ var ContentWidget = function(){
         if(!$.isEmptyObject(input)){
             if(input.block){
                 self.settings.countGoodsInBlock = input.block.count;
-                if (input.block.tmpl)
-                    self.settings.tmplPath = 'content/' + input.block.tmpl + '.html';
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if (input.content.tmpl)
-                    self.settings.tmplPath = 'content/' + input.content.tmpl + '.html';
             }
         }
         self.settings.inputParameters = input;
@@ -68,16 +78,7 @@ var ContentWidget = function(){
         self.settings.customContainer = Config.Containers.content.content.customClass;
         self.settings.blockContainerId = Config.Containers.content.block.widget;
         self.settings.customBlock = Config.Containers.content.block.customClass;
-        self.settings.tmplForBlock = Config.Content.tmpl.pathBlock;
-        self.settings.tmplForContent = Config.Content.tmpl.pathList;
-        self.settings.blockMainTmpl = Config.Content.tmpl.blockMainTmpl;
-        self.settings.blockSliderTmpl = Config.Content.tmpl.blockSliderTmpl;
-        self.settings.blockCaruselTmpl = Config.Content.tmpl.blockCaruselTmpl;
-        self.settings.blockTileTmpl = Config.Content.tmpl.blockTileTmpl;
-        self.settings.contentTableTmpl = Config.Content.tmpl.contentTableTmpl;
-        self.settings.contentListTmpl = Config.Content.tmpl.contentListTmpl;
-        self.settings.contentTileTmpl = Config.Content.tmpl.contentTileTmpl;
-        self.settings.noResultsTmpl = Config.Content.tmpl.noResultsTmpl;
+        self.settings.tmpl = Config.Content.tmpl;
         self.settings.countGoodsInBlock = Config.Content.countGoodsInBlock;
         self.settings.orderByContent = Config.Content.orderBy;
         self.settings.listPerPage = Config.Content.listPerPage;
@@ -98,7 +99,7 @@ var ContentWidget = function(){
     self.SelectTypeContent = function(){
         if(Routing.IsCategory()){ 
             if(!self.HasDefaultContent('content', 'content') || !Routing.IsDefault()){
-                self.BaseLoad.Tmpl(self.settings.tmplForContent, function(){
+                self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
                     EventDispatcher.DispatchEvent('onload.content.tmpl')
                 });
             }
@@ -107,7 +108,7 @@ var ContentWidget = function(){
         }
         else{
             if(!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()){
-                self.BaseLoad.Tmpl(self.settings.tmplForBlock, function(){
+                self.BaseLoad.Tmpl(self.settings.tmpl.block, function(){
                     EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
                 });
             }
@@ -195,13 +196,13 @@ var ContentWidget = function(){
         },
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockSliderTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.tmpl.block.id.slider).html());
             }
             if(type == 'carousel'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockCaruselTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.tmpl.block.id.carusel).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.blockTileTmpl).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.tmpl.block.id.tile).html());
             }
             $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
@@ -209,16 +210,16 @@ var ContentWidget = function(){
             var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerId).empty().html(temp);
             if(type == 'table'){ 
-                $("#" + self.settings.containerId).append($('script#' + self.settings.contentTableTmpl).html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.table).html());
             }
             if(type == 'list'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.contentListTmpl).html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.list).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.contentTileTmpl).html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.tile).html());
             }
             if(type == 'no_results'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.noResultsTmpl).html());
+                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.empty).html());
             }
         }
     };

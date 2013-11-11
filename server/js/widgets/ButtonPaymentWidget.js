@@ -2,13 +2,17 @@ window.ButtonPaymentWidget = function(){
     var self = this;
     self.widgetName = 'ButtonPaymentWidget';
     self.settings = {
-        tmplPath : null,
-        contentTmpl : null,
+        tmpl : {
+            path : null,
+            id : {
+                content: null,
+                skin : null
+            }
+        },
         inputParameters : {},
         containerId : null,
         containerButton : null,
         title : null,
-        skin : null,
         skinFromMemory: false,
         uniq : null,
         source : null,
@@ -23,10 +27,8 @@ window.ButtonPaymentWidget = function(){
     };
     self.SetParameters = function(data){
         self.settings.containerId = Config.Containers.payment.widget;
-        self.settings.tmplPath = Config.ButtonPayment.tmpl.path;
-        self.settings.contentTmpl = Config.ButtonPayment.tmpl.contentTmpl;
+        self.settings.tmpl= Config.ButtonPayment.tmpl;
         self.settings.title = Config.ButtonPayment.title;
-        self.settings.skin = Config.ButtonPayment.tmpl.skin;
         
         self.settings.containerButton = data.element;
         
@@ -35,10 +37,7 @@ window.ButtonPaymentWidget = function(){
             input = WParameters.buttonPayment;
         }
         if(!$.isEmptyObject(input)){
-            if(input.tmpl)
-                self.settings.tmplPath = 'buttonPayment/' + input.tmpl + '.html';
-            if(input.skin){
-                self.settings.skin = input.skin;
+            if(input.tmpl && input.tmpl.id && input.tmpl.id.skin){
                 self.settings.skinFromMemory = true;
             }
             if(input.title)
@@ -91,17 +90,18 @@ window.ButtonPaymentWidget = function(){
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('ButtonPayment.onload.tmpl_' + self.settings.uniq)
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('ButtonPayment.onload.tmpl_' + self.settings.uniq)
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('ButtonPayment.onload.tmpl_' + self.settings.uniq)
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -158,10 +158,10 @@ window.ButtonPaymentWidget = function(){
     };
     self.InsertContainer = {
         Button : function(){
-            $(self.settings.containerButton).html($('script#' + self.settings.skin).html());
+            $(self.settings.containerButton).html($('script#' + self.settings.tmpl.id.skin).html());
         },
         Content : function(){
-            $("#" + self.settings.containerId).html($('script#' + self.settings.contentTmpl).html()).hide();
+            $("#" + self.settings.containerId).html($('script#' + self.settings.tmpl.id.content).html()).hide();
         }
     };
     self.Fill = {

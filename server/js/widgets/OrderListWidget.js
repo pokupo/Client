@@ -4,10 +4,14 @@ var OrderListWidget = function() {
     self.currentPage = 1;
     self.settings = {
         containerFormId: null,
-        tmplPath: null,
-        ordListTmplId: null,
-        ordEmptyListTmplId: null,
-        ordDetailTmplId: null,
+        tmpl : {
+            path: null,
+            id : {
+                list : null,
+                empty : null,
+                detail : null
+            }
+        },
         inputParameters: {},
         style: null,
         customContainer: null
@@ -15,10 +19,7 @@ var OrderListWidget = function() {
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.orderList.widget;
         self.settings.customContainer = Config.Containers.orderList.customClass;
-        self.settings.tmplPath = Config.OrderList.tmpl.path;
-        self.settings.ordListTmplId = Config.OrderList.tmpl.ordListTmplId;
-        self.settings.ordEmptyListTmplId = Config.OrderList.tmpl.ordEmptyListTmplId;
-        self.settings.ordDetailTmplId = Config.OrderList.tmpl.ordDetailTmplId;
+        self.settings.tmpl = Config.OrderList.tmpl;
         self.settings.style = Config.OrderList.style;
         self.SetInputParameters();
         self.RegisterEvents();
@@ -36,10 +37,6 @@ var OrderListWidget = function() {
             input = WParameters.order;
         }
 
-        if (!$.isEmptyObject(input)) {
-            if (input.tmpl)
-                self.settings.tmplPath = 'orderList/' + input.tmpl + '.html';
-        }
         self.settings.inputParameters = input;
     };
     self.CheckRouteListOrder = function() {
@@ -60,17 +57,18 @@ var OrderListWidget = function() {
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckRouteListOrder();
+        });
+    };
     self.RegisterEvents = function() {
         if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRouteListOrder();
-            });
+            self.LoadTmpl();
         }
         else {
             EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRouteListOrder();
-                });
+                self.LoadTmpl();
             });
         }
 
@@ -170,15 +168,15 @@ var OrderListWidget = function() {
         },
         List: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordListTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.list).html());
         },
         Detail: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordDetailTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.detail).html());
         },
         EmptyList: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordEmptyListTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.empty).html());
         }
     };
     self.Fill = {

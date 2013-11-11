@@ -3,11 +3,15 @@ var RegistrationWidget = function() {
     self.widgetName = 'RegistrationWidget';
     self.settings = {
         containerFormId: null,
-        tmplPath: null,
-        regFormStep1TmplId: null,
-        regFormStep2TmplId: null,
-        regFormStep3TmplId: null,
-        regFormStep4TmplId: null,
+        tmpl : {
+            path : null,
+            id : {
+                step1: null,
+                step2: null,
+                step3: null,
+                step4: null
+            }
+        },
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -16,11 +20,7 @@ var RegistrationWidget = function() {
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.registration.widget;
         self.settings.customContainer = Config.Containers.registration.customClass;
-        self.settings.tmplPath = Config.Registration.tmpl.path;
-        self.settings.regFormStep1TmplId = Config.Registration.tmpl.regFormStep1TmplId;
-        self.settings.regFormStep2TmplId = Config.Registration.tmpl.regFormStep2TmplId;
-        self.settings.regFormStep3TmplId = Config.Registration.tmpl.regFormStep3TmplId;
-        self.settings.regFormStep4TmplId = Config.Registration.tmpl.regFormStep4TmplId;
+        self.settings.tmpl = Config.Registration.tmpl;
         self.settings.style = Config.Registration.style;
         self.SetInputParameters();
         self.RegisterEvents();
@@ -39,8 +39,6 @@ var RegistrationWidget = function() {
         }
 
         if(!$.isEmptyObject(input)){
-            if(input.tmpl)
-                self.settings.tmplPath = 'registration/' + input.tmpl + '.html';
             if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
         }
@@ -60,17 +58,18 @@ var RegistrationWidget = function() {
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckRouteRegistration();
+        });
+    };
     self.RegisterEvents = function() {
         if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRouteRegistration();
-            });
+            self.LoadTmpl();
         }
         else {
             EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRouteRegistration();
-                });
+                self.LoadTmpl();
             });
         }
 
@@ -333,19 +332,19 @@ var RegistrationWidget = function() {
         },
         Step1: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep1TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step1).html());
         },
         Step2: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep2TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.id.step2).html());
         },
         Step3: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep3TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step3).html());
         },
         Step4: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep4TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step4).html());
         }
     };
     self.Fill = {

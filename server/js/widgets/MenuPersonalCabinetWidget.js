@@ -3,18 +3,19 @@ var MenuPersonalCabinetWidget = function(){
     self.widgetName = 'MenuPersonalCabinetWidget';
     self.settings = {
         containerMenuId: null,
-        tmplPath : null,
-        menuTmpl : null,
+        tmpl : {
+            path : null,
+            id : null
+        },
         style: null,
         customContainer: null
     };
     self.active = null;
     self.subMenu = [];
     self.InitWidget = function(){
-        self.settings.tmplPath = Config.MenuPersonalCabinet.tmpl.path;
+        self.settings.tmpl = Config.MenuPersonalCabinet.tmpl;
         self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
         self.settings.customContainer = Config.Containers.menuPersonalCabinet.customClass;
-        self.settings.menuTmpl = Config.MenuPersonalCabinet.tmpl.menuPersonalCabinet;
         self.settings.style = Config.MenuPersonalCabinet.style;
         self.RegisterEvents();
         self.SetPosition();
@@ -23,12 +24,6 @@ var MenuPersonalCabinetWidget = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.menuPersonalCabinet){
             input = WParameters.menuPersonalCabinet;
-        }
-        
-        if(!$.isEmptyObject(input)){
-            if (input.tmpl) {
-                self.settings.tmplPath = 'menuPersonalCabinet/' + input.tmpl + '.html';
-            }
         }
      };
     self.AddMenu = function(opt){
@@ -48,7 +43,7 @@ var MenuPersonalCabinetWidget = function(){
         }
     };
     self.RegisterEvents = function() {
-        self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
+        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
             self.CheckRoute();
         });
 
@@ -60,7 +55,7 @@ var MenuPersonalCabinetWidget = function(){
         if($("#" + self.settings.containerMenuId).length > 0){
             var temp = $("#" + self.settings.containerMenuId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerMenuId).empty().html(temp);
-            $("#" + self.settings.containerMenuId).append($('script#' + self.settings.menuTmpl).html());
+            $("#" + self.settings.containerMenuId).append($('script#' + self.settings.tmpl.id).html());
         }
     };
     self.Fill = function(){

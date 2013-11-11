@@ -3,15 +3,19 @@ var OrderWidget = function() {
     self.widgetName = 'OrderWidget';
     self.settings = {
         containerFormId: null,
-        tmplPath: null,
-        ordFormStep1TmplId: null,
-        ordFormStep1ConfirmTmplId: null,
-        ordFormStep1ProfileTmplId: null,
-        ordFormStep3TmplId: null,
-        ordFormStep2TmplId: null,
-        ordFormStep2DeliveryTmplId: null,
-        ordFormStep4TmplId: null,
-        ordFormStep5TmplId: null,
+        tmpl : {
+            path: null,
+            id : {
+                step1 : null,
+                step1Confirm : null,
+                step1Profile : null,
+                step2 : null,
+                step2Form : null,
+                step3 : null,
+                step4 : null,
+                step5 : null
+            }
+        },
         inputParameters: {},
         style: null,
         customContainer: null
@@ -30,15 +34,7 @@ var OrderWidget = function() {
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.order.widget;
         self.settings.customContainer = Config.Containers.order.customClass;
-        self.settings.tmplPath = Config.Order.tmpl.path;
-        self.settings.ordFormStep1TmplId = Config.Order.tmpl.ordFormStep1TmplId;
-        self.settings.ordFormStep1ConfirmTmplId = Config.Order.tmpl.ordConfirmFormStep1TmplId;
-        self.settings.ordFormStep1ProfileTmplId = Config.Order.tmpl.ordProfileFormStep1TmplId
-        self.settings.ordFormStep3TmplId = Config.Order.tmpl.ordFormStep3TmplId;
-        self.settings.ordFormStep2TmplId = Config.Order.tmpl.ordFormStep2TmplId;
-        self.settings.ordFormStep2DeliveryTmplId = Config.Order.tmpl.ordDeliveryFormStep2TmplId;
-        self.settings.ordFormStep4TmplId = Config.Order.tmpl.ordFormStep4TmplId;
-        self.settings.ordFormStep5TmplId = Config.Order.tmpl.ordFormStep5TmplId;
+        self.settings.tmpl = Config.Order.tmpl;
         self.settings.style = Config.Order.style;
         self.SetInputParameters();
         self.RegisterEvents();
@@ -56,10 +52,6 @@ var OrderWidget = function() {
             input = WParameters.order;
         }
 
-        if (!$.isEmptyObject(input)) {
-            if (input.tmpl)
-                self.settings.tmplPath = 'order/' + input.tmpl + '.html';
-        }
         self.settings.inputParameters = input;
     };
     self.CheckRouteOrder = function() {
@@ -156,17 +148,18 @@ var OrderWidget = function() {
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckRouteOrder();
+        });
+    };
     self.RegisterEvents = function() {
         if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRouteOrder();
-            });
+            self.LoadTmpl();
         }
         else {
             EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRouteOrder();
-                });
+                self.LoadTmpl();
             });
         }
 
@@ -721,35 +714,35 @@ var OrderWidget = function() {
         },
         Step1: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep1TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step1).html());
         },
         Step1Confirm: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep1ConfirmTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step1Confirm).html());
         },
         Step1Profile: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep1ProfileTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step1Profile).html());
         },
         Step3: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep3TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step3).html());
         },
         Step2: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep2TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step2).html());
         },
         Step2Form: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep2DeliveryTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step2Form).html());
         },
         Step4: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep4TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step4).html());
         },
         Step5: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordFormStep5TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step5).html());
         }
     };
     self.Fill = {

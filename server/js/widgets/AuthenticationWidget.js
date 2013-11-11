@@ -3,9 +3,10 @@ var AuthenticationWidget = function(){
     self.widgetName = 'AuthenticationWidget';
     self.settings = {
         containerFormId : null,
-        tmplPath : null,
-        authFormTmplId : null,
-        containerSidebarId : null,
+        tmpl: {
+            path : null,
+            id : null
+        },
         inputParameters : {},
         https : null,
         style : null,
@@ -14,8 +15,7 @@ var AuthenticationWidget = function(){
     self.InitWidget = function(){
         self.settings.containerFormId = Config.Containers.authentication.widget; 
         self.settings.customContainer = Config.Containers.authentication.customClass;
-        self.settings.tmplPath = Config.Authentication.tmpl.path;
-        self.settings.authFormTmplId = Config.Authentication.tmpl.authFormTmplId;
+        self.settings.tmpl = Config.Authentication.tmpl;
         self.settings.https = Config.Authentication.https;
         self.settings.style = Config.Authentication.style;
         self.SetInputParameters();
@@ -34,9 +34,6 @@ var AuthenticationWidget = function(){
             input = WParameters.authentication;
         }
         if(!$.isEmptyObject(input)){
-            if(input.tmpl){
-                self.settings.tmplPath = 'authentication/' + input.tmpl + '.html';
-            }
             if(input.https){
                 self.settings.https = input.https;
                 Parameters.cache.https = input.https;
@@ -54,17 +51,18 @@ var AuthenticationWidget = function(){
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckAuthenticationRoute();
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckAuthenticationRoute();
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckAuthenticationRoute();
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -111,7 +109,7 @@ var AuthenticationWidget = function(){
         },
         Authentication : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.authFormTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id).html());
         }
     };
     self.Fill = {

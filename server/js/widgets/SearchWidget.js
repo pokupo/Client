@@ -3,8 +3,10 @@ var SearchWidget = function(){
     self.widgetName = 'SearchWidget';
     self.settings = {
         containerId : null, 
-        tmplPath : null,
-        tmplId : null,
+        tmpl: {
+            path : null,
+            id : null
+        },
         inputParameters : {},
         style : null,
         customContainer: null
@@ -12,8 +14,7 @@ var SearchWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.search.widget; 
         self.settings.customContainer = Config.Containers.search.customClass;
-        self.settings.tmplPath = Config.Search.tmpl.path;
-        self.settings.tmplId = Config.Search.tmpl.tmplId;
+        self.settings.tmpl = Config.Search.tmpl;
         self.settings.style = Config.Search.style;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -40,7 +41,7 @@ var SearchWidget = function(){
     self.InsertContainer = function(){
         var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
         $("#" + self.settings.containerId).empty().html(temp);
-        $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html()).show();
+        $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html()).show();
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
@@ -52,17 +53,18 @@ var SearchWidget = function(){
             });
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
-                });
+                self.LoadTmpl();
             });
         }
         

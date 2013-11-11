@@ -1,5 +1,5 @@
-var AnimateBreadCrumb = function(id){
-    $('.' + id).toggle(function() {
+var AnimateBreadCrumb = function(){
+    $('.breadcrumbsSubnav').toggle(function() {
         $(this).addClass('active');
         return false;
     }, function() {

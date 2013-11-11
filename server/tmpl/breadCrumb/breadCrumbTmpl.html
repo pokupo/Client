@@ -24,18 +24,19 @@
                     </div>
                 </td>
             <!-- /ko -->
-            
             <!-- ko foreach: crumbs -->
             <td class="second">
-                <!-- ko if: selectList().length > 0 -->
-                <div class="breadcrumbsSubnav" data-bind="css: $parent.cssItem">
+                <!-- ko if: showSelectList -->
+                <div class="breadcrumbsSubnav">
                     <a href="#" class="default" data-bind="text: title, click: ClickItem"></a>
-                    <ul data-bind="foreach: selectList">
+                    <ul>
+                        <!-- ko foreach: selectList -->
                         <li><a href="#" data-bind="text: title, click: ClickItem, css: cssActiveItem"></a></li>
+                        <!-- /ko -->
                     </ul>
                 </div>
                 <!-- /ko -->
-                <!-- ko if: selectList().length == 0 -->
+                <!-- ko ifnot: showSelectList -->
                     <a href="#" class="default" data-bind="text: title, click: ClickItem"></a>
                 <!-- /ko -->
             </td>
@@ -44,8 +45,4 @@
         </tr>
     </table>
     <div class="clear"></div>
-</script>
-
-<script type="text/html" id="breadCrumbSelectListTmpl">
-
 </script>

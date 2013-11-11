@@ -3,8 +3,10 @@ var CartWidget = function(){
     self.widgetName = 'CartWidget';
     self.settings = {
         title : null,
-        tmplPath : null,
-        tmplId : null,
+        tmpl :{
+            path : null,
+            id : null
+        },
         inputParameters : {},
         containerId : null,
         showBlocks : null,
@@ -15,8 +17,7 @@ var CartWidget = function(){
         self.settings.containerId = Config.Containers.cart.widget;
         self.settings.customContainer = Config.Containers.cart.customClass;
         self.settings.title = Config.Cart.title;
-        self.settings.tmplPath = Config.Cart.tmpl.path;
-        self.settings.tmplId = Config.Cart.tmpl.tmplId;
+        self.settings.tmpl = Config.Cart.tmpl;
         self.settings.style = Config.Cart.style;
         self.settings.showBlocks = Config.Cart.showBlocks;
         self.RegisterEvents();
@@ -41,9 +42,6 @@ var CartWidget = function(){
                      self.settings.showBlocks[key] = input.show[key];
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'cart/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
@@ -51,7 +49,7 @@ var CartWidget = function(){
         var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
         $("#" + self.settings.containerId).empty().html(temp);
             
-        $('#' + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
+        $('#' + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html());
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
@@ -63,17 +61,18 @@ var CartWidget = function(){
             });
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
-                });
+                self.LoadTmpl();
             });
         }
         

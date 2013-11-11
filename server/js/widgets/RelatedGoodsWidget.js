@@ -2,12 +2,16 @@ window.RelatedGoodsWidget = function(){
     var self = this;
     self.widgetName = 'RelatedGoodsWidget';
     self.settings = {
-        tmplPath : null,
-        contentTableTmpl : null,
-        contentListTmpl : null,
-        contentTileTmpl : null,
-        contentSliderTmpl : null,
-        contentCaruselTmpl : null,
+        tmpl : {
+            path : null,
+            id : {
+                table : null,
+                list : null,
+                tile : null,
+                slider : null,
+                carousel : null
+            }
+        },
         inputParameters : {},
         container : null,
         relatedGoods : {
@@ -21,12 +25,7 @@ window.RelatedGoodsWidget = function(){
         uniq : null
     };
     self.InitWidget = function(){
-        self.settings.tmplPath = Config.RelatedGoods.tmpl.path;
-        self.settings.contentTableTmpl = Config.RelatedGoods.tmpl.contentTableTmpl;
-        self.settings.contentListTmpl = Config.RelatedGoods.tmpl.contentListTmpl;
-        self.settings.contentTileTmpl = Config.RelatedGoods.tmpl.contentTileTmpl;
-        self.settings.contentSliderTmpl = Config.RelatedGoods.tmpl.contentSliderTmpl;
-        self.settings.contentCaruselTmpl = Config.RelatedGoods.tmpl.contentCaruselTmpl;
+        self.settings.tmpl = Config.RelatedGoods.tmpl;
         self.settings.relatedGoods.count = Config.RelatedGoods.countGoodsInBlock;
         self.settings.relatedGoods.countTile = Config.RelatedGoods.countGoodsTileInStr;
         self.settings.relatedGoods.typeView = Config.RelatedGoods.typeView;
@@ -42,8 +41,12 @@ window.RelatedGoodsWidget = function(){
     self.SetParameters = function(data){
         self.settings.container = data.element;
         for(var key in data.options.params){
-            if(key == 'tmpl' && data.options.params['tmpl'])
-                self.settings.tmplPath = 'relatedGoods/' + data.options.params['tmpl'] + '.html';
+            if(key == 'tmpl' && data.options.params['tmpl']){
+                if(data.options.params['tmpl']['path'])
+                    self.settings.tmpl.path = data.options.params['tmpl']['path'];
+                if(data.options.params['tmpl']['id'])
+                    self.settings.tmpl.id = data.options.params['tmpl']['id'];
+            }
             else if (key == 'uniq' && data.options.params['uniq'])
                 self.settings.uniq = data.options.params['uniq'];
             else if(key == 'id')
@@ -51,17 +54,18 @@ window.RelatedGoodsWidget = function(){
             self.settings.relatedGoods[key] = data.options.params[key];
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -78,15 +82,15 @@ window.RelatedGoodsWidget = function(){
     };
     self.InsertContainer = function(type){
             if(type == 'slider')
-                $(self.settings.container).html($('script#' + self.settings.contentSliderTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.tmpl.id.slider).html());
             if(type == 'carousel')
-                $(self.settings.container).html($('script#' + self.settings.contentCaruselTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.tmpl.id.carousel).html());
             if(type == 'tile')
-                $(self.settings.container).html($('script#' + self.settings.contentTileTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.tmpl.id.tile).html());
             if(type == 'table') 
-                $(self.settings.container).html($('script#' + self.settings.contentTableTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.tmpl.id.table).html());
             if(type == 'list')
-                $(self.settings.container).html($('script#' + self.settings.contentListTmpl).html());
+                $(self.settings.container).html($('script#' + self.settings.tmpl.id.list).html());
             if(type == 'empty')
                 $(self.settings.container).html('');
     };

@@ -1,13 +1,13 @@
 var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
-    host : "dev.pokupo.ru/",
-    pathToJS : "server/js/",
-    pathToTmpl : "server/tmpl/",
-    pathToData : "server/services/DataProxy.php?query=",
-    pathToPostData : "server/services/DataPostProxy.php",
-    pathToCore: "server/index.html",
-    pathToPostCore : 'server/postData.html',
+    host : "pokupo-server.asmsoft.ru/",    
+    pathToJS : "js/",
+    pathToTmpl : "tmpl/",
+    pathToData : "services/DataProxy.php?query=",
+    pathToPostData : "services/DataPostProxy.php",
+    pathToCore: "index.html",
+    pathToPostCore : 'postData.html',
     
     sourceData : 'proxy', //варианты api, proxy
     scripts : [
@@ -186,11 +186,14 @@ var XDMTransport = {
        delete XDMTransport.event[hash];
     },
     LoadTmpl: function(data, callback){
+        var url = XDMTransport.GetProtocol() +  JSSettings.host +  JSSettings.pathToTmpl + data;
+        if(/^(https?|ftp)\:\/\/(www\.)?([a-zA-Z0-9\.\-]+\.[a-z]{2,})(\/.+)$/.test(data))
+            url = data;
         if(JSSettings.sourceData == 'api'){
             $.ajax({
                 type: "GET",
                 async : true,
-                url: decodeURIComponent(XDMTransport.GetProtocol() +  JSSettings.host +  JSSettings.pathToTmpl + data),
+                url: decodeURIComponent(url),
                 dataType: 'html',
                 success: function(msg) {
                      if(callback)callback(msg);
@@ -205,7 +208,7 @@ var XDMTransport = {
                         if(callback)callback(msg);
                     }
                 });
-                socket.postMessage(JSSettings.pathToTmpl + data);
+                socket.postMessage(JSSettings.pathToData + url);
             }
             else{
                 setTimeout(function(){XDMTransport.LoadTmpl(data, callback)}, 1000);

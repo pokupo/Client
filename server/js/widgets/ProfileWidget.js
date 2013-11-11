@@ -3,11 +3,15 @@
     self.widgetName = 'ProfileWidget';
     self.settings = {
         containerFormId: null,
-        tmplPath: null,
-        personalInformationTmplId: null,
-        deliveryAddressTmpl: null,
-        deliveryAddressFormTmpl : null,
-        securityTmpl: null,
+        tmpl : {
+            path: null,
+            id : {
+                personal : null,
+                delivery : null,
+                deliveryForm : null,
+                security : null
+            }
+        },
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -16,11 +20,7 @@
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.profile.widget;
         self.settings.customContainer = Config.Containers.profile.customClass;
-        self.settings.tmplPath = Config.Profile.tmpl.path;
-        self.settings.personalInformationTmplId = Config.Profile.tmpl.personalInformationTmpl;
-        self.settings.deliveryAddressTmpl = Config.Profile.tmpl.deliveryAddressTmpl;
-        self.settings.deliveryAddressFormTmpl = Config.Profile.tmpl.deliveryAddressFormTmpl;
-        self.settings.securityTmpl = Config.Profile.tmpl.securityTmpl;
+        self.settings.tmpl = Config.Profile.tmpl;
         self.settings.style = Config.Profile.style;
         self.SetInputParameters();
         self.RegisterEvents();
@@ -39,8 +39,6 @@
         }
         
         if(!$.isEmptyObject(input)){
-            if (input.tmpl)
-                self.settings.tmplPath = 'profile/' + input.tmpl + '.html';
             if (input.geoShop)
                 self.settings.geoShop = input.geoShop;
         }
@@ -72,17 +70,18 @@
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckRouteProfile();
+        });
+    };
     self.RegisterEvents = function() {
         if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRouteProfile();
-            });
+            self.LoadTmpl();
         }
         else {
             EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRouteProfile();
-                });
+                self.LoadTmpl();
             });
         }
 
@@ -448,19 +447,19 @@
         },
         Personal : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.personalInformationTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.personal).html());
         },
         Delivery : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.deliveryAddressTmpl).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.delivery).html());
         },
         DeliveryForm : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.deliveryAddressFormTmpl).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.deliveryForm).html());
         },
         Security : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.securityTmpl).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.security).html());
         }
     };
     self.Fill = {

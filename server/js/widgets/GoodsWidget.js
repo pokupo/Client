@@ -4,8 +4,10 @@ var GoodsWidget = function(){
     self.goods = null;
     self.settings = {
         containerId : null, 
-        tmplPath : null,
-        tmplId : null,
+        tmpl : {
+            path : null,
+            id : null
+        },
         showBlocks : null,
         inputParameters : {},
         styleGoods : null,
@@ -14,8 +16,7 @@ var GoodsWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.goods.widget;
         self.settings.customContainer = Config.Containers.goods.customClass;
-        self.settings.tmplPath = Config.Goods.tmpl.path;
-        self.settings.tmplId = Config.Goods.tmpl.tmplId;
+        self.settings.tmpl = Config.Goods.tmpl;
         self.settings.showBlocks = Config.Goods.showBlocks;
         self.settings.styleGoods = Config.Goods.style;
         self.SetInputParameters();
@@ -49,9 +50,6 @@ var GoodsWidget = function(){
                     }
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'goods/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
@@ -62,17 +60,18 @@ var GoodsWidget = function(){
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckRoute();
+        });
+    };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckRoute();
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckRoute();
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -99,7 +98,7 @@ var GoodsWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html());
         }
     };
     self.Fill = {

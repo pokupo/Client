@@ -3,9 +3,13 @@ var UserInformationWidget = function(){
     self.widgetName = 'UserInformationWidget';
     self.settings = {
         containerId : null, 
-        tmplPath : null,
-        infoTmplId : null,
-        authTmplId : null,
+        tmpl :{
+            path : null,
+            id : {
+                info : null,
+                auth : null 
+            }
+        },
         inputParameters : {},
         showBlocks : null,
         style : null,
@@ -14,9 +18,7 @@ var UserInformationWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.userInformation.widget; 
         self.settings.customContainer = Config.Containers.userInformation.customClass;
-        self.settings.tmplPath = Config.UserInformation.tmpl.path;
-        self.settings.infoTmplId = Config.UserInformation.tmpl.infoTmplId;
-        self.settings.authTmplId = Config.UserInformation.tmpl.authTmplId;
+        self.settings.tmpl = Config.UserInformation.tmpl;
         self.settings.showBlocks = Config.UserInformation.showBlocks;
         self.settings.style = Config.UserInformation.style;
         self.RegisterEvents();
@@ -42,26 +44,21 @@ var UserInformationWidget = function(){
                         self.settings.showBlocks.push(input.show[i]);
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'userInformation/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
-    self.GetTmplRoute = function(){
-        return self.settings.tmplPath + self.settings.tmplId + '.html';
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
+        });
     };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
-            });
+            self.LoadTmpl();
         }
         else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
-                });
+            EventDispatcher.AddEventListener('onload.scripts', function (){ 
+                self.LoadTmpl();
             });
         }
         
@@ -109,11 +106,11 @@ var UserInformationWidget = function(){
         },
         AuthBlock : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.authTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.auth).html());
         },
         InfoBlock : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.infoTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.info).html());
         }
     };
     self.Fill = {

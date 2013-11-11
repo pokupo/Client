@@ -3,9 +3,13 @@ var CabinetCartGoodsWidget = function(){
     self.widgetName = 'CabinetCartGoodsWidget';
     self.cart = null;
     self.settings = {
-        tmplPath : null,
-        cartTmplId : null,
-        emptyCartTmplId : null,
+        tmpl : {
+            path : null,
+            id : {
+                content : null,
+                empty : null
+            }
+        },
         inputParameters : {},
         style : null,
         containerId : null,
@@ -14,9 +18,7 @@ var CabinetCartGoodsWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cabinetCartGoods.widget;
         self.settings.customContainer = Config.Containers.cabinetCartGoods.customClass;
-        self.settings.tmplPath = Config.CabinetCartGoods.tmpl.path;
-        self.settings.cartTmplId = Config.CabinetCartGoods.tmpl.cartTmplId;
-        self.settings.emptyCartTmplId = Config.CabinetCartGoods.tmpl.emptyCartTmplId;
+        self.settings.tmpl = Config.CabinetCartGoods.tmpl;
         self.settings.style = Config.CabinetCartGoods.style;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -62,17 +64,18 @@ var CabinetCartGoodsWidget = function(){
         else
             self.WidgetLoader(true);
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckCabinetCartGoodsRoute();
+        });
+    };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckCabinetCartGoodsRoute();
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckCabinetCartGoodsRoute();
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -146,11 +149,11 @@ var CabinetCartGoodsWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.cartTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.content).html());
         },
         EmptyCart :function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.emptyCartTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.empty).html());
         }
     };
     self.Fill =  {
@@ -211,9 +214,9 @@ var CabinetCartGoodsWidget = function(){
 
 var CartGoodsViewModel = function(){
     var self = this;
-    self.content = ko.observableArray();
+    self.sellerBlock = ko.observableArray();
     self.AddContent = function(data){
-        self.content.push(data);
+        self.sellerBlock.push(data);
     };
 };
 
@@ -247,7 +250,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
     }, this);
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
     self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
-    self.isChecked = ko.observable(false);
+    self.isSelectedAll = ko.observable(false);
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
@@ -301,12 +304,12 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
 
-        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
 
         if(self.goods().length == 0)
             content.content.remove(self);
         if(content.content().length == 0)
-            EventDispatcher.DispatchEvent('CartGoods.empty.cart');
+            EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart');
     };
     self.IsFavorite = function(){
         
@@ -339,7 +342,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             goods.isSelected(check);
         });
     }
-    self.DisabledButton = ko.computed(function(){
+    self.isDisabledButton = ko.computed(function(){
         var countGoods = self.goods().length;
         var selectedGoods = [];
         
@@ -348,8 +351,8 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
               selectedGoods.push(self.goods()[i].id);
         };
         if(selectedGoods.length > 0)
-            return true;
-        return false;
+            return false;
+        return true;
     }, this);
 };
 

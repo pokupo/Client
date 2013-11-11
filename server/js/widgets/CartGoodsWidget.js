@@ -3,9 +3,11 @@ var CartGoodsWidget = function(){
     self.widgetName = 'CartGoodsWidget';
     self.cart = null;
     self.settings = {
-        tmplPath : null,
-        cartTmplId : null,
-        emptyCartTmplId : null,
+        tmpl: {
+            path : null,
+            content : null,
+            empty : null,
+        },
         inputParameters : {},
         style : null,
         containerId : null,
@@ -14,9 +16,7 @@ var CartGoodsWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cartGoods.widget;
         self.settings.customContainer = Config.Containers.cartGoods.customClass;
-        self.settings.tmplPath = Config.CartGoods.tmpl.path;
-        self.settings.cartTmplId = Config.CartGoods.tmpl.cartTmplId;
-        self.settings.emptyCartTmplId = Config.CartGoods.tmpl.emptyCartTmplId;
+        self.settings.tmpl = Config.CartGoods.tmpl;
         self.settings.style = Config.CartGoods.style;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -49,9 +49,6 @@ var CartGoodsWidget = function(){
                     }
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'cartGoods/' + input.tmpl + '.html';
-            }
         }
     };
     self.CheckCartGoodsRoute = function(){
@@ -62,17 +59,18 @@ var CartGoodsWidget = function(){
             self.WidgetLoader(true);
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            self.CheckCartGoodsRoute();
+        });
+    };
     self.RegisterEvents = function(){ 
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckCartGoodsRoute();
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckCartGoodsRoute();
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -127,11 +125,11 @@ var CartGoodsWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.cartTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.content).html());
         },
         EmptyCart :function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.emptyCartTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.empty).html());
         }
     };
     self.Fill =  {
@@ -192,9 +190,9 @@ var CartGoodsWidget = function(){
 
 var CartGoodsViewModel = function(){
     var self = this;
-    self.content = ko.observableArray();
+    self.sellerBlock = ko.observableArray();
     self.AddContent = function(data){
-        self.content.push(data);
+        self.sellerBlock.push(data);
     };
 };
 
@@ -228,7 +226,7 @@ var BlockGoodsForSellerViewModel = function(content){
     }, this);
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
     self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
-    self.isChecked = ko.observable(false);
+    self.isSelectedAll = ko.observable(false);
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
@@ -324,7 +322,7 @@ var BlockGoodsForSellerViewModel = function(content){
             goods.isSelected(check);
         });
     }
-    self.DisabledButton = ko.computed(function(){
+    self.isDisabledButton = ko.computed(function(){
         var countGoods = self.goods().length;
         var selectedGoods = [];
         
@@ -333,8 +331,8 @@ var BlockGoodsForSellerViewModel = function(content){
               selectedGoods.push(self.goods()[i].id);
         };
         if(selectedGoods.length > 0)
-            return true;
-        return false;
+            return false;
+        return true;
     }, this);
 };
 

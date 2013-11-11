@@ -3,9 +3,10 @@ var BreadCrumbWidget = function(){
     self.widgetName = 'BreadCrumbWidget';
     self.settings = {
         containerId : null, 
-        tmplPath : null,
-        tmplId : null,
-        tmplSelectListId : null,
+        tmpl : {
+            path : null,
+            id : null
+        },
         inputParameters : {},
         styleBreadCrumb : null,
         customContainer : null
@@ -13,9 +14,7 @@ var BreadCrumbWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.breadCrumb.widget;
         self.settings.customContainer = Config.Containers.breadCrumb.customClass;
-        self.settings.tmplPath = Config.BreadCrumbs.tmpl.path;
-        self.settings.tmplId = Config.BreadCrumbs.tmpl.tmplId;
-        self.settings.tmplSelectListId = Config.BreadCrumbs.tmpl.tmplSelectListId;
+        self.settings.tmpl = Config.BreadCrumbs.tmpl;
         self.settings.styleBreadCrumb = Config.BreadCrumbs.style;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -33,15 +32,7 @@ var BreadCrumbWidget = function(){
             input = WParameters.breadCrumb;
         }
 
-        if(!$.isEmptyObject(input)){
-            if (input.tmpl) {
-                self.settings.tmplPath = 'breadCrumb/' + input.tmpl + '.html';
-            }
-        }
         self.settings.inputParameters = input;
-    };
-    self.GetTmplRoute = function(){
-        return self.settings.tmplPath + self.settings.tmplId + '.html';
     };
     self.InsertContainer = function(){
         for(var i=0; i<=self.settings.containerId.length-1; i++){
@@ -49,7 +40,7 @@ var BreadCrumbWidget = function(){
                 var temp = $("#" + self.settings.containerId[i]).find(self.SelectCustomContent().join(', ')).clone();
                 $("#" + self.settings.containerId[i]).empty().html(temp);
 
-                $("#" + self.settings.containerId[i]).append($('script#' + self.settings.tmplId).html());
+                $("#" + self.settings.containerId[i]).append($('script#' + self.settings.tmpl.id).html());
             }
         }
     };
@@ -64,17 +55,18 @@ var BreadCrumbWidget = function(){
             });
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl')
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl')
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl')
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -113,7 +105,7 @@ var BreadCrumbWidget = function(){
                 if($("#" + self.settings.containerId[i]).length > 0){
                     ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
                     self.ShowContainer(self.settings.containerId[i]);
-                    new AnimateBreadCrumb(data.cssItem);
+                    new AnimateBreadCrumb();
                 }
                 delete data;
             }
@@ -141,8 +133,14 @@ var BreadCrumbItem = function(data){
     self.title = data.name_category;
     self.typeCategory = data.type_category; 
     self.selectList = ko.observableArray();
+    self.showSelectList = ko.computed(function(){
+        if(self.selectList() > 0)
+            return true;
+        else false;
+    }, this);
     self.ClickItem = function(){
-        
+        if(!self.showSelectList())
+            EventDispatcher.DispatchEvent('breadCrumbWidget.click.item', {id : self.id});
     };
     self.AddSelectList = function(children){
         for(var i = 0; i <= children.length-1; i++){
@@ -156,7 +154,6 @@ var BreadCrumbViewModel = function(){
     self.lastItem = ko.observable();;
     self.title = "";
     self.crumbs = ko.observableArray();
-    self.cssItem = 'breadcrumbs_item';
     
     self.ToHomepage = function(){
         Routing.SetHash('default', 'Домашняя', {});

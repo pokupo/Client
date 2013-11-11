@@ -3,8 +3,10 @@ var CatalogWidget = function(){
     self.widgetName = 'CatalogWidget';
     self.settings = {
         containerId : null,
-        tmplPath : null,
-        tmplId : null,
+        tmpl : { 
+            path : null,
+            id : null
+        },
         inputParameters : {},
         styleCatalog : null,
         customContainer: null,
@@ -14,10 +16,7 @@ var CatalogWidget = function(){
         self.settings.containerId = Config.Containers.content.content.widget;
         self.settings.catalogContainerId = Config.Containers.catalog.widget;
         self.settings.customContainer = Config.Containers.catalog.customClass;
-        self.settings.tmplPath = Config.Catalog.tmpl.path;
-        self.settings.mainTmplPath = Config.Catalog.tmpl.mainPath;
-        self.settings.tmplId = Config.Catalog.tmpl.tmplId;
-        self.settings.blockMainTmpl = Config.Catalog.tmpl.blockMainTmplId;
+        self.settings.tmpl = Config.Catalog.tmpl;
         self.settings.styleCatalog = Config.Catalog.style;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -34,29 +33,20 @@ var CatalogWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.catalog){
             input = WParameters.catalog;
         }
-        if(!$.isEmptyObject(input)){
-            if (input.tmpl) {
-                self.settings.tmplPath = 'catalog/' + input.tmpl + '.html';
-            }
-        }
         self.settings.inputParameters = input;
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
+        });
+    };
     self.RegisterEvents = function(){
-
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.mainTmplPath, function(){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
-                });
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.mainTmplPath, function(){
-                    self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                        EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
-                    });
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -95,7 +85,7 @@ var CatalogWidget = function(){
             var temp = $("#" + self.settings.catalogContainerId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.catalogContainerId).empty().html(temp);
             
-            $("#" + self.settings.catalogContainerId).append($('script#' + self.settings.tmplId).html());
+            $("#" + self.settings.catalogContainerId).append($('script#' + self.settings.tmpl.id).html());
         }
     },
     self.Update = function(){
@@ -162,10 +152,9 @@ var CatalogWidget = function(){
 
 var CatalogViewModel = function(){
     var self = this;
-    self.isActive = Routing.GetActiveCategory();
-    self.children = ko.observableArray();
+    self.tab = ko.observableArray();
     self.AddItem = function(data){
-        var section = new SectionViewModel(data);
+        var section = new SectionViewModel(data, self.tab());
         if(data.children){
             for(var i = 0; i <= data.children.length-1; i++){
                 var item1 = new ItemViewModel(data.children[i], data.id);
@@ -178,11 +167,11 @@ var CatalogViewModel = function(){
                 section.children.push(item1);
             }
         }
-        self.children.push(section);
+        self.tab.push(section);
     }
 }
 
-var SectionViewModel = function(data){
+var SectionViewModel = function(data, parent){
     var self = this;
     self.id = data.id;
     self.title = ko.computed(function() {
@@ -193,25 +182,36 @@ var SectionViewModel = function(data){
     self.type_category = data.type_category;
     self.listClass = 'catalogCategories_' + data.id;
     self.tabClass = ko.computed(function() {
+        var css = 'listCategories_' + data.id;
+        if(parent.length == 1)
+            css = css + ' single';
         if(Routing.GetActiveCategory() == data.id){
             if(data.back)
-                return 'listCategories_' + data.id + ' return active'
+                return css + ' return active'
             else
-                return 'listCategories_' + data.id + ' active'
+                return css + ' active'
         }
         else
-            return 'listCategories_' + data.id;
+            return css;
     }, this);
     self.countGoods = data.count_goods;
     self.children = ko.observableArray();
-    self.TextItem = ko.computed(function(){
-        var text = data.name_category;
-        if(data.count_goods && data.count_goods > 0)
-            text = text + ' <span>' + data.count_goods + '</span>';
-        return text;
+    self.titleWithCount = ko.computed(function(){
+        if(data.back)
+            return 'Вверх';
+        else{
+            var text = data.name_category;
+            if(data.count_goods && data.count_goods > 0)
+                text = text + ' <span>' + data.count_goods + '</span>';
+            return text;
+        }
     }, this);
-    
-    self.ClickSection = function() {
+    self.isActive = ko.computed(function(){
+        if(Routing.GetActiveCategory() == self.id)
+            return true;
+        return false;
+    }, this);
+    self.ClickTab = function() {
         if(Parameters.cache.catalogs[self.id]){
             var tabTag = $('.listCategories_' + self.id)[0].tagName;
             $(tabTag + '[class^=listCategories]').removeClass('active');
@@ -239,11 +239,21 @@ var ItemViewModel = function(data, parent) {
     self.countGoods = data.count_goods;
     self.children = ko.observableArray();
     
-    self.TextItem = ko.computed(function(){
+    self.titleWithCount = ko.computed(function(){
         var text = data.name_category;
         if(data.count_goods && data.count_goods > 0)
             text = text + ' <span>' + data.count_goods + '</span>';
         return text;
+    }, this);
+    self.hasChildren = ko.computed(function(){
+       if(self.children().length > 0)
+           return true;
+       return false;
+    }, this);
+    self.liClass = ko.computed(function(){
+       if(self.hasChildren())
+           return 'menuparent';
+       return '';
     }, this);
     self.ClickItem = function() {
         var params;

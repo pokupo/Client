@@ -2,8 +2,10 @@ window.InfoSellerWidget = function(){
     var self = this;
     self.widgetName = 'InfoSellerWidget';
     self.settings = {
-        tmplPath : null,
-        tmplId : null,
+        tmpl : {
+            path : null,
+            id : null
+        },
         inputParameters : {},
         container : null,
         style : null,
@@ -19,15 +21,14 @@ window.InfoSellerWidget = function(){
         Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
-        self.settings.tmplPath = Config.InfoSeller.tmpl.path;
-        self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
+        self.settings.tmpl = Config.InfoSeller.tmpl;
         self.settings.container = data.element;
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
                 if(data.options.params['tmpl']['path'])
-                    self.settings.tmplPath = 'infoSeller/' + data.options.params['tmpl']['path'] + '.html';
+                    self.settings.tmpl.path = data.options.params['tmpl']['path'];
                 if(data.options.params['tmpl']['id'])
-                    self.settings.tmplId = data.options.params['tmpl']['id'];
+                    self.settings.tmpl.id = data.options.params['tmpl']['id'];
             }
             else if(key == 'uniq' && data.options.params['uniq'])
                     self.settings.hash = data.options.params['uniq'];
@@ -35,17 +36,18 @@ window.InfoSellerWidget = function(){
                 self.settings.infoSeller[key] = data.options.params[key];
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -67,7 +69,7 @@ window.InfoSellerWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){
-        $(self.settings.container).empty().append($('script#' + self.settings.tmplId).html());
+        $(self.settings.container).empty().append($('script#' + self.settings.tmpl.id).html());
         ko.applyBindings(data, $(self.settings.container).children()[0]);
     }
 }
