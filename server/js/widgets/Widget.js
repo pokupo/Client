@@ -331,7 +331,7 @@ var Widget = function (){
                 else{
                     for(var key2 in WParameters[key]){
                         if(WParameters[key][key2].hasOwnProperty('tmpl')){
-                            Config[key.charAt(0).toUpperCase() + key.slice(1)][key2].tmpl.custom = WParameters[key][key2].tmpl;
+                            Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl[key2].custom = WParameters[key][key2].tmpl;
                         }
                     }
                 }
@@ -659,18 +659,7 @@ var Widget = function (){
             }
         },
         Tmpl : function(tmpl, callback){
-            if(tmpl.custom && tmpl.custom.path){
-                if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.custom.path)]){
-                    self.CreateContainer();
-                    XDMTransport.LoadTmpl(tmpl.custom.path,function(data){
-                        console.log(self.widgetName);
-
-                        $("#" + self.settings.containerIdForTmpl).append(data);
-                        if(callback)callback();
-                    });
-                }
-            }
-            else{
+            function Default (){
                 if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.path)]){
                     self.CreateContainer();
                     XDMTransport.LoadTmpl(tmpl.path,function(data){
@@ -681,6 +670,102 @@ var Widget = function (){
                 else{
                     if(callback)callback();
                 }
+            };
+            function Custom (){
+                if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.custom.path)]){
+                    self.CreateContainer();
+                    XDMTransport.LoadTmpl(tmpl.custom.path,function(data){
+                        if(data){
+                            var id = 'temp_' + EventDispatcher.HashCode(tmpl.custom.path);
+                            var temp = $('<div id="' + id + '"></div>');
+                            temp.append(data);
+                            
+                            if(tmpl.custom.id){
+                                if($.type(tmpl.id) == 'object'){
+                                    if($.type(tmpl.custom.id) == 'object'){
+                                        for(var key in tmpl.id){
+                                            if(!tmpl.custom.id[key]){
+                                                console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']. No search key [' + key + ']');
+                                                temp.remove();
+                                                delete tmpl.custom;
+                                                Default ();
+                                                return false;
+                                                break;
+                                            }
+                                            else{
+                                                if(temp.find('script#' + tmpl.custom.id[key]).length != 1){
+                                                    console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id[key] + ']');
+                                                    temp.remove();
+                                                    delete tmpl.custom;
+                                                    Default ();
+                                                    return false;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else{
+                                        console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
+                                }   
+                                else{
+                                    if($(data).find('script#' + tmpl.custom.id).length != 1){
+                                        console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id + ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
+                                }
+                            }
+                            else{
+                                if($.type(tmpl.id) == 'object'){
+                                    for(var key in tmpl.id){
+                                        if(temp.find('script#' + tmpl.id[key]).length != 1){
+                                            console.log('Error settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id[key] + ']');
+                                            temp.remove();
+                                            delete tmpl.custom;
+                                            Default ();
+                                            return false;
+                                            break;
+                                        }
+                                    }
+                                }   
+                                else{
+                                    if($(data).find('script#' + tmpl.id).length != 1){
+                                        console.log('Error settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
+                                        temp.remove();
+                                        Default ();
+                                        return false;
+                                    }
+                                }
+                            }
+                            
+                            $("#" + self.settings.containerIdForTmpl).append(data);
+                            if(callback)callback();
+                        }
+                        else{
+                            console.log('Error load file template - ' + tmpl.custom.path);
+                            delete tmpl.custom;
+                            Default ();
+                        }
+                    });
+                }
+                else{
+                    if(callback)callback();
+                }
+            };
+            
+            
+            if(tmpl.custom && tmpl.custom.path){
+                Custom();
+            }
+            else{
+                Default();
             }
         },
         Path : function(categoryId, callback){

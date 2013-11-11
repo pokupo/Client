@@ -197,6 +197,9 @@ var XDMTransport = {
                 dataType: 'html',
                 success: function(msg) {
                      if(callback)callback(msg);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    if(callback)callback('');
                 }
             })
         }
