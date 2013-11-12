@@ -56,15 +56,10 @@ window.RelatedGoodsWidget = function(){
     };
     self.LoadTmpl = function(){
         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            console.log('load tmpl');
-            console.log(self.settings.uniq);
             EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
         });
     };
-    self.RegisterEvents = function(){
-        console.log('register event');
-        console.log(self.settings.uniq);
-            
+    self.RegisterEvents = function(){    
         EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq, function (data){
             var query = self.settings.relatedGoods.start + '/' + self.settings.relatedGoods.count + '/' + self.settings.relatedGoods.orderBy;
             self.BaseLoad.RelatedGoods(self.settings.relatedGoods.id, query, function(data){
@@ -91,7 +86,6 @@ window.RelatedGoodsWidget = function(){
                 $(self.settings.container).html('');
     };
     self.CheckData = function(data){ 
-        console.log(data);
         if(!data.err ){
             self.InsertContainer(self.settings.relatedGoods.typeView);
             self.Fill(self.settings.relatedGoods, data)
@@ -106,7 +100,7 @@ window.RelatedGoodsWidget = function(){
     };
     self.Render = function(data){
         ko.applyBindings(data, $(self.settings.container).children()[0]);
-        
+
         if(self.settings.relatedGoods.typeView == 'slider')
                 new AnimateSlider(data.cssBlockContainer);
         if(self.settings.relatedGoods.typeView == 'carousel')
@@ -151,6 +145,7 @@ var RelatedGoodsViewModel = function(settings, data){
                 }
             }
             self.cssBlockContainer  = self.cssBlockContainer + EventDispatcher.HashCode(data.toString());
+            data.unshift(first);
         }
         EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block_' + settings.uniq, self);
     }
