@@ -36,7 +36,7 @@ var MenuPersonalCabinetWidget = function(){
     self.CheckRouteMenuProfile = function() {
         if(Routing.route == 'profile' || Routing.route == 'favorites' || Routing.route == 'cabinet_cart' || Routing.route == 'purchases'){
             self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-                self.InsertContainer();
+                self.InsertContainer.Content();
                 self.Fill();
             });
         }
@@ -50,11 +50,14 @@ var MenuPersonalCabinetWidget = function(){
             self.CheckRouteMenuProfile();
         });
     };
-    self.InsertContainer = function(){
-        if($("#" + self.settings.containerMenuId).length > 0){
+    self.InsertContainer = {
+        EmptyWidget : function(){
             var temp = $("#" + self.settings.containerMenuId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerMenuId).empty().html(temp);
-            $("#" + self.settings.containerMenuId).append($('script#' + self.settings.tmpl.id).html());
+        },
+        Content : function(){
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerMenuId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
     self.Fill = function(){
@@ -64,9 +67,25 @@ var MenuPersonalCabinetWidget = function(){
     };
     self.Render = function(menu){
         if ($("#" + self.settings.containerMenuId).length > 0) {
-            ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
+            try{
+                ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
+                self.WidgetLoader(true, self.settings.containerMenuId);
+            }
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Content();
+                        self.Render(menu);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerMenuId);
+                }
+            }
         }
-        self.WidgetLoader(true, self.settings.containerMenuId);
     };
     self.SetPosition = function() {
         if (self.settings.style.position == 'absolute') {

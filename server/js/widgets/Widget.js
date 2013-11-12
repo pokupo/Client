@@ -265,6 +265,7 @@ var Loader = {
 var Widget = function (){
     var self = this;
     this.isReady = false;
+    this.widgetName = false;
     this.settings = {
         hostApi : null,
         httpsHostApi : null,
@@ -286,6 +287,7 @@ var Widget = function (){
                 Loader.Indicator(widget.widgetName, false);
             this.BaseLoad.Roots(function(){
                 widget.InitWidget();
+                self.widgetName = widget.widgetName;
             });
         }else{
             setTimeout(function(){self.Init(widget, noindicate)}, 100);
@@ -480,6 +482,37 @@ var Widget = function (){
         else{
             setTimeout(function() {self.ScrollTop(elementId);}, 100); 
         }
+    };
+    this.GetTmplName = function(name, block){
+        var tmplName = '';
+        if(name){
+            if(!block){
+                tmplName = this.settings.tmpl.id[name];
+                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id && this.settings.tmpl.custom.id[name])
+                    tmplName = this.settings.tmpl.custom.id[name];
+            }
+            else{
+                tmplName = this.settings.tmpl[block].id[name];
+                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id && this.settings.tmpl[block].custom.id[name])
+                    tmplName = this.settings.tmpl[block].custom.id[name];
+            }
+        }
+        else{
+            if(!block){
+                tmplName = this.settings.tmpl.id;
+                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id)
+                    tmplName = this.settings.tmpl.custom.id;
+            }
+            else{
+                tmplName = this.settings.tmpl[block].id;
+                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id)
+                    tmplName = this.settings.tmpl[block].custom.id;
+            }
+        }
+        return tmplName;
+    };
+    this.Exeption = function(text){
+        Logger.Console.Exeption(this.widgetName, text);
     };
     this.QueryError = function(data, callback, callbackPost){
         if (data.err) {
@@ -677,7 +710,7 @@ var Widget = function (){
                     self.CreateContainer();
                     XDMTransport.LoadTmpl(tmpl.custom.path,function(data){
                         if(data){
-                            var id = 'temp_' + EventDispatcher.HashCode(tmpl.custom.path);
+                            var id = 'temp_' + EventDispatcher.GetUUID();
                             var temp = $('<div id="' + id + '"></div>');
                             temp.append(data);
                             
@@ -686,27 +719,28 @@ var Widget = function (){
                                     if($.type(tmpl.custom.id) == 'object'){
                                         for(var key in tmpl.id){
                                             if(!tmpl.custom.id[key]){
-                                                console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']. No search key [' + key + ']');
+                                                tmpl.custom.id[key] = tmpl.id[key];
+                                            }
+                                            if((tmpl.custom.id[key] && temp.find('script#' + tmpl.custom.id[key]).length != 1)){
+                                                Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for key [' + key + '] - [' + tmpl.custom.id[key] + ']');
                                                 temp.remove();
                                                 delete tmpl.custom;
                                                 Default ();
                                                 return false;
                                                 break;
                                             }
-                                            else{
-                                                if(temp.find('script#' + tmpl.custom.id[key]).length != 1){
-                                                    console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id[key] + ']');
-                                                    temp.remove();
-                                                    delete tmpl.custom;
-                                                    Default ();
-                                                    return false;
-                                                    break;
-                                                }
+                                            else if(!tmpl.custom.id[key] && temp.find('script#' + tmpl.id[key]).length != 1){
+                                                Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for key [' + key + '] - [' + tmpl.id[key] + ']');
+                                                temp.remove();
+                                                delete tmpl.custom;
+                                                Default ();
+                                                return false;
+                                                break;
                                             }
                                         }
                                     }
                                     else{
-                                        console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']');
+                                        Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']');
                                         temp.remove();
                                         delete tmpl.custom;
                                         Default ();
@@ -715,7 +749,7 @@ var Widget = function (){
                                 }   
                                 else{
                                     if($(data).find('script#' + tmpl.custom.id).length != 1){
-                                        console.log('Error settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id + ']');
+                                        Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id + ']');
                                         temp.remove();
                                         delete tmpl.custom;
                                         Default ();
@@ -727,7 +761,7 @@ var Widget = function (){
                                 if($.type(tmpl.id) == 'object'){
                                     for(var key in tmpl.id){
                                         if(temp.find('script#' + tmpl.id[key]).length != 1){
-                                            console.log('Error settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id[key] + ']');
+                                            Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id[key] + ']');
                                             temp.remove();
                                             delete tmpl.custom;
                                             Default ();
@@ -738,7 +772,7 @@ var Widget = function (){
                                 }   
                                 else{
                                     if($(data).find('script#' + tmpl.id).length != 1){
-                                        console.log('Error settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
+                                        Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
                                         temp.remove();
                                         Default ();
                                         return false;
@@ -750,7 +784,7 @@ var Widget = function (){
                             if(callback)callback();
                         }
                         else{
-                            console.log('Error load file template - ' + tmpl.custom.path);
+                            Logger.Console.Exeption(self.widgetName,'Error load file template - ' + tmpl.custom.path);
                             delete tmpl.custom;
                             Default ();
                         }

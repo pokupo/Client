@@ -146,11 +146,17 @@ window.ButtonPaymentWidget = function(){
         }
     };
     self.InsertContainer = {
+        EmptyWidget : function(container){
+            var temp = $(container).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + container).empty().html(temp);
+        },
         Button : function(){
-            $(self.settings.containerButton).html($('script#' + self.settings.tmpl.id.skin).html());
+            self.InsertContainer.EmptyWidget(self.settings.containerButton);
+            $(self.settings.containerButton).html($('script#' + self.GetTmplName('skin')).html());
         },
         Content : function(){
-            $("#" + self.settings.containerId).html($('script#' + self.settings.tmpl.id.content).html()).hide();
+            self.InsertContainer.EmptyWidget("#" + self.settings.containerId);
+            $("#" + self.settings.containerId).html($('script#' + self.GetTmplName('content')).html()).hide();
         }
     };
     self.Fill = {
@@ -166,7 +172,23 @@ window.ButtonPaymentWidget = function(){
     };
     self.Render = {
         Button : function(data){
-            ko.applyBindings(data, $(self.settings.containerButton).children()[0]);
+            try{
+                ko.applyBindings(data, $(self.settings.containerButton).children()[0]);
+            }
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName('skin') + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Button();
+                        self.Render.Button(data);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+            }
         },
         Content : function(data){
             if ($("#" + self.settings.containerId).length > 0) {

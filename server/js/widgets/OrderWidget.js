@@ -703,35 +703,35 @@ var OrderWidget = function() {
         },
         Step1: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step1).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1')).html());
         },
         Step1Confirm: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step1Confirm).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Confirm')).html());
         },
         Step1Profile: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step1Profile).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Profile')).html());
         },
         Step3: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step3).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html());
         },
         Step2: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step2).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html());
         },
         Step2Form: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step2Form).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2Form')).html());
         },
         Step4: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step4).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html());
         },
         Step5: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.step5).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step5')).html());
         }
     };
     self.Fill = {
@@ -847,187 +847,317 @@ var OrderWidget = function() {
     };
     self.Render = {
         Step1: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-            }
-            $('input#' + form.registrationForm.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+            try{
+                if ($("#" + self.settings.containerFormId).length > 0) {
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                }
+                $('input#' + form.registrationForm.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
 
-            delete form;
-            self.WidgetLoader(true, self.settings.containerFormId);
+                delete form;
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Step1();
+                        self.Render.Step1(form);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+            }
         },
         Step1Confirm: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true,  self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Confirm') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step1Confirm();
+                            self.Render.Step1Confirm(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true,  self.settings.containerFormId);
         },
         Step1Profile: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-            }
-            $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                changeMonth: true,
-                changeYear: true,
-                dateFormat: 'dd.mm.yy',
-                defaultDate: '-24Y',
-                yearRange: "c-77:c+6",
-                minDate: '-101Y',
-                maxDate: '-18Y',
-                onClose: function(dateText, inst) {
-                    form.birthDay(dateText);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormat: 'dd.mm.yy',
+                        defaultDate: '-24Y',
+                        yearRange: "c-77:c+6",
+                        minDate: '-101Y',
+                        maxDate: '-18Y',
+                        onClose: function(dateText, inst) {
+                            form.birthDay(dateText);
+                        }
+                    });
+                    self.WidgetLoader(true, self.settings.containerFormId);
                 }
-            });
-            self.WidgetLoader(true, self.settings.containerFormId);
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Profile') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step1Profile();
+                            self.Render.Step1Profile(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
+            
         },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step3();
+                            self.Render.Step3(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step2();
+                            self.Render.Step2(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2Form: function(delivery) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-            }
+                try{
+                    ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                    $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
 
-            $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-
-            $('#' + delivery.cssRegionList).autocomplete({
-                source: function(request, response) {
-                    self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
-                        if (!data.err) {
-                            response($.map(data, function(item) {
-                                return {
-                                    value: $.trim(item.formalname + ' ' + item.shortname),
-                                    region: item
-                                };
-                            }));
-                        }
-                        else {
-                            $('#' + delivery.cssRegionList).autocomplete("close");
-                            return false;
+                    $('#' + delivery.cssRegionList).autocomplete({
+                        source: function(request, response) {
+                            self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
+                                if (!data.err) {
+                                    response($.map(data, function(item) {
+                                        return {
+                                            value: $.trim(item.formalname + ' ' + item.shortname),
+                                            region: item
+                                        };
+                                    }));
+                                }
+                                else {
+                                    $('#' + delivery.cssRegionList).autocomplete("close");
+                                    return false;
+                                }
+                            });
+                        },
+                        select: function(event, ui) {
+                            delivery.region(ui.item.region);
+                            delivery.customRegion(ui.item.value);
+                            if (ui.item.region && ui.item.region.postalcode != 0)
+                                delivery.postCode(ui.item.region.postalcode);
+                            else {
+                                delivery.postCode(null);
+                            }
                         }
                     });
-                },
-                select: function(event, ui) {
-                    delivery.region(ui.item.region);
-                    delivery.customRegion(ui.item.value);
-                    if (ui.item.region && ui.item.region.postalcode != 0)
-                        delivery.postCode(ui.item.region.postalcode);
-                    else {
-                        delivery.postCode(null);
-                    }
-                }
-            });
 
-            $('#' + delivery.cssCityList).autocomplete({
-                source: function(request, response) {
-                    if (delivery.region()) {
-                        self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        city: item
-                                    };
-                                }));
+                    $('#' + delivery.cssCityList).autocomplete({
+                        source: function(request, response) {
+                            if (delivery.region()) {
+                                self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                city: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + delivery.cssCityList).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + delivery.cssCityList).autocomplete("close");
-                                return false;
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    delivery.city(ui.item.city);
-                    delivery.customCity(ui.item.value);
-                    if (ui.item.city && ui.item.city.postalcode != 0)
-                        delivery.postCode(ui.item.city.postalcode);
-                    else
-                        delivery.postCode(null);
-                }
-            });
+                        },
+                        select: function(event, ui) {
+                            delivery.city(ui.item.city);
+                            delivery.customCity(ui.item.value);
+                            if (ui.item.city && ui.item.city.postalcode != 0)
+                                delivery.postCode(ui.item.city.postalcode);
+                            else
+                                delivery.postCode(null);
+                        }
+                    });
 
-            $('#' + delivery.cssAddress).autocomplete({
-                source: function(request, response) {
-                    if (delivery.region()) {
-                        self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        street: item
-                                    };
-                                }));
+                    $('#' + delivery.cssAddress).autocomplete({
+                        source: function(request, response) {
+                            if (delivery.region()) {
+                                self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                street: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + delivery.cssAddress).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + delivery.cssAddress).autocomplete("close");
-                                return false;
+                        },
+                        select: function(event, ui) {
+                            delivery.address(ui.item.street);
+                            delivery.customAddress(ui.item.value);
+                            if (ui.item.street && ui.item.street.postalcode != 0)
+                                delivery.postCode(ui.item.street.postalcode);
+                            else
+                                delivery.postCode(null);
+                        }
+                    });
+                    $('#' + delivery.cssCountryList).change(function() {
+                        var v = $('#' + delivery.cssCountryList + ' option:selected').val();
+                        $.grep(delivery.countryList(), function(data) {
+                            if (data.id == v) {
+                                delivery.country(data);
+                                delivery.customRegion(null);
+                                delivery.region(null);
+                                delivery.customCity(null);
+                                delivery.city(null);
+                                delivery.customAddress(null)
+                                delivery.address(null);
+                                delivery.postCode(null);
                             }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    delivery.address(ui.item.street);
-                    delivery.customAddress(ui.item.value);
-                    if (ui.item.street && ui.item.street.postalcode != 0)
-                        delivery.postCode(ui.item.street.postalcode);
-                    else
-                        delivery.postCode(null);
-                }
-            });
-            $('#' + delivery.cssCountryList).change(function() {
-                var v = $('#' + delivery.cssCountryList + ' option:selected').val();
-                $.grep(delivery.countryList(), function(data) {
-                    if (data.id == v) {
-                        delivery.country(data);
-                        delivery.customRegion(null);
-                        delivery.region(null);
+                        })
+                    });
+
+                    $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
+                        delivery.customRegion($(this).val());
                         delivery.customCity(null);
                         delivery.city(null);
                         delivery.customAddress(null)
                         delivery.address(null);
                         delivery.postCode(null);
+                    });
+
+                    $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
+                        delivery.customCity($(this).val());
+                        delivery.customAddress(null)
+                        delivery.address(null);
+                        delivery.postCode(null);
+                    });
+
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step2Form();
+                            self.Render.Step2Form(delivery);
+                        });
                     }
-                })
-            });
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
 
-            $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
-                delivery.customRegion($(this).val());
-                delivery.customCity(null);
-                delivery.city(null);
-                delivery.customAddress(null)
-                delivery.address(null);
-                delivery.postCode(null);
-            });
-
-            $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
-                delivery.customCity($(this).val());
-                delivery.customAddress(null)
-                delivery.address(null);
-                delivery.postCode(null);
-            });
-
-            self.WidgetLoader(true, self.settings.containerFormId);
+            
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step4();
+                            self.Render.Step4(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step5: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step5') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step5();
+                            self.Render.Step5(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {

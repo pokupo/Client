@@ -157,15 +157,15 @@ var OrderListWidget = function() {
         },
         List: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.list).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('list')).html()).children().hide();
         },
         Detail: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.detail).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('detail')).html()).children().hide();
         },
         EmptyList: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id.empty).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('empty')).html()).children().hide();
         }
     };
     self.Fill = {
@@ -235,19 +235,53 @@ var OrderListWidget = function() {
     self.Render = {
         List: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                    new AnimateOrderList();
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.List();
+                            self.Render.List(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            new AnimateOrderList();
-            self.WidgetLoader(true, self.settings.containerFormId);
+            
         },
         EmptyList: function() {
             self.WidgetLoader(true, self.settings.containerFormId);
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Detail();
+                            self.Render.Detail(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
+            
         }
     };
     self.SetPosition = function() {

@@ -87,7 +87,7 @@ var GoodsWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
     self.Fill = {
@@ -140,22 +140,38 @@ var GoodsWidget = function(){
     };
     self.Render = {
         Goods: function(data){
-            if($("#" + self.settings.containerId).length > 0){
-                self.InsertContainer.Content();
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+            try{
+                if($("#" + self.settings.containerId).length > 0){
+                    self.InsertContainer.Content();
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
-                new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
-                
-                if(data.ShowGallery())
-                    new AnimateCarousel(Config.Goods.galleryId);
+                    new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
+
+                    if(data.ShowGallery())
+                        new AnimateCarousel(Config.Goods.galleryId);
+                }
+                self.AddGoodsInCookie(data);
+                delete data;
+
+                self.WidgetLoader(true, self.settings.containerId);
+                if(Ya != undefined){
+                    Config.Goods.share.element = data.blocks.main.cssShareBlock
+                    new Ya.share(Config.Goods.share);
+                }
             }
-            self.AddGoodsInCookie(data);
-            delete data;
-
-            self.WidgetLoader(true, self.settings.containerId);
-            if(Ya != undefined){
-                Config.Goods.share.element = data.blocks.main.cssShareBlock
-                new Ya.share(Config.Goods.share);
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Content();
+                        self.Render.Goods(data);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
             }
         }
     };

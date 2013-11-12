@@ -23,6 +23,7 @@ var UserInformationWidget = function(){
         self.settings.style = Config.UserInformation.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.LoadTmpl();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -52,16 +53,7 @@ var UserInformationWidget = function(){
             EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
         });
     };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (){ 
-                self.LoadTmpl();
-            });
-        }
-        
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('onload.userInformation.tmpl', function (){
             self.BaseLoad.Login(false, false, false, function(data){
                 self.CheckAuthorization(data);
@@ -81,7 +73,9 @@ var UserInformationWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            EventDispatcher.DispatchEvent('onload.userInformation.tmpl');
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                EventDispatcher.DispatchEvent('onload.userInformation.tmpl');
+            });
         });
     };
     self.CheckAuthorization = function(data){
@@ -106,11 +100,11 @@ var UserInformationWidget = function(){
         },
         AuthBlock : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.auth).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('auth')).html()).children().hide();
         },
         InfoBlock : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.info).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('info')).html()).children().hide();
         }
     };
     self.Fill = {
@@ -127,15 +121,48 @@ var UserInformationWidget = function(){
     self.Render = {
         AuthBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('auth') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.AuthBlock();
+                            self.Render.AuthBlock(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerId);
         },
         InfoBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('info') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.InfoBlock();
+                            self.Render.InfoBlock(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerId);
+            
         }
     }
     self.SetPosition = function(){

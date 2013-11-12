@@ -55,11 +55,13 @@ var CatalogWidget = function(){
         });
     };
     self.InsertContainer = {
-        Main : function(){
+        EmptyWidget : function(){
             var temp = $("#" + self.settings.catalogContainerId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.catalogContainerId).empty().html(temp);
-            
-            $("#" + self.settings.catalogContainerId).append($('script#' + self.settings.tmpl.id).html());
+        },
+        Main : function(){
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.catalogContainerId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     },
     self.Update = function(){
@@ -105,10 +107,26 @@ var CatalogWidget = function(){
     self.Render = {
         Tree : function(data){ 
             if($("#" + self.settings.catalogContainerId).length > 0){
-                ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
-                
+                try{
+                    ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
+                    self.WidgetLoader(true, self.settings.catalogContainerId );
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Main();
+                            self.Render.Tree(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.catalogContainerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.catalogContainerId );
+            
         }
     }
     self.SetPosition = function(){

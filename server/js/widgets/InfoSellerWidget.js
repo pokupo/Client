@@ -44,8 +44,10 @@ window.InfoSellerWidget = function(){
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('InfoSellerWidget.onload.tmpl.' + self.settings.hash, function (data){
-            if(self.settings.infoSeller['data'])
+            if(self.settings.infoSeller['data']){
+                self.InsertContainer.Content();
                 self.Fill(self.settings.infoSeller['data'])
+            }
             else{
                 window.console && console.log('No data on the Seller');
                 self.WidgetLoader(true);
@@ -56,13 +58,37 @@ window.InfoSellerWidget = function(){
             self.Render(data);
         });
     };
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.container).empty().html(temp);
+        },
+        Content : function(){
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.container).append($('script#' + self.GetTmplName()).html()).children().hide();
+        }
+    }
     self.Fill = function(data){
         var info = new InfoSellerViewModel(data);
         self.Render(info);
     };
     self.Render = function(data){
-        $(self.settings.container).html($('script#' + self.settings.tmpl.id).html());
-        ko.applyBindings(data, $(self.settings.container).children()[0]);
+        try{
+            ko.applyBindings(data, $(self.settings.container).children()[0]);
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Content();
+                    self.Render(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+            }
+        }
     }
 }
 

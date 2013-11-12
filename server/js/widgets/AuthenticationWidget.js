@@ -98,7 +98,7 @@ var AuthenticationWidget = function(){
         },
         Authentication : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.tmpl.id).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
     self.Fill = {
@@ -111,9 +111,26 @@ var AuthenticationWidget = function(){
     self.Render = {
         Authentication : function(form){
             if($("#" + self.settings.containerFormId).length > 0){
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Authentication();
+                            self.Render.Authentication(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
+            
         }
     };
     self.SetPosition = function(){

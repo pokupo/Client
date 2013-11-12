@@ -35,13 +35,17 @@ var BreadCrumbWidget = function(){
 
         self.settings.inputParameters = input;
     };
-    self.InsertContainer = function(){
-        for(var i=0; i<=self.settings.containerId.length-1; i++){
-            if($("#" + self.settings.containerId[i]).length > 0){
-                var temp = $("#" + self.settings.containerId[i]).find(self.SelectCustomContent().join(', ')).clone();
-                $("#" + self.settings.containerId[i]).empty().html(temp);
-
-                $("#" + self.settings.containerId[i]).append($('script#' + self.settings.tmpl.id).html());
+    self.InsertContainer = {
+        EmptyWidget : function(i){
+            var temp = $("#" + self.settings.containerId[i]).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId[i]).empty().html(temp);
+        },
+        Main : function(){
+            for(var i=0; i<=self.settings.containerId.length-1; i++){
+                if($("#" + self.settings.containerId[i]).length > 0){
+                    self.InsertContainer.EmptyWidget(i);
+                    $("#" + self.settings.containerId[i]).append($('script#' + self.GetTmplName()).html()).children().hide();
+                }
             }
         }
     };
@@ -101,16 +105,32 @@ var BreadCrumbWidget = function(){
     },
     self.Render = {
         BreadCrumb : function(data){
-            self.InsertContainer();
+            self.InsertContainer.Main();
             for(var i=0; i<=self.settings.containerId.length-1; i++){
                 if($("#" + self.settings.containerId[i]).length > 0){
-                    ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
-                    self.ShowContainer(self.settings.containerId[i]);
-                    new AnimateBreadCrumb();
+                    try{
+                        ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
+                        self.ShowContainer(self.settings.containerId[i]);
+                        new AnimateBreadCrumb();
+                        self.WidgetLoader(true );
+                    }
+                    catch(e){
+                        self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                        if(self.settings.tmpl.custom){
+                            delete self.settings.tmpl.custom;
+                            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                                self.InsertContainer.Main();
+                                self.Render.BreadCrumb(data);
+                            });
+                        }
+                        else{
+                            self.InsertContainer.EmptyWidget(i);
+                            self.WidgetLoader(true);
+                        }
+                    }
                 }
                 delete data;
             }
-            self.WidgetLoader(true );
         }
     }
     self.SetPosition = function(){

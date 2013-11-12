@@ -135,11 +135,11 @@ var CabinetCartGoodsWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.content).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('content')).html()).children().hide();
         },
         EmptyCart :function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id.empty).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('empty')).html()).children().hide();
         }
     };
     self.Fill =  {
@@ -176,9 +176,25 @@ var CabinetCartGoodsWidget = function(){
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerId);
         },
         EmptyCart : function(){
             self.WidgetLoader(true, self.settings.containerId);

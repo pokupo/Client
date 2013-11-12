@@ -22,6 +22,7 @@ var CartWidget = function(){
         self.settings.showBlocks = Config.Cart.showBlocks;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.LoadTmpl();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -45,11 +46,15 @@ var CartWidget = function(){
         }
         self.settings.inputParameters = input;
     };
-    self.InsertContainer = function(){
-        var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
-        $("#" + self.settings.containerId).empty().html(temp);
-            
-        $('#' + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html());
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
+        Main : function(){
+            self.InsertContainer.EmptyWidget();
+            $('#' + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html()).children().hide();
+        }
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
@@ -66,22 +71,13 @@ var CartWidget = function(){
             EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
         });
     };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
-            });
-        }
-        
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('CartWidget.onload.tmpl', function (){
             self.CheckRoute();
         });
         
         EventDispatcher.AddEventListener('CartWidget.onload.info', function(data){
-            self.InsertContainer();
+            self.InsertContainer.Main();
             self.Fill(data);
         })
         
@@ -92,11 +88,11 @@ var CartWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            EventDispatcher.DispatchEvent('CartWidget.onload.tmpl');
+            self.LoadTmpl();
         });
         
         EventDispatcher.AddEventListener('widgets.cart.infoUpdate', function(data){
-             EventDispatcher.DispatchEvent('CartWidget.onload.tmpl', data);
+             self.LoadTmpl();
         });
     };
     self.Fill = function(data){
@@ -105,8 +101,24 @@ var CartWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){ 
-        ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
-        self.WidgetLoader(true, self.settings.containerId);
+        try{
+            ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
+            self.WidgetLoader(true, self.settings.containerId);
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Main();
+                    self.Render(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+                self.WidgetLoader(true, self.settings.containerId);
+            }
+        }
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters['position'] == 'absolute'){

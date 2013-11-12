@@ -299,6 +299,17 @@ var XDMTransport = {
     }
 }
 
+var Logger = {
+    Console : {
+        Error : function(){
+            
+        },
+        Exeption : function(widget, text){
+            console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
+        }
+    }
+}
+
 $().ready(function(){
    JSCore.Init();
 })

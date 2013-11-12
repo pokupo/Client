@@ -196,13 +196,13 @@ var ContentWidget = function(){
         },
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.tmpl.block.id.slider).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('slider', 'block')).html()).children().hide();
             }
             if(type == 'carousel'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.tmpl.block.id.carusel).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('carusel', 'block')).html()).children().hide();
             }
             if(type == 'tile'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.settings.tmpl.block.id.tile).html());
+                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('tile', 'block')).html()).children().hide();
             }
             $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
@@ -210,16 +210,16 @@ var ContentWidget = function(){
             var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerId).empty().html(temp);
             if(type == 'table'){ 
-                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.table).html());
+                $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('table', 'content')).html()).children().hide();
             }
             if(type == 'list'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.list).html());
+                $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('list', 'content')).html()).children().hide();
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.tile).html());
+                $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('tile', 'content')).html()).children().hide();
             }
             if(type == 'no_results'){
-                $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.content.id.empty).html());
+                $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('empty', 'content')).html()).children().hide();
             }
         }
     };
@@ -272,31 +272,79 @@ var ContentWidget = function(){
         },
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                var f = data.filters;
-                new AnimateSelectList(f.sort.cssSortList);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    var f = data.filters;
+                    new AnimateSelectList(f.sort.cssSortList);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.List(data.typeView);
+                            self.Render.List(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
             delete data;
-            self.WidgetLoader(true, self.settings.containerId);
         },
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
-                ko.applyBindings(data, $('#' + data.cssBlock)[0]);
-                self.Render.Animate.block.push({type: data.typeView, data : data})
-                self.testBlock.ready = self.testBlock.ready + 1;
+                try{
+                    ko.applyBindings(data, $('#' + data.cssBlock)[0]);
+                    self.Render.Animate.block.push({type: data.typeView, data : data})
+                    self.testBlock.ready = self.testBlock.ready + 1;
 
-                if(self.testBlock.IsReady()){
-                    self.WidgetLoader(true, self.settings.blockContainerId);
-                    self.Render.Animate.Do();
+                    if(self.testBlock.IsReady()){
+                        self.WidgetLoader(true, self.settings.blockContainerId);
+                        self.Render.Animate.Do();
+                    }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Block(data.typeView);
+                            self.Render.Block(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.blockContainerId);
+                    }
                 }
             }
             delete data;
         },
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.List(data.typeView);
+                            self.Render.NoResults(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyBlockWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){
