@@ -363,7 +363,7 @@ var Widget = function (){
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
-            data.options.params['uniq'] = EventDispatcher.HashCode(JSON.stringify(data.options));
+            data.options.params['uniq'] = EventDispatcher.GetUUID();
             embed.SetParameters(data);
             embed.Init(embed, true);
         });
@@ -663,6 +663,7 @@ var Widget = function (){
                 if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.path)]){
                     self.CreateContainer();
                     XDMTransport.LoadTmpl(tmpl.path,function(data){
+                        Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.path)] = true;
                         $("#" + self.settings.containerIdForTmpl).append(data);
                         if(callback)callback();
                     });
@@ -744,7 +745,7 @@ var Widget = function (){
                                     }
                                 }
                             }
-                            
+                            Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.custom.path)] = true;
                             $("#" + self.settings.containerIdForTmpl).append(data);
                             if(callback)callback();
                         }

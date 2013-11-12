@@ -31,9 +31,9 @@ window.RelatedGoodsWidget = function(){
         self.settings.relatedGoods.typeView = Config.RelatedGoods.typeView;
         self.settings.relatedGoods.orderBy = Config.RelatedGoods.orderBy;
         self.settings.relatedGoods.start = Config.RelatedGoods.start;
-        
-        self.RegisterEvents();
         self.Loader();
+        self.RegisterEvents();
+        self.LoadTmpl();
     };
     self.Loader = function(){
         Loader.InsertContainer(self.settings.container);
@@ -56,19 +56,15 @@ window.RelatedGoodsWidget = function(){
     };
     self.LoadTmpl = function(){
         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            console.log('load tmpl');
+            console.log(self.settings.uniq);
             EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
         });
     };
     self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
-            });
-        }
-        
+        console.log('register event');
+        console.log(self.settings.uniq);
+            
         EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq, function (data){
             var query = self.settings.relatedGoods.start + '/' + self.settings.relatedGoods.count + '/' + self.settings.relatedGoods.orderBy;
             self.BaseLoad.RelatedGoods(self.settings.relatedGoods.id, query, function(data){
@@ -95,6 +91,7 @@ window.RelatedGoodsWidget = function(){
                 $(self.settings.container).html('');
     };
     self.CheckData = function(data){ 
+        console.log(data);
         if(!data.err ){
             self.InsertContainer(self.settings.relatedGoods.typeView);
             self.Fill(self.settings.relatedGoods, data)

@@ -173,13 +173,18 @@ var Config = {
     },
     SearchResult : {
         tmpl: {
-            path : "searchResult/advancedSearchFormTmpl.html", // файл шаблонов расширенной формы и результатов поиска
-            id : {
-                form : "advancedSearchFormTmpl", // id шаблона расширенной формы
-                table : "searchResultTableTmpl", // id шаблона таблицы
-                list : "searchResultListTmpl", // id шаблона списка
-                tile : "searchResultTileTmpl", // id шаблона плитки
-                empty : "searchResultErrorTmpl" // id шаблона товаров не найдено
+            content : {
+                path : "searchResult/searchResultTmpl.html", // результатов поиска
+                id : {
+                    table : "searchResultTableTmpl", // id шаблона таблицы
+                    list : "searchResultListTmpl", // id шаблона списка
+                    tile : "searchResultTileTmpl", // id шаблона плитки
+                    empty : "searchResultErrorTmpl" // id шаблона товаров не найдено
+                }
+            },
+            form : {
+                path : "searchResult/advancedSearchFormTmpl.html", // файл шаблонов расширенной формы
+                id : "advancedSearchFormTmpl", // id шаблона расширенной формы
             }
         },
         idAdvancedSearchForm : "advancedSearch", // id расширенной формы

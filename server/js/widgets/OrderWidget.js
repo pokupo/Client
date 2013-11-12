@@ -38,6 +38,7 @@ var OrderWidget = function() {
         self.settings.style = Config.Order.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteOrder();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
@@ -115,54 +116,42 @@ var OrderWidget = function() {
             }
             if (Routing.params.step) {
                 self.BaseLoad.Login(false, false, false, function(data) {
-                    if(Routing.params.id)
-                        self.order.id = Routing.params.id;
-                
-                    if (Routing.params.step == 1 && !Routing.params.block) {
-                        if (data.err)
-                            self.Step.Step1();
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        if(Routing.params.id)
+                            self.order.id = Routing.params.id;
+
+                        if (Routing.params.step == 1 && !Routing.params.block) {
+                            if (data.err)
+                                self.Step.Step1();
+                            else
+                                Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                        }
+                        else if (Routing.params.step == 1 && Routing.params.block == 'confirm') {
+                            self.Step.Step1Confirm();
+                        }
+                        else if (!data.err && Routing.params.step == 1 && Routing.params.block == 'profile' && self.order.id) {
+                            self.Step.Step1Profile();
+                        }
+                        else if (!data.err && Routing.params.step == 2 && !Routing.params.block && self.order.id)
+                            self.Step.Step2();
+                        else if (!data.err && Routing.params.step == 2 && Routing.params.block == 'add' && self.order.id)
+                            self.Step.Step2Form();
+                        else if (!data.err && Routing.params.step == 3 && self.order.id)
+                            self.Step.Step3();
+                        else if (!data.err && Routing.params.step == 4 && self.order.id)
+                            self.Step.Step4();
+                        else if (Routing.params.step == 5)
+                            self.Step.Step5();
                         else
-                            Routing.SetHash('order', 'Оформление заказа', {step: 2});
-                    }
-                    else if (Routing.params.step == 1 && Routing.params.block == 'confirm') {
-                        self.Step.Step1Confirm();
-                    }
-                    else if (!data.err && Routing.params.step == 1 && Routing.params.block == 'profile' && self.order.id) {
-                        self.Step.Step1Profile();
-                    }
-                    else if (!data.err && Routing.params.step == 2 && !Routing.params.block && self.order.id)
-                        self.Step.Step2();
-                    else if (!data.err && Routing.params.step == 2 && Routing.params.block == 'add' && self.order.id)
-                        self.Step.Step2Form();
-                    else if (!data.err && Routing.params.step == 3 && self.order.id)
-                        self.Step.Step3();
-                    else if (!data.err && Routing.params.step == 4 && self.order.id)
-                        self.Step.Step4();
-                    else if (Routing.params.step == 5)
-                        self.Step.Step5();
-                    else
-                        Routing.SetHash('default', 'Домашняя', {});
+                            Routing.SetHash('default', 'Домашняя', {});
+                    });
                 });
             }
         }
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckRouteOrder();
-        });
-    };
     self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.LoadTmpl();
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.LoadTmpl();
-            });
-        }
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteOrder();
         });

@@ -7,13 +7,20 @@ var SearchResultWidget = function(){
         customContainerForSearchResult: null,
         customContainerForAdvancedSearch: null,
         tmpl : {
-            path : null,
-            id : {
-                form : null,
-                table : null,
-                list : null,
-                tile : null,
-                empty : null,
+            content: {
+                path : {
+                    list : null
+                }, 
+                id: {
+                    table : null, 
+                    list : null, 
+                    tile : null,
+                    empty : null
+                }
+            },
+            form : {
+                path : null,
+                id : null
             }
         },
         idAdvancedSearchForm : null,
@@ -39,6 +46,7 @@ var SearchResultWidget = function(){
         self.settings.paging = Config.Paging;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckRoutingSearch();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -63,7 +71,7 @@ var SearchResultWidget = function(){
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRouting = function(){
+    self.CheckRoutingSearch = function(){
         if(Routing.route == 'search'){
             for(var key in Routing.params){
                 if(key == 'idSelectCategories'){
@@ -86,32 +94,10 @@ var SearchResultWidget = function(){
             }
             EventDispatcher.DispatchEvent('widget.change.route')
         }
-        else if(Routing.IsDefault() && !self.HasDefaultContent()){
-            self.WidgetLoader(true);
-        }
         else
             self.WidgetLoader(true);  
     };
-    self.LoadTmpl = function(){
-        new Dyn();
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('searchResultWidget.onload.tmpl')
-        });
-    };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
-            });
-        }
-        
-        EventDispatcher.AddEventListener('searchResultWidget.onload.tmpl', function(){
-            self.CheckRouting();
-        });
-        
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
             if($("#" + self.settings.containerIdForAdvancedSearch).text() == ""){
                 self.BaseLoad.Roots(function(){
@@ -124,11 +110,14 @@ var SearchResultWidget = function(){
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
-            self.InsertContainer.AdvancedSearchForm();
-            if(Routing.route != 'search')
-                Parameters.SetDefaultFilterParameters();
-            self.Fill.AdvancedSearchForm();
-            self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+            self.BaseLoad.Tmpl(self.settings.tmpl.form, function(){
+                new Dyn();
+                self.InsertContainer.AdvancedSearchForm();
+                if(Routing.route != 'search')
+                    Parameters.SetDefaultFilterParameters();
+                self.Fill.AdvancedSearchForm();
+                self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+            });
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.submit.form', function (data){
@@ -163,10 +152,9 @@ var SearchResultWidget = function(){
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
             if(Routing.route == 'search'){
-                self.InsertContainer.AdvancedSearchForm();
-                self.Fill.AdvancedSearchForm();
-
-                EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
+                self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
+                    EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
+                });
             }
             else{
                 self.WidgetLoader(true);
@@ -178,24 +166,23 @@ var SearchResultWidget = function(){
         AdvancedSearchForm : function(){
             var temp = $("#" + self.settings.containerIdForAdvancedSearch).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForAdvancedSearch).empty().html(temp);
-            
-            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.tmpl.id.form).html()).children().hide();
+            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.tmpl.form.id).html()).children().hide();
         },
         SearchResult : function(type){
             var temp = $("#" + self.settings.containerIdForSearchResult).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForSearchResult).empty().html(temp);
             
             if(type == 'table'){ 
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.table).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.table).html());
             }
             if(type == 'list'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.list).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.list).html());
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.tile).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.tile).html());
             }
             if(type == 'error'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.id.empty).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.empty).html());
             }
         }
     };

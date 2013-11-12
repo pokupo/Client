@@ -20,6 +20,7 @@ window.ButtonPaymentWidget = function(){
     };
     self.InitWidget = function(){
         self.RegisterEvents();
+        self.CheckRouteButtonPayment();
         self.Loader();
     };
     self.Loader = function(){
@@ -79,32 +80,20 @@ window.ButtonPaymentWidget = function(){
     };
     self.CheckRouteButtonPayment = function(){
         if(Routing.route == 'payment' || (Routing.IsDefault() && !self.HasDefaultContent())){
-            self.InsertContainer.Content();
-            if(Routing.params.orderId)
-                self.GetData.Order(Routing.params.orderId);
-            if(Routing.params.goodsId)
-                self.GetData.Goods(Routing.params.goodsId);
-            if(Routing.params.amount)
-                self.GetData.Amount(Routing.params.amount);
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.InsertContainer.Content();
+                if(Routing.params.orderId)
+                    self.GetData.Order(Routing.params.orderId);
+                if(Routing.params.goodsId)
+                    self.GetData.Goods(Routing.params.goodsId);
+                if(Routing.params.amount)
+                    self.GetData.Amount(Routing.params.amount);
+            });
         }
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('ButtonPayment.onload.tmpl_' + self.settings.uniq)
-        });
-    };
     self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
-            });
-        }
-        
         EventDispatcher.AddEventListener('ButtonPayment.onload.tmpl_' + self.settings.uniq, function (data){
             self.InsertContainer.Button();
             self.Fill.Button();

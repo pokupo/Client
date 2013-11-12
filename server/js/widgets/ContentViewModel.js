@@ -1,7 +1,7 @@
 var ContentViewModel = function(data, i){
     var self = this;
     self.id = data.id;
-    self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
+    self.uniq = EventDispatcher.GetUUID();
     self.chortName = data.chort_name;
     self.fullName = data.full_name;
     self.routeImage = Parameters.pathToImages + data.route_image;

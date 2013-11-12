@@ -18,6 +18,7 @@ var MenuPersonalCabinetWidget = function(){
         self.settings.customContainer = Config.Containers.menuPersonalCabinet.customClass;
         self.settings.style = Config.MenuPersonalCabinet.style;
         self.RegisterEvents();
+        self.CheckRouteMenuProfile();
         self.SetPosition();
     };
      self.SetInputParameters = function(){
@@ -32,10 +33,12 @@ var MenuPersonalCabinetWidget = function(){
             self.subMenu = opt.menu;
         }
     };
-    self.CheckRoute = function() {
+    self.CheckRouteMenuProfile = function() {
         if(Routing.route == 'profile' || Routing.route == 'favorites' || Routing.route == 'cabinet_cart' || Routing.route == 'purchases'){
-            self.InsertContainer();
-            self.Fill();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function() {
+                self.InsertContainer();
+                self.Fill();
+            });
         }
         else{
             $("#" + self.settings.containerMenuId).empty()
@@ -43,12 +46,8 @@ var MenuPersonalCabinetWidget = function(){
         }
     };
     self.RegisterEvents = function() {
-        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-            self.CheckRoute();
-        });
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
-            self.CheckRoute();
+            self.CheckRouteMenuProfile();
         });
     };
     self.InsertContainer = function(){

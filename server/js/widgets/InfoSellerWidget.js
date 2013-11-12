@@ -14,8 +14,9 @@ window.InfoSellerWidget = function(){
     };
     self.InitWidget = function(){
         self.settings.style = Config.InfoSeller.style;
-        self.RegisterEvents();
         self.Loader();
+        self.RegisterEvents();
+        self.LoadTmpl();
     };
     self.Loader = function(){
         Loader.InsertContainer(self.settings.container);
@@ -42,15 +43,6 @@ window.InfoSellerWidget = function(){
         });
     };
     self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
-            });
-        }
-        
         EventDispatcher.AddEventListener('InfoSellerWidget.onload.tmpl.' + self.settings.hash, function (data){
             if(self.settings.infoSeller['data'])
                 self.Fill(self.settings.infoSeller['data'])
@@ -69,7 +61,7 @@ window.InfoSellerWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){
-        $(self.settings.container).empty().append($('script#' + self.settings.tmpl.id).html());
+        $(self.settings.container).html($('script#' + self.settings.tmpl.id).html());
         ko.applyBindings(data, $(self.settings.container).children()[0]);
     }
 }

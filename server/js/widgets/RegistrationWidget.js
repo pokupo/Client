@@ -24,6 +24,7 @@ var RegistrationWidget = function() {
         self.settings.style = Config.Registration.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteRegistration();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
@@ -46,33 +47,22 @@ var RegistrationWidget = function() {
     };
     self.CheckRouteRegistration = function() {
         if (Routing.route == 'registration') {
-            if (Routing.params.step == 1)
-                self.Step.Step1();
-            if (Routing.params.step == 2)
-                self.Step.Step2();
-            if (Routing.params.step == 3)
-                self.Step.Step3();
-            if (Routing.params.step == 4)
-                self.Step.Step4();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                if (Routing.params.step == 1)
+                    self.Step.Step1();
+                if (Routing.params.step == 2)
+                    self.Step.Step2();
+                if (Routing.params.step == 3)
+                    self.Step.Step3();
+                if (Routing.params.step == 4)
+                    self.Step.Step4();
+            });
         }
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckRouteRegistration();
-        });
-    };
-    self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.LoadTmpl();
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.LoadTmpl();
-            });
-        }
 
+    self.RegisterEvents = function() {
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteRegistration();
         });

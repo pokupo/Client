@@ -24,6 +24,7 @@ var FavoritesWidget = function() {
         self.settings.style = Config.Favorites.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckRouteFavorites();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
@@ -45,18 +46,17 @@ var FavoritesWidget = function() {
                        self.settings.showBlocks.splice(self.settings.showBlocks.indexOf(self.settings.showBlocks[i]), 1);
                 }
             }
-            if (input.tmpl) {
-                self.settings.tmplPath = 'favorites/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRoute = function() {
+    self.CheckRouteFavorites = function() {
         if (Routing.route == 'favorites') {
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
-                    self.Update.Menu();
-                    self.Update.Content();
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.Update.Menu();
+                        self.Update.Content();
+                    });
                 }
                 else{
                     Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
@@ -69,28 +69,9 @@ var FavoritesWidget = function() {
             self.WidgetLoader(true);
         }
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckRoute();
-        });
-    };
     self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.LoadTmpl();
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.LoadTmpl();
-            });
-        }
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
-            if (Routing.route == 'favorites') {
-                self.Update.Menu();
-                self.Update.Content();
-            }
-            else
-                self.WidgetLoader(true);
+            self.CheckRouteFavorites();
         });
         
         EventDispatcher.AddEventListener('Favorites.empty', function() {
@@ -254,7 +235,7 @@ var BlockFavoritesForSellerViewModel = function(content){
     }, this);
     self.goods = ko.observableArray();
 
-    self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
+    self.uniq = EventDispatcher.GetUUID();
     self.cssSelectAll = "favoritesSelectAll_" + self.uniq;
     self.isChecked = ko.observable(false);
     

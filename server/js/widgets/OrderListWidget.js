@@ -23,6 +23,7 @@ var OrderListWidget = function() {
         self.settings.style = Config.OrderList.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteListOrder();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
@@ -44,8 +45,10 @@ var OrderListWidget = function() {
             self.WidgetLoader(false);
             self.BaseLoad.Login(false, false, false, function(data) {
                 if (!data.err) {
-                    self.Update.Menu();
-                    self.Update.Content();
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.Update.Menu();
+                        self.Update.Content();
+                    });
                 }
                 else {
                     Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 1];
@@ -57,21 +60,7 @@ var OrderListWidget = function() {
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckRouteListOrder();
-        });
-    };
     self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.LoadTmpl();
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.LoadTmpl();
-            });
-        }
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteListOrder();
         });

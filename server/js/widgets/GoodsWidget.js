@@ -21,6 +21,7 @@ var GoodsWidget = function(){
         self.settings.styleGoods = Config.Goods.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteGoods();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -53,30 +54,18 @@ var GoodsWidget = function(){
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRoute = function(){
+    self.CheckRouteGoods = function(){
         if(Routing.route == 'goods'){
-            self.Update();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.Update();
+            });
         }
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckRoute();
-        });
-    };
     self.RegisterEvents = function(){ 
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.LoadTmpl();
-            });
-        }
-        
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            self.CheckRoute();
+            self.CheckRouteGoods();
         });
         
         EventDispatcher.AddEventListener('GoodsWidget.onload.info', function (data){
@@ -302,7 +291,7 @@ var GoodsMainBlockViewModel = function(data){
     }, this);
     self.ordered = ko.observable(1);
     self.cart = ko.observable(Parameters.cache.cart);
-    self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
+    self.uniq = EventDispatcher.GetUUID();
     self.cssToCart = 'goodsToCart_' + self.uniq;
     self.cssTitleToCart = 'goodsTilteToCart_' + self.uniq;
     self.cssShareBlock = 'share';

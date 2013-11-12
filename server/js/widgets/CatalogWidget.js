@@ -20,6 +20,7 @@ var CatalogWidget = function(){
         self.settings.styleCatalog = Config.Catalog.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckRouteCatalog()
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -35,49 +36,22 @@ var CatalogWidget = function(){
         }
         self.settings.inputParameters = input;
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('catalogWidget.onload.tmpl')
-        });
-    };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
+    self.CheckRouteCatalog = function(){
+        if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.Update();
             });
         }
-        
-        EventDispatcher.AddEventListener('catalogWidget.onload.tmpl', function (data){
-            if(Routing.IsSection() || Routing.IsDefault()){
-                if(Routing.IsDefault() && !self.HasDefaultContent())
-                    self.Update();
-                else
-                    self.WidgetLoader(true);
-            }
-            else{
-                self.WidgetLoader(true);
-            }
-        });
-        
+        else
+            self.WidgetLoader(true);
+    };
+    self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('catalogWidget.fill.section', function(data){
             self.Render.Tree(data);
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
-                if(Routing.IsSection() || (Routing.IsDefault() && !self.HasDefaultContent())){
-                    self.WidgetLoader(false);
-                }
-                else{
-                    self.WidgetLoader(true);
-                }
-                self.Update();
-            }
-            else
-                self.WidgetLoader(true);
+            self.CheckRouteCatalog();
         });
     };
     self.InsertContainer = {

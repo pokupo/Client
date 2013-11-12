@@ -24,6 +24,7 @@
         self.settings.style = Config.Profile.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteProfile();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
@@ -50,15 +51,17 @@
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
                     Loader.Indicator('MenuPersonalCabinetWidget', false);
-                    if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
-                        self.Info.Personal();
-                    if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && !Routing.params.form)
-                        self.Info.Delivery();
-                    if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && Routing.params.form == 'add')
-                        self.Info.DeliveryForm();
-                    if (Routing.params.info == Config.Profile.menu.security.prefix)
-                        self.Info.Security();
-                    self.Info.Menu();
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
+                            self.Info.Personal();
+                        if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && !Routing.params.form)
+                            self.Info.Delivery();
+                        if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && Routing.params.form == 'add')
+                            self.Info.DeliveryForm();
+                        if (Routing.params.info == Config.Profile.menu.security.prefix)
+                            self.Info.Security();
+                        self.Info.Menu();
+                    });
                 }
                 else{
                     Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
@@ -70,21 +73,7 @@
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckRouteProfile();
-        });
-    };
     self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.LoadTmpl();
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.LoadTmpl();
-            });
-        }
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteProfile();
         });

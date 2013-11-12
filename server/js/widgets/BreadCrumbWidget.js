@@ -18,6 +18,7 @@ var BreadCrumbWidget = function(){
         self.settings.styleBreadCrumb = Config.BreadCrumbs.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckRouteBreadCrumb();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -44,7 +45,7 @@ var BreadCrumbWidget = function(){
             }
         }
     };
-    self.CheckRoute = function(id){
+    self.CheckRouteBreadCrumb = function(id){
         if(Routing.IsDefault() && self.HasDefaultContent()){
             self.WidgetLoader(true);
         }
@@ -71,15 +72,15 @@ var BreadCrumbWidget = function(){
         }
         
         EventDispatcher.AddEventListener('onload.breadCrumb.tmpl', function (data){
-            self.CheckRoute(Routing.GetActiveCategory());
+            self.CheckRouteBreadCrumb(Routing.GetActiveCategory());
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            self.CheckRoute(Routing.GetActiveCategory()); 
+            self.CheckRouteBreadCrumb(Routing.GetActiveCategory()); 
         });
         
         EventDispatcher.AddEventListener('widget.route.change.breadCrumb', function(id){
-            self.CheckRoute(id);
+            self.CheckRouteBreadCrumb(id);
         })
         
         EventDispatcher.AddEventListener('breadCrumbWidget.fill.item', function (data){ 

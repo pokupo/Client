@@ -20,6 +20,7 @@ var CartGoodsWidget = function(){
         self.settings.style = Config.CartGoods.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckCartGoodsRoute();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -53,27 +54,15 @@ var CartGoodsWidget = function(){
     };
     self.CheckCartGoodsRoute = function(){
         if(Routing.route == 'cart'){
-            self.Update();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.Update();
+            });
         }
         else{
             self.WidgetLoader(true);
         }
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckCartGoodsRoute();
-        });
-    };
     self.RegisterEvents = function(){ 
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.LoadTmpl();
-            });
-        }
-        
         EventDispatcher.AddEventListener('widget.change.route', function (){
             self.CheckCartGoodsRoute();
         });

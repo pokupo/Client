@@ -22,6 +22,7 @@ var CabinetCartGoodsWidget = function(){
         self.settings.style = Config.CabinetCartGoods.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckCabinetCartGoodsRoute();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -51,34 +52,19 @@ var CabinetCartGoodsWidget = function(){
                     }
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'cabinetCartGoods/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
     self.CheckCabinetCartGoodsRoute = function(){
         if(Routing.route == 'cabinet_cart'){
-            self.Update.Content();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.Update.Content();
+            });
         }
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckCabinetCartGoodsRoute();
-        });
-    };
     self.RegisterEvents = function(){ 
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.LoadTmpl();
-            });
-        }
-        
         EventDispatcher.AddEventListener('widget.change.route', function (){
             self.CheckCabinetCartGoodsRoute();
         });

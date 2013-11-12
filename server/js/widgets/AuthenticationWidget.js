@@ -20,6 +20,7 @@ var AuthenticationWidget = function(){
         self.settings.style = Config.Authentication.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckAuthenticationRoute();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -46,26 +47,14 @@ var AuthenticationWidget = function(){
     };
     self.CheckAuthenticationRoute = function(){
         if(Routing.route == 'login'){
-            self.SelectTypeContent();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.SelectTypeContent();
+            });
         }
         else
             self.WidgetLoader(true);
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckAuthenticationRoute();
-        });
-    };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.LoadTmpl();
-            });
-        }
-        
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('widget.change.route', function (){
             self.CheckAuthenticationRoute();
         });
