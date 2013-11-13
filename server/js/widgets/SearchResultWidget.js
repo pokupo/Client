@@ -163,26 +163,31 @@ var SearchResultWidget = function(){
         });
     };
     self.InsertContainer = {
-        AdvancedSearchForm : function(){
+        EmptyFormWidget : function(){
             var temp = $("#" + self.settings.containerIdForAdvancedSearch).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForAdvancedSearch).empty().html(temp);
-            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.tmpl.form.id).html()).children().hide();
         },
-        SearchResult : function(type){
+        AdvancedSearchForm : function(){
+            self.InsertContainer.EmptyFormWidget();
+            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.GetTmplName(false, 'form')).html()).children().hide();
+        },
+        EmptyWidget : function(){
             var temp = $("#" + self.settings.containerIdForSearchResult).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForSearchResult).empty().html(temp);
-            
+        },
+        SearchResult : function(type){
+            self.InsertContainer.EmptyWidget();
             if(type == 'table'){ 
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.table).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('table', 'content')).html()).children().hide();
             }
             if(type == 'list'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.list).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('list', 'content')).html()).children().hide();
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.tile).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('tile', 'content')).html()).children().hide();
             }
             if(type == 'error'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.tmpl.content.id.empty).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('empty', 'content')).html()).children().hide();
             }
         }
     };
@@ -199,49 +204,80 @@ var SearchResultWidget = function(){
     self.Render = {
         AdvancedSearchForm : function(data){
             if($("#" + self.settings.containerIdForAdvancedSearch).length){
-                ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
 
-                $("#" + self.settings.idTreeCategoriesForAdvancedSearchForm).dynatree({
-                    checkbox: true,
-                    selectMode: 3,
-                    children: data.categories,
-                    onSelect: function(select, node) {
-                        var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-                            return node.data.key;
+                    $("#" + self.settings.idTreeCategoriesForAdvancedSearchForm).dynatree({
+                        checkbox: true,
+                        selectMode: 3,
+                        children: data.categories,
+                        onSelect: function(select, node) {
+                            var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
+                                return node.data.key;
+                            });
+
+                            Parameters.filter.idSelectCategories = selKeys;
+                        }
+                    });
+
+                    $('.' + data.cssTypeSearch).sSelect({
+                        defaultText: self.settings.listTypeSearch[data.typeSearch]
+                    }).change(function(){
+                        var id = $('.' + data.cssTypeSearch).getSetSSValue();
+                        $('.' + data.cssTypeSearch + ' option').removeAttr('selected');
+                        $('.' + data.cssTypeSearch + ' option[value=' + id + ']').attr('selected', true);
+                        $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
+                    });
+
+                    $('.' + data.cssTypeSeller).sSelect({
+                        defaultText: self.settings.listTypeSeller[data.typeSeller]
+                    }).change(function(){
+                        var id = $('.' + data.cssTypeSeller).getSetSSValue();
+                        $('.' + data.cssTypeSeller + ' option').removeAttr('selected');
+                        $('.' + data.cssTypeSeller + ' option[value=' + id + ']').attr('selected', true);
+                        $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
+                    });
+                    $("#" + self.settings.containerIdForAdvancedSearch).show();
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.AdvancedSearchForm();
+                            self.Render.AdvancedSearchForm(data);
                         });
-
-                        Parameters.filter.idSelectCategories = selKeys;
                     }
-                });
-
-                $('.' + data.cssTypeSearch).sSelect({
-                    defaultText: self.settings.listTypeSearch[data.typeSearch]
-                }).change(function(){
-                    var id = $('.' + data.cssTypeSearch).getSetSSValue();
-                    $('.' + data.cssTypeSearch + ' option').removeAttr('selected');
-                    $('.' + data.cssTypeSearch + ' option[value=' + id + ']').attr('selected', true);
-                    $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
-                });
-
-                $('.' + data.cssTypeSeller).sSelect({
-                    defaultText: self.settings.listTypeSeller[data.typeSeller]
-                }).change(function(){
-                    var id = $('.' + data.cssTypeSeller).getSetSSValue();
-                    $('.' + data.cssTypeSeller + ' option').removeAttr('selected');
-                    $('.' + data.cssTypeSeller + ' option[value=' + id + ']').attr('selected', true);
-                    $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
-                });
-                $("#" + self.settings.containerIdForAdvancedSearch).show();
+                    else{
+                        self.InsertContainer.EmptyFormWidget();
+                        self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+                    }
+                }
             }
         },
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
-                var f = data.filters;
-                new AnimateSelectList(f.sort.cssSortList);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
+                    var f = data.filters;
+                    new AnimateSelectList(f.sort.cssSortList);
+                    self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.SearchResult(data.typeView);
+                            self.Render.SearchResult(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+                    }
+                }
             }
-            delete data;
-            self.WidgetLoader(true, self.settings.containerIdForSearchResult);
         }
     };
     self.SetPosition = function(){

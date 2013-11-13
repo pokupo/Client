@@ -60,12 +60,12 @@ window.InfoSellerWidget = function(){
     };
     self.InsertContainer = {
         EmptyWidget : function(){
-            var temp = $("#" + self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.container).empty().html(temp);
+            var temp = $(self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
+            $(self.settings.container).empty().html(temp);
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.container).append($('script#' + self.GetTmplName()).html()).children().hide();
+            $(self.settings.container).append($('script#' + self.GetTmplName()).html());
         }
     }
     self.Fill = function(data){

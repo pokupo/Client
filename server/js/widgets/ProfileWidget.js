@@ -436,19 +436,19 @@
         },
         Personal : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('personal')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('personal')).html()).children().hide();
         },
         Delivery : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('delivery')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('delivery')).html()).children().hide();
         },
         DeliveryForm : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('deliveryForm')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('deliveryForm')).html()).children().hide();
         },
         Security : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('security')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('security')).html()).children().hide();
         }
     };
     self.Fill = {
@@ -499,288 +499,350 @@
         }
     };
     self.Render = {
-        Personal : function(form){
-            
+        Personal : function(form){ 
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-            }
-            $("#" + form.registrationData.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                changeMonth: true,
-                changeYear: true,
-                dateFormat: 'dd.mm.yy',
-                defaultDate: '-24Y',
-                yearRange: "c-77:c+6",
-                minDate : '-101Y',
-                maxDate : '-18Y',
-                onClose: function(dateText, inst) {
-                    form.registrationData.birthDayField(dateText);
-                }
-            });
-            
-            $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-
-            $('#' + form.postalAddress.cssRegionList).autocomplete({
-                source: function(request, response) {
-                    self.BaseLoad.Region(form.postalAddress.country().id + '/' + encodeURIComponent(request.term), function(data) {
-                        if (!data.err) {
-                            response($.map(data, function(item) {
-                                return {
-                                    value: $.trim(item.formalname + ' ' + item.shortname),
-                                    region: item
-                                };
-                            }));
-                        }
-                        else {
-                            $('#' + form.postalAddress.cssRegionList).autocomplete("close");
-                            return false;
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    $("#" + form.registrationData.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormat: 'dd.mm.yy',
+                        defaultDate: '-24Y',
+                        yearRange: "c-77:c+6",
+                        minDate : '-101Y',
+                        maxDate : '-18Y',
+                        onClose: function(dateText, inst) {
+                            form.registrationData.birthDayField(dateText);
                         }
                     });
-                },
-                select: function(event, ui) {
-                    form.postalAddress.region(ui.item.region);
-                    form.postalAddress.customRegion(ui.item.value);
-                    if (ui.item.region && ui.item.region.postalcode != 0)
-                        form.postalAddress.postIndex(ui.item.region.postalcode);
-                    else {
-                        form.postalAddress.postIndex(null);
-                    }
-                }
-            });
 
-            $('#' + form.postalAddress.cssCityList).autocomplete({
-                source: function(request, response) {
-                    if (form.postalAddress.region()) {
-                        self.BaseLoad.City(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        city: item
-                                    };
-                                }));
-                            }
+                    $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+
+                    $('#' + form.postalAddress.cssRegionList).autocomplete({
+                        source: function(request, response) {
+                            self.BaseLoad.Region(form.postalAddress.country().id + '/' + encodeURIComponent(request.term), function(data) {
+                                if (!data.err) {
+                                    response($.map(data, function(item) {
+                                        return {
+                                            value: $.trim(item.formalname + ' ' + item.shortname),
+                                            region: item
+                                        };
+                                    }));
+                                }
+                                else {
+                                    $('#' + form.postalAddress.cssRegionList).autocomplete("close");
+                                    return false;
+                                }
+                            });
+                        },
+                        select: function(event, ui) {
+                            form.postalAddress.region(ui.item.region);
+                            form.postalAddress.customRegion(ui.item.value);
+                            if (ui.item.region && ui.item.region.postalcode != 0)
+                                form.postalAddress.postIndex(ui.item.region.postalcode);
                             else {
-                                $('#' + form.postalAddress.cssCityList).autocomplete("close");
-                                return false;
+                                form.postalAddress.postIndex(null);
                             }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    form.postalAddress.city(ui.item.city);
-                    form.postalAddress.customCity(ui.item.value);
-                    if (ui.item.city && ui.item.city.postalcode != 0)
-                        form.postalAddress.postIndex(ui.item.city.postalcode);
-                    else
-                        form.postalAddress.postIndex(null);
-                }
-            });
+                        }
+                    });
 
-            $('#' + form.postalAddress.cssAddress).autocomplete({
-                source: function(request, response) {
-                    if (form.postalAddress.region()) {
-                        self.BaseLoad.Street(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(form.postalAddress.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        street: item
-                                    };
-                                }));
+                    $('#' + form.postalAddress.cssCityList).autocomplete({
+                        source: function(request, response) {
+                            if (form.postalAddress.region()) {
+                                self.BaseLoad.City(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                city: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + form.postalAddress.cssCityList).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + form.postalAddress.cssAddress).autocomplete("close");
-                                return false;
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    form.postalAddress.address(ui.item.street);
-                    form.postalAddress.customAddress(ui.item.value);
-                    if (ui.item.street && ui.item.street.postalcode != 0)
-                        form.postalAddress.postIndex(ui.item.street.postalcode);
-                    else
-                        form.postalAddress.postIndex(null);
-                }
-            });
+                        },
+                        select: function(event, ui) {
+                            form.postalAddress.city(ui.item.city);
+                            form.postalAddress.customCity(ui.item.value);
+                            if (ui.item.city && ui.item.city.postalcode != 0)
+                                form.postalAddress.postIndex(ui.item.city.postalcode);
+                            else
+                                form.postalAddress.postIndex(null);
+                        }
+                    });
 
-            $('#' + form.postalAddress.cssCountryList).change(function() {
-                var v = $(this).getSetSSValue();
-                $.grep(form.postalAddress.countryList(), function(data) {
-                    if (data.id == v){
-                        form.postalAddress.country(data);
-                        form.postalAddress.customRegion(null);
-                        form.postalAddress.region(null);
+                    $('#' + form.postalAddress.cssAddress).autocomplete({
+                        source: function(request, response) {
+                            if (form.postalAddress.region()) {
+                                self.BaseLoad.Street(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(form.postalAddress.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                street: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + form.postalAddress.cssAddress).autocomplete("close");
+                                        return false;
+                                    }
+                                });
+                            }
+                        },
+                        select: function(event, ui) {
+                            form.postalAddress.address(ui.item.street);
+                            form.postalAddress.customAddress(ui.item.value);
+                            if (ui.item.street && ui.item.street.postalcode != 0)
+                                form.postalAddress.postIndex(ui.item.street.postalcode);
+                            else
+                                form.postalAddress.postIndex(null);
+                        }
+                    });
+
+                    $('#' + form.postalAddress.cssCountryList).change(function() {
+                        var v = $(this).getSetSSValue();
+                        $.grep(form.postalAddress.countryList(), function(data) {
+                            if (data.id == v){
+                                form.postalAddress.country(data);
+                                form.postalAddress.customRegion(null);
+                                form.postalAddress.region(null);
+                                form.postalAddress.customCity(null);
+                                form.postalAddress.city(null);
+                                form.postalAddress.customAddress(null)
+                                form.postalAddress.address(null);
+                                form.postalAddress.postIndex(null);
+                            }
+                        })
+                    });
+
+                    $('#' + form.postalAddress.cssRegionList).bind('textchange', function(event, previousText) {
+                        form.postalAddress.customRegion($(this).val());
                         form.postalAddress.customCity(null);
                         form.postalAddress.city(null);
                         form.postalAddress.customAddress(null)
                         form.postalAddress.address(null);
                         form.postalAddress.postIndex(null);
+                    });
+
+                    $('#' + form.postalAddress.cssCityList).bind('textchange', function(event, previousText) {
+                        form.postalAddress.customCity($(this).val());
+                        form.postalAddress.customAddress(null)
+                        form.postalAddress.address(null);
+                        form.postalAddress.postIndex(null);
+                    });
+
+                    self.WidgetLoader(true, self.settings.containerFormId);
+
+                    if(Routing.params.edit == 'postal_address'){
+                        self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
                     }
-                })
-            });
-
-            $('#' + form.postalAddress.cssRegionList).bind('textchange', function(event, previousText) {
-                form.postalAddress.customRegion($(this).val());
-                form.postalAddress.customCity(null);
-                form.postalAddress.city(null);
-                form.postalAddress.customAddress(null)
-                form.postalAddress.address(null);
-                form.postalAddress.postIndex(null);
-            });
-
-            $('#' + form.postalAddress.cssCityList).bind('textchange', function(event, previousText) {
-                form.postalAddress.customCity($(this).val());
-                form.postalAddress.customAddress(null)
-                form.postalAddress.address(null);
-                form.postalAddress.postIndex(null);
-            });
-   
-            self.WidgetLoader(true, self.settings.containerFormId);
-            
-            if(Routing.params.edit == 'postal_address'){
-                self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Personal();
+                            self.Render.Personal(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
         },
         DeliveryList : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Delivery();
+                            self.Render.DeliveryList(delivery);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            
-            self.WidgetLoader(true, self.settings.containerFormId);
         },
         DeliveryForm : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-            }
+                try{
+                    ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                    
+                    $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
             
-            $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-            
-            $('#' + delivery.cssRegionList).autocomplete({
-                source: function(request, response) {
-                    self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
-                        if (!data.err) {
-                            response($.map(data, function(item) {
-                                return {
-                                    value: $.trim(item.formalname + ' ' + item.shortname),
-                                    region: item
-                                };
-                            }));
-                        }
-                        else {
-                            $('#' + delivery.cssRegionList).autocomplete("close");
-                            return false;
+                    $('#' + delivery.cssRegionList).autocomplete({
+                        source: function(request, response) {
+                            self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
+                                if (!data.err) {
+                                    response($.map(data, function(item) {
+                                        return {
+                                            value: $.trim(item.formalname + ' ' + item.shortname),
+                                            region: item
+                                        };
+                                    }));
+                                }
+                                else {
+                                    $('#' + delivery.cssRegionList).autocomplete("close");
+                                    return false;
+                                }
+                            });
+                        },
+                        select: function(event, ui) {
+                            delivery.region(ui.item.region);
+                            delivery.customRegion(ui.item.value);
+                            if (ui.item.region && ui.item.region.postalcode != 0)
+                                delivery.postCode(ui.item.region.postalcode);
+                            else {
+                                delivery.postCode(null);
+                            }
                         }
                     });
-                },
-                select: function(event, ui) {
-                    delivery.region(ui.item.region);
-                    delivery.customRegion(ui.item.value);
-                    if (ui.item.region && ui.item.region.postalcode != 0)
-                        delivery.postCode(ui.item.region.postalcode);
-                    else {
-                        delivery.postCode(null);
-                    }
-                }
-            });
 
-            $('#' + delivery.cssCityList).autocomplete({
-                source: function(request, response) {
-                    if (delivery.region()) {
-                        self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        city: item
-                                    };
-                                }));
+                    $('#' + delivery.cssCityList).autocomplete({
+                        source: function(request, response) {
+                            if (delivery.region()) {
+                                self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                city: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + delivery.cssCityList).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + delivery.cssCityList).autocomplete("close");
-                                return false;
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    delivery.city(ui.item.city);
-                    delivery.customCity(ui.item.value);
-                    if (ui.item.city && ui.item.city.postalcode != 0)
-                        delivery.postCode(ui.item.city.postalcode);
-                    else
-                        delivery.postCode(null);
-                }
-            });
+                        },
+                        select: function(event, ui) {
+                            delivery.city(ui.item.city);
+                            delivery.customCity(ui.item.value);
+                            if (ui.item.city && ui.item.city.postalcode != 0)
+                                delivery.postCode(ui.item.city.postalcode);
+                            else
+                                delivery.postCode(null);
+                        }
+                    });
 
-            $('#' + delivery.cssAddress).autocomplete({
-                source: function(request, response) {
-                    if (delivery.region()) {
-                        self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        street: item
-                                    };
-                                }));
+                    $('#' + delivery.cssAddress).autocomplete({
+                        source: function(request, response) {
+                            if (delivery.region()) {
+                                self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                street: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + delivery.cssAddress).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + delivery.cssAddress).autocomplete("close");
-                                return false;
+                        },
+                        select: function(event, ui) {
+                            delivery.address(ui.item.street);
+                            delivery.customAddress(ui.item.value);
+                            if (ui.item.street && ui.item.street.postalcode != 0)
+                                delivery.postCode(ui.item.street.postalcode);
+                            else
+                                delivery.postCode(null);
+                        }
+                    });
+                    $('#' + delivery.cssCountryList).change(function() {
+                        var v = $('#' + delivery.cssCountryList + ' option:selected').val();
+                        $.grep(delivery.countryList(), function(data) {
+                            if (data.id == v){
+                                delivery.country(data);
+                                delivery.customRegion(null);
+                                delivery.region(null);
+                                delivery.customCity(null);
+                                delivery.city(null);
+                                delivery.customAddress(null)
+                                delivery.address(null);
+                                delivery.postCode(null);
                             }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    delivery.address(ui.item.street);
-                    delivery.customAddress(ui.item.value);
-                    if (ui.item.street && ui.item.street.postalcode != 0)
-                        delivery.postCode(ui.item.street.postalcode);
-                    else
-                        delivery.postCode(null);
-                }
-            });
-            $('#' + delivery.cssCountryList).change(function() {
-                var v = $('#' + delivery.cssCountryList + ' option:selected').val();
-                $.grep(delivery.countryList(), function(data) {
-                    if (data.id == v){
-                        delivery.country(data);
-                        delivery.customRegion(null);
-                        delivery.region(null);
+                        })
+                    });
+
+                    $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
+                        delivery.customRegion($(this).val());
                         delivery.customCity(null);
                         delivery.city(null);
                         delivery.customAddress(null)
                         delivery.address(null);
                         delivery.postCode(null);
+                    });
+
+                    $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
+                        delivery.customCity($(this).val());
+                        delivery.customAddress(null)
+                        delivery.address(null);
+                        delivery.postCode(null);
+                    });
+
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.DeliveryForm();
+                            self.Render.DeliveryForm(delivery);
+                        });
                     }
-                })
-            });
-
-            $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
-                delivery.customRegion($(this).val());
-                delivery.customCity(null);
-                delivery.city(null);
-                delivery.customAddress(null)
-                delivery.address(null);
-                delivery.postCode(null);
-            });
-
-            $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
-                delivery.customCity($(this).val());
-                delivery.customAddress(null)
-                delivery.address(null);
-                delivery.postCode(null);
-            });
-            
-            self.WidgetLoader(true, self.settings.containerFormId);
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
         },
         Security : function(sequrity){
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('security') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Security();
+                            self.Render.Security(sequrity);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {

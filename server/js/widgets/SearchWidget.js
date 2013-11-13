@@ -38,10 +38,15 @@ var SearchWidget = function(){
 
         self.settings.inputParameters = input;
     };
-    self.InsertContainer = function(){
-        var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
-        $("#" + self.settings.containerId).empty().html(temp);
-        $("#" + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html()).show();
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
+        Content : function(){
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName()).html()).children().hide();
+        }
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
@@ -83,7 +88,7 @@ var SearchWidget = function(){
         });
         
         EventDispatcher.AddEventListener('searchWidget.fill.listCategory', function (data){
-            self.InsertContainer();
+            self.InsertContainer.Content();
             self.Render(data);
         });
         
@@ -104,18 +109,34 @@ var SearchWidget = function(){
     };
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){
-            ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+            try{
+                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
-            $('.' + data.cssSelectList).sSelect({
-                defaultText: data.selectedCategory
-            }).change(function(){
-                var id = $('.' + data.cssSelectList).getSetSSValue();
-                $('.' + data.cssSelectList + ' option').removeAttr('selected');
-                $('.' + data.cssSelectList + ' option[value=' + id + ']').attr('selected', true);
-            });
-            $('.' + data.cssSelectList).getSetSSValue(data.id);
+                $('.' + data.cssSelectList).sSelect({
+                    defaultText: data.selectedCategory
+                }).change(function(){
+                    var id = $('.' + data.cssSelectList).getSetSSValue();
+                    $('.' + data.cssSelectList + ' option').removeAttr('selected');
+                    $('.' + data.cssSelectList + ' option[value=' + id + ']').attr('selected', true);
+                });
+                $('.' + data.cssSelectList).getSetSSValue(data.id);
+                self.WidgetLoader(true, self.settings.containerId);
+            }
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Content();
+                        self.Render(data);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+            }
         }
-        self.WidgetLoader(true, self.settings.containerId);
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters.position == 'absolute'){

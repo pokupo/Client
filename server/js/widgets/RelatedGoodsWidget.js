@@ -71,27 +71,33 @@ window.RelatedGoodsWidget = function(){
             self.Render(data);
         });
     };
-    self.InsertContainer = function(type){
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.container).empty().html(temp);
+        },
+        Content : function(type){
             if(type == 'slider')
-                $(self.settings.container).html($('script#' + self.settings.tmpl.id.slider).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('slider')).html());
             if(type == 'carousel')
-                $(self.settings.container).html($('script#' + self.settings.tmpl.id.carousel).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('carousel')).html());
             if(type == 'tile')
-                $(self.settings.container).html($('script#' + self.settings.tmpl.id.tile).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('tile')).html());
             if(type == 'table') 
-                $(self.settings.container).html($('script#' + self.settings.tmpl.id.table).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('table')).html());
             if(type == 'list')
-                $(self.settings.container).html($('script#' + self.settings.tmpl.id.list).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('list')).html());
             if(type == 'empty')
                 $(self.settings.container).html('');
+        }
     };
     self.CheckData = function(data){ 
         if(!data.err ){
-            self.InsertContainer(self.settings.relatedGoods.typeView);
+            self.InsertContainer.Content(self.settings.relatedGoods.typeView);
             self.Fill(self.settings.relatedGoods, data)
         }
         else{
-            self.InsertContainer('empty');
+            self.InsertContainer.Content('empty');
         }
     };
     self.Fill = function(settings, data){
@@ -99,12 +105,28 @@ window.RelatedGoodsWidget = function(){
         related.AddContent();
     };
     self.Render = function(data){
-        ko.applyBindings(data, $(self.settings.container).children()[0]);
+        try{
+            ko.applyBindings(data, $(self.settings.container).children()[0]);
 
-        if(self.settings.relatedGoods.typeView == 'slider')
-                new AnimateSlider(data.cssBlockContainer);
-        if(self.settings.relatedGoods.typeView == 'carousel')
-                new AnimateCarousel(data.cssBlockContainer);
+            if(self.settings.relatedGoods.typeView == 'slider')
+                    new AnimateSlider(data.cssBlockContainer);
+            if(self.settings.relatedGoods.typeView == 'carousel')
+                    new AnimateCarousel(data.cssBlockContainer);
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Content(data.typeView);
+                    self.Render.Content(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+                self.WidgetLoader(true, self.settings.container);
+            }
+        }
     };
 }
 

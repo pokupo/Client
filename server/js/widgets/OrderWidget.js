@@ -703,35 +703,35 @@ var OrderWidget = function() {
         },
         Step1: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1')).html()).children().hide();
         },
         Step1Confirm: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Confirm')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Confirm')).html()).children().hide();
         },
         Step1Profile: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Profile')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Profile')).html()).children().hide();
         },
         Step3: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
         },
         Step2: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html()).children().hide();
         },
         Step2Form: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2Form')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2Form')).html()).children().hide();
         },
         Step4: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html()).children().hide();
         },
         Step5: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step5')).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step5')).html()).children().hide();
         }
     };
     self.Fill = {
