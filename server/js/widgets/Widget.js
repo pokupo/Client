@@ -427,6 +427,27 @@ var Widget = function (){
                 });
             }
         };
+        ko.extenders.defaultConutryIfChange = function(target, parent) {
+            var result = ko.computed({
+                read: target,  //always return the original observables value
+                write: function(newValue) {
+                    if(target() != newValue){
+                        parent.customRegion(null);
+                        parent.region(null);
+                        parent.customCity(null);
+                        parent.city(null);
+                        parent.customAddress(null)
+                        parent.address(null);
+                        parent.postIndex(null);
+                    }
+                    target(newValue);
+                 }
+            }).extend({ notify: 'always' });
+
+            result(target());
+
+            return result;
+        };
     };
     this.WidgetLoader = function(test, container){
         Loader.Indicator(this.widgetName, test, container);

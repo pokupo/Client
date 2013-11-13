@@ -16,7 +16,13 @@
                             <div class="center_block">
                                 <div class="form_item form_item_region" id="typeSearch">
                                     <label>Искать:</label>
-                                    <select name="typeSearch" class="form_select" data-bind="css: cssTypeSearch, options: typesSearch, optionsText: 'text', optionsValue: 'key'"></select>
+                                    <div class="headerCssSelect">
+                                        <select name="typeSearch" class="form_select" data-bind="css: cssTypeSearch, value: typeSearch">
+                                            <!-- ko foreach: typesSearch-->
+                                            <option data-bind="text: title, value: key"></option>
+                                            <!-- /ko -->
+                                        </select>
+                                    </div>
                                 </div></div>
                         </td>
                     </tr>
@@ -39,7 +45,13 @@
                                 </div>
                                 <div class="form_item form_item_city" id="typeSeller">
                                     <label>Тип продавца:</label>
-                                    <select name="typeSeller" class="form_select" data-bind="css: cssTypeSeller, options: typesSellers, optionsText: 'text', optionsValue: 'key'"></select>
+                                    <div class="headerCssSelect">
+                                        <select name="typeSeller" class="form_select" data-bind="css: cssTypeSeller, value: typeSeller">
+                                            <!-- ko foreach: typesSellers-->
+                                            <option data-bind="text: title, value: key"></option>
+                                            <!-- /ko -->
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </td>

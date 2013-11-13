@@ -220,23 +220,6 @@ var SearchResultWidget = function(){
                         }
                     });
 
-                    $('.' + data.cssTypeSearch).sSelect({
-                        defaultText: self.settings.listTypeSearch[data.typeSearch]
-                    }).change(function(){
-                        var id = $('.' + data.cssTypeSearch).getSetSSValue();
-                        $('.' + data.cssTypeSearch + ' option').removeAttr('selected');
-                        $('.' + data.cssTypeSearch + ' option[value=' + id + ']').attr('selected', true);
-                        $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
-                    });
-
-                    $('.' + data.cssTypeSeller).sSelect({
-                        defaultText: self.settings.listTypeSeller[data.typeSeller]
-                    }).change(function(){
-                        var id = $('.' + data.cssTypeSeller).getSetSSValue();
-                        $('.' + data.cssTypeSeller + ' option').removeAttr('selected');
-                        $('.' + data.cssTypeSeller + ' option[value=' + id + ']').attr('selected', true);
-                        $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
-                    });
                     $("#" + self.settings.containerIdForAdvancedSearch).show();
                 }
                 catch(e){
@@ -281,7 +264,6 @@ var SearchResultWidget = function(){
         }
     };
     self.SetPosition = function(){
-
         if(self.settings.inputParameters['position'] == 'absolute'){
             for(var key in self.settings.inputParameters){
                 if(self.settings.styleSearchResult[key])
@@ -299,11 +281,13 @@ var AdvancedSearchFormViewModel = function(params){
     var self = this;
     self.keyWords = Parameters.filter.keyWords;
     self.idCategories = Parameters.filter.idCategories;
-    self.typeSearch = Parameters.filter.typeSearch;
+    self.typeSearch = ko.observable();
+    self.typeSearch(Parameters.filter.typeSearch);
     self.startCost = Parameters.filter.startCost;
     self.endCost = Parameters.filter.endCost;
     self.exceptWords = Parameters.filter.exceptWords;
-    self.typeSeller = Parameters.filter.typeSeller;
+    self.typeSeller = ko.observable();
+    self.typeSeller(Parameters.filter.typeSeller);
     
     self.categories = [];
     self.typesSearch = ko.observableArray();
@@ -312,15 +296,20 @@ var AdvancedSearchFormViewModel = function(params){
     self.cssTypeSearch = 'advancedSearchTypeSearch';
     self.cssTypeSeller = 'advancedSearchTypeSeller';
     self.cachData = {};
-    
-    self.FillSelectList = function(options, list){
+
+    self.FillTypeSearchSelectList = function(options, list){
         for(var key in options){
-            list.push({key : key, text : options[key]})
+            list.push(new AdvancedSearchFormTypeSearchViewModel({key: key, title: options[key]}, self));
+        }
+    };
+    self.FillTypeSellerSelectList = function(options, list){
+        for(var key in options){
+            list.push(new AdvancedSearchFormTypeSellerViewModel({key: key, title: options[key]}, self));
         }
     };
     
-    self.FillSelectList(params.listTypeSearch, self.typesSearch);
-    self.FillSelectList(params.listTypeSeller, self.typesSellers);
+    self.FillTypeSearchSelectList(params.listTypeSearch, self.typesSearch);
+    self.FillTypeSellerSelectList(params.listTypeSeller, self.typesSellers);
     
     self.AddCategories = function(data){
         self.cachData = data;
@@ -359,13 +348,9 @@ var AdvancedSearchFormViewModel = function(params){
     self.SubmitAdvancedSearchForm = function(data){
         Loader.Indicator('SearchResultWidget', false);
         self.keyWords = $(data.keyWords).val();
-        var selectedTypeSearch = $(data.typeSearch).find('option:selected');
-        self.typeSearch = $(selectedTypeSearch[selectedTypeSearch.length-1]).val();
         self.startCost = $(data.startCost).val();
         self.endCost = $(data.endCost).val();
         self.exceptWords = $(data.exceptWords).val();
-        var selectedTypeSeller = $(data.typeSeller).find('option:selected');
-        self.typeSeller = $(selectedTypeSeller[selectedTypeSeller.length-1]).val();
 
         Parameters.filter.idCategories = self.idCategories = [];
         self.FindSelectedSection(self.cachData, Parameters.filter.idSelectCategories);
@@ -373,13 +358,13 @@ var AdvancedSearchFormViewModel = function(params){
         if(self.idCategories.length > 0)
            Parameters.filter.idCategories = self.idCategories.join(",");
         Parameters.filter.keyWords = self.keyWords;
-        Parameters.filter.typeSearch = self.typeSearch;
+        Parameters.filter.typeSearch = self.typeSearch();
         Parameters.filter.startCost = self.startCost;
         Parameters.filter.endCost = self.endCost;
         Parameters.filter.exceptWords = self.exceptWords;
-        Parameters.filter.typeSeller = self.typeSeller;
+        Parameters.filter.typeSeller = self.typeSeller();
         Parameters.filter.page = 1;
-        
+        console.log(self.typeSearch());
         Routing.SetHash('search', 'Расширенный поиск', Parameters.filter);
     };
     self.FilterCategories = function(data){
@@ -421,6 +406,26 @@ var AdvancedSearchFormViewModel = function(params){
                 self.FindChildrenCategory(data[i].children)
             }
         }
+    }
+}
+
+var AdvancedSearchFormTypeSearchViewModel = function(data, parent){
+    var self = this;
+    self.title = data.title;
+    self.key = data.key;
+    
+    self.ClickItem = function(){
+        parent.typeSearch(self.key);
+    }
+}
+
+var AdvancedSearchFormTypeSellerViewModel = function(data, parent){
+    var self = this;
+    self.title = data.title;
+    self.key = data.key;
+    
+    self.ClickItem = function(){
+        parent.typeSeller(self.key);
     }
 }
 

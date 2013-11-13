@@ -314,7 +314,6 @@
                         '&is_default=yes';
                 self.BaseLoad.SetDefaultDelivaryAddress(str, function(result){
                     if(result.result == 'ok'){
-//                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
                     }
                     else{
                         self.QueryError(result, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', data)})

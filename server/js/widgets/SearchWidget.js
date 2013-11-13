@@ -103,7 +103,7 @@ var SearchWidget = function(){
             search = new SearchViewModel();
             Parameters.cache.searchWidget = search;
         }
-        search.selectedCategory = data.name_category;
+
         if(Parameters.cache.childrenCategory[data.id])
             search.AddListCategory(Parameters.cache.childrenCategory[data.id], data);
     };
@@ -111,15 +111,6 @@ var SearchWidget = function(){
         if($("#" + self.settings.containerId).length > 0){
             try{
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-
-                $('.' + data.cssSelectList).sSelect({
-                    defaultText: data.selectedCategory
-                }).change(function(){
-                    var id = $('.' + data.cssSelectList).getSetSSValue();
-                    $('.' + data.cssSelectList + ' option').removeAttr('selected');
-                    $('.' + data.cssSelectList + ' option[value=' + id + ']').attr('selected', true);
-                });
-                $('.' + data.cssSelectList).getSetSSValue(data.id);
                 self.WidgetLoader(true, self.settings.containerId);
             }
             catch(e){
@@ -151,19 +142,23 @@ var SearchWidget = function(){
     };
 }
 
-var SearchCategoryItem = function(data, level){
+var SearchCategoryItem = function(data, level, select){
     var self = this;
     self.id = data.id;
     self.title = Array(level).join(" - ") + data.name_category;
     self.typeCategory = data.type_category;
+    
+    self.ClickItem = function(){
+        select.selectedCatigoriesId(self.id);
+    }
 }
 
 var SearchViewModel = function(){
     var self = this;
     self.text = '';
-    self.selectedCategory = "";
     self.cssSelectList = 'searchSelectList';
     self.categories =  ko.observableArray();
+    self.selectedCatigoriesId = ko.observable();
     self.idCategories = Parameters.filter.idCategories;
     self.typeCategories = [];
     self.cachData = {};
@@ -178,14 +173,14 @@ var SearchViewModel = function(){
         self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
         
         self.typeCategories[parent.id] = parent.type_category;
-        self.categories.push(new SearchCategoryItem(parent, 0));
+        self.categories.push(new SearchCategoryItem(parent, 0, self));
         
         for(var i = 0; i <= data.length - 1; i++){
-            self.categories.push(new SearchCategoryItem(data[i], 1))
+            self.categories.push(new SearchCategoryItem(data[i], 1, self))
             self.typeCategories[data[i].id] = data[i].type_category;
             if(data[i].children){
                 for(var j = 0; j <= data[i].children.length - 1; j++){
-                    self.categories.push(new SearchCategoryItem(data[i].children[j], 2));
+                    self.categories.push(new SearchCategoryItem(data[i].children[j], 2, self));
                     self.typeCategories[data[i].id] = data[i].type_category;
                 }
             }
@@ -194,9 +189,9 @@ var SearchViewModel = function(){
     };
     self.SubmitSearchForm = function(data){
         self.idCategories = [];
+        var selected = self.selectedCatigoriesId();
         var keyWords = $(data.text).val();
         if(keyWords){
-            var selected = parseInt($(data.category).find('option:selected').val());
             if(self.typeCategories[selected] != 'category')
                 self.FindSelectedSection(self.cachData, selected);
             else 
@@ -210,7 +205,7 @@ var SearchViewModel = function(){
             Parameters.filter.idCategories = self.idCategories;
 
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
-            
+
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
             $(data.text).val('');
         }

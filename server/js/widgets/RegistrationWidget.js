@@ -492,7 +492,6 @@ var RegistrationWidget = function() {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    $('#' + form.cssCountryList).sSelect({defaultText: ' '});
 
                     $('#' + form.cssRegionList).autocomplete({
                         source: function(request, response) {
@@ -580,22 +579,6 @@ var RegistrationWidget = function() {
                         }
                     });
 
-                    $('#' + form.cssCountryList).change(function() {
-                        var v = $(this).getSetSSValue();
-                        $.grep(form.countryList(), function(data) {
-                            if (data.id == v){
-                                form.country(data);
-                                form.customRegion(null);
-                                form.region(null);
-                                form.customCity(null);
-                                form.city(null);
-                                form.customAddress(null)
-                                form.address(null);
-                                form.postIndex(null);
-                            }
-                        })
-                    });
-
                     $('#' + form.cssRegionList).bind('textchange', function(event, previousText) {
                         form.customRegion($(this).val());
                         form.customCity(null);
@@ -648,7 +631,7 @@ var RegistrationWidget = function() {
 
 var RegistrationFormStep4ViewModel = function() {
     var self = this;
-    self.country = ko.observable();
+    self.country = ko.observable().extend({defaultConutryIfChange: self});
     self.cssCountryList = 'country_list';
     self.errorCountry = ko.observable(null);
 
