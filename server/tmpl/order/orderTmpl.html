@@ -535,7 +535,14 @@
                                                 <label>Ваша страна:
                                                     <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
                                                 </label>
-                                                <select id="delivery_country_list" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
+                                                <div>
+                                                    <select id="delivery_country_list" class="form_select" data-bind="value: idCountry, attr: {id: cssCountryList}">
+                                                        <option value=""></option>
+                                                        <!-- ko foreach: countryList -->
+                                                        <option data-bind="text: name, value: id"></option>
+                                                        <!-- /ko -->
+                                                    </select>
+                                                </div>
                                                 <!-- ko if: errorCountry -->
                                                     <div class="form_error" data-bind="text: errorCountry "></div>
                                                 <!-- /ko -->

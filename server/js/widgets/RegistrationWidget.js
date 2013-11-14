@@ -199,7 +199,7 @@ var RegistrationWidget = function() {
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
             self.WidgetLoader(false);
-            var str = '?id_country=' + encodeURIComponent($.trim(step4.country().id));
+            var str = '?id_country=' + encodeURIComponent($.trim(step4.country()));
             if (step4.region())
                 str = str + '&code_region=' + encodeURIComponent($.trim(step4.region().regioncode));
             else
@@ -493,9 +493,20 @@ var RegistrationWidget = function() {
                 try{
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
 
+                    $('#' + form.cssCountryList).change(function() {
+                        form.customRegion(null);
+                        form.region(null);
+                        form.customCity(null);
+                        form.city(null);
+                        form.customAddress(null)
+                        form.address(null);
+                        form.postIndex(null);
+                    });
+                    
                     $('#' + form.cssRegionList).autocomplete({
                         source: function(request, response) {
-                            self.BaseLoad.Region(form.country().id + '/' + encodeURIComponent(request.term), function(data) {
+                            console.log(form.country());
+                            self.BaseLoad.Region(form.country() + '/' + encodeURIComponent(request.term), function(data) {
                                 if (!data.err) {
                                     response($.map(data, function(item) {
                                         return {
@@ -524,7 +535,7 @@ var RegistrationWidget = function() {
                     $('#' + form.cssCityList).autocomplete({
                         source: function(request, response) {
                             if (form.region()) {
-                                self.BaseLoad.City(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                self.BaseLoad.City(form.country() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
                                     if (!data.err) {
                                         response($.map(data, function(item) {
                                             return {
@@ -553,7 +564,7 @@ var RegistrationWidget = function() {
                     $('#' + form.cssAddress).autocomplete({
                         source: function(request, response) {
                             if (form.region()) {
-                                self.BaseLoad.Street(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                self.BaseLoad.Street(form.country() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
                                     if (!data.err) {
                                         response($.map(data, function(item) {
                                             return {
@@ -631,7 +642,7 @@ var RegistrationWidget = function() {
 
 var RegistrationFormStep4ViewModel = function() {
     var self = this;
-    self.country = ko.observable().extend({defaultConutryIfChange: self});
+    self.country = ko.observable();
     self.cssCountryList = 'country_list';
     self.errorCountry = ko.observable(null);
 

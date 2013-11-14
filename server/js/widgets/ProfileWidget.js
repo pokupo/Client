@@ -234,7 +234,7 @@
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
             str = str + '&address=' + encodeURIComponent($.trim(data.customAddress())) + 
-                    '&post_code=' + encodeURIComponent($.trim(data.postCode())) + 
+                    '&post_code=' + encodeURIComponent($.trim(data.postIndex())) + 
                     '&addressee=' + encodeURIComponent($.trim(data.addressee())) + 
                     '&contact_phone=' + encodeURIComponent($.trim(data.contactPhone())) + 
                     '&is_default=' + encodeURIComponent(data.isDefault() ? 'yes' : 'no');
@@ -267,7 +267,7 @@
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
             str = str + '&address=' + encodeURIComponent($.trim(data.customAddress())) + 
-                    '&post_code=' + encodeURIComponent($.trim(data.postCode())) + 
+                    '&post_code=' + encodeURIComponent($.trim(data.postIndex())) + 
                     '&addressee=' + encodeURIComponent($.trim(data.addressee())) + 
                     '&contact_phone=' + encodeURIComponent($.trim(data.contactPhone())) + 
                     '&is_default=' + encodeURIComponent(data.isDefault() ? 'yes' : 'no');
@@ -404,12 +404,10 @@
         },
         Personal : function(){
             self.InsertContainer.Personal();
-            var personal = new ProfilePersonalInformationViewModel();
             
             self.BaseLoad.Profile(function(registration){
                 self.BaseLoad.ProfileInfo(function(data) {
-                    self.Fill.Personal(registration, personal);
-                    personal.registrationData.dateRegistration(data.date_reg);
+                    self.Fill.Personal(registration, data);
                 });
             });
         },
@@ -451,28 +449,20 @@
         }
     };
     self.Fill = {
-        Personal : function(data, personal){
-            personal.AddContent(data);
+        Personal : function(data, reg){
+            var personal = new ProfilePersonalInformationViewModel();
             
             var shopId = Parameters.shopId;
             if (self.settings.geoShop == 0)
                 shopId = 0;
-            self.BaseLoad.Country(shopId, function(data) {
-                personal.postalAddress.AddCountryList(data);
-                if(personal.postalAddress.idCountry()){
-                    $.grep(personal.postalAddress.countryList(), function(data) {
-                        if (data.id == personal.postalAddress.idCountry()){
-                            personal.postalAddress.country(data);
-                        }
-                    })
-                }
+            self.BaseLoad.Country(shopId, function(c) {
+                personal.AddContent(data, reg, c);
                 self.Render.Personal(personal);
             });
         },
         Delivery : function(data){
             var delivery = new ProfileDeliveryAddressViewModel();
             delivery.AddContent(data);
-
             self.Render.DeliveryList(delivery);
         },
         DeliveryForm : function(form){
@@ -482,13 +472,6 @@
             self.BaseLoad.Country(shopId, function(data) {
                 form.AddCountryList(data);
                 self.InsertContainer.DeliveryForm();
-                if(form.idCountry()){
-                    $.grep(form.countryList(), function(data) {
-                        if (data.id == form.idCountry()){
-                            form.country(data);
-                        }
-                    })
-                }
                 self.Render.DeliveryForm(form);
             });
         },
@@ -516,7 +499,23 @@
                     });
 
                     $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-
+                    
+                    $('#' + form.postalAddress.cssCountryList).change(function() {
+                        var v =  $('#' + form.postalAddress.cssCountryList + " option:selected").val();
+                        $.grep(form.postalAddress.countryList(), function(data) {
+                            if (data.id == v){
+                                form.postalAddress.country(data);
+                                form.postalAddress.customRegion(null);
+                                form.postalAddress.region(null);
+                                form.postalAddress.customCity(null);
+                                form.postalAddress.city(null);
+                                form.postalAddress.customAddress(null)
+                                form.postalAddress.address(null);
+                                form.postalAddress.postIndex(null);
+                            }
+                        })
+                    });
+            
                     $('#' + form.postalAddress.cssRegionList).autocomplete({
                         source: function(request, response) {
                             self.BaseLoad.Region(form.postalAddress.country().id + '/' + encodeURIComponent(request.term), function(data) {
@@ -601,22 +600,6 @@
                             else
                                 form.postalAddress.postIndex(null);
                         }
-                    });
-
-                    $('#' + form.postalAddress.cssCountryList).change(function() {
-                        var v = $(this).getSetSSValue();
-                        $.grep(form.postalAddress.countryList(), function(data) {
-                            if (data.id == v){
-                                form.postalAddress.country(data);
-                                form.postalAddress.customRegion(null);
-                                form.postalAddress.region(null);
-                                form.postalAddress.customCity(null);
-                                form.postalAddress.city(null);
-                                form.postalAddress.customAddress(null)
-                                form.postalAddress.address(null);
-                                form.postalAddress.postIndex(null);
-                            }
-                        })
                     });
 
                     $('#' + form.postalAddress.cssRegionList).bind('textchange', function(event, previousText) {
@@ -707,9 +690,9 @@
                             delivery.region(ui.item.region);
                             delivery.customRegion(ui.item.value);
                             if (ui.item.region && ui.item.region.postalcode != 0)
-                                delivery.postCode(ui.item.region.postalcode);
+                                delivery.postIndex(ui.item.region.postalcode);
                             else {
-                                delivery.postCode(null);
+                                delivery.postIndex(null);
                             }
                         }
                     });
@@ -737,9 +720,9 @@
                             delivery.city(ui.item.city);
                             delivery.customCity(ui.item.value);
                             if (ui.item.city && ui.item.city.postalcode != 0)
-                                delivery.postCode(ui.item.city.postalcode);
+                                delivery.postIndex(ui.item.city.postalcode);
                             else
-                                delivery.postCode(null);
+                                delivery.postIndex(null);
                         }
                     });
 
@@ -766,9 +749,9 @@
                             delivery.address(ui.item.street);
                             delivery.customAddress(ui.item.value);
                             if (ui.item.street && ui.item.street.postalcode != 0)
-                                delivery.postCode(ui.item.street.postalcode);
+                                delivery.postIndex(ui.item.street.postalcode);
                             else
-                                delivery.postCode(null);
+                                delivery.postIndex(null);
                         }
                     });
                     $('#' + delivery.cssCountryList).change(function() {
@@ -782,7 +765,7 @@
                                 delivery.city(null);
                                 delivery.customAddress(null)
                                 delivery.address(null);
-                                delivery.postCode(null);
+                                delivery.postIndex(null);
                             }
                         })
                     });
@@ -793,14 +776,14 @@
                         delivery.city(null);
                         delivery.customAddress(null)
                         delivery.address(null);
-                        delivery.postCode(null);
+                        delivery.postIndex(null);
                     });
 
                     $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
                         delivery.customCity($(this).val());
                         delivery.customAddress(null)
                         delivery.address(null);
-                        delivery.postCode(null);
+                        delivery.postIndex(null);
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
@@ -865,12 +848,14 @@ var ProfilePersonalInformationViewModel = function(){
     self.postalAddress = null;
     self.contacts = null;
     
-    self.AddContent = function(data){
+    self.AddContent = function(data, reg, c){
         var registrationData = new ProfileDataRegistrationViewModel();
         registrationData.AddContent(data);
+        registrationData.dateRegistration(reg.date_reg);
         self.registrationData = registrationData;
         
         var postalAddress = new ProfilePostalAddressViewModel();
+        postalAddress.AddCountryList(c);
         postalAddress.AddContent(data);
         self.postalAddress = postalAddress;
         
@@ -1063,7 +1048,7 @@ var ProfilePostalAddressViewModel = function(){
     var self = this;
     self.data = null;
     self.cssPostAddressForm = 'profile_postal_address_form';
-    
+
     self.countryText = ko.observable();
     self.idCountry = ko.observable();
     self.country = ko.observable();
@@ -1101,9 +1086,14 @@ var ProfilePostalAddressViewModel = function(){
     
     self.AddContent = function(data){ 
         self.data = data;
-
+        
         self.idCountry(data.id_country);
         self.countryText(data.country);
+        $.grep(self.countryList(), function(c) {
+            if (data.id_country == c.id){
+                self.country(c);
+            }
+        })
         
         self.regionText(data.region);
         self.region({regioncode : data.code_region});
@@ -1121,7 +1111,7 @@ var ProfilePostalAddressViewModel = function(){
         self.postIndex(data.post_code);
         
         self.checkInfo(data.check_info);
-        
+       
         if(Routing.params.edit == 'postal_address')
             self.isEditBlock(1);
     };
@@ -1369,7 +1359,7 @@ var DeliveryAddressViewModel = function(data, list){
     self.region = data.region;
     self.codeCity = data.code_city;
     self.city = data.city;
-    self.postCode = data.post_code;
+    self.postIndex = data.post_code;
     self.address = data.address;
     self.addressee = data.addressee;
     
@@ -1432,7 +1422,7 @@ var DeliveryAddressFormViewModel = function(model){
     self.cssCityList = 'delivery_city';
     self.errorCity = ko.observable(null);
     
-    self.postCode = ko.observable();
+    self.postIndex = ko.observable();
     self.cssPostCode = 'delivery_post_index';
     self.errorPostCode = ko.observable(null);
     
@@ -1456,18 +1446,20 @@ var DeliveryAddressFormViewModel = function(model){
         if (data.length > 0) {
             for (var i = 0; i <= data.length - 1; i++) {
                 self.countryList.push(new CountryListViewModel(data[i]));
+                if(data[i].id == self.idCountry())
+                    self.country(data[i]);
             }
         }
     };
     
     self.AddContent = function(data){
         self.id(data.id);
-        self.idCountry(data.idCountry);
+        self.idCountry = ko.observable(data.idCountry);
         self.region({regioncode : data.codeRegion});
         self.customRegion(data.region);
         self.city({aoguid :data.codeCity});
         self.customCity(data.city);
-        self.postCode(data.postCode);
+        self.postIndex(data.postIndex);
         self.customAddress(data.address);
         self.addressee(data.addressee);
         self.isDefault(data.isDefault());
@@ -1535,7 +1527,7 @@ var DeliveryAddressFormViewModel = function(model){
         return true;
     };
     self.PostIndexValidation = function() {
-        if (!self.postCode()) {
+        if (!self.postIndex()) {
             self.errorPostCode(Config.Profile.error.postIndex.empty);
             return false;
         }
