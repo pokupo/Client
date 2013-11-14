@@ -1,4 +1,5 @@
 <script type="text/html" id="goodsTmpl">
+    <!-- version 1.0 -->
 <div class="pageWidth">
     <div class="productCardBox">
         <h1 data-bind="text: blocks.main.chortName, attr: {id : blocks.main.cssTitleToCart}"></h1>
@@ -6,7 +7,7 @@
             <tr>
                 <td style="width:305px; padding-right:20px;" data-bind="template: { name: 'goodsGalleryBlockTmpl', data: blocks }"></td>
                 <td>
-                    <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : 'infoSellerTmpl'}}"></div>
+                    <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo, tmpl : 'infoSellerTmpl'}}"></div>
                     <!-- ko with: blocks.main -->
                         <div class="productActionBox">
                             <table cellpadding="0" cellspacing="0" width="100%" class="productActionTable">
@@ -112,7 +113,7 @@
 </div>
 <div class="horizontalSection">
     <div class="pageWidth">
-        <div class="category_block_node_jcarousel" data-bind="embedWidget :{ widget : 'RelatedGoodsWidget', params : {id : id, typeView: 'list', count: 6, countTile : 6}}"></div>
+        <div class="category_block_node_jcarousel" data-bind="embedWidget :{ widget : 'RelatedGoodsWidget-1.0', params : {id : id, typeView: 'list', count: 6, countTile : 6}}"></div>
     </div>
 </div>
 </script>

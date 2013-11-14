@@ -1,6 +1,11 @@
 var FavoritesWidget = function() {
     var self = this;
     self.widgetName = 'FavoritesWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.favorites = null;
     self.settings = {
         tmpl : {
@@ -30,7 +35,7 @@ var FavoritesWidget = function() {
     self.SetInputParameters = function() {
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/FavoritesWidget.js/);
+            var temp = JSCore.ParserInputParameters(/FavoritesWidget/);
             if(temp.favorites){
                 input = temp.favorites;
             }
@@ -141,7 +146,7 @@ var FavoritesWidget = function() {
         },
         Menu : function(){
             Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
         },

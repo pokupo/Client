@@ -1,6 +1,11 @@
 var GoodsWidget = function(){
     var self = this;
     self.widgetName = 'GoodsWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.goods = null;
     self.settings = {
         containerId : null, 
@@ -27,7 +32,7 @@ var GoodsWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/GoodsWidget.js/);
+            var temp = JSCore.ParserInputParameters(/GoodsWidget/);
             if(temp.goods){
                 input = temp.goods;
             }

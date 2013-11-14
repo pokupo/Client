@@ -1,6 +1,11 @@
 window.RelatedGoodsWidget = function(){
     var self = this;
     self.widgetName = 'RelatedGoodsWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         tmpl : {
             path : null,

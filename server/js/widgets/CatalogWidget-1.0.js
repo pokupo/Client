@@ -1,6 +1,11 @@
 var CatalogWidget = function(){
     var self = this;
     self.widgetName = 'CatalogWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerId : null,
         tmpl : { 
@@ -26,7 +31,7 @@ var CatalogWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/CatalogWidget.js/);
+            var temp = JSCore.ParserInputParameters(/CatalogWidget/);
             if(temp.catalog){
                 input = temp.catalog;
             }

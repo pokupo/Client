@@ -1,6 +1,11 @@
 var AuthenticationWidget = function(){
     var self = this;
     self.widgetName = 'AuthenticationWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerFormId : null,
         tmpl: {
@@ -26,7 +31,7 @@ var AuthenticationWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/AuthenticationWidget.js/);
+            var temp = JSCore.ParserInputParameters(/AuthenticationWidget/);
             if(temp.authentication){
                 input = temp.authentication;
             }

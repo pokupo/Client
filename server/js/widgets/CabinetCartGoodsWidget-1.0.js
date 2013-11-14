@@ -1,6 +1,11 @@
 var CabinetCartGoodsWidget = function(){
     var self = this;
     self.widgetName = 'CabinetCartGoodsWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.cart = null;
     self.settings = {
         tmpl : {
@@ -28,7 +33,7 @@ var CabinetCartGoodsWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/CabinetCartGoodsWidget.js/);
+            var temp = JSCore.ParserInputParameters(/CabinetCartGoodsWidget/);
             if(temp.cabinetCartGoods){
                 input = temp.cabinetCartGoods;
             }
@@ -123,7 +128,7 @@ var CabinetCartGoodsWidget = function(){
         },
         Menu : function(){
             Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
         },

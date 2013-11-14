@@ -1,6 +1,11 @@
 var SearchResultWidget = function(){
     var self = this;
     self.widgetName = 'SearchResultWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerIdForSearchResult : null,
         containerIdForAdvancedSearch : null,
@@ -52,7 +57,7 @@ var SearchResultWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/SearchResultWidget.js/);
+            var temp = JSCore.ParserInputParameters(/SearchResultWidget/);
             if(temp.searchResult){
                 input = temp.searchResult;
             }

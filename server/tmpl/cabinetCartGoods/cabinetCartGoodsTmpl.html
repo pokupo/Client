@@ -7,11 +7,12 @@
     }
 </style>
 <script type="text/html" id="cabinetCartGoodsTmpl">
+    <!-- version 1.0 -->
     <!-- ko foreach: sellerBlock -->
         <div class="horizontalSection">
             <div class="pageWidth">
                 <br/>
-                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo}}"></div>
+                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo}}"></div>
             </div>
         </div>
         
@@ -163,6 +164,7 @@
 </script>
 
 <script type="text/html" id="emptyCabinetCartGoodsTmpl">
+    <!-- version 1.0 -->
     <div class="horizontalSection">
         <div class="pageWidth">
             <br/>

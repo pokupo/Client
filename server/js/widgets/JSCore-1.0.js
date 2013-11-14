@@ -1,13 +1,13 @@
 var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
-    host : "pokupo-server.asmsoft.ru/",    
-    pathToJS : "js/",
-    pathToTmpl : "tmpl/",
-    pathToData : "services/DataProxy.php?query=",
-    pathToPostData : "services/DataPostProxy.php",
-    pathToCore: "index.html",
-    pathToPostCore : 'postData.html',
+    host : "dev.pokupo.ru/",
+    pathToJS : "server/js/",
+    pathToTmpl : "server/tmpl/",
+    pathToData : "server/services/DataProxy.php?query=",
+    pathToPostData : "server/services/DataPostProxy.php",
+    pathToCore: "server/index.html",
+    pathToPostCore : 'server/postData.html',
     
     sourceData : 'proxy', //варианты api, proxy
     scripts : [
@@ -24,21 +24,21 @@ var JSSettings = {
         'jquery.textchange.min.js',
         'jquery.hoverIntent.minified.js',
         'jquery.colorbox-min.js',
-        'widgets/Config.js',
-        'widgets/Routing.js',
-        'widgets/Paging.js',
-        'widgets/ContentViewModel.js',
-        'widgets/OrderViewModel.js',
-        'widgets/RegistrationViewModel.js',
-        'widgets/AuthenticationViewModel.js',
-        'widgets/Widget.js',
-        'widgets/AnimateSlider.js',
-        'widgets/AnimateCarousel.js',
-        'widgets/AnimateAddToCart.js',
-        'widgets/AnimateSelectList.js',
-        'widgets/AnimateBreadCrumb.js',
-        'widgets/AnimateTab.js',
-        'widgets/AnimateOrderList.js'],
+        'widgets/Config-1.0.js',
+        'widgets/Routing-1.0.js',
+        'widgets/Paging-1.0.js',
+        'widgets/ContentViewModel-1.0.js',
+        'widgets/OrderViewModel-1.0.js',
+        'widgets/RegistrationViewModel-1.0.js',
+        'widgets/AuthenticationViewModel-1.0.js',
+        'widgets/Widget-1.0.js',
+        'widgets/AnimateSlider-1.0.js',
+        'widgets/AnimateCarousel-1.0.js',
+        'widgets/AnimateAddToCart-1.0.js',
+        'widgets/AnimateSelectList-1.0.js',
+        'widgets/AnimateBreadCrumb-1.0.js',
+        'widgets/AnimateTab-1.0.js',
+        'widgets/AnimateOrderList-1.0.js'],
     inputParameters : {}
 }
 
@@ -124,6 +124,7 @@ var JSLoader = {
 }
 
 var JSCore = {
+    version : 1.0,
     isReady : false,
     shopId : null,
     Init : function(){
@@ -161,15 +162,15 @@ var JSCore = {
     },
     SetInputParameters : function(){
         var input = {};
+        var temp = JSCore.ParserInputParameters(/JSCore/);
+        if(temp && temp.core){
+            input = JSON.parse(temp.core);
+        }
         if(typeof WParameters !== 'undefined' && WParameters.core){
             input = WParameters.core;
         }
-        JSSettings.inputParameters = JSCore.ParserInputParameters(/JSCore.js/)
-        var temp = JSCore.ParserInputParameters(/JSCore.js/);
-        if(temp && temp.core){
-            input = temp.core;
-        }
-        JSSettings.inputParameters = JSON.parse(input);
+
+        JSSettings.inputParameters = input;
     }
 };
 
@@ -301,9 +302,6 @@ var XDMTransport = {
 
 var Logger = {
     Console : {
-        Error : function(){
-            
-        },
         Exeption : function(widget, text){
             console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
         }

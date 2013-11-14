@@ -8,6 +8,7 @@
 </style>
 
 <script type="text/html" id="cartGoodsTmpl">
+    <!-- version 1.0 -->
     <div class="pageWidth">
         <h1>Моя корзина</h1>
     </div>
@@ -15,7 +16,7 @@
     <!-- ko foreach: sellerBlock -->
         <div class="horizontalSection noborder">
             <div class="pageWidth">
-                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo}}"></div>
+                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo}}"></div>
             </div>
         </div>
         
@@ -167,6 +168,7 @@
 </script>
 
 <script type="text/html" id="emptyCartGoodsTmpl">
+    <!-- version 1.0 -->
     <div class="horizontalSection">
         <div class="pageWidth">
             <p>В корзине нет ни одного товара.</p>

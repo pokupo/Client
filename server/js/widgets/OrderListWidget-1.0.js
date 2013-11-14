@@ -1,6 +1,11 @@
 var OrderListWidget = function() {
     var self = this;
     self.widgetName = 'OrderListWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.currentPage = 1;
     self.settings = {
         containerFormId: null,
@@ -29,7 +34,7 @@ var OrderListWidget = function() {
     self.SetInputParameters = function() {
         var input = {};
         if (Config.Base.sourceParameters == 'string') {
-            var temp = JSCore.ParserInputParameters(/OrderListWidget.js/);
+            var temp = JSCore.ParserInputParameters(/OrderListWidget/);
             if (temp.order) {
                 input = temp.order;
             }
@@ -145,7 +150,7 @@ var OrderListWidget = function() {
         },
         Menu: function() {
             Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function() {
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function() {
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
         }

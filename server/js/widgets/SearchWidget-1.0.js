@@ -1,6 +1,11 @@
 var SearchWidget = function(){
     var self = this;
     self.widgetName = 'SearchWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerId : null, 
         tmpl: {
@@ -23,7 +28,7 @@ var SearchWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/SearchWidget.js/);
+            var temp = JSCore.ParserInputParameters(/SearchWidget/);
             if(temp.search){
                 input = temp.search;
             }

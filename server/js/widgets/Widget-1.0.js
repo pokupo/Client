@@ -102,7 +102,7 @@ var Loader = {
             }
             if(container)
                 this.containers.push({container: container, widgetName: widget});
-            
+
             this.ShowLoading();
         }
     },
@@ -264,8 +264,13 @@ var Loader = {
 
 var Widget = function (){
     var self = this;
+    self.version = 1.0;
+    self.minCoreVersion = 1.0;
+    self.maxCoreVersion = 2.0;
     this.isReady = false;
     this.widgetName = false;
+    this.minTmplVersion = false;
+    this.maxTmplVersion = false;
     this.settings = {
         hostApi : null,
         httpsHostApi : null,
@@ -282,13 +287,29 @@ var Widget = function (){
     };
     this.Init = function(widget, noindicate){
         if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
-            this.SelfInit();
-            if(!noindicate)
-                Loader.Indicator(widget.widgetName, false);
-            this.BaseLoad.Roots(function(){
-                widget.InitWidget();
-                self.widgetName = widget.widgetName;
-            });
+            
+            if(JSCore.version >= self.minCoreVersion && JSCore.version <= self.maxCoreVersion){
+                if(self.version >= widget.minWidgetVersion && self.version <= widget.maxWidgetVersion){
+                    this.SelfInit();
+                    if(!noindicate)
+                        Loader.Indicator(widget.widgetName, false);
+                    this.BaseLoad.Roots(function(){
+                        widget.InitWidget();
+                        self.widgetName = widget.widgetName;
+                        self.minTmplVersion = widget.minTmplVersion;
+                        self.maxTmplVersion = widget.maxTmplVersion;
+                    });
+                }
+                else{
+                    Loader.Indicator(widget.widgetName, true);
+                    delete Loader.widgets[widget.widgetName];
+                    Logger.Console.Exeption(widget.widgetName, 'Widget version = [' + self.version + ']. For correct work of the widget required version: min - [' + widget.minWidgetVersion + '] max - [' + widget.maxWidgetVersion + ']');
+                }
+            }
+            else{
+                Loader.Indicator(widget.widgetName, true);
+                Logger.Console.Exeption('Widget', 'JSCore version = [' + JSCore.version + ']. For correct work of the widgets required version: min - [' + self.minCoreVersion + '] max - [' + self.maxCoreVersion + ']');
+            }
         }else{
             setTimeout(function(){self.Init(widget, noindicate)}, 100);
         }
@@ -373,8 +394,8 @@ var Widget = function (){
         EventDispatcher.AddEventListener('widget.onload.menuPersonalCabinet', function(opt){
             MenuPersonalCabinetWidget.prototype = new Widget();
             var menu = new MenuPersonalCabinetWidget();
-            menu.Init(menu);
             menu.AddMenu(opt);
+            menu.Init(menu);
         });
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
@@ -423,6 +444,7 @@ var Widget = function (){
             init: function(element, valueAccessor) {
                 var options = valueAccessor() || {};
                 self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
+                    options.widget = options.widget.split('-')[0];
                     EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
                 });
             }
@@ -576,7 +598,7 @@ var Widget = function (){
             buttons: button
         });
         $('.ui-dialog-titlebar-close').hide();
-    },
+    };
     this.Confirm = function(message, callbackOk, callbackFail){
         if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
             $('body').append(Config.Base.containerConfirm);
@@ -599,7 +621,20 @@ var Widget = function (){
             ]
         });
         $('.ui-dialog-titlebar-close').hide();
-    },
+    };
+    this.ErrorVertionTmpl = function(tmpl, hash, temp){
+        var version = /<!-- version ([\d.]*) -->/;
+        var result = temp.find('script#' + tmpl).html().match(version);
+        if(result){
+            if(parseFloat(result[1]) >= self.minTmplVersion && parseFloat(result[1]) <= self.maxTmplVersion)
+                return false;
+        }
+        Parameters.cache.tmpl[hash] = 'error';
+       
+        Loader.Indicator(self.widgetName, true);
+        delete Loader.widgets[self.widgetName];
+        return true;
+    };
     this.BaseLoad  = {
         Roots : function(callback){
             if(Parameters.cache.roots.length == 0){
@@ -693,24 +728,51 @@ var Widget = function (){
         },
         Tmpl : function(tmpl, callback){
             function Default (){
-                if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.path)]){
+                var hash = EventDispatcher.HashCode(tmpl.path);
+                if(!Parameters.cache.tmpl[hash]){
                     self.CreateContainer();
                     XDMTransport.LoadTmpl(tmpl.path,function(data){
-                        Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.path)] = true;
-                        $("#" + self.settings.containerIdForTmpl).append(data);
-                        if(callback)callback();
+                        if(data){
+                            var id = 'temp_' + hash;
+                            var temp = $('<div id="' + id + '"></div>');
+                            temp.append(data);
+                            
+                            if($.type(tmpl.id) == 'object'){
+                                for(var key in tmpl.id){
+                                    if(self.ErrorVertionTmpl(tmpl.id[key], hash, temp)){
+                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        temp.remove();
+                                        return false;
+                                        break;
+                                    }
+                                }
+                            }
+                            else{
+                               if(self.ErrorVertionTmpl(tmpl.id, hash, temp)){
+                                    Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                    temp.remove();
+                                    return false;
+                                }
+                            }
+                            Parameters.cache.tmpl[hash] = 'ok';
+                            temp.remove();
+                            $("#" + self.settings.containerIdForTmpl).append(data);
+                            if(callback)callback();
+                        }
                     });
                 }
                 else{
-                    if(callback)callback();
+                    if(Parameters.cache.tmpl[hash] != 'error')
+                        if(callback)callback();
                 }
             };
             function Custom (){
-                if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.custom.path)]){
+                var hash = EventDispatcher.HashCode(tmpl.custom.path);
+                if(!Parameters.cache.tmpl[hash]){
                     self.CreateContainer();
                     XDMTransport.LoadTmpl(tmpl.custom.path,function(data){
                         if(data){
-                            var id = 'temp_' + EventDispatcher.GetUUID();
+                            var id = 'temp_' + hash;
                             var temp = $('<div id="' + id + '"></div>');
                             temp.append(data);
                             
@@ -722,18 +784,15 @@ var Widget = function (){
                                                 tmpl.custom.id[key] = tmpl.id[key];
                                             }
                                             if((tmpl.custom.id[key] && temp.find('script#' + tmpl.custom.id[key]).length != 1)){
-                                                Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for key [' + key + '] - [' + tmpl.custom.id[key] + ']');
+                                                Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for [' + key + '] - [' + tmpl.custom.id[key] + ']');
                                                 temp.remove();
                                                 delete tmpl.custom;
                                                 Default ();
                                                 return false;
                                                 break;
                                             }
-                                            else if(!tmpl.custom.id[key] && temp.find('script#' + tmpl.id[key]).length != 1){
-                                                Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for key [' + key + '] - [' + tmpl.id[key] + ']');
-                                                temp.remove();
-                                                delete tmpl.custom;
-                                                Default ();
+                                            if(self.ErrorVertionTmpl(tmpl.custom.id[key], hash, temp)){
+                                                Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.custom.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                                 return false;
                                                 break;
                                             }
@@ -755,13 +814,28 @@ var Widget = function (){
                                         Default ();
                                         return false;
                                     }
+                                    if(self.ErrorVertionTmpl(tmpl.custom.id, hash, temp)){
+                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.custom.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
                                 }
                             }
                             else{
                                 if($.type(tmpl.id) == 'object'){
                                     for(var key in tmpl.id){
                                         if(temp.find('script#' + tmpl.id[key]).length != 1){
-                                            Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id[key] + ']');
+                                            Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.id[key] + ']');
+                                            temp.remove();
+                                            delete tmpl.custom;
+                                            Default ();
+                                            return false;
+                                            break;
+                                        }
+                                        if(self.ErrorVertionTmpl(tmpl.id[key], hash, temp)){
+                                            Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                             temp.remove();
                                             delete tmpl.custom;
                                             Default ();
@@ -771,15 +845,23 @@ var Widget = function (){
                                     }
                                 }   
                                 else{
-                                    if($(data).find('script#' + tmpl.id).length != 1){
+                                    if(temp.find('script#' + tmpl.id).length != 1){
                                         Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
                                         temp.remove();
                                         Default ();
                                         return false;
                                     }
+                                    if(self.ErrorVertionTmpl(tmpl.id, hash, temp)){
+                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
                                 }
                             }
-                            Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl.custom.path)] = true;
+                            Parameters.cache.tmpl[hash] = 'ok';
+                            temp.remove();
                             $("#" + self.settings.containerIdForTmpl).append(data);
                             if(callback)callback();
                         }
@@ -791,7 +873,8 @@ var Widget = function (){
                     });
                 }
                 else{
-                    if(callback)callback();
+                    if(Parameters.cache.tmpl[hash] != 'error')
+                        if(callback)callback();
                 }
             };
             
@@ -1155,7 +1238,6 @@ var Widget = function (){
                 }, true);
             }
             else{
-                console.log(Parameters.cache.payment);
                 callback(Parameters.cache.payment);
             }
         },

@@ -1,6 +1,11 @@
 var UserInformationWidget = function(){
     var self = this;
     self.widgetName = 'UserInformationWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerId : null, 
         tmpl :{
@@ -29,7 +34,7 @@ var UserInformationWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/UserInformationWidget.js/);
+            var temp = JSCore.ParserInputParameters(/UserInformationWidget/);
             if(temp.userInformation){
                 input = temp.userInformation;
             }
@@ -148,7 +153,7 @@ var UserInformationWidget = function(){
                     self.WidgetLoader(true, self.settings.containerId);
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('info') + ']');
+                    self.Exeption('Error of the template [' + self.GetTmplName('info') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

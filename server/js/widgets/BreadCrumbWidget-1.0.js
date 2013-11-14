@@ -1,6 +1,11 @@
 var BreadCrumbWidget = function(){
     var self = this;
     self.widgetName = 'BreadCrumbWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerId : null, 
         tmpl : {
@@ -24,7 +29,7 @@ var BreadCrumbWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/BreadCrumbWidget.js/);
+            var temp = JSCore.ParserInputParameters(/BreadCrumbWidget/);
             if(temp.breadCrumb){
                 input = temp.breadCrumb;
             }

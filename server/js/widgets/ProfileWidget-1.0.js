@@ -1,6 +1,11 @@
  var ProfileWidget = function() {
     var self = this;
     self.widgetName = 'ProfileWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerFormId: null,
         tmpl : {
@@ -30,7 +35,7 @@
     self.SetInputParameters = function() {
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/ProfileWidget.js/);
+            var temp = JSCore.ParserInputParameters(/ProfileWidget/);
             if(temp.profile){
                 input = temp.profile;
             }
@@ -396,7 +401,7 @@
     }
     self.Info = {
         Menu : function(){
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
                 if (!Routing.params.info)
                      Routing.params.info = Config.Profile.menu.personalInformation.prefix;
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : Config.Profile.menu, active : Routing.params.info});

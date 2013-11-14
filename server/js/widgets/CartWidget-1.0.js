@@ -1,6 +1,11 @@
 var CartWidget = function(){
     var self = this;
     self.widgetName = 'CartWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         title : null,
         tmpl :{
@@ -28,7 +33,7 @@ var CartWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/CartWidget.js/);
+            var temp = JSCore.ParserInputParameters(/CartWidget/);
             if(temp.cart){
                 input = temp.cart;
             }
