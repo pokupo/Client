@@ -27,6 +27,7 @@ window.ButtonPaymentWidget = function(){
         self.RegisterEvents();
         self.CheckRouteButtonPayment();
         self.Loader();
+        self.LoadTmpl();
     };
     self.Loader = function(){
         Loader.InsertContainer(self.settings.containerButton);
@@ -54,14 +55,10 @@ window.ButtonPaymentWidget = function(){
         for(var key in data.options.params){
             switch (key){
                 case 'tmpl':
-                    self.settings.tmplPath = 'buttonPayment/' + data.options.params['tmpl'] + '.html';
+                    self.settings.tmpl = data.options.params['tmpl']; 
                     break;
                 case 'title':
                     self.settings.title = data.options.params['title'];
-                    break;
-                case 'skin':
-                    self.settings.skin = data.options.params['skin'];
-                    self.settings.skinFromMemory = true;
                     break;
                 case 'uniq':
                     self.settings.uniq = data.options.params['uniq'];
@@ -97,6 +94,11 @@ window.ButtonPaymentWidget = function(){
         }
         else
             self.WidgetLoader(true);
+    };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('ButtonPayment.onload.tmpl_' + self.settings.uniq)
+        });
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('ButtonPayment.onload.tmpl_' + self.settings.uniq, function (data){
@@ -153,7 +155,7 @@ window.ButtonPaymentWidget = function(){
     self.InsertContainer = {
         EmptyWidget : function(container){
             var temp = $(container).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + container).empty().html(temp);
+            $(container).empty().html(temp);
         },
         Button : function(){
             self.InsertContainer.EmptyWidget(self.settings.containerButton);
