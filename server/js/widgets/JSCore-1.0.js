@@ -127,12 +127,15 @@ var JSCore = {
     version : 1.0,
     isReady : false,
     shopId : null,
+    dev : false,
     Init : function(){
         if(document.location.protocol == 'https:')
             JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
         JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.SetInputParameters();
         JSCore.shopId = JSSettings.inputParameters['shopId'];
+        if(JSSettings.inputParameters['dev'])
+            JSCore.dev = true;
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
     },
@@ -303,7 +306,14 @@ var XDMTransport = {
 var Logger = {
     Console : {
         Exeption : function(widget, text){
-            console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
+            console && console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
+        },
+        Info : function(widget, text){
+            console && console.log('Info : ' + new Date() + ' : ' + widget + ' : ' + text);
+        },
+        VarDump : function(widget, name, obj){
+            console && console.log('Var Dump : ' + widget + ' : ' + name)
+            console && console.log(obj);
         }
     }
 }

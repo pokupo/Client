@@ -102,7 +102,8 @@ var Loader = {
             }
             if(container)
                 this.containers.push({container: container, widgetName: widget});
-
+            if(JSCore.dev)
+                Logger.Console.VarDump('Loader', 'widgets', this.widgets);
             this.ShowLoading();
         }
     },

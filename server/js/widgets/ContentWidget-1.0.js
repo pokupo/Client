@@ -124,6 +124,9 @@ var ContentWidget = function(){
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
             self.BaseLoad.Blocks(Routing.GetActiveCategory(), function(data){
+                if(JSCore.dev)
+                    Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
+                
                 self.CheckData(data)
             });
         });
@@ -231,6 +234,8 @@ var ContentWidget = function(){
     self.Fill = {
         Block : function(data){
             var block = new BlockViewModel(data, self.settings.countGoodsInBlock);
+            if(JSCore.dev)
+                Logger.Console.VarDump(self.widgetName, 'data blockId = [' + block.id + '] typeView = [' + block.typeView + ']' , block)
             block.AddContent();
         },
         Content : function(data){
@@ -372,7 +377,7 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.sort          = data.sort;
     self.titleBlock    = data.block.name_category;
     self.typeView      = data.block.type_view;
-    self.countGoods    = data.block.count_goods;
+    self.countGoods    = data.block.count_goods ? data.block.count_goods : 0;
     
     self.cssBlock      = 'block_sort_' + data.sort;
     self.cssBlockContainer  = 'sliderContainer_' + self.id ;
@@ -414,6 +419,8 @@ var BlockViewModel = function(data, countGoodsInContent){
             content.unshift(last);
             EventDispatcher.DispatchEvent('contentWidget.fill.block', self);
         }
+        else
+            EventDispatcher.DispatchEvent('contentWidget.fill.block', self);
     };
     self.ClickCategory = function(){
         Routing.SetHash('catalog', self.titleBlock, {category:data.block.id});
