@@ -1,11 +1,18 @@
 var GoodsWidget = function(){
     var self = this;
     self.widgetName = 'GoodsWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.goods = null;
     self.settings = {
         containerId : null, 
-        tmplPath : null,
-        tmplId : null,
+        tmpl : {
+            path : null,
+            id : null
+        },
         showBlocks : null,
         inputParameters : {},
         styleGoods : null,
@@ -14,18 +21,18 @@ var GoodsWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.goods.widget;
         self.settings.customContainer = Config.Containers.goods.customClass;
-        self.settings.tmplPath = Config.Goods.tmpl.path;
-        self.settings.tmplId = Config.Goods.tmpl.tmplId;
+        self.settings.tmpl = Config.Goods.tmpl;
         self.settings.showBlocks = Config.Goods.showBlocks;
         self.settings.styleGoods = Config.Goods.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteGoods();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/GoodsWidget.js/);
+            var temp = JSCore.ParserInputParameters(/GoodsWidget/);
             if(temp.goods){
                 input = temp.goods;
             }
@@ -49,35 +56,21 @@ var GoodsWidget = function(){
                     }
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'goods/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRoute = function(){
+    self.CheckRouteGoods = function(){
         if(Routing.route == 'goods'){
-            self.Update();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.Update();
+            });
         }
         else
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function(){ 
-        if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckRoute();
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckRoute();
-                });
-            });
-        }
-        
         EventDispatcher.AddEventListener('widget.change.route', function (){
-            self.CheckRoute();
+            self.CheckRouteGoods();
         });
         
         EventDispatcher.AddEventListener('GoodsWidget.onload.info', function (data){
@@ -99,7 +92,7 @@ var GoodsWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
     self.Fill = {
@@ -152,22 +145,38 @@ var GoodsWidget = function(){
     };
     self.Render = {
         Goods: function(data){
-            if($("#" + self.settings.containerId).length > 0){
-                self.InsertContainer.Content();
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+            try{
+                if($("#" + self.settings.containerId).length > 0){
+                    self.InsertContainer.Content();
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
 
-                new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
-                
-                if(data.ShowGallery())
-                    new AnimateCarousel(Config.Goods.galleryId);
+                    new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
+
+                    if(data.ShowGallery())
+                        new AnimateCarousel(Config.Goods.galleryId);
+                }
+                self.AddGoodsInCookie(data);
+                delete data;
+
+                self.WidgetLoader(true, self.settings.containerId);
+                if(Ya != undefined){
+                    Config.Goods.share.element = data.blocks.main.cssShareBlock
+                    new Ya.share(Config.Goods.share);
+                }
             }
-            self.AddGoodsInCookie(data);
-            delete data;
-
-            self.WidgetLoader(true, self.settings.containerId);
-            if(Ya != undefined){
-                Config.Goods.share.element = data.blocks.main.cssShareBlock
-                new Ya.share(Config.Goods.share);
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Content();
+                        self.Render.Goods(data);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
             }
         }
     };
@@ -303,7 +312,7 @@ var GoodsMainBlockViewModel = function(data){
     }, this);
     self.ordered = ko.observable(1);
     self.cart = ko.observable(Parameters.cache.cart);
-    self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
+    self.uniq = EventDispatcher.GetUUID();
     self.cssToCart = 'goodsToCart_' + self.uniq;
     self.cssTitleToCart = 'goodsTilteToCart_' + self.uniq;
     self.cssShareBlock = 'share';

@@ -1,13 +1,22 @@
 var RegistrationWidget = function() {
     var self = this;
     self.widgetName = 'RegistrationWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerFormId: null,
-        tmplPath: null,
-        regFormStep1TmplId: null,
-        regFormStep2TmplId: null,
-        regFormStep3TmplId: null,
-        regFormStep4TmplId: null,
+        tmpl : {
+            path : null,
+            id : {
+                step1: null,
+                step2: null,
+                step3: null,
+                step4: null
+            }
+        },
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -16,20 +25,17 @@ var RegistrationWidget = function() {
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.registration.widget;
         self.settings.customContainer = Config.Containers.registration.customClass;
-        self.settings.tmplPath = Config.Registration.tmpl.path;
-        self.settings.regFormStep1TmplId = Config.Registration.tmpl.regFormStep1TmplId;
-        self.settings.regFormStep2TmplId = Config.Registration.tmpl.regFormStep2TmplId;
-        self.settings.regFormStep3TmplId = Config.Registration.tmpl.regFormStep3TmplId;
-        self.settings.regFormStep4TmplId = Config.Registration.tmpl.regFormStep4TmplId;
+        self.settings.tmpl = Config.Registration.tmpl;
         self.settings.style = Config.Registration.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteRegistration();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/RegistrationWidget.js/);
+            var temp = JSCore.ParserInputParameters(/RegistrationWidget/);
             if(temp.registration){
                 input = temp.registration;
             }
@@ -39,8 +45,6 @@ var RegistrationWidget = function() {
         }
 
         if(!$.isEmptyObject(input)){
-            if(input.tmpl)
-                self.settings.tmplPath = 'registration/' + input.tmpl + '.html';
             if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
         }
@@ -48,32 +52,22 @@ var RegistrationWidget = function() {
     };
     self.CheckRouteRegistration = function() {
         if (Routing.route == 'registration') {
-            if (Routing.params.step == 1)
-                self.Step.Step1();
-            if (Routing.params.step == 2)
-                self.Step.Step2();
-            if (Routing.params.step == 3)
-                self.Step.Step3();
-            if (Routing.params.step == 4)
-                self.Step.Step4();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                if (Routing.params.step == 1)
+                    self.Step.Step1();
+                if (Routing.params.step == 2)
+                    self.Step.Step2();
+                if (Routing.params.step == 3)
+                    self.Step.Step3();
+                if (Routing.params.step == 4)
+                    self.Step.Step4();
+            });
         }
         else
             self.WidgetLoader(true);
     };
-    self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRouteRegistration();
-            });
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRouteRegistration();
-                });
-            });
-        }
 
+    self.RegisterEvents = function() {
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteRegistration();
         });
@@ -210,7 +204,7 @@ var RegistrationWidget = function() {
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
             self.WidgetLoader(false);
-            var str = '?id_country=' + encodeURIComponent($.trim(step4.country().id));
+            var str = '?id_country=' + encodeURIComponent($.trim(step4.country()));
             if (step4.region())
                 str = str + '&code_region=' + encodeURIComponent($.trim(step4.region().regioncode));
             else
@@ -333,19 +327,19 @@ var RegistrationWidget = function() {
         },
         Step1: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep1TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1')).html()).children().hide();
         },
         Step2: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep2TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html()).children().hide();
         },
         Step3: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep3TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
         },
         Step4: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.regFormStep4TmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html()).children().hide();
         }
     };
     self.Fill = {
@@ -422,132 +416,89 @@ var RegistrationWidget = function() {
     self.Render = {
         Step1: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    $('input#' + form.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step1();
+                            self.Render.Step1(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            $('input#' + form.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step2();
+                            self.Render.Step2(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
         },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-            }
-            $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                changeMonth: true,
-                changeYear: true,
-                dateFormat: 'dd.mm.yy',
-                defaultDate: '-24Y',
-                yearRange: "c-77:c+6",
-                minDate : '-101Y',
-                maxDate : '-18Y',
-                onClose: function(dateText, inst) {
-                    form.birthDay(dateText);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormat: 'dd.mm.yy',
+                        defaultDate: '-24Y',
+                        yearRange: "c-77:c+6",
+                        minDate : '-101Y',
+                        maxDate : '-18Y',
+                        onClose: function(dateText, inst) {
+                            form.birthDay(dateText);
+                        }
+                    });
+                    self.WidgetLoader(true, self.settings.containerFormId);
                 }
-            });
-            self.WidgetLoader(true, self.settings.containerFormId);
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step3();
+                            self.Render.Step3(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-            }
-            $('#' + form.cssCountryList).sSelect({defaultText: ' '});
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
 
-            $('#' + form.cssRegionList).autocomplete({
-                source: function(request, response) {
-                    self.BaseLoad.Region(form.country().id + '/' + encodeURIComponent(request.term), function(data) {
-                        if (!data.err) {
-                            response($.map(data, function(item) {
-                                return {
-                                    value: $.trim(item.formalname + ' ' + item.shortname),
-                                    region: item
-                                };
-                            }));
-                        }
-                        else {
-                            $('#' + form.cssRegionList).autocomplete("close");
-                            return false;
-                        }
-                    });
-                },
-                select: function(event, ui) {
-                    form.region(ui.item.region);
-                    form.customRegion(ui.item.value);
-                    if (ui.item.region && ui.item.region.postalcode != 0)
-                        form.postIndex(ui.item.region.postalcode);
-                    else {
-                        form.postIndex(null);
-                    }
-                }
-            });
-
-            $('#' + form.cssCityList).autocomplete({
-                source: function(request, response) {
-                    if (form.region()) {
-                        self.BaseLoad.City(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        city: item
-                                    };
-                                }));
-                            }
-                            else {
-                                $('#' + form.cssCityList).autocomplete("close");
-                                return false;
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    form.city(ui.item.city);
-                    form.customCity(ui.item.value);
-                    if (ui.item.city && ui.item.city.postalcode != 0)
-                        form.postIndex(ui.item.city.postalcode);
-                    else
-                        form.postIndex(null);
-                }
-            });
-
-            $('#' + form.cssAddress).autocomplete({
-                source: function(request, response) {
-                    if (form.region()) {
-                        self.BaseLoad.Street(form.country().id + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        street: item
-                                    };
-                                }));
-                            }
-                            else {
-                                $('#' + form.cssAddress).autocomplete("close");
-                                return false;
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    form.address(ui.item.street);
-                    form.customAddress(ui.item.value);
-                    if (ui.item.street && ui.item.street.postalcode != 0)
-                        form.postIndex(ui.item.street.postalcode);
-                    else
-                        form.postIndex(null);
-                }
-            });
-
-            $('#' + form.cssCountryList).change(function() {
-                var v = $(this).getSetSSValue();
-                $.grep(form.countryList(), function(data) {
-                    if (data.id == v){
-                        form.country(data);
+                    $('#' + form.cssCountryList).change(function() {
                         form.customRegion(null);
                         form.region(null);
                         form.customCity(null);
@@ -555,27 +506,128 @@ var RegistrationWidget = function() {
                         form.customAddress(null)
                         form.address(null);
                         form.postIndex(null);
+                    });
+                    
+                    $('#' + form.cssRegionList).autocomplete({
+                        source: function(request, response) {
+                            console.log(form.country());
+                            self.BaseLoad.Region(form.country() + '/' + encodeURIComponent(request.term), function(data) {
+                                if (!data.err) {
+                                    response($.map(data, function(item) {
+                                        return {
+                                            value: $.trim(item.formalname + ' ' + item.shortname),
+                                            region: item
+                                        };
+                                    }));
+                                }
+                                else {
+                                    $('#' + form.cssRegionList).autocomplete("close");
+                                    return false;
+                                }
+                            });
+                        },
+                        select: function(event, ui) {
+                            form.region(ui.item.region);
+                            form.customRegion(ui.item.value);
+                            if (ui.item.region && ui.item.region.postalcode != 0)
+                                form.postIndex(ui.item.region.postalcode);
+                            else {
+                                form.postIndex(null);
+                            }
+                        }
+                    });
+
+                    $('#' + form.cssCityList).autocomplete({
+                        source: function(request, response) {
+                            if (form.region()) {
+                                self.BaseLoad.City(form.country() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                city: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + form.cssCityList).autocomplete("close");
+                                        return false;
+                                    }
+                                });
+                            }
+                        },
+                        select: function(event, ui) {
+                            form.city(ui.item.city);
+                            form.customCity(ui.item.value);
+                            if (ui.item.city && ui.item.city.postalcode != 0)
+                                form.postIndex(ui.item.city.postalcode);
+                            else
+                                form.postIndex(null);
+                        }
+                    });
+
+                    $('#' + form.cssAddress).autocomplete({
+                        source: function(request, response) {
+                            if (form.region()) {
+                                self.BaseLoad.Street(form.country() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                street: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + form.cssAddress).autocomplete("close");
+                                        return false;
+                                    }
+                                });
+                            }
+                        },
+                        select: function(event, ui) {
+                            form.address(ui.item.street);
+                            form.customAddress(ui.item.value);
+                            if (ui.item.street && ui.item.street.postalcode != 0)
+                                form.postIndex(ui.item.street.postalcode);
+                            else
+                                form.postIndex(null);
+                        }
+                    });
+
+                    $('#' + form.cssRegionList).bind('textchange', function(event, previousText) {
+                        form.customRegion($(this).val());
+                        form.customCity(null);
+                        form.city(null);
+                        form.customAddress(null)
+                        form.address(null);
+                        form.postIndex(null);
+                    });
+
+                    $('#' + form.cssCityList).bind('textchange', function(event, previousText) {
+                        form.customCity($(this).val());
+                        form.customAddress(null)
+                        form.address(null);
+                        form.postIndex(null);
+                    });
+
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step4();
+                            self.Render.Step4(form);
+                        });
                     }
-                })
-            });
-
-            $('#' + form.cssRegionList).bind('textchange', function(event, previousText) {
-                form.customRegion($(this).val());
-                form.customCity(null);
-                form.city(null);
-                form.customAddress(null)
-                form.address(null);
-                form.postIndex(null);
-            });
-
-            $('#' + form.cssCityList).bind('textchange', function(event, previousText) {
-                form.customCity($(this).val());
-                form.customAddress(null)
-                form.address(null);
-                form.postIndex(null);
-            });
-
-            self.WidgetLoader(true, self.settings.containerFormId);
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
         }
     };
     self.SetPosition = function() {

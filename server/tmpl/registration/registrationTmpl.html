@@ -1,4 +1,5 @@
 <script type="text/html" id="registrationFromStep1Tmpl">
+    <!-- version 1.0 -->
     <div class="pageWidth">
     <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
         <tr>
@@ -129,6 +130,7 @@
 </script>
 
 <script type="text/html" id="registrationFromStep2Tmpl">
+    <!-- version 1.0 -->
     <div class="pageWidth">
     <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
         <tr>
@@ -233,6 +235,7 @@
 </script>
 
 <script type="text/html" id="registrationFromStep3Tmpl">
+    <!-- version 1.0 -->
     <div class="pageWidth">
     <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
         <tr>
@@ -344,6 +347,7 @@
 </script>
 
 <script type="text/html" id="registrationFromStep4Tmpl">
+    <!-- version 1.0 -->
     <div class="pageWidth">
     <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
         <tr>
@@ -377,7 +381,14 @@
                                         <label>Ваша страна:
                                             <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Выберите страну проживания</span></div></div>
                                         </label>
-                                        <select id="country_list" class="form_select" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' '"></select>
+                                        <div>
+                                            <select id="country_list" class="form_select" data-bind="value: country, attr:{id: cssCountryList}">
+                                                <option value=""></option>
+                                                <!-- ko foreach: countryList -->
+                                                <option data-bind="text: name, value: id"></option>
+                                                <!-- /ko -->
+                                            </select>
+                                        </div>
                                         <!-- ko if: errorCountry-->
                                             <div class="form_error" data-bind="text: errorCountry"></div>
                                         <!-- /ko -->

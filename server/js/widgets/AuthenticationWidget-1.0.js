@@ -1,11 +1,17 @@
 var AuthenticationWidget = function(){
     var self = this;
     self.widgetName = 'AuthenticationWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerFormId : null,
-        tmplPath : null,
-        authFormTmplId : null,
-        containerSidebarId : null,
+        tmpl: {
+            path : null,
+            id : null
+        },
         inputParameters : {},
         https : null,
         style : null,
@@ -14,18 +20,18 @@ var AuthenticationWidget = function(){
     self.InitWidget = function(){
         self.settings.containerFormId = Config.Containers.authentication.widget; 
         self.settings.customContainer = Config.Containers.authentication.customClass;
-        self.settings.tmplPath = Config.Authentication.tmpl.path;
-        self.settings.authFormTmplId = Config.Authentication.tmpl.authFormTmplId;
+        self.settings.tmpl = Config.Authentication.tmpl;
         self.settings.https = Config.Authentication.https;
         self.settings.style = Config.Authentication.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckAuthenticationRoute();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/AuthenticationWidget.js/);
+            var temp = JSCore.ParserInputParameters(/AuthenticationWidget/);
             if(temp.authentication){
                 input = temp.authentication;
             }
@@ -34,9 +40,6 @@ var AuthenticationWidget = function(){
             input = WParameters.authentication;
         }
         if(!$.isEmptyObject(input)){
-            if(input.tmpl){
-                self.settings.tmplPath = 'authentication/' + input.tmpl + '.html';
-            }
             if(input.https){
                 self.settings.https = input.https;
                 Parameters.cache.https = input.https;
@@ -49,25 +52,14 @@ var AuthenticationWidget = function(){
     };
     self.CheckAuthenticationRoute = function(){
         if(Routing.route == 'login'){
-            self.SelectTypeContent();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.SelectTypeContent();
+            });
         }
         else
             self.WidgetLoader(true);
     };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckAuthenticationRoute();
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckAuthenticationRoute();
-                });
-            });
-        }
-        
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('widget.change.route', function (){
             self.CheckAuthenticationRoute();
         });
@@ -111,7 +103,7 @@ var AuthenticationWidget = function(){
         },
         Authentication : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.authFormTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
     self.Fill = {
@@ -124,9 +116,26 @@ var AuthenticationWidget = function(){
     self.Render = {
         Authentication : function(form){
             if($("#" + self.settings.containerFormId).length > 0){
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Authentication();
+                            self.Render.Authentication(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
+            
         }
     };
     self.SetPosition = function(){

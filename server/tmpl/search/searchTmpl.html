@@ -1,11 +1,18 @@
 <script type="text/html" id="searchTmpl">
+    <!-- version 1.0 -->
     <div class="searchBox">
         <div class="form_center">
             <div class="form_left">
                 <div class="form_right">
-                    <form action="" data-bind="submit:SubmitSearchForm">
-                        <select name="category" class="form_select" data-bind="css: cssSelectList, options: categories, optionsText: 'title', optionsValue: 'id'">
-                        </select>
+                    <form action="" data-bind="submit: SubmitSearchForm">
+                        <div class="headerCssSelect">
+                            <select name="category" class="form_select" data-bind="css: cssSelectList, value: selectedCatigoriesId">
+                                <!-- ko foreach: categories -->
+                                     <option data-bind="text: title, click: ClickItem, value: id"></option>
+                                <!-- /ko -->
+                            </select>
+                        </div>
+                        
                         <div class="form_item_name">
                             <input required="required" class="form_text" type="text" name="text" placeholder="Введите название товара для его поиска..." />
                         </div>

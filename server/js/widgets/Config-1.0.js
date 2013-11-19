@@ -62,7 +62,7 @@ var Config = {
     Goods : {
         tmpl: {
             path : "goods/goodsTmpl.html", // файл шаблона
-            tmplId : "goodsTmpl" // id шаблона виджета карточки товара по умолчанию
+            id : "goodsTmpl" // id шаблона виджета карточки товара по умолчанию
         },
         showBlocks : ['main', 'description'], // блоки отображаемые по умолчанию
         moreBlocks : {
@@ -92,9 +92,7 @@ var Config = {
     Catalog : {
         tmpl : {
             path : "catalog/catalogTmpl.html", // путь к шаблонам
-            mainPath : "content/mainTmpl.html", // путь к шаблонам
-            tmplId : "catalogTmpl", // id шаблона виджета каталога по умолчанию
-            blockMainTmplId : 'blockMainTmpl'
+            id : "catalogTmpl" // id шаблона виджета каталога по умолчанию
         },
         style : { // стиль блока
             'position' : 'absolute', 
@@ -108,8 +106,7 @@ var Config = {
     BreadCrumbs : {
         tmpl: {
             path : "breadCrumb/breadCrumbTmpl.html", // путь к шаблонам
-            tmplId : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию
-            tmplSelectListId : "breadCrumbSelectListTmpl" // id шаблона выпадающего списка
+            id : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию
         },
         style : { // стиль блока
             'position' : 'absolute', 
@@ -126,17 +123,23 @@ var Config = {
             filter : 'Товаров по ключу "%%filterName%%" не найдено' // сообщение в случае отсутствия товаров после фильтрации
         },
         tmpl: {
-            mainPath : "content/mainTmpl.html", // путь к шаблонам
-            pathBlock : "content/blockTmpl.html", // файл шаблона промо блоков
-            pathList : "content/contentTmpl.html", // файл шаблона реестра товаров
-            blockMainTmpl : "blockMainTmpl",
-            blockSliderTmpl : "blockSliderTmpl", // id шаблона слайдера (промо)
-            blockCaruselTmpl : "blockCaruselTmpl", // id шаблона карусели (промо)
-            blockTileTmpl : "blockTileTmpl", // id шаблона плитки (промо)
-            contentTableTmpl : "contentTableTmpl", // id шаблона таблицы
-            contentListTmpl : "contentListTmpl", // id шаблона списка
-            contentTileTmpl : "contentTileTmpl", // id шаблона плитки
-            noResultsTmpl : "contentNoResultsTmpl" // id шаблона товаров не найдено
+            content: {
+                path : "content/contentTmpl.html", // файл шаблона реестра товаров 
+                id: {
+                    table : "contentTableTmpl", // id шаблона таблицы
+                    list : "contentListTmpl", // id шаблона списка
+                    tile : "contentTileTmpl", // id шаблона плитки
+                    empty : "contentNoResultsTmpl" // id шаблона товаров не найдено
+                }
+            },
+            block : {
+                path : "content/blockTmpl.html", // файл шаблона промо блоков 
+                id: {
+                    slider : "blockSliderTmpl", // id шаблона слайдера (промо)
+                    carusel : "blockCaruselTmpl", // id шаблона карусели (промо)
+                    tile : "blockTileTmpl" // id шаблона плитки (промо)
+                }
+            }
         },
         countGoodsInBlock : 6,  // кол-во товаров выводимых в блоке по умолчанию
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
@@ -154,7 +157,7 @@ var Config = {
     Search : {
         tmpl : {
             path : "search/searchTmpl.html", // путь к шаблонам
-            tmplId : "searchTmpl" // id шаблона формы поиска по умолчанию
+            id : "searchTmpl" // id шаблона формы поиска по умолчанию
         },
         message : {
              empty : 'Введите название товара для его поиска.'
@@ -170,12 +173,19 @@ var Config = {
     },
     SearchResult : {
         tmpl: {
-            path : "searchResult/advancedSearchFormTmpl.html", // файл шаблонов расширенной формы и результатов поиска
-            advancedSearchFormTmpl : "advancedSearchFormTmpl", // id шаблона расширенной формы
-            contentTableTmpl : "searchResultTableTmpl", // id шаблона таблицы
-            contentListTmpl : "searchResultListTmpl", // id шаблона списка
-            contentTileTmpl : "searchResultTileTmpl", // id шаблона плитки
-            noResultsTmpl : "searchResultErrorTmpl" // id шаблона товаров не найдено
+            content : {
+                path : "searchResult/searchResultTmpl.html", // результатов поиска
+                id : {
+                    table : "searchResultTableTmpl", // id шаблона таблицы
+                    list : "searchResultListTmpl", // id шаблона списка
+                    tile : "searchResultTileTmpl", // id шаблона плитки
+                    empty : "searchResultErrorTmpl" // id шаблона товаров не найдено
+                }
+            },
+            form : {
+                path : "searchResult/advancedSearchFormTmpl.html", // файл шаблонов расширенной формы
+                id : "advancedSearchFormTmpl", // id шаблона расширенной формы
+            }
         },
         idAdvancedSearchForm : "advancedSearch", // id расширенной формы
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
@@ -201,11 +211,13 @@ var Config = {
     RelatedGoods : {
         tmpl:{
             path : "relatedGoods/relatedGoodsTmpl.html", // файл шаблонов связанных товаров
-            contentTableTmpl : "relatedGoodsTableTmpl", // id шаблона таблицы
-            contentListTmpl : "relatedGoodsListTmpl", // id шаблона списка
-            contentTileTmpl : "relatedGoodsTileTmpl", // id шаблона плитки
-            contentSliderTmpl : "relatedGoodsSliderTmpl", // id шаблона слайдера
-            contentCaruselTmpl : "relatedGoodsCaruselTmpl" // id шаблона карусели
+            id : {
+                table : "relatedGoodsTableTmpl", // id шаблона таблицы
+                list : "relatedGoodsListTmpl", // id шаблона списка
+                tile : "relatedGoodsTileTmpl", // id шаблона плитки
+                slider : "relatedGoodsSliderTmpl", // id шаблона слайдера
+                carousel : "relatedGoodsCarouselTmpl" // id шаблона карусели
+            }
         },
         countGoodsInBlock : 6, // максимальное кол-во товаров в блоке
         countGoodsTileInStr : 5, // кол-во плиток в строке 
@@ -215,15 +227,17 @@ var Config = {
     },
     InfoSeller : {
         tmpl: {
-            tmplId : "infoSellerTmpl", // id шаблона информации о продавце
+            id : "infoSellerTmpl", // id шаблона информации о продавце
             path : "infoSeller/infoSellerTmpl.html" // файл шаблона информации о продавце
         }
     },
     UserInformation : {
         tmpl : {
             path : "userInformation/userInformationTmpl.html", // файл шаблонов
-            infoTmplId : "userInformationTmpl", //id шаблона вывода информации о пользователе
-            authTmplId : "authorizationLinkTmpl" //id шаблона с сылками войти/регистрация
+            id : {
+                info : "userInformationTmpl", //id шаблона вывода информации о пользователе
+                auth : "authorizationLinkTmpl" //id шаблона с сылками войти/регистрация
+            } 
         },
         showBlocks : ['login'], 
         style : {// стиль блока
@@ -239,7 +253,7 @@ var Config = {
         https : "always", // always, never, login
         tmpl : {
             path : "authentication/authenticationTmpl.html", // файл шаблонов
-            authFormTmplId : "authenticationFormTmpl" //id шаблона формы авторизации
+            id : "authenticationFormTmpl" //id шаблона формы авторизации
         },
         message : {
             pleaseLogIn : 'Необходимо авторизоваться.',
@@ -257,10 +271,12 @@ var Config = {
     Registration : {
         tmpl : {
             path : "registration/registrationTmpl.html", // файл шаблонов
-            regFormStep1TmplId : "registrationFromStep1Tmpl", //id шаблона формы регистрации шаг 1
-            regFormStep2TmplId : "registrationFromStep2Tmpl", //id шаблона формы регистрации шаг 2
-            regFormStep3TmplId : "registrationFromStep3Tmpl", //id шаблона формы регистрации шаг 3
-            regFormStep4TmplId : "registrationFromStep4Tmpl", //id шаблона формы регистрации шаг 4
+            id: {
+                step1 : "registrationFromStep1Tmpl", //id шаблона формы регистрации шаг 1
+                step2 : "registrationFromStep2Tmpl", //id шаблона формы регистрации шаг 2
+                step3 : "registrationFromStep3Tmpl", //id шаблона формы регистрации шаг 3
+                step4 : "registrationFromStep4Tmpl", //id шаблона формы регистрации шаг 4
+            }
         },
         regular : { // регулярные выражения полей
             username : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
@@ -364,7 +380,7 @@ var Config = {
     MenuPersonalCabinet : {
         tmpl : {
             path : "menuPersonalCabinet/menuPersonalCabinetTmpl.html", // файл шаблонов
-            menuPersonalCabinet : 'menuPersonalCabinetTmpl', // id шаблона меню личного кабинета
+            id : 'menuPersonalCabinetTmpl', // id шаблона меню личного кабинета
         },
         style : {// стиль блока
             'position' : 'relative', 
@@ -378,10 +394,12 @@ var Config = {
     Profile : {
         tmpl : {
             path : "profile/profileTmpl.html", // файл шаблонов
-            personalInformationTmpl : "personalInformationTmpl", //id шаблона формы персоональных данных
-            deliveryAddressTmpl : "deliveryAddressTmpl", //id шаблона списка адресов доставки
-            deliveryAddressFormTmpl : "deliveryAddressFormTmpl", //id шаблона формы адресов доставки
-            securityTmpl : "securityTmpl" //id шаблона формы смены пароля
+            id: {
+                personal : "personalInformationTmpl", //id шаблона формы персоональных данных
+                delivery : "deliveryAddressTmpl", //id шаблона списка адресов доставки
+                deliveryForm : "deliveryAddressFormTmpl", //id шаблона формы адресов доставки
+                security : "securityTmpl" //id шаблона формы смены пароля
+            }
         },
         menu : {
             personalInformation : {title : 'Персональные данные', prefix : 'personal'},
@@ -505,7 +523,7 @@ var Config = {
         },
         tmpl : {
             path : "cart/cartTmpl.html", // файл шаблонов
-            tmplId : "cartTmpl", //id шаблона формы авторизации
+            id : "cartTmpl", //id шаблона формы авторизации
         },
         style : {// стиль блока
             'position' : 'absolute', 
@@ -520,8 +538,10 @@ var Config = {
         title : 'Моя корзина',
         tmpl : {
             path : "cartGoods/cartGoodsTmpl.html", // файл шаблонов
-            cartTmplId : "cartGoodsTmpl", //id шаблона формы авторизации
-            emptyCartTmplId : "emptyCartGoodsTmpl"
+            id : {
+                content : "cartGoodsTmpl", //id шаблона формы авторизации
+                empty : "emptyCartGoodsTmpl"
+            }
         },
         message :{
             addFavorites : 'Выбранные товары добавлены в избранное.',
@@ -543,8 +563,10 @@ var Config = {
         title : 'Моя корзина',
         tmpl : {
             path : "cabinetCartGoods/cabinetCartGoodsTmpl.html", // файл шаблонов
-            cartTmplId : "cabinetCartGoodsTmpl", //id шаблона формы авторизации
-            emptyCartTmplId : "emptyCabinetCartGoodsTmpl"
+            id : {
+                content : "cabinetCartGoodsTmpl", //id шаблона формы авторизации
+                empty : "emptyCabinetCartGoodsTmpl"
+            }
         },
         message :{
             addFavorites : 'Выбранные товары добавлены в избранное.',
@@ -566,8 +588,10 @@ var Config = {
         title : 'Избранное',
         tmpl : {
             path : "favorites/favoritesTmpl.html", // файл шаблонов
-            cartTmplId : "favoritesTmpl", //id шаблона формы авторизации
-            emptyCartTmplId : "emptyFavoritesTmpl"
+            id: {
+                content: "favoritesTmpl",//id шаблона формы авторизации
+                empty : "emptyFavoritesTmpl"
+            }, 
         },
         showBlocks : ['infoShop','addToCart','buy'],
         message :{
@@ -589,14 +613,16 @@ var Config = {
     Order : {
         tmpl : {
             path : "order/orderTmpl.html", // файл шаблонов
-            ordFormStep1TmplId : "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
-            ordConfirmFormStep1TmplId : "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
-            ordProfileFormStep1TmplId : 'orderProfileFormStep1Tmpl', // id шаблона формы персоональных данных
-            ordFormStep3TmplId : "orderFormStep3Tmpl", //id шаблона формы заказа шаг 3
-            ordFormStep2TmplId : "orderFormStep2Tmpl", //id шаблона формы заказа шаг 2
-            ordDeliveryFormStep2TmplId : 'orderDeliveryFormStep2Tmpl',
-            ordFormStep4TmplId : "orderFormStep4Tmpl", //id шаблона формы заказа шаг 4
-            ordFormStep5TmplId : "orderFormStep5Tmpl", //id шаблона формы заказа шаг 5
+            id : {
+                step1 : "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
+                step1Confirm : "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
+                step1Profile : 'orderProfileFormStep1Tmpl', // id шаблона формы персоональных данных
+                step2 : "orderFormStep2Tmpl", //id шаблона формы заказа шаг 2
+                step2Form : 'orderDeliveryFormStep2Tmpl',
+                step3 : "orderFormStep3Tmpl", //id шаблона формы заказа шаг 3
+                step4 : "orderFormStep4Tmpl", //id шаблона формы заказа шаг 4
+                step5 : "orderFormStep5Tmpl", //id шаблона формы заказа шаг 5
+            }
         },
         regular : { // регулярные выражения полей
             username : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
@@ -665,9 +691,11 @@ var Config = {
     OrderList : {
         tmpl : {
             path : "orderList/orderListTmpl.html", // файл шаблонов
-            ordListTmplId : "orderListTmpl", //id шаблона списка заказов
-            ordEmptyListTmplId : 'orderEmptyListTmpl', //id шаблона пустого списка
-            ordDetailTmplId : "orderDetailTmpl", //id шаблона списка заказов
+            id : {
+                list : "orderListTmpl", //id шаблона списка заказов
+                empty : 'orderEmptyListTmpl', //id шаблона пустого списка
+                detail : "orderDetailTmpl", //id шаблона списка заказов
+            }
         },
         message : {
             orderConfirm : 'Ваш заказ подтвержден.',
@@ -691,8 +719,10 @@ var Config = {
         title : "Оплатить", // заголовок кнопки
         tmpl : {
             path : 'buttonPayment/buttonPaymentTmpl.html', // файл шаблонов
-            contentTmpl : 'paymentPageTmpl', //id шаблона страницы оплаты
-            skin : 'buttonPaymentImpl' //id шаблона кнопки
+            id : {
+                content : 'paymentPageTmpl', //id шаблона страницы оплаты
+                skin : 'buttonPaymentImpl' //id шаблона кнопки
+            }
         },
         Error : {
             required : 'Поле обязательно для заполнения.',

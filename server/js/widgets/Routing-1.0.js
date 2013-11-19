@@ -1,4 +1,5 @@
 var Routing = {
+    version: 1.0,
     route : '',
     title : '',
     defaultTitle : '',

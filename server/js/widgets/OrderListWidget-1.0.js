@@ -1,13 +1,22 @@
 var OrderListWidget = function() {
     var self = this;
     self.widgetName = 'OrderListWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.currentPage = 1;
     self.settings = {
         containerFormId: null,
-        tmplPath: null,
-        ordListTmplId: null,
-        ordEmptyListTmplId: null,
-        ordDetailTmplId: null,
+        tmpl : {
+            path: null,
+            id : {
+                list : null,
+                empty : null,
+                detail : null
+            }
+        },
         inputParameters: {},
         style: null,
         customContainer: null
@@ -15,19 +24,17 @@ var OrderListWidget = function() {
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.orderList.widget;
         self.settings.customContainer = Config.Containers.orderList.customClass;
-        self.settings.tmplPath = Config.OrderList.tmpl.path;
-        self.settings.ordListTmplId = Config.OrderList.tmpl.ordListTmplId;
-        self.settings.ordEmptyListTmplId = Config.OrderList.tmpl.ordEmptyListTmplId;
-        self.settings.ordDetailTmplId = Config.OrderList.tmpl.ordDetailTmplId;
+        self.settings.tmpl = Config.OrderList.tmpl;
         self.settings.style = Config.OrderList.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteListOrder();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
         var input = {};
         if (Config.Base.sourceParameters == 'string') {
-            var temp = JSCore.ParserInputParameters(/OrderListWidget.js/);
+            var temp = JSCore.ParserInputParameters(/OrderListWidget/);
             if (temp.order) {
                 input = temp.order;
             }
@@ -36,10 +43,6 @@ var OrderListWidget = function() {
             input = WParameters.order;
         }
 
-        if (!$.isEmptyObject(input)) {
-            if (input.tmpl)
-                self.settings.tmplPath = 'orderList/' + input.tmpl + '.html';
-        }
         self.settings.inputParameters = input;
     };
     self.CheckRouteListOrder = function() {
@@ -47,8 +50,10 @@ var OrderListWidget = function() {
             self.WidgetLoader(false);
             self.BaseLoad.Login(false, false, false, function(data) {
                 if (!data.err) {
-                    self.Update.Menu();
-                    self.Update.Content();
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.Update.Menu();
+                        self.Update.Content();
+                    });
                 }
                 else {
                     Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 1];
@@ -61,19 +66,6 @@ var OrderListWidget = function() {
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRouteListOrder();
-            });
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRouteListOrder();
-                });
-            });
-        }
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteListOrder();
         });
@@ -158,7 +150,7 @@ var OrderListWidget = function() {
         },
         Menu: function() {
             Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function() {
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function() {
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
         }
@@ -170,15 +162,15 @@ var OrderListWidget = function() {
         },
         List: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordListTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('list')).html()).children().hide();
         },
         Detail: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordDetailTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('detail')).html()).children().hide();
         },
         EmptyList: function() {
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.ordEmptyListTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('empty')).html()).children().hide();
         }
     };
     self.Fill = {
@@ -248,19 +240,53 @@ var OrderListWidget = function() {
     self.Render = {
         List: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                    new AnimateOrderList();
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.List();
+                            self.Render.List(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            new AnimateOrderList();
-            self.WidgetLoader(true, self.settings.containerFormId);
+            
         },
         EmptyList: function() {
             self.WidgetLoader(true, self.settings.containerFormId);
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Detail();
+                            self.Render.Detail(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
+            
         }
     };
     self.SetPosition = function() {

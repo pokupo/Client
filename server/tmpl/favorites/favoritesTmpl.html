@@ -7,12 +7,13 @@
     }
 </style>
 <script type="text/html" id="favoritesTmpl">
+    <!-- version 1.0 -->
     <!-- ko foreach: content -->
         <!-- ko if: showSellerInfo -->
             <div class="horizontalSection">
                 <div class="pageWidth">
                     <br/>
-                    <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerTmpl', id: 'infoSellerTmpl'}}}"></div>
+                    <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo}}"></div>
                 </div>
             </div>
         <!-- /ko -->
@@ -113,6 +114,7 @@
 </script>
 
 <script type="text/html" id="emptyFavoritesTmpl">
+    <!-- version 1.0 -->
     <div class="horizontalSection">
         <div class="pageWidth">
             <br/>

@@ -1,11 +1,13 @@
-<script type="text/html" id="contentTileTmpl">
+<script type="text/html" id="searchResultTileTmpl">
     <!-- version 1.0 -->
-    <div class="pageWidth">
-        <h1 data-bind="text: titleBlock"></h1>
+    <!--  ko template: { name: 'searchResultFiletrTmpl', data: filters } --><!-- /ko -->
+    
+    <div class="horizontalSection">
+        <div class="pageWidth">
+             Найдено <!-- ko text: countGoods --><!-- /ko --> товаров
+        </div>
     </div>
     
-    <div class="horizontalSection" data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></div>
-
     <!-- ko foreach: content -->
         <div class="horizontalSection">
             <div class="pageWidth">
@@ -69,13 +71,15 @@
     <!-- /ko -->
 </script>
 
-<script type="text/html" id="contentTableTmpl">
+<script type="text/html" id="searchResultTableTmpl">
     <!-- version 1.0 -->
-    <div class="pageWidth">
-        <h1 data-bind="text: titleBlock"></h1>
-    </div>
+    <!--  ko template: { name: 'searchResultFiletrTmpl', data: filters } --><!-- /ko -->
     
-    <div class="horizontalSection" data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></div>
+    <div class="horizontalSection">
+        <div class="pageWidth">
+             Найдено <!-- ko text: countGoods --><!-- /ko --> товаров
+        </div>
+    </div>
     
     <!-- ko foreach: content -->
     <div class="horizontalSection">
@@ -145,14 +149,16 @@
     <!-- /ko -->
 </script>
 
-<script type="text/html" id="contentListTmpl">
+<script type="text/html" id="searchResultListTmpl">
     <!-- version 1.0 -->
-    <div class="pageWidth">
-        <h1 data-bind="text: titleBlock"></h1>
+    <!--  ko template: { name: 'searchResultFiletrTmpl', data: filters } --><!-- /ko -->
+    
+    <div class="horizontalSection">
+        <div class="pageWidth">
+             Найдено <!-- ko text: countGoods --><!-- /ko --> товаров
+        </div>
     </div>
     
-    <div class="horizontalSection" data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></div>
-
     <div class="horizontalSection">
          <div class="pageWidth">
               <div class="itemsListTableRow categoryList">
@@ -223,22 +229,25 @@
     <!-- /ko -->
 </script>
 
-<script type="text/html" id="contentNoResultsTmpl">
+<script type="text/html" id="searchResultErrorTmpl">
     <!-- version 1.0 -->
-    <div class="pageWidth">
-        <h1 data-bind="text: titleBlock"></h1>
+    <div class="horizontalSection">
+        <div class="pageWidth">
+            <h1>По вашему запросу товаров не найдено</h1>
+        </div><!-- /pageWidth -->
     </div>
     
-    <div class="horizontalSection" data-bind="template: { name: 'contentFiletrTmpl', data: filters }"></div>
+    <!--  ko template: { name: 'searchResultFiletrTmpl', data: filters } --><!-- /ko -->
     
     <div class="horizontalSection">
         <div class="pageWidth">
-            <p data-bind="text:message"></p>
-        </div>
+             Попробуйте изменить параметры поиска и попробуйте еще раз.
+        </div><!-- /pageWidth -->
     </div>
 </script>
 
-<script type="text/html" id="contentFiletrTmpl">
+<script type="text/html" id="searchResultFiletrTmpl">
+    <div class="horizontalSection">
         <div class="horizontalSearchBar">
             <div class="pageWidth">
                 <table style="width: 100%;">
@@ -280,4 +289,7 @@
                 <div class="clear"></div>
              </div>
         </div>
+    </div>
 </script>
+
+

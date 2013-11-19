@@ -1,17 +1,33 @@
 var SearchResultWidget = function(){
     var self = this;
     self.widgetName = 'SearchResultWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerIdForSearchResult : null,
         containerIdForAdvancedSearch : null,
         customContainerForSearchResult: null,
         customContainerForAdvancedSearch: null,
-        tmplPath : null,
-        advancedSearchFormTmpl : null,
-        contentTableTmpl : null,
-        contentListTmpl : null,
-        contentTileTmpl : null,
-        noResultsTmpl : null,
+        tmpl : {
+            content: {
+                path : {
+                    list : null
+                }, 
+                id: {
+                    table : null, 
+                    list : null, 
+                    tile : null,
+                    empty : null
+                }
+            },
+            form : {
+                path : null,
+                id : null
+            }
+        },
         idAdvancedSearchForm : null,
         idTreeCategoriesForAdvancedSearchForm : 'tree_categories_for_advanced_search',
         inputParameters : {},
@@ -26,12 +42,7 @@ var SearchResultWidget = function(){
         self.settings.customContainerForSearchResult = Config.Containers.searchResult.content.customClass;
         self.settings.containerIdForAdvancedSearch = Config.Containers.searchResult.form.widget;
         self.settings.customContainerForAdvancedSearch = Config.Containers.searchResult.form.customClass;
-        self.settings.tmplPath = Config.SearchResult.tmpl.path;
-        self.settings.advancedSearchFormTmpl = Config.SearchResult.tmpl.advancedSearchFormTmpl;
-        self.settings.contentTableTmpl = Config.SearchResult.tmpl.contentTableTmpl;
-        self.settings.contentListTmpl = Config.SearchResult.tmpl.contentListTmpl;
-        self.settings.contentTileTmpl = Config.SearchResult.tmpl.contentTileTmpl;
-        self.settings.noResultsTmpl = Config.SearchResult.tmpl.noResultsTmpl;
+        self.settings.tmpl = Config.SearchResult.tmpl;
         self.settings.idAdvancedSearchForm = Config.SearchResult.idAdvancedSearchForm;
         self.settings.listPerPage = Config.SearchResult.listPerPage;
         self.settings.listTypeSearch = Config.SearchResult.listTypeSearch;
@@ -40,12 +51,13 @@ var SearchResultWidget = function(){
         self.settings.paging = Config.Paging;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckRoutingSearch();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/SearchResultWidget.js/);
+            var temp = JSCore.ParserInputParameters(/SearchResultWidget/);
             if(temp.searchResult){
                 input = temp.searchResult;
             }
@@ -60,17 +72,11 @@ var SearchResultWidget = function(){
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
-                if (input.content.tmpl)
-                    self.settings.tmplPath = 'searchResult/' + input.content.tmpl + '.html';
-            }
-            if(input.form){
-                if (input.form.tmpl)
-                    self.settings.tmplPath = 'searchResult/' + input.form.tmpl + '.html';
             }
         }
         self.settings.inputParameters = input;
     };
-    self.CheckRouting = function(){
+    self.CheckRoutingSearch = function(){
         if(Routing.route == 'search'){
             for(var key in Routing.params){
                 if(key == 'idSelectCategories'){
@@ -93,32 +99,10 @@ var SearchResultWidget = function(){
             }
             EventDispatcher.DispatchEvent('widget.change.route')
         }
-        else if(Routing.IsDefault() && !self.HasDefaultContent()){
-            self.WidgetLoader(true);
-        }
         else
             self.WidgetLoader(true);  
     };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            new Dyn();
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('searchResultWidget.onload.tmpl')
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                new Dyn();
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('searchResultWidget.onload.tmpl')
-                });
-            });
-        }
-        
-        EventDispatcher.AddEventListener('searchResultWidget.onload.tmpl', function(){
-            self.CheckRouting();
-        });
-        
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
             if($("#" + self.settings.containerIdForAdvancedSearch).text() == ""){
                 self.BaseLoad.Roots(function(){
@@ -131,11 +115,14 @@ var SearchResultWidget = function(){
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
-            self.InsertContainer.AdvancedSearchForm();
-            if(Routing.route != 'search')
-                Parameters.SetDefaultFilterParameters();
-            self.Fill.AdvancedSearchForm();
-            self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+            self.BaseLoad.Tmpl(self.settings.tmpl.form, function(){
+                new Dyn();
+                self.InsertContainer.AdvancedSearchForm();
+                if(Routing.route != 'search')
+                    Parameters.SetDefaultFilterParameters();
+                self.Fill.AdvancedSearchForm();
+                self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+            });
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.submit.form', function (data){
@@ -170,10 +157,9 @@ var SearchResultWidget = function(){
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
             if(Routing.route == 'search'){
-                self.InsertContainer.AdvancedSearchForm();
-                self.Fill.AdvancedSearchForm();
-
-                EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
+                self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
+                    EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
+                });
             }
             else{
                 self.WidgetLoader(true);
@@ -182,27 +168,31 @@ var SearchResultWidget = function(){
         });
     };
     self.InsertContainer = {
-        AdvancedSearchForm : function(){
+        EmptyFormWidget : function(){
             var temp = $("#" + self.settings.containerIdForAdvancedSearch).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForAdvancedSearch).empty().html(temp);
-            
-            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.settings.advancedSearchFormTmpl).html()).children().hide();
         },
-        SearchResult : function(type){
+        AdvancedSearchForm : function(){
+            self.InsertContainer.EmptyFormWidget();
+            $("#" + self.settings.containerIdForAdvancedSearch).append($('script#' + self.GetTmplName(false, 'form')).html()).children().hide();
+        },
+        EmptyWidget : function(){
             var temp = $("#" + self.settings.containerIdForSearchResult).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerIdForSearchResult).empty().html(temp);
-            
+        },
+        SearchResult : function(type){
+            self.InsertContainer.EmptyWidget();
             if(type == 'table'){ 
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTableTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('table', 'content')).html()).children().hide();
             }
             if(type == 'list'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentListTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('list', 'content')).html()).children().hide();
             }
             if(type == 'tile'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.contentTileTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('tile', 'content')).html()).children().hide();
             }
             if(type == 'error'){
-                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.settings.noResultsTmpl).html());
+                $("#" + self.settings.containerIdForSearchResult).append($('script#' + self.GetTmplName('empty', 'content')).html()).children().hide();
             }
         }
     };
@@ -219,53 +209,66 @@ var SearchResultWidget = function(){
     self.Render = {
         AdvancedSearchForm : function(data){
             if($("#" + self.settings.containerIdForAdvancedSearch).length){
-                ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
 
-                $("#" + self.settings.idTreeCategoriesForAdvancedSearchForm).dynatree({
-                    checkbox: true,
-                    selectMode: 3,
-                    children: data.categories,
-                    onSelect: function(select, node) {
-                        var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-                            return node.data.key;
+                    $("#" + self.settings.idTreeCategoriesForAdvancedSearchForm).dynatree({
+                        checkbox: true,
+                        selectMode: 3,
+                        children: data.categories,
+                        onSelect: function(select, node) {
+                            var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
+                                return node.data.key;
+                            });
+
+                            Parameters.filter.idSelectCategories = selKeys;
+                        }
+                    });
+
+                    $("#" + self.settings.containerIdForAdvancedSearch).show();
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.AdvancedSearchForm();
+                            self.Render.AdvancedSearchForm(data);
                         });
-
-                        Parameters.filter.idSelectCategories = selKeys;
                     }
-                });
-
-                $('.' + data.cssTypeSearch).sSelect({
-                    defaultText: self.settings.listTypeSearch[data.typeSearch]
-                }).change(function(){
-                    var id = $('.' + data.cssTypeSearch).getSetSSValue();
-                    $('.' + data.cssTypeSearch + ' option').removeAttr('selected');
-                    $('.' + data.cssTypeSearch + ' option[value=' + id + ']').attr('selected', true);
-                    $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
-                });
-
-                $('.' + data.cssTypeSeller).sSelect({
-                    defaultText: self.settings.listTypeSeller[data.typeSeller]
-                }).change(function(){
-                    var id = $('.' + data.cssTypeSeller).getSetSSValue();
-                    $('.' + data.cssTypeSeller + ' option').removeAttr('selected');
-                    $('.' + data.cssTypeSeller + ' option[value=' + id + ']').attr('selected', true);
-                    $('#' + self.settings.idAdvancedSearchForm + ' input:submit').focus();
-                });
-                $("#" + self.settings.containerIdForAdvancedSearch).show();
+                    else{
+                        self.InsertContainer.EmptyFormWidget();
+                        self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+                    }
+                }
             }
         },
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
-                var f = data.filters;
-                new AnimateSelectList(f.sort.cssSortList);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
+                    var f = data.filters;
+                    new AnimateSelectList(f.sort.cssSortList);
+                    self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.SearchResult(data.typeView);
+                            self.Render.SearchResult(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+                    }
+                }
             }
-            delete data;
-            self.WidgetLoader(true, self.settings.containerIdForSearchResult);
         }
     };
     self.SetPosition = function(){
-
         if(self.settings.inputParameters['position'] == 'absolute'){
             for(var key in self.settings.inputParameters){
                 if(self.settings.styleSearchResult[key])
@@ -283,11 +286,13 @@ var AdvancedSearchFormViewModel = function(params){
     var self = this;
     self.keyWords = Parameters.filter.keyWords;
     self.idCategories = Parameters.filter.idCategories;
-    self.typeSearch = Parameters.filter.typeSearch;
+    self.typeSearch = ko.observable();
+    self.typeSearch(Parameters.filter.typeSearch);
     self.startCost = Parameters.filter.startCost;
     self.endCost = Parameters.filter.endCost;
     self.exceptWords = Parameters.filter.exceptWords;
-    self.typeSeller = Parameters.filter.typeSeller;
+    self.typeSeller = ko.observable();
+    self.typeSeller(Parameters.filter.typeSeller);
     
     self.categories = [];
     self.typesSearch = ko.observableArray();
@@ -296,15 +301,20 @@ var AdvancedSearchFormViewModel = function(params){
     self.cssTypeSearch = 'advancedSearchTypeSearch';
     self.cssTypeSeller = 'advancedSearchTypeSeller';
     self.cachData = {};
-    
-    self.FillSelectList = function(options, list){
+
+    self.FillTypeSearchSelectList = function(options, list){
         for(var key in options){
-            list.push({key : key, text : options[key]})
+            list.push(new AdvancedSearchFormTypeSearchViewModel({key: key, title: options[key]}, self));
+        }
+    };
+    self.FillTypeSellerSelectList = function(options, list){
+        for(var key in options){
+            list.push(new AdvancedSearchFormTypeSellerViewModel({key: key, title: options[key]}, self));
         }
     };
     
-    self.FillSelectList(params.listTypeSearch, self.typesSearch);
-    self.FillSelectList(params.listTypeSeller, self.typesSellers);
+    self.FillTypeSearchSelectList(params.listTypeSearch, self.typesSearch);
+    self.FillTypeSellerSelectList(params.listTypeSeller, self.typesSellers);
     
     self.AddCategories = function(data){
         self.cachData = data;
@@ -343,13 +353,9 @@ var AdvancedSearchFormViewModel = function(params){
     self.SubmitAdvancedSearchForm = function(data){
         Loader.Indicator('SearchResultWidget', false);
         self.keyWords = $(data.keyWords).val();
-        var selectedTypeSearch = $(data.typeSearch).find('option:selected');
-        self.typeSearch = $(selectedTypeSearch[selectedTypeSearch.length-1]).val();
         self.startCost = $(data.startCost).val();
         self.endCost = $(data.endCost).val();
         self.exceptWords = $(data.exceptWords).val();
-        var selectedTypeSeller = $(data.typeSeller).find('option:selected');
-        self.typeSeller = $(selectedTypeSeller[selectedTypeSeller.length-1]).val();
 
         Parameters.filter.idCategories = self.idCategories = [];
         self.FindSelectedSection(self.cachData, Parameters.filter.idSelectCategories);
@@ -357,13 +363,13 @@ var AdvancedSearchFormViewModel = function(params){
         if(self.idCategories.length > 0)
            Parameters.filter.idCategories = self.idCategories.join(",");
         Parameters.filter.keyWords = self.keyWords;
-        Parameters.filter.typeSearch = self.typeSearch;
+        Parameters.filter.typeSearch = self.typeSearch();
         Parameters.filter.startCost = self.startCost;
         Parameters.filter.endCost = self.endCost;
         Parameters.filter.exceptWords = self.exceptWords;
-        Parameters.filter.typeSeller = self.typeSeller;
+        Parameters.filter.typeSeller = self.typeSeller();
         Parameters.filter.page = 1;
-        
+        console.log(self.typeSearch());
         Routing.SetHash('search', 'Расширенный поиск', Parameters.filter);
     };
     self.FilterCategories = function(data){
@@ -405,6 +411,26 @@ var AdvancedSearchFormViewModel = function(params){
                 self.FindChildrenCategory(data[i].children)
             }
         }
+    }
+}
+
+var AdvancedSearchFormTypeSearchViewModel = function(data, parent){
+    var self = this;
+    self.title = data.title;
+    self.key = data.key;
+    
+    self.ClickItem = function(){
+        parent.typeSearch(self.key);
+    }
+}
+
+var AdvancedSearchFormTypeSellerViewModel = function(data, parent){
+    var self = this;
+    self.title = data.title;
+    self.key = data.key;
+    
+    self.ClickItem = function(){
+        parent.typeSeller(self.key);
     }
 }
 

@@ -1,9 +1,16 @@
 window.InfoSellerWidget = function(){
     var self = this;
     self.widgetName = 'InfoSellerWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
-        tmplPath : null,
-        tmplId : null,
+        tmpl : {
+            path : null,
+            id : null
+        },
         inputParameters : {},
         container : null,
         style : null,
@@ -12,22 +19,22 @@ window.InfoSellerWidget = function(){
     };
     self.InitWidget = function(){
         self.settings.style = Config.InfoSeller.style;
-        self.RegisterEvents();
         self.Loader();
+        self.RegisterEvents();
+        self.LoadTmpl();
     };
     self.Loader = function(){
         Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
-        self.settings.tmplPath = Config.InfoSeller.tmpl.path;
-        self.settings.tmplId = Config.InfoSeller.tmpl.tmplId;
+        self.settings.tmpl = Config.InfoSeller.tmpl;
         self.settings.container = data.element;
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
                 if(data.options.params['tmpl']['path'])
-                    self.settings.tmplPath = 'infoSeller/' + data.options.params['tmpl']['path'] + '.html';
+                    self.settings.tmpl.path = data.options.params['tmpl']['path'];
                 if(data.options.params['tmpl']['id'])
-                    self.settings.tmplId = data.options.params['tmpl']['id'];
+                    self.settings.tmpl.id = data.options.params['tmpl']['id'];
             }
             else if(key == 'uniq' && data.options.params['uniq'])
                     self.settings.hash = data.options.params['uniq'];
@@ -35,23 +42,17 @@ window.InfoSellerWidget = function(){
                 self.settings.infoSeller[key] = data.options.params[key];
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
+        });
+    };
     self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
-                });
-            });
-        }
-        
         EventDispatcher.AddEventListener('InfoSellerWidget.onload.tmpl.' + self.settings.hash, function (data){
-            if(self.settings.infoSeller['data'])
+            if(self.settings.infoSeller['data']){
+                self.InsertContainer.Content();
                 self.Fill(self.settings.infoSeller['data'])
+            }
             else{
                 window.console && console.log('No data on the Seller');
                 self.WidgetLoader(true);
@@ -62,13 +63,37 @@ window.InfoSellerWidget = function(){
             self.Render(data);
         });
     };
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $(self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
+            $(self.settings.container).empty().html(temp);
+        },
+        Content : function(){
+            self.InsertContainer.EmptyWidget();
+            $(self.settings.container).append($('script#' + self.GetTmplName()).html());
+        }
+    }
     self.Fill = function(data){
         var info = new InfoSellerViewModel(data);
         self.Render(info);
     };
     self.Render = function(data){
-        $(self.settings.container).empty().append($('script#' + self.settings.tmplId).html());
-        ko.applyBindings(data, $(self.settings.container).children()[0]);
+        try{
+            ko.applyBindings(data, $(self.settings.container).children()[0]);
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Content();
+                    self.Render(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+            }
+        }
     }
 }
 

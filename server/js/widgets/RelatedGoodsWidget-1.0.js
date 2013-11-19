@@ -1,13 +1,22 @@
 window.RelatedGoodsWidget = function(){
     var self = this;
     self.widgetName = 'RelatedGoodsWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
-        tmplPath : null,
-        contentTableTmpl : null,
-        contentListTmpl : null,
-        contentTileTmpl : null,
-        contentSliderTmpl : null,
-        contentCaruselTmpl : null,
+        tmpl : {
+            path : null,
+            id : {
+                table : null,
+                list : null,
+                tile : null,
+                slider : null,
+                carousel : null
+            }
+        },
         inputParameters : {},
         container : null,
         relatedGoods : {
@@ -21,20 +30,15 @@ window.RelatedGoodsWidget = function(){
         uniq : null
     };
     self.InitWidget = function(){
-        self.settings.tmplPath = Config.RelatedGoods.tmpl.path;
-        self.settings.contentTableTmpl = Config.RelatedGoods.tmpl.contentTableTmpl;
-        self.settings.contentListTmpl = Config.RelatedGoods.tmpl.contentListTmpl;
-        self.settings.contentTileTmpl = Config.RelatedGoods.tmpl.contentTileTmpl;
-        self.settings.contentSliderTmpl = Config.RelatedGoods.tmpl.contentSliderTmpl;
-        self.settings.contentCaruselTmpl = Config.RelatedGoods.tmpl.contentCaruselTmpl;
+        self.settings.tmpl = Config.RelatedGoods.tmpl;
         self.settings.relatedGoods.count = Config.RelatedGoods.countGoodsInBlock;
         self.settings.relatedGoods.countTile = Config.RelatedGoods.countGoodsTileInStr;
         self.settings.relatedGoods.typeView = Config.RelatedGoods.typeView;
         self.settings.relatedGoods.orderBy = Config.RelatedGoods.orderBy;
         self.settings.relatedGoods.start = Config.RelatedGoods.start;
-        
-        self.RegisterEvents();
         self.Loader();
+        self.RegisterEvents();
+        self.LoadTmpl();
     };
     self.Loader = function(){
         Loader.InsertContainer(self.settings.container);
@@ -42,8 +46,12 @@ window.RelatedGoodsWidget = function(){
     self.SetParameters = function(data){
         self.settings.container = data.element;
         for(var key in data.options.params){
-            if(key == 'tmpl' && data.options.params['tmpl'])
-                self.settings.tmplPath = 'relatedGoods/' + data.options.params['tmpl'] + '.html';
+            if(key == 'tmpl' && data.options.params['tmpl']){
+                if(data.options.params['tmpl']['path'])
+                    self.settings.tmpl.path = data.options.params['tmpl']['path'];
+                if(data.options.params['tmpl']['id'])
+                    self.settings.tmpl.id = data.options.params['tmpl']['id'];
+            }
             else if (key == 'uniq' && data.options.params['uniq'])
                 self.settings.uniq = data.options.params['uniq'];
             else if(key == 'id')
@@ -51,20 +59,12 @@ window.RelatedGoodsWidget = function(){
             self.settings.relatedGoods[key] = data.options.params[key];
         }
     };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
-                });
-            });
-        }
-        
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
+        });
+    };
+    self.RegisterEvents = function(){    
         EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq, function (data){
             var query = self.settings.relatedGoods.start + '/' + self.settings.relatedGoods.count + '/' + self.settings.relatedGoods.orderBy;
             self.BaseLoad.RelatedGoods(self.settings.relatedGoods.id, query, function(data){
@@ -76,27 +76,33 @@ window.RelatedGoodsWidget = function(){
             self.Render(data);
         });
     };
-    self.InsertContainer = function(type){
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.container).empty().html(temp);
+        },
+        Content : function(type){
             if(type == 'slider')
-                $(self.settings.container).html($('script#' + self.settings.contentSliderTmpl).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('slider')).html());
             if(type == 'carousel')
-                $(self.settings.container).html($('script#' + self.settings.contentCaruselTmpl).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('carousel')).html());
             if(type == 'tile')
-                $(self.settings.container).html($('script#' + self.settings.contentTileTmpl).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('tile')).html());
             if(type == 'table') 
-                $(self.settings.container).html($('script#' + self.settings.contentTableTmpl).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('table')).html());
             if(type == 'list')
-                $(self.settings.container).html($('script#' + self.settings.contentListTmpl).html());
+                $(self.settings.container).html($('script#' + self.GetTmplName('list')).html());
             if(type == 'empty')
                 $(self.settings.container).html('');
+        }
     };
     self.CheckData = function(data){ 
         if(!data.err ){
-            self.InsertContainer(self.settings.relatedGoods.typeView);
+            self.InsertContainer.Content(self.settings.relatedGoods.typeView);
             self.Fill(self.settings.relatedGoods, data)
         }
         else{
-            self.InsertContainer('empty');
+            self.InsertContainer.Content('empty');
         }
     };
     self.Fill = function(settings, data){
@@ -104,12 +110,28 @@ window.RelatedGoodsWidget = function(){
         related.AddContent();
     };
     self.Render = function(data){
-        ko.applyBindings(data, $(self.settings.container).children()[0]);
-        
-        if(self.settings.relatedGoods.typeView == 'slider')
-                new AnimateSlider(data.cssBlockContainer);
-        if(self.settings.relatedGoods.typeView == 'carousel')
-                new AnimateCarousel(data.cssBlockContainer);
+        try{
+            ko.applyBindings(data, $(self.settings.container).children()[0]);
+
+            if(self.settings.relatedGoods.typeView == 'slider')
+                    new AnimateSlider(data.cssBlockContainer);
+            if(self.settings.relatedGoods.typeView == 'carousel')
+                    new AnimateCarousel(data.cssBlockContainer);
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Content(data.typeView);
+                    self.Render.Content(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+                self.WidgetLoader(true, self.settings.container);
+            }
+        }
     };
 }
 
@@ -150,6 +172,7 @@ var RelatedGoodsViewModel = function(settings, data){
                 }
             }
             self.cssBlockContainer  = self.cssBlockContainer + EventDispatcher.HashCode(data.toString());
+            data.unshift(first);
         }
         EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block_' + settings.uniq, self);
     }

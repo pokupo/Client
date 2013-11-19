@@ -1,11 +1,20 @@
 var UserInformationWidget = function(){
     var self = this;
     self.widgetName = 'UserInformationWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerId : null, 
-        tmplPath : null,
-        infoTmplId : null,
-        authTmplId : null,
+        tmpl :{
+            path : null,
+            id : {
+                info : null,
+                auth : null 
+            }
+        },
         inputParameters : {},
         showBlocks : null,
         style : null,
@@ -14,19 +23,18 @@ var UserInformationWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.userInformation.widget; 
         self.settings.customContainer = Config.Containers.userInformation.customClass;
-        self.settings.tmplPath = Config.UserInformation.tmpl.path;
-        self.settings.infoTmplId = Config.UserInformation.tmpl.infoTmplId;
-        self.settings.authTmplId = Config.UserInformation.tmpl.authTmplId;
+        self.settings.tmpl = Config.UserInformation.tmpl;
         self.settings.showBlocks = Config.UserInformation.showBlocks;
         self.settings.style = Config.UserInformation.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.LoadTmpl();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/UserInformationWidget.js/);
+            var temp = JSCore.ParserInputParameters(/UserInformationWidget/);
             if(temp.userInformation){
                 input = temp.userInformation;
             }
@@ -42,29 +50,15 @@ var UserInformationWidget = function(){
                         self.settings.showBlocks.push(input.show[i]);
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'userInformation/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
-    self.GetTmplRoute = function(){
-        return self.settings.tmplPath + self.settings.tmplId + '.html';
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
+        });
     };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
-                });
-            });
-        }
-        
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('onload.userInformation.tmpl', function (){
             self.BaseLoad.Login(false, false, false, function(data){
                 self.CheckAuthorization(data);
@@ -84,7 +78,9 @@ var UserInformationWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            EventDispatcher.DispatchEvent('onload.userInformation.tmpl');
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                EventDispatcher.DispatchEvent('onload.userInformation.tmpl');
+            });
         });
     };
     self.CheckAuthorization = function(data){
@@ -109,11 +105,11 @@ var UserInformationWidget = function(){
         },
         AuthBlock : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.authTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('auth')).html()).children().hide();
         },
         InfoBlock : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.infoTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('info')).html()).children().hide();
         }
     };
     self.Fill = {
@@ -130,15 +126,48 @@ var UserInformationWidget = function(){
     self.Render = {
         AuthBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('auth') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.AuthBlock();
+                            self.Render.AuthBlock(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerId);
         },
         InfoBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Error of the template [' + self.GetTmplName('info') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.InfoBlock();
+                            self.Render.InfoBlock(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerId);
+            
         }
     }
     self.SetPosition = function(){

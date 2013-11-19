@@ -1,34 +1,28 @@
 <script type="text/html" id="catalogTmpl">
+    <!-- version 1.0 -->
     <div class="sidebar_block_menu">
         <div class="top_tabs">
-            <!-- ko if: children().length == 1 -->
-                <!-- ko foreach: children -->
-                <span class="single" data-bind="text: title, css: tabClass, click: ClickSection"></span>
-                <!-- /ko -->
-            <!-- /ko -->
-            <!-- ko if: children().length > 1 -->
-                <!-- ko foreach: children -->
-                <span data-bind="text: title, css: tabClass, click: ClickSection"></span>
-                <!-- /ko -->
+            <!-- ko foreach: tab -->
+               <span data-bind="text: title, css: tabClass, click: ClickTab"></span>
             <!-- /ko -->
         </div>
-        <!-- ko foreach: children -->
-        <ul class="sectionCategories" data-bind='css: listClass, visible: $parent.isActive == id'>
-            <!-- ko foreach: children -->
-            <li data-bind="css : { menuparent : children().length > 0}">
-                <a href="#" data-bind="html: TextItem, click: ClickItem "></a>
-                <!-- ko if: children().length > 0 -->
-                <ul>
+        <!-- ko foreach: tab -->
+            <ul class="sectionCategories" data-bind='css: listClass, visible: isActive'>
                 <!-- ko foreach: children -->
-                    <li>
-                         <a href="#" data-bind="html: TextItem, click: ClickItem "></a>
+                    <li data-bind="css : liClass">
+                        <a href="#" data-bind="html: titleWithCount, click: ClickItem "></a>
+                        <!-- ko if: hasChildren -->
+                            <ul>
+                            <!-- ko foreach: children -->
+                                <li>
+                                     <a href="#" data-bind="html: titleWithCount, click: ClickItem "></a>
+                                </li>
+                            <!-- /ko -->
+                            </ul>
+                        <!-- /ko -->
                     </li>
                 <!-- /ko -->
-                </ul>
-                <!-- /ko -->
-            </li>
-            <!-- /ko -->
-        </ul>
+            </ul>
         <!-- /ko -->
     </div>
 </script>

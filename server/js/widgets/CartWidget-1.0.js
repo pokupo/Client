@@ -1,10 +1,17 @@
 var CartWidget = function(){
     var self = this;
     self.widgetName = 'CartWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         title : null,
-        tmplPath : null,
-        tmplId : null,
+        tmpl :{
+            path : null,
+            id : null
+        },
         inputParameters : {},
         containerId : null,
         showBlocks : null,
@@ -15,18 +22,18 @@ var CartWidget = function(){
         self.settings.containerId = Config.Containers.cart.widget;
         self.settings.customContainer = Config.Containers.cart.customClass;
         self.settings.title = Config.Cart.title;
-        self.settings.tmplPath = Config.Cart.tmpl.path;
-        self.settings.tmplId = Config.Cart.tmpl.tmplId;
+        self.settings.tmpl = Config.Cart.tmpl;
         self.settings.style = Config.Cart.style;
         self.settings.showBlocks = Config.Cart.showBlocks;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.LoadTmpl();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/CartWidget.js/);
+            var temp = JSCore.ParserInputParameters(/CartWidget/);
             if(temp.cart){
                 input = temp.cart;
             }
@@ -41,17 +48,18 @@ var CartWidget = function(){
                      self.settings.showBlocks[key] = input.show[key];
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'cart/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
-    self.InsertContainer = function(){
-        var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
-        $("#" + self.settings.containerId).empty().html(temp);
-            
-        $('#' + self.settings.containerId).append($('script#' + self.settings.tmplId).html());
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
+        Main : function(){
+            self.InsertContainer.EmptyWidget();
+            $('#' + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html()).children().hide();
+        }
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
@@ -63,26 +71,18 @@ var CartWidget = function(){
             });
         }
     };
-    self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
-                });
-            });
-        }
-        
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
+        });
+    };
+    self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('CartWidget.onload.tmpl', function (){
             self.CheckRoute();
         });
         
         EventDispatcher.AddEventListener('CartWidget.onload.info', function(data){
-            self.InsertContainer();
+            self.InsertContainer.Main();
             self.Fill(data);
         })
         
@@ -93,11 +93,11 @@ var CartWidget = function(){
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            EventDispatcher.DispatchEvent('CartWidget.onload.tmpl');
+            self.LoadTmpl();
         });
         
         EventDispatcher.AddEventListener('widgets.cart.infoUpdate', function(data){
-             EventDispatcher.DispatchEvent('CartWidget.onload.tmpl', data);
+             self.LoadTmpl();
         });
     };
     self.Fill = function(data){
@@ -106,8 +106,24 @@ var CartWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){ 
-        ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
-        self.WidgetLoader(true, self.settings.containerId);
+        try{
+            ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
+            self.WidgetLoader(true, self.settings.containerId);
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Main();
+                    self.Render(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+                self.WidgetLoader(true, self.settings.containerId);
+            }
+        }
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters['position'] == 'absolute'){

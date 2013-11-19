@@ -1,34 +1,35 @@
 var MenuPersonalCabinetWidget = function(){
     var self = this;
     self.widgetName = 'MenuPersonalCabinetWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerMenuId: null,
-        tmplPath : null,
-        menuTmpl : null,
+        tmpl : {
+            path : null,
+            id : null
+        },
         style: null,
         customContainer: null
     };
     self.active = null;
     self.subMenu = [];
     self.InitWidget = function(){
-        self.settings.tmplPath = Config.MenuPersonalCabinet.tmpl.path;
+        self.settings.tmpl = Config.MenuPersonalCabinet.tmpl;
         self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
         self.settings.customContainer = Config.Containers.menuPersonalCabinet.customClass;
-        self.settings.menuTmpl = Config.MenuPersonalCabinet.tmpl.menuPersonalCabinet;
         self.settings.style = Config.MenuPersonalCabinet.style;
         self.RegisterEvents();
+        self.CheckRouteMenuProfile();
         self.SetPosition();
     };
      self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.menuPersonalCabinet){
             input = WParameters.menuPersonalCabinet;
-        }
-        
-        if(!$.isEmptyObject(input)){
-            if (input.tmpl) {
-                self.settings.tmplPath = 'menuPersonalCabinet/' + input.tmpl + '.html';
-            }
         }
      };
     self.AddMenu = function(opt){
@@ -37,10 +38,12 @@ var MenuPersonalCabinetWidget = function(){
             self.subMenu = opt.menu;
         }
     };
-    self.CheckRoute = function() {
+    self.CheckRouteMenuProfile = function() {
         if(Routing.route == 'profile' || Routing.route == 'favorites' || Routing.route == 'cabinet_cart' || Routing.route == 'purchases'){
-            self.InsertContainer();
-            self.Fill();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function() {
+                self.InsertContainer.Content();
+                self.Fill();
+            });
         }
         else{
             $("#" + self.settings.containerMenuId).empty()
@@ -48,19 +51,18 @@ var MenuPersonalCabinetWidget = function(){
         }
     };
     self.RegisterEvents = function() {
-        self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-            self.CheckRoute();
-        });
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
-            self.CheckRoute();
+            self.CheckRouteMenuProfile();
         });
     };
-    self.InsertContainer = function(){
-        if($("#" + self.settings.containerMenuId).length > 0){
+    self.InsertContainer = {
+        EmptyWidget : function(){
             var temp = $("#" + self.settings.containerMenuId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerMenuId).empty().html(temp);
-            $("#" + self.settings.containerMenuId).append($('script#' + self.settings.menuTmpl).html());
+        },
+        Content : function(){
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerMenuId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
     self.Fill = function(){
@@ -70,9 +72,25 @@ var MenuPersonalCabinetWidget = function(){
     };
     self.Render = function(menu){
         if ($("#" + self.settings.containerMenuId).length > 0) {
-            ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
+            try{
+                ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
+                self.WidgetLoader(true, self.settings.containerMenuId);
+            }
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Content();
+                        self.Render(menu);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerMenuId);
+                }
+            }
         }
-        self.WidgetLoader(true, self.settings.containerMenuId);
     };
     self.SetPosition = function() {
         if (self.settings.style.position == 'absolute') {

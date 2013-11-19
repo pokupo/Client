@@ -1,10 +1,17 @@
 var SearchWidget = function(){
     var self = this;
     self.widgetName = 'SearchWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerId : null, 
-        tmplPath : null,
-        tmplId : null,
+        tmpl: {
+            path : null,
+            id : null
+        },
         inputParameters : {},
         style : null,
         customContainer: null
@@ -12,8 +19,7 @@ var SearchWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.search.widget; 
         self.settings.customContainer = Config.Containers.search.customClass;
-        self.settings.tmplPath = Config.Search.tmpl.path;
-        self.settings.tmplId = Config.Search.tmpl.tmplId;
+        self.settings.tmpl = Config.Search.tmpl;
         self.settings.style = Config.Search.style;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -22,7 +28,7 @@ var SearchWidget = function(){
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/SearchWidget.js/);
+            var temp = JSCore.ParserInputParameters(/SearchWidget/);
             if(temp.search){
                 input = temp.search;
             }
@@ -37,10 +43,15 @@ var SearchWidget = function(){
 
         self.settings.inputParameters = input;
     };
-    self.InsertContainer = function(){
-        var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
-        $("#" + self.settings.containerId).empty().html(temp);
-        $("#" + self.settings.containerId).append($('script#' + self.settings.tmplId).html()).show();
+    self.InsertContainer = {
+        EmptyWidget : function(){
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
+        },
+        Content : function(){
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName()).html()).children().hide();
+        }
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
@@ -52,17 +63,18 @@ var SearchWidget = function(){
             });
         }
     };
+    self.LoadTmpl = function(){
+        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+            EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
+        });
+    };
     self.RegisterEvents = function(){
         if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
-            });
+            self.LoadTmpl();
         }
         else{
             EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
-                });
+                self.LoadTmpl();
             });
         }
         
@@ -81,7 +93,7 @@ var SearchWidget = function(){
         });
         
         EventDispatcher.AddEventListener('searchWidget.fill.listCategory', function (data){
-            self.InsertContainer();
+            self.InsertContainer.Content();
             self.Render(data);
         });
         
@@ -96,24 +108,31 @@ var SearchWidget = function(){
             search = new SearchViewModel();
             Parameters.cache.searchWidget = search;
         }
-        search.selectedCategory = data.name_category;
+
         if(Parameters.cache.childrenCategory[data.id])
             search.AddListCategory(Parameters.cache.childrenCategory[data.id], data);
     };
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){
-            ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-
-            $('.' + data.cssSelectList).sSelect({
-                defaultText: data.selectedCategory
-            }).change(function(){
-                var id = $('.' + data.cssSelectList).getSetSSValue();
-                $('.' + data.cssSelectList + ' option').removeAttr('selected');
-                $('.' + data.cssSelectList + ' option[value=' + id + ']').attr('selected', true);
-            });
-            $('.' + data.cssSelectList).getSetSSValue(data.id);
+            try{
+                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                self.WidgetLoader(true, self.settings.containerId);
+            }
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Content();
+                        self.Render(data);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+            }
         }
-        self.WidgetLoader(true, self.settings.containerId);
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters.position == 'absolute'){
@@ -128,19 +147,23 @@ var SearchWidget = function(){
     };
 }
 
-var SearchCategoryItem = function(data, level){
+var SearchCategoryItem = function(data, level, select){
     var self = this;
     self.id = data.id;
     self.title = Array(level).join(" - ") + data.name_category;
     self.typeCategory = data.type_category;
+    
+    self.ClickItem = function(){
+        select.selectedCatigoriesId(self.id);
+    }
 }
 
 var SearchViewModel = function(){
     var self = this;
     self.text = '';
-    self.selectedCategory = "";
     self.cssSelectList = 'searchSelectList';
     self.categories =  ko.observableArray();
+    self.selectedCatigoriesId = ko.observable();
     self.idCategories = Parameters.filter.idCategories;
     self.typeCategories = [];
     self.cachData = {};
@@ -155,14 +178,14 @@ var SearchViewModel = function(){
         self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
         
         self.typeCategories[parent.id] = parent.type_category;
-        self.categories.push(new SearchCategoryItem(parent, 0));
+        self.categories.push(new SearchCategoryItem(parent, 0, self));
         
         for(var i = 0; i <= data.length - 1; i++){
-            self.categories.push(new SearchCategoryItem(data[i], 1))
+            self.categories.push(new SearchCategoryItem(data[i], 1, self))
             self.typeCategories[data[i].id] = data[i].type_category;
             if(data[i].children){
                 for(var j = 0; j <= data[i].children.length - 1; j++){
-                    self.categories.push(new SearchCategoryItem(data[i].children[j], 2));
+                    self.categories.push(new SearchCategoryItem(data[i].children[j], 2, self));
                     self.typeCategories[data[i].id] = data[i].type_category;
                 }
             }
@@ -171,9 +194,9 @@ var SearchViewModel = function(){
     };
     self.SubmitSearchForm = function(data){
         self.idCategories = [];
+        var selected = self.selectedCatigoriesId();
         var keyWords = $(data.text).val();
         if(keyWords){
-            var selected = parseInt($(data.category).find('option:selected').val());
             if(self.typeCategories[selected] != 'category')
                 self.FindSelectedSection(self.cachData, selected);
             else 
@@ -187,7 +210,7 @@ var SearchViewModel = function(){
             Parameters.filter.idCategories = self.idCategories;
 
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
-            
+
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
             $(data.text).val('');
         }

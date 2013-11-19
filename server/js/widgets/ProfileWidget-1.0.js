@@ -1,13 +1,22 @@
  var ProfileWidget = function() {
     var self = this;
     self.widgetName = 'ProfileWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.settings = {
         containerFormId: null,
-        tmplPath: null,
-        personalInformationTmplId: null,
-        deliveryAddressTmpl: null,
-        deliveryAddressFormTmpl : null,
-        securityTmpl: null,
+        tmpl : {
+            path: null,
+            id : {
+                personal : null,
+                delivery : null,
+                deliveryForm : null,
+                security : null
+            }
+        },
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -16,20 +25,17 @@
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.profile.widget;
         self.settings.customContainer = Config.Containers.profile.customClass;
-        self.settings.tmplPath = Config.Profile.tmpl.path;
-        self.settings.personalInformationTmplId = Config.Profile.tmpl.personalInformationTmpl;
-        self.settings.deliveryAddressTmpl = Config.Profile.tmpl.deliveryAddressTmpl;
-        self.settings.deliveryAddressFormTmpl = Config.Profile.tmpl.deliveryAddressFormTmpl;
-        self.settings.securityTmpl = Config.Profile.tmpl.securityTmpl;
+        self.settings.tmpl = Config.Profile.tmpl;
         self.settings.style = Config.Profile.style;
         self.SetInputParameters();
         self.RegisterEvents();
+        self.CheckRouteProfile();
         self.SetPosition();
     };
     self.SetInputParameters = function() {
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/ProfileWidget.js/);
+            var temp = JSCore.ParserInputParameters(/ProfileWidget/);
             if(temp.profile){
                 input = temp.profile;
             }
@@ -39,8 +45,6 @@
         }
         
         if(!$.isEmptyObject(input)){
-            if (input.tmpl)
-                self.settings.tmplPath = 'profile/' + input.tmpl + '.html';
             if (input.geoShop)
                 self.settings.geoShop = input.geoShop;
         }
@@ -52,15 +56,17 @@
             self.BaseLoad.Login(false, false, false, function(data){
                 if(!data.err){
                     Loader.Indicator('MenuPersonalCabinetWidget', false);
-                    if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
-                        self.Info.Personal();
-                    if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && !Routing.params.form)
-                        self.Info.Delivery();
-                    if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && Routing.params.form == 'add')
-                        self.Info.DeliveryForm();
-                    if (Routing.params.info == Config.Profile.menu.security.prefix)
-                        self.Info.Security();
-                    self.Info.Menu();
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        if (!Routing.params.info || Routing.params.info == Config.Profile.menu.personalInformation.prefix)
+                            self.Info.Personal();
+                        if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && !Routing.params.form)
+                            self.Info.Delivery();
+                        if (Routing.params.info == Config.Profile.menu.deliveryAddress.prefix && Routing.params.form == 'add')
+                            self.Info.DeliveryForm();
+                        if (Routing.params.info == Config.Profile.menu.security.prefix)
+                            self.Info.Security();
+                        self.Info.Menu();
+                    });
                 }
                 else{
                     Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
@@ -73,19 +79,6 @@
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function() {
-        if (JSLoader.loaded) {
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                self.CheckRouteProfile();
-            });
-        }
-        else {
-            EventDispatcher.AddEventListener('onload.scripts', function(data) {
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function() {
-                    self.CheckRouteProfile();
-                });
-            });
-        }
-
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteProfile();
         });
@@ -246,7 +239,7 @@
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
             str = str + '&address=' + encodeURIComponent($.trim(data.customAddress())) + 
-                    '&post_code=' + encodeURIComponent($.trim(data.postCode())) + 
+                    '&post_code=' + encodeURIComponent($.trim(data.postIndex())) + 
                     '&addressee=' + encodeURIComponent($.trim(data.addressee())) + 
                     '&contact_phone=' + encodeURIComponent($.trim(data.contactPhone())) + 
                     '&is_default=' + encodeURIComponent(data.isDefault() ? 'yes' : 'no');
@@ -279,7 +272,7 @@
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
             str = str + '&address=' + encodeURIComponent($.trim(data.customAddress())) + 
-                    '&post_code=' + encodeURIComponent($.trim(data.postCode())) + 
+                    '&post_code=' + encodeURIComponent($.trim(data.postIndex())) + 
                     '&addressee=' + encodeURIComponent($.trim(data.addressee())) + 
                     '&contact_phone=' + encodeURIComponent($.trim(data.contactPhone())) + 
                     '&is_default=' + encodeURIComponent(data.isDefault() ? 'yes' : 'no');
@@ -326,7 +319,6 @@
                         '&is_default=yes';
                 self.BaseLoad.SetDefaultDelivaryAddress(str, function(result){
                     if(result.result == 'ok'){
-//                        self.ShowMessage(Config.Profile.message.setDefaultDelivery, false, false);
                     }
                     else{
                         self.QueryError(result, function(){EventDispatcher.DispatchEvent('ProfileWidget.delivery.sedDefault', data)})
@@ -409,7 +401,7 @@
     }
     self.Info = {
         Menu : function(){
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
                 if (!Routing.params.info)
                      Routing.params.info = Config.Profile.menu.personalInformation.prefix;
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : Config.Profile.menu, active : Routing.params.info});
@@ -417,12 +409,10 @@
         },
         Personal : function(){
             self.InsertContainer.Personal();
-            var personal = new ProfilePersonalInformationViewModel();
             
             self.BaseLoad.Profile(function(registration){
                 self.BaseLoad.ProfileInfo(function(data) {
-                    self.Fill.Personal(registration, personal);
-                    personal.registrationData.dateRegistration(data.date_reg);
+                    self.Fill.Personal(registration, data);
                 });
             });
         },
@@ -448,44 +438,36 @@
         },
         Personal : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.personalInformationTmplId).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('personal')).html()).children().hide();
         },
         Delivery : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.deliveryAddressTmpl).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('delivery')).html()).children().hide();
         },
         DeliveryForm : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.deliveryAddressFormTmpl).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('deliveryForm')).html()).children().hide();
         },
         Security : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.settings.securityTmpl).html());
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('security')).html()).children().hide();
         }
     };
     self.Fill = {
-        Personal : function(data, personal){
-            personal.AddContent(data);
+        Personal : function(data, reg){
+            var personal = new ProfilePersonalInformationViewModel();
             
             var shopId = Parameters.shopId;
             if (self.settings.geoShop == 0)
                 shopId = 0;
-            self.BaseLoad.Country(shopId, function(data) {
-                personal.postalAddress.AddCountryList(data);
-                if(personal.postalAddress.idCountry()){
-                    $.grep(personal.postalAddress.countryList(), function(data) {
-                        if (data.id == personal.postalAddress.idCountry()){
-                            personal.postalAddress.country(data);
-                        }
-                    })
-                }
+            self.BaseLoad.Country(shopId, function(c) {
+                personal.AddContent(data, reg, c);
                 self.Render.Personal(personal);
             });
         },
         Delivery : function(data){
             var delivery = new ProfileDeliveryAddressViewModel();
             delivery.AddContent(data);
-
             self.Render.DeliveryList(delivery);
         },
         DeliveryForm : function(form){
@@ -495,13 +477,6 @@
             self.BaseLoad.Country(shopId, function(data) {
                 form.AddCountryList(data);
                 self.InsertContainer.DeliveryForm();
-                if(form.idCountry()){
-                    $.grep(form.countryList(), function(data) {
-                        if (data.id == form.idCountry()){
-                            form.country(data);
-                        }
-                    })
-                }
                 self.Render.DeliveryForm(form);
             });
         },
@@ -511,288 +486,350 @@
         }
     };
     self.Render = {
-        Personal : function(form){
-            
+        Personal : function(form){ 
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-            }
-            $("#" + form.registrationData.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                changeMonth: true,
-                changeYear: true,
-                dateFormat: 'dd.mm.yy',
-                defaultDate: '-24Y',
-                yearRange: "c-77:c+6",
-                minDate : '-101Y',
-                maxDate : '-18Y',
-                onClose: function(dateText, inst) {
-                    form.registrationData.birthDayField(dateText);
-                }
-            });
-            
-            $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-
-            $('#' + form.postalAddress.cssRegionList).autocomplete({
-                source: function(request, response) {
-                    self.BaseLoad.Region(form.postalAddress.country().id + '/' + encodeURIComponent(request.term), function(data) {
-                        if (!data.err) {
-                            response($.map(data, function(item) {
-                                return {
-                                    value: $.trim(item.formalname + ' ' + item.shortname),
-                                    region: item
-                                };
-                            }));
-                        }
-                        else {
-                            $('#' + form.postalAddress.cssRegionList).autocomplete("close");
-                            return false;
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    $("#" + form.registrationData.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormat: 'dd.mm.yy',
+                        defaultDate: '-24Y',
+                        yearRange: "c-77:c+6",
+                        minDate : '-101Y',
+                        maxDate : '-18Y',
+                        onClose: function(dateText, inst) {
+                            form.registrationData.birthDayField(dateText);
                         }
                     });
-                },
-                select: function(event, ui) {
-                    form.postalAddress.region(ui.item.region);
-                    form.postalAddress.customRegion(ui.item.value);
-                    if (ui.item.region && ui.item.region.postalcode != 0)
-                        form.postalAddress.postIndex(ui.item.region.postalcode);
-                    else {
-                        form.postalAddress.postIndex(null);
-                    }
-                }
-            });
 
-            $('#' + form.postalAddress.cssCityList).autocomplete({
-                source: function(request, response) {
-                    if (form.postalAddress.region()) {
-                        self.BaseLoad.City(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        city: item
-                                    };
-                                }));
+                    $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+                    
+                    $('#' + form.postalAddress.cssCountryList).change(function() {
+                        var v =  $('#' + form.postalAddress.cssCountryList + " option:selected").val();
+                        $.grep(form.postalAddress.countryList(), function(data) {
+                            if (data.id == v){
+                                form.postalAddress.country(data);
+                                form.postalAddress.customRegion(null);
+                                form.postalAddress.region(null);
+                                form.postalAddress.customCity(null);
+                                form.postalAddress.city(null);
+                                form.postalAddress.customAddress(null)
+                                form.postalAddress.address(null);
+                                form.postalAddress.postIndex(null);
                             }
+                        })
+                    });
+            
+                    $('#' + form.postalAddress.cssRegionList).autocomplete({
+                        source: function(request, response) {
+                            self.BaseLoad.Region(form.postalAddress.country().id + '/' + encodeURIComponent(request.term), function(data) {
+                                if (!data.err) {
+                                    response($.map(data, function(item) {
+                                        return {
+                                            value: $.trim(item.formalname + ' ' + item.shortname),
+                                            region: item
+                                        };
+                                    }));
+                                }
+                                else {
+                                    $('#' + form.postalAddress.cssRegionList).autocomplete("close");
+                                    return false;
+                                }
+                            });
+                        },
+                        select: function(event, ui) {
+                            form.postalAddress.region(ui.item.region);
+                            form.postalAddress.customRegion(ui.item.value);
+                            if (ui.item.region && ui.item.region.postalcode != 0)
+                                form.postalAddress.postIndex(ui.item.region.postalcode);
                             else {
-                                $('#' + form.postalAddress.cssCityList).autocomplete("close");
-                                return false;
+                                form.postalAddress.postIndex(null);
                             }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    form.postalAddress.city(ui.item.city);
-                    form.postalAddress.customCity(ui.item.value);
-                    if (ui.item.city && ui.item.city.postalcode != 0)
-                        form.postalAddress.postIndex(ui.item.city.postalcode);
-                    else
-                        form.postalAddress.postIndex(null);
-                }
-            });
+                        }
+                    });
 
-            $('#' + form.postalAddress.cssAddress).autocomplete({
-                source: function(request, response) {
-                    if (form.postalAddress.region()) {
-                        self.BaseLoad.Street(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(form.postalAddress.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        street: item
-                                    };
-                                }));
+                    $('#' + form.postalAddress.cssCityList).autocomplete({
+                        source: function(request, response) {
+                            if (form.postalAddress.region()) {
+                                self.BaseLoad.City(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                city: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + form.postalAddress.cssCityList).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + form.postalAddress.cssAddress).autocomplete("close");
-                                return false;
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    form.postalAddress.address(ui.item.street);
-                    form.postalAddress.customAddress(ui.item.value);
-                    if (ui.item.street && ui.item.street.postalcode != 0)
-                        form.postalAddress.postIndex(ui.item.street.postalcode);
-                    else
-                        form.postalAddress.postIndex(null);
-                }
-            });
+                        },
+                        select: function(event, ui) {
+                            form.postalAddress.city(ui.item.city);
+                            form.postalAddress.customCity(ui.item.value);
+                            if (ui.item.city && ui.item.city.postalcode != 0)
+                                form.postalAddress.postIndex(ui.item.city.postalcode);
+                            else
+                                form.postalAddress.postIndex(null);
+                        }
+                    });
 
-            $('#' + form.postalAddress.cssCountryList).change(function() {
-                var v = $(this).getSetSSValue();
-                $.grep(form.postalAddress.countryList(), function(data) {
-                    if (data.id == v){
-                        form.postalAddress.country(data);
-                        form.postalAddress.customRegion(null);
-                        form.postalAddress.region(null);
+                    $('#' + form.postalAddress.cssAddress).autocomplete({
+                        source: function(request, response) {
+                            if (form.postalAddress.region()) {
+                                self.BaseLoad.Street(form.postalAddress.country().id + '/' + encodeURIComponent(form.postalAddress.region().regioncode) + '/' + encodeURIComponent(form.postalAddress.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                street: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + form.postalAddress.cssAddress).autocomplete("close");
+                                        return false;
+                                    }
+                                });
+                            }
+                        },
+                        select: function(event, ui) {
+                            form.postalAddress.address(ui.item.street);
+                            form.postalAddress.customAddress(ui.item.value);
+                            if (ui.item.street && ui.item.street.postalcode != 0)
+                                form.postalAddress.postIndex(ui.item.street.postalcode);
+                            else
+                                form.postalAddress.postIndex(null);
+                        }
+                    });
+
+                    $('#' + form.postalAddress.cssRegionList).bind('textchange', function(event, previousText) {
+                        form.postalAddress.customRegion($(this).val());
                         form.postalAddress.customCity(null);
                         form.postalAddress.city(null);
                         form.postalAddress.customAddress(null)
                         form.postalAddress.address(null);
                         form.postalAddress.postIndex(null);
+                    });
+
+                    $('#' + form.postalAddress.cssCityList).bind('textchange', function(event, previousText) {
+                        form.postalAddress.customCity($(this).val());
+                        form.postalAddress.customAddress(null)
+                        form.postalAddress.address(null);
+                        form.postalAddress.postIndex(null);
+                    });
+
+                    self.WidgetLoader(true, self.settings.containerFormId);
+
+                    if(Routing.params.edit == 'postal_address'){
+                        self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
                     }
-                })
-            });
-
-            $('#' + form.postalAddress.cssRegionList).bind('textchange', function(event, previousText) {
-                form.postalAddress.customRegion($(this).val());
-                form.postalAddress.customCity(null);
-                form.postalAddress.city(null);
-                form.postalAddress.customAddress(null)
-                form.postalAddress.address(null);
-                form.postalAddress.postIndex(null);
-            });
-
-            $('#' + form.postalAddress.cssCityList).bind('textchange', function(event, previousText) {
-                form.postalAddress.customCity($(this).val());
-                form.postalAddress.customAddress(null)
-                form.postalAddress.address(null);
-                form.postalAddress.postIndex(null);
-            });
-   
-            self.WidgetLoader(true, self.settings.containerFormId);
-            
-            if(Routing.params.edit == 'postal_address'){
-                self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Personal();
+                            self.Render.Personal(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
         },
         DeliveryList : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Delivery();
+                            self.Render.DeliveryList(delivery);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            
-            self.WidgetLoader(true, self.settings.containerFormId);
         },
         DeliveryForm : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-            }
+                try{
+                    ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                    
+                    $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
             
-            $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
-            
-            $('#' + delivery.cssRegionList).autocomplete({
-                source: function(request, response) {
-                    self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
-                        if (!data.err) {
-                            response($.map(data, function(item) {
-                                return {
-                                    value: $.trim(item.formalname + ' ' + item.shortname),
-                                    region: item
-                                };
-                            }));
-                        }
-                        else {
-                            $('#' + delivery.cssRegionList).autocomplete("close");
-                            return false;
+                    $('#' + delivery.cssRegionList).autocomplete({
+                        source: function(request, response) {
+                            self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
+                                if (!data.err) {
+                                    response($.map(data, function(item) {
+                                        return {
+                                            value: $.trim(item.formalname + ' ' + item.shortname),
+                                            region: item
+                                        };
+                                    }));
+                                }
+                                else {
+                                    $('#' + delivery.cssRegionList).autocomplete("close");
+                                    return false;
+                                }
+                            });
+                        },
+                        select: function(event, ui) {
+                            delivery.region(ui.item.region);
+                            delivery.customRegion(ui.item.value);
+                            if (ui.item.region && ui.item.region.postalcode != 0)
+                                delivery.postIndex(ui.item.region.postalcode);
+                            else {
+                                delivery.postIndex(null);
+                            }
                         }
                     });
-                },
-                select: function(event, ui) {
-                    delivery.region(ui.item.region);
-                    delivery.customRegion(ui.item.value);
-                    if (ui.item.region && ui.item.region.postalcode != 0)
-                        delivery.postCode(ui.item.region.postalcode);
-                    else {
-                        delivery.postCode(null);
-                    }
-                }
-            });
 
-            $('#' + delivery.cssCityList).autocomplete({
-                source: function(request, response) {
-                    if (delivery.region()) {
-                        self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        city: item
-                                    };
-                                }));
+                    $('#' + delivery.cssCityList).autocomplete({
+                        source: function(request, response) {
+                            if (delivery.region()) {
+                                self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                city: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + delivery.cssCityList).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + delivery.cssCityList).autocomplete("close");
-                                return false;
-                            }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    delivery.city(ui.item.city);
-                    delivery.customCity(ui.item.value);
-                    if (ui.item.city && ui.item.city.postalcode != 0)
-                        delivery.postCode(ui.item.city.postalcode);
-                    else
-                        delivery.postCode(null);
-                }
-            });
+                        },
+                        select: function(event, ui) {
+                            delivery.city(ui.item.city);
+                            delivery.customCity(ui.item.value);
+                            if (ui.item.city && ui.item.city.postalcode != 0)
+                                delivery.postIndex(ui.item.city.postalcode);
+                            else
+                                delivery.postIndex(null);
+                        }
+                    });
 
-            $('#' + delivery.cssAddress).autocomplete({
-                source: function(request, response) {
-                    if (delivery.region()) {
-                        self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                            if (!data.err) {
-                                response($.map(data, function(item) {
-                                    return {
-                                        value: $.trim(item.shortname + '. ' + item.formalname),
-                                        street: item
-                                    };
-                                }));
+                    $('#' + delivery.cssAddress).autocomplete({
+                        source: function(request, response) {
+                            if (delivery.region()) {
+                                self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                    if (!data.err) {
+                                        response($.map(data, function(item) {
+                                            return {
+                                                value: $.trim(item.shortname + '. ' + item.formalname),
+                                                street: item
+                                            };
+                                        }));
+                                    }
+                                    else {
+                                        $('#' + delivery.cssAddress).autocomplete("close");
+                                        return false;
+                                    }
+                                });
                             }
-                            else {
-                                $('#' + delivery.cssAddress).autocomplete("close");
-                                return false;
+                        },
+                        select: function(event, ui) {
+                            delivery.address(ui.item.street);
+                            delivery.customAddress(ui.item.value);
+                            if (ui.item.street && ui.item.street.postalcode != 0)
+                                delivery.postIndex(ui.item.street.postalcode);
+                            else
+                                delivery.postIndex(null);
+                        }
+                    });
+                    $('#' + delivery.cssCountryList).change(function() {
+                        var v = $('#' + delivery.cssCountryList + ' option:selected').val();
+                        $.grep(delivery.countryList(), function(data) {
+                            if (data.id == v){
+                                delivery.country(data);
+                                delivery.customRegion(null);
+                                delivery.region(null);
+                                delivery.customCity(null);
+                                delivery.city(null);
+                                delivery.customAddress(null)
+                                delivery.address(null);
+                                delivery.postIndex(null);
                             }
-                        });
-                    }
-                },
-                select: function(event, ui) {
-                    delivery.address(ui.item.street);
-                    delivery.customAddress(ui.item.value);
-                    if (ui.item.street && ui.item.street.postalcode != 0)
-                        delivery.postCode(ui.item.street.postalcode);
-                    else
-                        delivery.postCode(null);
-                }
-            });
-            $('#' + delivery.cssCountryList).change(function() {
-                var v = $('#' + delivery.cssCountryList + ' option:selected').val();
-                $.grep(delivery.countryList(), function(data) {
-                    if (data.id == v){
-                        delivery.country(data);
-                        delivery.customRegion(null);
-                        delivery.region(null);
+                        })
+                    });
+
+                    $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
+                        delivery.customRegion($(this).val());
                         delivery.customCity(null);
                         delivery.city(null);
                         delivery.customAddress(null)
                         delivery.address(null);
-                        delivery.postCode(null);
+                        delivery.postIndex(null);
+                    });
+
+                    $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
+                        delivery.customCity($(this).val());
+                        delivery.customAddress(null)
+                        delivery.address(null);
+                        delivery.postIndex(null);
+                    });
+
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.DeliveryForm();
+                            self.Render.DeliveryForm(delivery);
+                        });
                     }
-                })
-            });
-
-            $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
-                delivery.customRegion($(this).val());
-                delivery.customCity(null);
-                delivery.city(null);
-                delivery.customAddress(null)
-                delivery.address(null);
-                delivery.postCode(null);
-            });
-
-            $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
-                delivery.customCity($(this).val());
-                delivery.customAddress(null)
-                delivery.address(null);
-                delivery.postCode(null);
-            });
-            
-            self.WidgetLoader(true, self.settings.containerFormId);
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
         },
         Security : function(sequrity){
             if ($("#" + self.settings.containerFormId).length > 0) {
-                ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
+                try{
+                    ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('security') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Security();
+                            self.Render.Security(sequrity);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerFormId);
         }
     };
     self.SetPosition = function() {
@@ -816,12 +853,14 @@ var ProfilePersonalInformationViewModel = function(){
     self.postalAddress = null;
     self.contacts = null;
     
-    self.AddContent = function(data){
+    self.AddContent = function(data, reg, c){
         var registrationData = new ProfileDataRegistrationViewModel();
         registrationData.AddContent(data);
+        registrationData.dateRegistration(reg.date_reg);
         self.registrationData = registrationData;
         
         var postalAddress = new ProfilePostalAddressViewModel();
+        postalAddress.AddCountryList(c);
         postalAddress.AddContent(data);
         self.postalAddress = postalAddress;
         
@@ -1014,7 +1053,7 @@ var ProfilePostalAddressViewModel = function(){
     var self = this;
     self.data = null;
     self.cssPostAddressForm = 'profile_postal_address_form';
-    
+
     self.countryText = ko.observable();
     self.idCountry = ko.observable();
     self.country = ko.observable();
@@ -1052,9 +1091,14 @@ var ProfilePostalAddressViewModel = function(){
     
     self.AddContent = function(data){ 
         self.data = data;
-
+        
         self.idCountry(data.id_country);
         self.countryText(data.country);
+        $.grep(self.countryList(), function(c) {
+            if (data.id_country == c.id){
+                self.country(c);
+            }
+        })
         
         self.regionText(data.region);
         self.region({regioncode : data.code_region});
@@ -1072,7 +1116,7 @@ var ProfilePostalAddressViewModel = function(){
         self.postIndex(data.post_code);
         
         self.checkInfo(data.check_info);
-        
+       
         if(Routing.params.edit == 'postal_address')
             self.isEditBlock(1);
     };
@@ -1320,7 +1364,7 @@ var DeliveryAddressViewModel = function(data, list){
     self.region = data.region;
     self.codeCity = data.code_city;
     self.city = data.city;
-    self.postCode = data.post_code;
+    self.postIndex = data.post_code;
     self.address = data.address;
     self.addressee = data.addressee;
     
@@ -1383,7 +1427,7 @@ var DeliveryAddressFormViewModel = function(model){
     self.cssCityList = 'delivery_city';
     self.errorCity = ko.observable(null);
     
-    self.postCode = ko.observable();
+    self.postIndex = ko.observable();
     self.cssPostCode = 'delivery_post_index';
     self.errorPostCode = ko.observable(null);
     
@@ -1407,18 +1451,20 @@ var DeliveryAddressFormViewModel = function(model){
         if (data.length > 0) {
             for (var i = 0; i <= data.length - 1; i++) {
                 self.countryList.push(new CountryListViewModel(data[i]));
+                if(data[i].id == self.idCountry())
+                    self.country(data[i]);
             }
         }
     };
     
     self.AddContent = function(data){
         self.id(data.id);
-        self.idCountry(data.idCountry);
+        self.idCountry = ko.observable(data.idCountry);
         self.region({regioncode : data.codeRegion});
         self.customRegion(data.region);
         self.city({aoguid :data.codeCity});
         self.customCity(data.city);
-        self.postCode(data.postCode);
+        self.postIndex(data.postIndex);
         self.customAddress(data.address);
         self.addressee(data.addressee);
         self.isDefault(data.isDefault());
@@ -1486,7 +1532,7 @@ var DeliveryAddressFormViewModel = function(model){
         return true;
     };
     self.PostIndexValidation = function() {
-        if (!self.postCode()) {
+        if (!self.postIndex()) {
             self.errorPostCode(Config.Profile.error.postIndex.empty);
             return false;
         }

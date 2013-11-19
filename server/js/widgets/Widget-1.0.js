@@ -102,7 +102,7 @@ var Loader = {
             }
             if(container)
                 this.containers.push({container: container, widgetName: widget});
-            
+
             this.ShowLoading();
         }
     },
@@ -262,9 +262,15 @@ var Loader = {
     }
 };
 
-function Widget(){
+var Widget = function (){
     var self = this;
+    self.version = 1.0;
+    self.minCoreVersion = 1.0;
+    self.maxCoreVersion = 2.0;
     this.isReady = false;
+    this.widgetName = false;
+    this.minTmplVersion = false;
+    this.maxTmplVersion = false;
     this.settings = {
         hostApi : null,
         httpsHostApi : null,
@@ -281,12 +287,29 @@ function Widget(){
     };
     this.Init = function(widget, noindicate){
         if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
-            this.SelfInit();
-            if(!noindicate)
-                Loader.Indicator(widget.widgetName, false);
-            this.BaseLoad.Roots(function(){
-                widget.InitWidget();
-            });
+            
+            if(JSCore.version >= self.minCoreVersion && JSCore.version <= self.maxCoreVersion){
+                if(self.version >= widget.minWidgetVersion && self.version <= widget.maxWidgetVersion){
+                    this.SelfInit();
+                    if(!noindicate)
+                        Loader.Indicator(widget.widgetName, false);
+                    this.BaseLoad.Roots(function(){
+                        widget.InitWidget();
+                        self.widgetName = widget.widgetName;
+                        self.minTmplVersion = widget.minTmplVersion;
+                        self.maxTmplVersion = widget.maxTmplVersion;
+                    });
+                }
+                else{
+                    Loader.Indicator(widget.widgetName, true);
+                    delete Loader.widgets[widget.widgetName];
+                    Logger.Console.Exeption(widget.widgetName, 'Widget version = [' + self.version + ']. For correct work of the widget required version: min - [' + widget.minWidgetVersion + '] max - [' + widget.maxWidgetVersion + ']');
+                }
+            }
+            else{
+                Loader.Indicator(widget.widgetName, true);
+                Logger.Console.Exeption('Widget', 'JSCore version = [' + JSCore.version + ']. For correct work of the widgets required version: min - [' + self.minCoreVersion + '] max - [' + self.maxCoreVersion + ']');
+            }
         }else{
             setTimeout(function(){self.Init(widget, noindicate)}, 100);
         }
@@ -316,15 +339,26 @@ function Widget(){
             Parameters.loading = Config.Base.loading;
             
             this.RegistrCustomBindings();
-            this.UpdateSettingsContainer();
+            this.UpdateSettings();
             Routing.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId'];
         }
     };
-    this.UpdateSettingsContainer = function(){
+    this.UpdateSettings = function(){
         if(typeof WParameters !== 'undefined'){
             for(var key in WParameters){
+                if(WParameters[key].hasOwnProperty('tmpl')){
+                    Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl.custom = WParameters[key].tmpl;
+                }
+                else{
+                    for(var key2 in WParameters[key]){
+                        if(WParameters[key][key2].hasOwnProperty('tmpl')){
+                            Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl[key2].custom = WParameters[key][key2].tmpl;
+                        }
+                    }
+                }
+                
                 if(WParameters[key].hasOwnProperty('container')){
                     if(WParameters[key].container.widget)
                         Config.Containers[key].widget = WParameters[key].container.widget;
@@ -352,7 +386,7 @@ function Widget(){
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
-            data.options.params['uniq'] = EventDispatcher.HashCode(JSON.stringify(data.options));
+            data.options.params['uniq'] = EventDispatcher.GetUUID();
             embed.SetParameters(data);
             embed.Init(embed, true);
         });
@@ -360,8 +394,8 @@ function Widget(){
         EventDispatcher.AddEventListener('widget.onload.menuPersonalCabinet', function(opt){
             MenuPersonalCabinetWidget.prototype = new Widget();
             var menu = new MenuPersonalCabinetWidget();
-            menu.Init(menu);
             menu.AddMenu(opt);
+            menu.Init(menu);
         });
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
@@ -410,6 +444,7 @@ function Widget(){
             init: function(element, valueAccessor) {
                 var options = valueAccessor() || {};
                 self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
+                    options.widget = options.widget.split('-')[0];
                     EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
                 });
             }
@@ -469,6 +504,37 @@ function Widget(){
         else{
             setTimeout(function() {self.ScrollTop(elementId);}, 100); 
         }
+    };
+    this.GetTmplName = function(name, block){
+        var tmplName = '';
+        if(name){
+            if(!block){
+                tmplName = this.settings.tmpl.id[name];
+                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id && this.settings.tmpl.custom.id[name])
+                    tmplName = this.settings.tmpl.custom.id[name];
+            }
+            else{
+                tmplName = this.settings.tmpl[block].id[name];
+                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id && this.settings.tmpl[block].custom.id[name])
+                    tmplName = this.settings.tmpl[block].custom.id[name];
+            }
+        }
+        else{
+            if(!block){
+                tmplName = this.settings.tmpl.id;
+                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id)
+                    tmplName = this.settings.tmpl.custom.id;
+            }
+            else{
+                tmplName = this.settings.tmpl[block].id;
+                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id)
+                    tmplName = this.settings.tmpl[block].custom.id;
+            }
+        }
+        return tmplName;
+    };
+    this.Exeption = function(text){
+        Logger.Console.Exeption(this.widgetName, text);
     };
     this.QueryError = function(data, callback, callbackPost){
         if (data.err) {
@@ -532,7 +598,7 @@ function Widget(){
             buttons: button
         });
         $('.ui-dialog-titlebar-close').hide();
-    },
+    };
     this.Confirm = function(message, callbackOk, callbackFail){
         if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
             $('body').append(Config.Base.containerConfirm);
@@ -555,7 +621,20 @@ function Widget(){
             ]
         });
         $('.ui-dialog-titlebar-close').hide();
-    },
+    };
+    this.ErrorVertionTmpl = function(tmpl, hash, temp){
+        var version = /<!-- version ([\d.]*) -->/;
+        var result = temp.find('script#' + tmpl).html().match(version);
+        if(result){
+            if(parseFloat(result[1]) >= self.minTmplVersion && parseFloat(result[1]) <= self.maxTmplVersion)
+                return false;
+        }
+        Parameters.cache.tmpl[hash] = 'error';
+       
+        Loader.Indicator(self.widgetName, true);
+        delete Loader.widgets[self.widgetName];
+        return true;
+    };
     this.BaseLoad  = {
         Roots : function(callback){
             if(Parameters.cache.roots.length == 0){
@@ -648,15 +727,163 @@ function Widget(){
             }
         },
         Tmpl : function(tmpl, callback){
-            if(!Parameters.cache.tmpl[EventDispatcher.HashCode(tmpl)]){
-                self.CreateContainer();
-                XDMTransport.LoadTmpl(tmpl,function(data){
-                    $("#" + self.settings.containerIdForTmpl).append(data);
-                    if(callback)callback();
-                });
+            function Default (){
+                var hash = EventDispatcher.HashCode(tmpl.path);
+                if(!Parameters.cache.tmpl[hash]){
+                    self.CreateContainer();
+                    XDMTransport.LoadTmpl(tmpl.path,function(data){
+                        if(data){
+                            var id = 'temp_' + hash;
+                            var temp = $('<div id="' + id + '"></div>');
+                            temp.append(data);
+                            
+                            if($.type(tmpl.id) == 'object'){
+                                for(var key in tmpl.id){
+                                    if(self.ErrorVertionTmpl(tmpl.id[key], hash, temp)){
+                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        temp.remove();
+                                        return false;
+                                        break;
+                                    }
+                                }
+                            }
+                            else{
+                               if(self.ErrorVertionTmpl(tmpl.id, hash, temp)){
+                                    Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                    temp.remove();
+                                    return false;
+                                }
+                            }
+                            Parameters.cache.tmpl[hash] = 'ok';
+                            temp.remove();
+                            $("#" + self.settings.containerIdForTmpl).append(data);
+                            if(callback)callback();
+                        }
+                    });
+                }
+                else{
+                    if(Parameters.cache.tmpl[hash] != 'error')
+                        if(callback)callback();
+                }
+            };
+            function Custom (){
+                var hash = EventDispatcher.HashCode(tmpl.custom.path);
+                if(!Parameters.cache.tmpl[hash]){
+                    self.CreateContainer();
+                    XDMTransport.LoadTmpl(tmpl.custom.path,function(data){
+                        if(data){
+                            var id = 'temp_' + hash;
+                            var temp = $('<div id="' + id + '"></div>');
+                            temp.append(data);
+                            
+                            if(tmpl.custom.id){
+                                if($.type(tmpl.id) == 'object'){
+                                    if($.type(tmpl.custom.id) == 'object'){
+                                        for(var key in tmpl.id){
+                                            if(!tmpl.custom.id[key]){
+                                                tmpl.custom.id[key] = tmpl.id[key];
+                                            }
+                                            if((tmpl.custom.id[key] && temp.find('script#' + tmpl.custom.id[key]).length != 1)){
+                                                Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for [' + key + '] - [' + tmpl.custom.id[key] + ']');
+                                                temp.remove();
+                                                delete tmpl.custom;
+                                                Default ();
+                                                return false;
+                                                break;
+                                            }
+                                            if(self.ErrorVertionTmpl(tmpl.custom.id[key], hash, temp)){
+                                                Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.custom.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                                return false;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else{
+                                        Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
+                                }   
+                                else{
+                                    if($(data).find('script#' + tmpl.custom.id).length != 1){
+                                        Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id + ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
+                                    if(self.ErrorVertionTmpl(tmpl.custom.id, hash, temp)){
+                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.custom.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
+                                }
+                            }
+                            else{
+                                if($.type(tmpl.id) == 'object'){
+                                    for(var key in tmpl.id){
+                                        if(temp.find('script#' + tmpl.id[key]).length != 1){
+                                            Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.id[key] + ']');
+                                            temp.remove();
+                                            delete tmpl.custom;
+                                            Default ();
+                                            return false;
+                                            break;
+                                        }
+                                        if(self.ErrorVertionTmpl(tmpl.id[key], hash, temp)){
+                                            Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                            temp.remove();
+                                            delete tmpl.custom;
+                                            Default ();
+                                            return false;
+                                            break;
+                                        }
+                                    }
+                                }   
+                                else{
+                                    if(temp.find('script#' + tmpl.id).length != 1){
+                                        Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
+                                        temp.remove();
+                                        Default ();
+                                        return false;
+                                    }
+                                    if(self.ErrorVertionTmpl(tmpl.id, hash, temp)){
+                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        temp.remove();
+                                        delete tmpl.custom;
+                                        Default ();
+                                        return false;
+                                    }
+                                }
+                            }
+                            Parameters.cache.tmpl[hash] = 'ok';
+                            temp.remove();
+                            $("#" + self.settings.containerIdForTmpl).append(data);
+                            if(callback)callback();
+                        }
+                        else{
+                            Logger.Console.Exeption(self.widgetName,'Error load file template - ' + tmpl.custom.path);
+                            delete tmpl.custom;
+                            Default ();
+                        }
+                    });
+                }
+                else{
+                    if(Parameters.cache.tmpl[hash] != 'error')
+                        if(callback)callback();
+                }
+            };
+            
+            
+            if(tmpl.custom && tmpl.custom.path){
+                Custom();
             }
             else{
-                if(callback)callback();
+                Default();
             }
         },
         Path : function(categoryId, callback){
@@ -1011,7 +1238,6 @@ function Widget(){
                 }, true);
             }
             else{
-                console.log(Parameters.cache.payment);
                 callback(Parameters.cache.payment);
             }
         },

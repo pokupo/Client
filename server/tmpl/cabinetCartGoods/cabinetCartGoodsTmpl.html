@@ -7,21 +7,22 @@
     }
 </style>
 <script type="text/html" id="cabinetCartGoodsTmpl">
-    <!-- ko foreach: content -->
+    <!-- version 1.0 -->
+    <!-- ko foreach: sellerBlock -->
         <div class="horizontalSection">
             <div class="pageWidth">
                 <br/>
-                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget', params : {data : sellerInfo, tmpl : {path : 'infoSellerTmpl', id: 'infoSellerTmpl'}}}"></div>
+                <div class="productSellerBox" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo}}"></div>
             </div>
         </div>
         
-        <!--  ko template: { name: 'HeaderBlockTmpl' } --><!-- /ko -->
+        <!--  ko template: { name: 'cabinetCartGoodsHeaderBlockTmpl' } --><!-- /ko -->
                 
         <!-- ko foreach: goods -->
-           <!-- ko template: { name: 'GoodsBlockTmpl' } --><!-- /ko -->
+           <!-- ko template: { name: 'cabinetCartGoodsGoodsBlockTmpl' } --><!-- /ko -->
         <!-- /ko -->
 
-        <!--  ko template: { name: 'FooterBlockTmpl' } --><!-- /ko -->
+        <!--  ko template: { name: 'cabinetCartGoodsFooterBlockTmpl' } --><!-- /ko -->
     <!-- /ko -->
 </script>
 
@@ -32,7 +33,7 @@
                 <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td class="itemsListTableCell col_1">
-                            <input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/>
+                            <input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isSelectedAll "/>
                         </td>
                         <td class="itemsListTableCell col_2">Товар</td>
                         <td class="itemsListTableCell col_3">&nbsp;</td>
@@ -106,11 +107,11 @@
                     <div class="result_left">
                         <span>Действия для выбраного:</span>
                         <div class="buttons">
-                        <!-- ko if: DisabledButton -->
+                        <!-- ko if: isDisabledButton -->
                             <input class="addButtonSmall" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
                             <input class="addButtonSmall" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
                         <!-- /ko -->
-                        <!-- ko ifnot: DisabledButton -->
+                        <!-- ko ifnot: isDisabledButton -->
                             <input class="addButtonSmall" disabled="disabled" type="submit" value="Удалить" data-bind="click: ClickButchRemove"/>
                             <input class="addButtonSmall" disabled="disabled" type="submit" value="Отложить в избранное" data-bind="click: ClickButchFavorites"/>
                         <!-- /ko -->
@@ -163,6 +164,7 @@
 </script>
 
 <script type="text/html" id="emptyCabinetCartGoodsTmpl">
+    <!-- version 1.0 -->
     <div class="horizontalSection">
         <div class="pageWidth">
             <br/>

@@ -1,4 +1,5 @@
 <script type="text/html" id="orderFormStep1Tmpl">
+    <!-- version 1.0 -->
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -175,6 +176,7 @@
 </script>
 
 <script type="text/html" id="orderConfirmFormStep1Tmpl">
+    <!-- version 1.0 -->
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -300,6 +302,7 @@
 </script>
 
 <script type="text/html" id="orderProfileFormStep1Tmpl">
+    <!-- version 1.0 -->
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -414,6 +417,7 @@
 </script>
 
 <script type="text/html" id="orderFormStep2Tmpl">
+    <!-- version 1.0 -->
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -501,6 +505,7 @@
 </script>
 
 <script type="text/html" id="orderDeliveryFormStep2Tmpl">
+    <!-- version 1.0 -->
     <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -535,7 +540,14 @@
                                                 <label>Ваша страна:
                                                     <span style="color: #ed710d;">*</span><div class="popupTip"><img title="" alt="" src="http://dev.pokupo.ru/images/ico_11.png" /><div class="popup" style="display: none;"><span>Введите ваш адрес электронной почты. Он и будет Вашим логином для доступа на сайт.</span></div></div>
                                                 </label>
-                                                <select id="delivery_country_list" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
+                                                <div>
+                                                    <select id="delivery_country_list" class="form_select" data-bind="value: idCountry, attr: {id: cssCountryList}">
+                                                        <option value=""></option>
+                                                        <!-- ko foreach: countryList -->
+                                                        <option data-bind="text: name, value: id"></option>
+                                                        <!-- /ko -->
+                                                    </select>
+                                                </div>
                                                 <!-- ko if: errorCountry -->
                                                     <div class="form_error" data-bind="text: errorCountry "></div>
                                                 <!-- /ko -->
@@ -655,6 +667,7 @@
 </script>
 
 <script type="text/html" id="orderFormStep3Tmpl">
+    <!-- version 1.0 -->
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -738,6 +751,7 @@
 </script>
 
 <script type="text/html" id="orderFormStep4Tmpl">
+    <!-- version 1.0 -->
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">
@@ -832,6 +846,7 @@
 </script>
 
 <script type="text/html" id="orderFormStep5Tmpl">
+    <!-- version 1.0 -->
 <div class="horizontalSection noborder">
     <div class="pageWidth">
         <table cellpadding="0" cellspacing="0" width="100%" id="checkoutStep_1" class="checkoutStep">

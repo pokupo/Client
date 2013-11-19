@@ -1,4 +1,5 @@
 <script type="text/html" id="personalInformationTmpl">
+    <!-- version 1.0 -->
     <div class="horizontalSection noborder">
         <div class="pageWidth">
             <!-- ko template: { name: 'registrationDataTmpl', data: registrationData } --><!-- /ko -->
@@ -173,7 +174,14 @@
             <div class="floatFields4columns">
                 <div class="formItem">
                     <label>Страна:</label>
-                    <select id="country_list_profile" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
+                    <div>
+                        <select id="country_list_profile" class="form_select" data-bind="value: idCountry, attr: {id: cssCountryList}">
+                            <option value=""></option>
+                            <!-- ko foreach: countryList -->
+                            <option data-bind="text: name, value: id"></option>
+                            <!-- /ko -->
+                        </select>
+                    </div>
                     <!-- ko if: errorCountry-->
                         <div class="form_error" data-bind="text: errorCountry"></div>
                     <!-- /ko -->
@@ -278,6 +286,7 @@
 </script>
 
 <script type="text/html" id="deliveryAddressTmpl">
+    <!-- version 1.0 -->
     <div class="horizontalSection noborder">
         <div class="pageWidth">
             <h1>Выберите адрес доставки</h1>
@@ -320,7 +329,7 @@
         <!-- ko foreach: addressList -->
         <tr class="listTableRow" data-bind="click: ClickItem, css: cssIsDefault()">
             <td data-bind="text: address"></td>
-            <td data-bind="text: postCode"></td>
+            <td data-bind="text: postIndex"></td>
             <td data-bind="text: country"></td>
             <td data-bind="text: region"></td>
             <td data-bind="text: city"></td>
@@ -350,13 +359,21 @@
 </script>
 
 <script type="text/html" id="deliveryAddressFormTmpl">
+    <!-- version 1.0 -->
     <div class="floatFieldsFormSetion">
         <div class="pageWidth">
             <div class="formSetionHeader">Адрес доставки</div>
             <div class="floatFields4columns">
                 <div class="formItem">
                     <label>Страна:</label>
-                    <select id="delivery_country_list" data-bind="options: countryList, optionsText: 'name', optionsValue: 'id', optionsCaption: ' ', value: idCountry"></select>
+                    <div>
+                        <select id="delivery_country_list" class="form_select" data-bind="value: idCountry, attr: {id: cssCountryList}">
+                            <option value=""></option>
+                            <!-- ko foreach: countryList -->
+                            <option data-bind="text: name, value: id"></option>
+                            <!-- /ko -->
+                        </select>
+                    </div>
                     <!-- ko if: errorCountry -->
                         <div class="form_error" data-bind="text: errorCountry "></div>
                     <!-- /ko -->
@@ -384,7 +401,7 @@
                 </div>
                 <div class="formItem">
                     <label>Почтовый индекс.</label> 
-                    <input name="textfield" type="text" id="textfield" data-bind="value: postCode, attr: {id: cssPostCode}"/>
+                    <input name="textfield" type="text" id="textfield" data-bind="value: postIndex, attr: {id: cssPostCode}"/>
                     <!-- ko if: errorPostCode-->
                         <div class="form_error" data-bind="text: errorPostCode"></div>
                     <!-- /ko -->
@@ -427,6 +444,7 @@
 </script>
     
 <script type="text/html" id="securityTmpl">
+    <!-- version 1.0 -->
     <div class="floatFieldsFormSetion">
         <div class="pageWidth">
             <div class="formSetionHeader">Изменить пароль</div>

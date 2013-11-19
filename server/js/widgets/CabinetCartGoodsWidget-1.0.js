@@ -1,11 +1,20 @@
 var CabinetCartGoodsWidget = function(){
     var self = this;
     self.widgetName = 'CabinetCartGoodsWidget';
+    self.version = 1.0;
+    self.minWidgetVersion = 1.0;
+    self.maxWidgetVersion = 2.0;
+    self.minTmplVersion = 1.0;
+    self.maxTmplVersion = 2.0;
     self.cart = null;
     self.settings = {
-        tmplPath : null,
-        cartTmplId : null,
-        emptyCartTmplId : null,
+        tmpl : {
+            path : null,
+            id : {
+                content : null,
+                empty : null
+            }
+        },
         inputParameters : {},
         style : null,
         containerId : null,
@@ -14,18 +23,17 @@ var CabinetCartGoodsWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.cabinetCartGoods.widget;
         self.settings.customContainer = Config.Containers.cabinetCartGoods.customClass;
-        self.settings.tmplPath = Config.CabinetCartGoods.tmpl.path;
-        self.settings.cartTmplId = Config.CabinetCartGoods.tmpl.cartTmplId;
-        self.settings.emptyCartTmplId = Config.CabinetCartGoods.tmpl.emptyCartTmplId;
+        self.settings.tmpl = Config.CabinetCartGoods.tmpl;
         self.settings.style = Config.CabinetCartGoods.style;
         self.RegisterEvents();
         self.SetInputParameters();
+        self.CheckCabinetCartGoodsRoute();
         self.SetPosition();
     };
     self.SetInputParameters = function(){
         var input = {};
         if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/CabinetCartGoodsWidget.js/);
+            var temp = JSCore.ParserInputParameters(/CabinetCartGoodsWidget/);
             if(temp.cabinetCartGoods){
                 input = temp.cabinetCartGoods;
             }
@@ -49,33 +57,19 @@ var CabinetCartGoodsWidget = function(){
                     }
                 }
             }
-            if(input.tmpl){
-                self.settings.tmplPath = 'cabinetCartGoods/' + input.tmpl + '.html';
-            }
         }
         self.settings.inputParameters = input;
     };
     self.CheckCabinetCartGoodsRoute = function(){
         if(Routing.route == 'cabinet_cart'){
-            self.Update.Content();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.Update.Content();
+            });
         }
         else
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function(){ 
-        if(JSLoader.loaded){
-            self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                 self.CheckCabinetCartGoodsRoute();
-            });
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){
-                self.BaseLoad.Tmpl(self.settings.tmplPath, function(){
-                     self.CheckCabinetCartGoodsRoute();
-                });
-            });
-        }
-        
         EventDispatcher.AddEventListener('widget.change.route', function (){
             self.CheckCabinetCartGoodsRoute();
         });
@@ -134,7 +128,7 @@ var CabinetCartGoodsWidget = function(){
         },
         Menu : function(){
             Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
         },
@@ -146,11 +140,11 @@ var CabinetCartGoodsWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.cartTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('content')).html()).children().hide();
         },
         EmptyCart :function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.settings.emptyCartTmplId).html());
+            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('empty')).html()).children().hide();
         }
     };
     self.Fill =  {
@@ -187,9 +181,25 @@ var CabinetCartGoodsWidget = function(){
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                try{
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
-            self.WidgetLoader(true, self.settings.containerId);
         },
         EmptyCart : function(){
             self.WidgetLoader(true, self.settings.containerId);
@@ -211,9 +221,9 @@ var CabinetCartGoodsWidget = function(){
 
 var CartGoodsViewModel = function(){
     var self = this;
-    self.content = ko.observableArray();
+    self.sellerBlock = ko.observableArray();
     self.AddContent = function(data){
-        self.content.push(data);
+        self.sellerBlock.push(data);
     };
 };
 
@@ -247,7 +257,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
     }, this);
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
     self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
-    self.isChecked = ko.observable(false);
+    self.isSelectedAll = ko.observable(false);
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
@@ -301,12 +311,12 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
 
-        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
 
         if(self.goods().length == 0)
             content.content.remove(self);
         if(content.content().length == 0)
-            EventDispatcher.DispatchEvent('CartGoods.empty.cart');
+            EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart');
     };
     self.IsFavorite = function(){
         
@@ -339,7 +349,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             goods.isSelected(check);
         });
     }
-    self.DisabledButton = ko.computed(function(){
+    self.isDisabledButton = ko.computed(function(){
         var countGoods = self.goods().length;
         var selectedGoods = [];
         
@@ -348,8 +358,8 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
               selectedGoods.push(self.goods()[i].id);
         };
         if(selectedGoods.length > 0)
-            return true;
-        return false;
+            return false;
+        return true;
     }, this);
 };
 
