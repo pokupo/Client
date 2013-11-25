@@ -142,7 +142,8 @@ var SearchResultWidget = function(){
             })
         });
         
-        EventDispatcher.AddEventListener('searchResultWidget.onload.searchResult', function (data){ 
+        EventDispatcher.AddEventListener('searchResultWidget.onload.searchResult', function (data){
+            EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl');
             self.Fill.SearchResult(data);
         });
         
