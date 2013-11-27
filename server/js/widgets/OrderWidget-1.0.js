@@ -262,7 +262,7 @@ var OrderWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -289,7 +289,7 @@ var OrderWidget = function() {
                 else
                     test = false;
 
-                if (test) {
+                if (test) { 
                     self.BaseLoad.Login(false, false, false, function(request) {
                         Parameters.cache.order.step1.confirm = step1confirm;
                         if (!request.err) {
@@ -317,7 +317,7 @@ var OrderWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -347,7 +347,7 @@ var OrderWidget = function() {
                     Routing.SetHash('order', 'Оформление заказа', {step: 2});
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -629,15 +629,6 @@ var OrderWidget = function() {
                 self.Fill.Step1Profile(data);
             });
         },
-        Step3: function() {
-            if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.Shipping(self.order.id, function(data) {
-                    self.InsertContainer.Step3();
-                    self.Fill.Step3(data);
-                });
-            else
-                Routing.SetHash('order', 'Оформление заказа', {step: 4});
-        },
         Step2: function() {
             if(Routing.params.id){
                 self.BaseLoad.OrderInfo(self.order.id + '/yes', function(data) {
@@ -688,6 +679,17 @@ var OrderWidget = function() {
             else
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
+        Step3: function() {
+            console.log('step3');
+            if (self.DataOrder.IsRealGoods())
+                self.BaseLoad.Shipping(self.order.id, function(data) {
+                    console.log(data);
+                    self.InsertContainer.Step3();
+                    self.Fill.Step3(data);
+                });
+            else
+                Routing.SetHash('order', 'Оформление заказа', {step: 4});
+        },
         Step4: function() {
             self.BaseLoad.Payment(self.order.id, function(data) {
                 self.InsertContainer.Step4();
@@ -718,10 +720,6 @@ var OrderWidget = function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Profile')).html()).children().hide();
         },
-        Step3: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
-        },
         Step2: function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html()).children().hide();
@@ -729,6 +727,10 @@ var OrderWidget = function() {
         Step2Form: function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2Form')).html()).children().hide();
+        },
+        Step3: function() {
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
         },
         Step4: function() {
             self.InsertContainer.EmptyWidget();
@@ -933,28 +935,6 @@ var OrderWidget = function() {
             }
             
         },
-        Step3: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step3();
-                            self.Render.Step3(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-        },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
@@ -1119,6 +1099,28 @@ var OrderWidget = function() {
             }
 
             
+        },
+        Step3: function(form) {
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step3();
+                            self.Render.Step3(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
