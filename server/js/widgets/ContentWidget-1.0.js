@@ -286,6 +286,7 @@ var ContentWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     var f = data.filters;
                     new AnimateSelectList(f.sort.cssSortList);
+                    $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
                 }
                 catch(e){
