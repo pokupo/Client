@@ -263,7 +263,9 @@
                                 <div class="sortingSubnav active" data-bind="attr : {id : sort.cssSortList }">
                                   <span class="default" data-bind="text: sort.activeItem().title"></span>
                                   <ul data-bind="foreach: sort.list">
+                                      <!-- ko ifnot: isActive -->
                                       <li><a href="#" data-bind="click: ClickSort, text: title"></a></li>
+                                      <!-- /ko -->
                                   </ul>
                                 </div>
                             </div>

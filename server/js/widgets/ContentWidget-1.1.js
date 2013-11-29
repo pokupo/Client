@@ -214,9 +214,12 @@ var ContentWidget = function(){
             }
             $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
-        List : function(type){
+        EmptyWidget : function(){
             var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerId).empty().html(temp);
+        },
+        List : function(type){
+            self.InsertContainer.EmptyWidget();
             if(type == 'table'){ 
                 $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('table', 'content')).html()).children().hide();
             }
@@ -578,8 +581,14 @@ var SortContentItemViewModel = function(data, active){
     var self = this;
     self.name = data.name;
     self.title = data.title;
+    self.isActive = false;
     self.ClickSort = function(){
-        active(self);
+        $.each(active.list(), function(i){
+            active.list()[i].isActive = false
+        })
+        active.activeItem(self);
+        self.isActive = true;
+        
         Loader.Indicator('ContentWidget', false); 
                 
         Routing.UpdateMoreParameters({orderBy : self.name});
@@ -595,13 +604,18 @@ var SortContentListViewModel = function(){
     
     self.AddContent = function(data){
         $.each(data, function(i){
-            self.list.push(new SortContentItemViewModel(data[i], self.activeItem));
+            self.list.push(new SortContentItemViewModel(data[i], self));
         });
     };
     self.SetDefault = function(orderBy){
         $.each(self.list(), function(i){
-            if(self.list()[i].name == orderBy)
+            if(self.list()[i].name == orderBy){
                 self.activeItem(self.list()[i]);
+                self.list()[i].isActive = true;
+            }
+            else{
+                self.list()[i].isActive = false;
+            }
         });
     };
 };
