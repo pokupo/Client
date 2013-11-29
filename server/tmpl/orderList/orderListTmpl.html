@@ -188,7 +188,7 @@
 </script>
 
 <script type="text/html" id="orderDetailTmpl">
-    <!-- version 1.0 -->
+    <!-- version 1.1 -->
 <div class="horizontalSection">
     <div class="tabsContent active" id="tabContent_2">
         <div class="horizontalSection noborder">
@@ -432,7 +432,7 @@
                             <!-- /ko -->
                             <!-- ko if: statusPay() == "wait_pay" -->
                                 <td width="50">&nbsp;</td>
-                                <td data-bind="embedWidget :{ widget : 'ButtonPaymentWidget-1.0', params : { title: 'Оплатить заказ', orderId: id()}}"></td>
+                                <td data-bind="embedWidget :{ widget : 'ButtonPaymentWidget-1.1', params : { title: 'Оплатить заказ', orderId: id()}}"></td>
                                 <td width="50">&nbsp;</td>
                                 <td><button class="goButton refresh" data-bind="click: ClickRefresh"><span></span>Обновить</button></td>
                             <!-- /ko -->
