@@ -1,7 +1,7 @@
 var GoodsWidget = function(){
     var self = this;
     self.widgetName = 'GoodsWidget';
-    self.version = 1.1;
+    self.version = 1.2;
     self.minWidgetVersion = 1.0;
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
@@ -315,8 +315,7 @@ var GoodsMainBlockViewModel = function(data){
         }
         else if(self.count && self.count != 0){
             if(self.count > 1)
-                return self.count;
-            return "Да";
+                return "Да";
         }
         else
             return "Нет";
