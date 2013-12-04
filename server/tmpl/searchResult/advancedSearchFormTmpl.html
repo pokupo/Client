@@ -1,5 +1,5 @@
 <script type="text/html" id="advancedSearchFormTmpl">
-    <!-- version 1.0 -->
+    <!-- version 1.1 -->
     <div class="pageWidth">
         <h1>Расширенный поиск</h1>
     </div>
@@ -17,8 +17,8 @@
                             <div class="center_block">
                                 <div class="form_item form_item_region" id="typeSearch">
                                     <label>Искать:</label>
-                                    <div class="headerCssSelect">
-                                        <select name="typeSearch" class="form_select" data-bind="css: cssTypeSearch, value: typeSearch">
+                                    <div class="cssSelect">
+                                        <select name="typeSearch" data-bind="css: cssTypeSearch, value: typeSearch">
                                             <!-- ko foreach: typesSearch-->
                                             <option data-bind="text: title, value: key"></option>
                                             <!-- /ko -->
@@ -46,7 +46,7 @@
                                 </div>
                                 <div class="form_item form_item_city" id="typeSeller">
                                     <label>Тип продавца:</label>
-                                    <div class="headerCssSelect">
+                                    <div class="cssSelect">
                                         <select name="typeSeller" class="form_select" data-bind="css: cssTypeSeller, value: typeSeller">
                                             <!-- ko foreach: typesSellers-->
                                             <option data-bind="text: title, value: key"></option>
