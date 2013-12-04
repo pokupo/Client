@@ -9,13 +9,17 @@
             <form action="" data-bind="submit: SubmitAdvancedSearchForm">
                 <table style="float: left; width: 100%;">
                     <tr>
-                        <td><div class="left_block">
+                        <td>
+                            <div class="left_block">
+                                <label>Рубрики:</label>
+                                <div id="tree_categories_for_advanced_search"></div>
+                            </div>
+                            <div class="center_block">
                                 <div class="form_item form_item_title">
                                     <label>Ключевые слова:</label>
                                     <input class="form_text" type="text" name="keyWords" data-bind="value: keyWords" />
-                                </div></div>
-                            <div class="center_block">
-                                <div class="form_item form_item_region" id="typeSearch">
+                                </div>
+                                <div class="form_item form_item_type">
                                     <label>Искать:</label>
                                     <div class="cssSelect">
                                         <select name="typeSearch" data-bind="css: cssTypeSearch, value: typeSearch">
@@ -24,27 +28,20 @@
                                             <!-- /ko -->
                                         </select>
                                     </div>
-                                </div></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div class="left_block">
-                                <label>Рубрики:</label>
-                                <div id="tree_categories_for_advanced_search"></div>
+                                </div>
+                                <div class="form_item form_item_slovo">
+                                    <label>Исключить слова:</label>
+                                    <input class="form_text" type="text" name="exceptWords" data-bind="value: exceptWords" />
+                                </div>
                             </div>
-                            <div class="center_block">
+                            <div class="right_block">
                                 <div class="form_item form_item_price">
                                     <label>Ценовой диапазон (руб.):</label>
                                     <input class="form_text form_text_1" type="text" name="startCost" data-bind="value: startCost" />
                                     <input class="form_text form_text_2" type="text" name="endCost" data-bind="value: endCost" />
                                     <span>—</span>
                                 </div>
-                                <div class="form_item form_item_slovo">
-                                    <label>Исключить слова:</label>
-                                    <input class="form_text" type="text" name="exceptWords" data-bind="value: exceptWords" />
-                                </div>
-                                <div class="form_item form_item_city" id="typeSeller">
+                                <div class="form_item form_item_type">
                                     <label>Тип продавца:</label>
                                     <div class="cssSelect">
                                         <select name="typeSeller" class="form_select" data-bind="css: cssTypeSeller, value: typeSeller">
