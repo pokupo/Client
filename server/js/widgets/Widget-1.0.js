@@ -102,7 +102,8 @@ var Loader = {
             }
             if(container)
                 this.containers.push({container: container, widgetName: widget});
-
+            if(JSCore.dev)
+                Logger.Console.VarDump('Loader', 'widgets', this.widgets);
             this.ShowLoading();
         }
     },
@@ -1205,15 +1206,11 @@ var Widget = function (){
             }, true);
         },
         Shipping : function(str, callback){
-            if(!Parameters.cache.shipping){
-                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + Parameters.shopId + '/' + str), function(data){
-                    Parameters.cache.shipping = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else
-                callback(Parameters.cache.shipping);
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + Parameters.shopId + '/' + str), function(data){
+                Parameters.cache.shipping = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         NewOrder : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'add/' + Parameters.shopId + '/' + str), function(data){
@@ -1230,16 +1227,11 @@ var Widget = function (){
             }, true);
         },
         Payment : function(str, callback){
-            if(!Parameters.cache.payment){
-                XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
-                    Parameters.cache.payment = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else{
-                callback(Parameters.cache.payment);
-            }
+            XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
+                Parameters.cache.payment = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         OrderInfo : function(str, callback){
             XDMTransport.LoadData(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'info/' + str), function(data){

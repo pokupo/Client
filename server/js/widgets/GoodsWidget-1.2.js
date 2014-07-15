@@ -1,12 +1,13 @@
 var GoodsWidget = function(){
     var self = this;
     self.widgetName = 'GoodsWidget';
-    self.version = 1.0;
+    self.version = 1.2;
     self.minWidgetVersion = 1.0;
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
     self.goods = null;
+    self.hasButton = false;
     self.settings = {
         containerId : null, 
         tmpl : {
@@ -111,7 +112,10 @@ var GoodsWidget = function(){
         Main : function(data){
             GoodsMainBlockViewModel.prototype = new Widget();
             self.goods.AddBlock('main', new GoodsMainBlockViewModel(data));
-            self.goods.AddBlock('description', data.description);
+            var key = 'description';
+            self.goods.AddBlock(key, data.description);
+            if(data.description.match(/data-bind/))
+                self.hasButton = key;
         },
         Gallery : function(data){
             var gallery =[];
@@ -149,6 +153,33 @@ var GoodsWidget = function(){
                 if($("#" + self.settings.containerId).length > 0){
                     self.InsertContainer.Content();
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    
+                    if(self.hasButton){
+                        $.each(data.moreBlock, function(i){
+                            if(data.moreBlock[i].key == self.hasButton){
+                                var button = $('#' + data.moreBlock[i].idBlock + ' [data-bind^=click]');
+                                $.each(button, function(i){
+                                    if(data.blocks.main.showAddToCart()){
+                                        if($(button[i]).attr('data-bind').match(/AddToCart/)){
+                                            var addToCart = new AddToCartButtonViewModel(data.blocks.main);
+                                            ko.applyBindings(addToCart, button[i]);
+                                        }
+                                    }
+                                    else
+                                        $(button[i]).hide();
+                                    
+                                    if(data.blocks.main.showBuy()){
+                                        if($(button[i]).attr('data-bind').match(/Buy/)){
+                                            var buy = new BuyButtonViewModel(data.blocks.main);
+                                            ko.applyBindings(buy, button[i]);
+                                        }
+                                    }
+                                    else
+                                        $(button[i]).hide();
+                                });
+                            }
+                        });
+                    }
 
                     new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
 
@@ -284,8 +315,7 @@ var GoodsMainBlockViewModel = function(data){
         }
         else if(self.count && self.count != 0){
             if(self.count > 1)
-                return self.count;
-            return "Да";
+                return "Да";
         }
         else
             return "Нет";
@@ -438,6 +468,33 @@ var MoreBlockViewModel = function(key){
         }
     }
 }
+
+var BuyButtonViewModel = function(data){
+    var self = this;
+    self.showBuy = ko.computed(function(){
+        if(data.showAddToCart())
+            return true;
+        return false;
+    }, this);
+    self.Buy = function(){
+         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: data.sellerId, goodsId: data.id, count: data.ordered()});
+    };
+};
+
+var AddToCartButtonViewModel = function(data){
+    var self = this;
+    self.showAddToCart = ko.computed(function(){
+        if(data.showBuy())
+            return true;
+        return false;
+    }, this);
+    self.AddToCart = function(cart){
+        Parameters.cache.cart = data.ordered();
+        data.cart(data.cart() + data.ordered()); 
+ 
+        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : data.id, sellerId : data.sellerId, count: data.ordered(), hash : data.uniq})
+    };
+};
 
 var TestGoodsCrumb = {
     Init : function(){

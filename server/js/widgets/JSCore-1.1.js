@@ -24,7 +24,7 @@ var JSSettings = {
         'jquery.textchange.min.js',
         'jquery.hoverIntent.minified.js',
         'jquery.colorbox-min.js',
-        'widgets/Config-1.0.js',
+        'widgets/Config-1.1.js',
         'widgets/Routing-1.0.js',
         'widgets/Paging-1.0.js',
         'widgets/ContentViewModel-1.0.js',
@@ -124,15 +124,18 @@ var JSLoader = {
 }
 
 var JSCore = {
-    version : 1.0,
+    version : 1.1,
     isReady : false,
     shopId : null,
+    dev : false,
     Init : function(){
         if(document.location.protocol == 'https:')
             JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
         JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.SetInputParameters();
         JSCore.shopId = JSSettings.inputParameters['shopId'];
+        if(JSSettings.inputParameters['dev'])
+            JSCore.dev = true;
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
     },
@@ -303,7 +306,14 @@ var XDMTransport = {
 var Logger = {
     Console : {
         Exeption : function(widget, text){
-            console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
+            console && console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
+        },
+        Info : function(widget, text){
+            console && console.log('Info : ' + new Date() + ' : ' + widget + ' : ' + text);
+        },
+        VarDump : function(widget, name, obj){
+            console && console.log('Var Dump : ' + widget + ' : ' + name)
+            console && console.log(obj);
         }
     }
 }

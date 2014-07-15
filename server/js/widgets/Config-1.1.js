@@ -57,7 +57,7 @@ var Config = {
         favorites : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера избранного
         order : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера оформления заказа
         orderList : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера списка заказов
-        payment : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера страницы оплаты
+        buttonPayment : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера страницы оплаты
     },
     Goods : {
         tmpl: {
@@ -653,6 +653,19 @@ var Config = {
             failSendToken : 'Код не был отправлен. Попробуйте повторить запрос позднее.',
         },
         error : { // сообщения об ошибках при валидации формы регистрации
+            username : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 4 символа',
+                maxLength : 'Максимум 40 символов',
+                regular : 'Только буквы латинского или русского алфавита',
+                uniq: 'К сожалению это имя уже занято, попробуйте указать другой вариант'
+            },
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                maxLength : 'Максимум 64 символа',
+                regular : 'Строка не является адресом электронной почты',
+                uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
             country : {
                 empty : 'Поле обязательно для заполнения'
             },
@@ -676,8 +689,17 @@ var Config = {
             },
             phone : {
                 empty : 'Поле обязательно для заполнения',
-                phone : 'Не верный формат телефона'
-            }
+                regular : 'Не верный формат телефона',
+                uniq : 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
+            },
+            emailToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            phoneToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
         },
         style : {// стиль блока
             'position' : 'absolute', 

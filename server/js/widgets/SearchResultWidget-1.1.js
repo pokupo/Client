@@ -142,7 +142,8 @@ var SearchResultWidget = function(){
             })
         });
         
-        EventDispatcher.AddEventListener('searchResultWidget.onload.searchResult', function (data){ 
+        EventDispatcher.AddEventListener('searchResultWidget.onload.searchResult', function (data){
+            EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl');
             self.Fill.SearchResult(data);
         });
         
@@ -571,8 +572,13 @@ var SortSearchResultItemViewModel = function(data, active){
     var self = this;
     self.name = data.name;
     self.title = data.title;
+    self.isActive = false;
     self.ClickSort = function(){
-        active(self);
+        $.each(active.list(), function(i){
+            active.list()[i].isActive = false
+        })
+        active.activeItem(self);
+        self.isActive = true;
         Loader.Indicator('SearchResultWidget', false); 
         
         Parameters.filter.orderBy = self.name;
@@ -589,13 +595,18 @@ var SortSearchResultListViewModel = function(){
     
     self.AddContent = function(data){
         $.each(data, function(i){
-            self.list.push(new SortSearchResultItemViewModel(data[i], self.activeItem));
+            self.list.push(new SortSearchResultItemViewModel(data[i], self));
         });
     };
     self.SetDefault = function(orderBy){
         $.each(self.list(), function(i){
-            if(self.list()[i].name == orderBy)
+            if(self.list()[i].name == orderBy){
                 self.activeItem(self.list()[i]);
+                self.list()[i].isActive = true;
+            }
+            else{
+                self.list()[i].isActive = false;
+            }
         });
     };
 };

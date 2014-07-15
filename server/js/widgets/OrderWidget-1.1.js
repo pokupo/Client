@@ -1,7 +1,7 @@
 var OrderWidget = function() {
     var self = this;
     self.widgetName = 'OrderWidget';
-    self.version = 1.0;
+    self.version = 1.1;
     self.minWidgetVersion = 1.0;
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
@@ -262,7 +262,7 @@ var OrderWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -289,7 +289,7 @@ var OrderWidget = function() {
                 else
                     test = false;
 
-                if (test) {
+                if (test) { 
                     self.BaseLoad.Login(false, false, false, function(request) {
                         Parameters.cache.order.step1.confirm = step1confirm;
                         if (!request.err) {
@@ -317,7 +317,7 @@ var OrderWidget = function() {
                     });
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
@@ -347,14 +347,15 @@ var OrderWidget = function() {
                     Routing.SetHash('order', 'Оформление заказа', {step: 2});
                 }
                 else
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_method_shipping=' + data.id(), function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '?id_method_shipping=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)})){
-                    self.order.shipping = data;
+                    self.order.shipping = data.selected;
+                    data.fn();
                 }
             })
         });
@@ -401,7 +402,8 @@ var OrderWidget = function() {
             self.BaseLoad.EditOrder(self.order.id + '?id_shipping_address=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)})) {
                     Parameters.cache.delivery = null;
-                    self.order.delivery = data;
+                    self.order.delivery = data.selected;
+                    data.fn();
                 }
             });
         });
@@ -430,9 +432,10 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step4.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_method_payment=' + data.id(), function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '?id_method_payment=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)})){
-                    self.order.payment = data;
+                    self.order.payment = data.selected;
+                    data.fn();
                 }
             });
         });
@@ -629,15 +632,6 @@ var OrderWidget = function() {
                 self.Fill.Step1Profile(data);
             });
         },
-        Step3: function() {
-            if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.Shipping(self.order.id, function(data) {
-                    self.InsertContainer.Step3();
-                    self.Fill.Step3(data);
-                });
-            else
-                Routing.SetHash('order', 'Оформление заказа', {step: 4});
-        },
         Step2: function() {
             if(Routing.params.id){
                 self.BaseLoad.OrderInfo(self.order.id + '/yes', function(data) {
@@ -688,6 +682,15 @@ var OrderWidget = function() {
             else
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
+        Step3: function() {
+            if (self.DataOrder.IsRealGoods())
+                self.BaseLoad.Shipping(self.order.id, function(data) {
+                    self.InsertContainer.Step3();
+                    self.Fill.Step3(data);
+                });
+            else
+                Routing.SetHash('order', 'Оформление заказа', {step: 4});
+        },
         Step4: function() {
             self.BaseLoad.Payment(self.order.id, function(data) {
                 self.InsertContainer.Step4();
@@ -718,10 +721,6 @@ var OrderWidget = function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Profile')).html()).children().hide();
         },
-        Step3: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
-        },
         Step2: function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html()).children().hide();
@@ -729,6 +728,10 @@ var OrderWidget = function() {
         Step2Form: function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2Form')).html()).children().hide();
+        },
+        Step3: function() {
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
         },
         Step4: function() {
             self.InsertContainer.EmptyWidget();
@@ -933,28 +936,6 @@ var OrderWidget = function() {
             }
             
         },
-        Step3: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step3();
-                            self.Render.Step3(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-        },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
@@ -1120,6 +1101,28 @@ var OrderWidget = function() {
 
             
         },
+        Step3: function(form) {
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                try{
+                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step3();
+                            self.Render.Step3(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
+        },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
@@ -1194,6 +1197,7 @@ var OrderFormStep2ViewModel = function() {
     self.addressList = ko.observableArray();
     self.cssAddressList = 'delivary_address_list';
     self.checked = ko.observable();
+    self.selectedItem = ko.observable();
 
     self.ClickAddAddress = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
@@ -1234,8 +1238,15 @@ var OrderFormStep2ViewModel = function() {
              Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
     };
     self.Submit = function() {
-        if (self.HasAddress())
-            Routing.SetHash('order', 'Оформление заказа', {step: 3});
+        if (self.HasAddress()){
+            EventDispatcher.DispatchEvent('OrderWidget.step2.change', {
+                id : self.checked(),
+                selected : self.selectedItem(),
+                fn : function(){
+                    Routing.SetHash('order', 'Оформление заказа', {step: 3});
+                }
+            });
+        }
         else
             EventDispatcher.DispatchEvent('OrderWidget.step2.message');
     };
@@ -1288,9 +1299,8 @@ var OrderItemFormStep2ViewModel = function(data, list) {
         self.cssIsDefault('delivery_address_is_default active');
         self.isDefault(true);
         list.checked(self.id);
+        list.selectedItem(self);
         Parameters.cache.order.delivery = self;
-
-        EventDispatcher.DispatchEvent('OrderWidget.step2.change', self);
     };
 
 };
@@ -1465,6 +1475,7 @@ var OrderFormStep3ViewModel = function() {
     var self = this;
     self.shipping = ko.observableArray();
     self.checked = ko.observable();
+    self.selectedItem = ko.observable();
 
     self.AddShipping = function(data) {
         self.shipping = ko.observableArray();
@@ -1488,8 +1499,15 @@ var OrderFormStep3ViewModel = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 2});
     };
     self.Submit = function() {
-        if (self.HasShipping())
-            Routing.SetHash('order', 'Оформление заказа', {step: 4});
+        if (self.HasShipping()){
+            EventDispatcher.DispatchEvent('OrderWidget.step3.change', {
+                id: self.checked(),
+                selected : self.selectedItem(),
+                fn: function(){
+                    Routing.SetHash('order', 'Оформление заказа', {step: 4});
+                }
+            });
+        }
         else
             EventDispatcher.DispatchEvent('OrderWidget.step3.message');
     };
@@ -1538,8 +1556,7 @@ var OrderItemFormStep3ViewModel = function(parent) {
         self.cssActive('shipping_row active');
         self.isActive(true);
         parent.checked(self.id());
-
-        EventDispatcher.DispatchEvent('OrderWidget.step3.change', self);
+        parent.selectedItem(self);
     }
 };
 
@@ -1547,6 +1564,7 @@ var OrderFormStep4ViewModel = function() {
     var self = this;
     self.payment = ko.observableArray();
     self.checked = ko.observable();
+    self.selectedItem = ko.observable();
 
     self.AddPayment = function(data) {
         self.payment = ko.observableArray();
@@ -1575,14 +1593,23 @@ var OrderFormStep4ViewModel = function() {
                     Routing.SetHash(link.route, link.title, link.data, true);
                     return false;
                 }
+                else
+                    Routing.SetHash('order', 'Оформление заказа', {step: 3});
             }
         }
         else
              Routing.SetHash('order', 'Оформление заказа', {step: 3});
     };
     self.Submit = function() {
-        if (self.HasPayment())
-            Routing.SetHash('order', 'Оформление заказа', {step: 5});
+        if (self.HasPayment()){
+            EventDispatcher.DispatchEvent('OrderWidget.step4.change', {
+                id: self.checked(),
+                selected : self.selectedItem(),
+                fn: function(){
+                    Routing.SetHash('order', 'Оформление заказа', {step: 5});
+                }
+            });
+        }
         else
             EventDispatcher.DispatchEvent('OrderWidget.step4.message');
     };
@@ -1630,8 +1657,7 @@ var OrderItemFormStep4ViewModel = function(parent) {
         self.cssActive('payment_row active');
         self.isActive(true);
         parent.checked(self.id());
-
-        EventDispatcher.DispatchEvent('OrderWidget.step4.change', self);
+        parent.selectedItem(self);
     };
 };
 

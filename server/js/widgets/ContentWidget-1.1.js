@@ -124,6 +124,9 @@ var ContentWidget = function(){
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
             self.BaseLoad.Blocks(Routing.GetActiveCategory(), function(data){
+                if(JSCore.dev)
+                    Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
+                
                 self.CheckData(data)
             });
         });
@@ -211,9 +214,12 @@ var ContentWidget = function(){
             }
             $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
-        List : function(type){
+        EmptyWidget : function(){
             var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.containerId).empty().html(temp);
+        },
+        List : function(type){
+            self.InsertContainer.EmptyWidget();
             if(type == 'table'){ 
                 $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('table', 'content')).html()).children().hide();
             }
@@ -231,6 +237,8 @@ var ContentWidget = function(){
     self.Fill = {
         Block : function(data){
             var block = new BlockViewModel(data, self.settings.countGoodsInBlock);
+            if(JSCore.dev)
+                Logger.Console.VarDump(self.widgetName, 'data blockId = [' + block.id + '] typeView = [' + block.typeView + ']' , block)
             block.AddContent();
         },
         Content : function(data){
@@ -281,6 +289,7 @@ var ContentWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     var f = data.filters;
                     new AnimateSelectList(f.sort.cssSortList);
+                    $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
                 }
                 catch(e){
@@ -372,7 +381,7 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.sort          = data.sort;
     self.titleBlock    = data.block.name_category;
     self.typeView      = data.block.type_view;
-    self.countGoods    = data.block.count_goods;
+    self.countGoods    = data.block.count_goods ? data.block.count_goods : 0;
     
     self.cssBlock      = 'block_sort_' + data.sort;
     self.cssBlockContainer  = 'sliderContainer_' + self.id ;
@@ -414,6 +423,8 @@ var BlockViewModel = function(data, countGoodsInContent){
             content.unshift(last);
             EventDispatcher.DispatchEvent('contentWidget.fill.block', self);
         }
+        else
+            EventDispatcher.DispatchEvent('contentWidget.fill.block', self);
     };
     self.ClickCategory = function(){
         Routing.SetHash('catalog', self.titleBlock, {category:data.block.id});
@@ -570,8 +581,14 @@ var SortContentItemViewModel = function(data, active){
     var self = this;
     self.name = data.name;
     self.title = data.title;
+    self.isActive = false;
     self.ClickSort = function(){
-        active(self);
+        $.each(active.list(), function(i){
+            active.list()[i].isActive = false
+        })
+        active.activeItem(self);
+        self.isActive = true;
+        
         Loader.Indicator('ContentWidget', false); 
                 
         Routing.UpdateMoreParameters({orderBy : self.name});
@@ -587,13 +604,18 @@ var SortContentListViewModel = function(){
     
     self.AddContent = function(data){
         $.each(data, function(i){
-            self.list.push(new SortContentItemViewModel(data[i], self.activeItem));
+            self.list.push(new SortContentItemViewModel(data[i], self));
         });
     };
     self.SetDefault = function(orderBy){
         $.each(self.list(), function(i){
-            if(self.list()[i].name == orderBy)
+            if(self.list()[i].name == orderBy){
                 self.activeItem(self.list()[i]);
+                self.list()[i].isActive = true;
+            }
+            else{
+                self.list()[i].isActive = false;
+            }
         });
     };
 };

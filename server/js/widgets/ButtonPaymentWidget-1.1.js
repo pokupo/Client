@@ -1,7 +1,7 @@
 window.ButtonPaymentWidget = function(){
     var self = this;
     self.widgetName = 'ButtonPaymentWidget';
-    self.version = 1.0;
+    self.version = 1.1;
     self.minWidgetVersion = 1.0;
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
@@ -33,7 +33,7 @@ window.ButtonPaymentWidget = function(){
         Loader.InsertContainer(self.settings.containerButton);
     };
     self.SetParameters = function(data){
-        self.settings.containerId = Config.Containers.payment.widget;
+        self.settings.containerId = Config.Containers.buttonPayment.widget;
         self.settings.tmpl= Config.ButtonPayment.tmpl;
         self.settings.title = Config.ButtonPayment.title;
         
@@ -81,7 +81,7 @@ window.ButtonPaymentWidget = function(){
         }
     };
     self.CheckRouteButtonPayment = function(){
-        if(Routing.route == 'payment' || (Routing.IsDefault() && !self.HasDefaultContent())){
+        if(Routing.route == 'payment'){
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
                 self.InsertContainer.Content();
                 if(Routing.params.orderId)
