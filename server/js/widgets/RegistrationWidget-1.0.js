@@ -510,7 +510,6 @@ var RegistrationWidget = function() {
                     
                     $('#' + form.cssRegionList).autocomplete({
                         source: function(request, response) {
-                            console.log(form.country());
                             self.BaseLoad.Region(form.country() + '/' + encodeURIComponent(request.term), function(data) {
                                 if (!data.err) {
                                     response($.map(data, function(item) {

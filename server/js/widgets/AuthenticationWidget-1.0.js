@@ -54,6 +54,7 @@ var AuthenticationWidget = function(){
         if(Routing.route == 'login'){
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
                 self.SelectTypeContent();
+                self.BaseLoad.LoginForProxy();
             });
         }
         else
