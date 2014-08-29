@@ -1,0 +1,181 @@
+<script type="text/html" id="messageTopicTmpl">
+    <!-- version 1.0 -->
+    <div class="horizontalSection"> 
+        <div class="tabsContent active" id="tabContent_2">
+            <div class="pageWidth">
+                <!-- form -->
+                <div class="horizontalSection noborder messagesTabs">
+                    <div class="newMessage">
+                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    </div>
+
+                    <div class="htabsContent">
+
+                        <div class="horizontalSection noborder">
+                            <div class="itemsListTableRow tableHead messageList">
+                                <div class="col_act"><input type="checkbox"></div>
+                                <div class="col_icon">&nbsp;</div>
+                                <div class="col_1_summary">Отправитель</div>
+                                <div class="col_icon">&nbsp;</div>
+                                <div class="col_2_summary">Тема</div>
+                                <div class="col_3_summary">Сообщение</div>
+                                <div class="col_4_summary">Дата</div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- for --> 
+                        <div class="horizontalSection activeHoverElement">
+                            <div class="itemsListTableRow messageList new">
+                                <div class="messageAct">
+                                    <div class="col_act"><input type="checkbox"></div>
+                                    <div class="col_icon"><img src="images/_mail_wrap.png" width="16" height="16" align="top" title="Новое сообщение"></div>
+                                </div>
+                                <div class="col_userpic"><img width="24" height="24" src="images/sample-user-pic.jpg"></img></div>
+                                <a href="#">
+                                    <div class="col_1_summary"><span>admin<b></b></span></div>
+                                    <div class="col_2_summary"><span>(112) Тема Sample SubjectТема Sample Subject<b></b></span></div>
+                                    <div class="col_3_summary"><span>Текст сообщения Текст сообщения Текст сообщения Текст сообщения Текст сообщения Текст сообщения <b></b></span></div>
+                                    <div class="col_4_summary">10:24</div>
+                                </a>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <!-- endfor -->
+
+                        <div class="horizontalSection">
+                            <table width="100%">
+                                <tr>
+                                    <td>
+                                        <button class="subButton left" >Отметить как прочитанное</button>
+                                    </td>
+                                    <td>
+                                        <!-- paginate -->
+                                    </td>
+                                    <td>
+                                        <button class="subButton delete right" ><span></span>Удалить</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="newMessage">
+                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</script>
+
+<script type="text/html" id="messageListTmpl">
+    <!-- version 1.0 -->
+    <div></div>
+</script>
+
+<script type="text/html" id="messageEmptyListTmpl">
+    <!-- version 1.0 -->
+    <div class="horizontalSection"> 
+        <div class="tabsContent active" id="tabContent_2">
+            <div class="pageWidth">
+                <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
+                <div class="horizontalSection noborder messagesTabs">
+                    <div class="newMessage">
+                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    </div>
+                    <div class="htabsContent">
+                        <div class="horizontalSection">
+                            <table width="100%">
+                                <tr>
+                                    <td>
+                                        <div class="paginationSmall" data-bind="html: messageError"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="newMessage">
+                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</script>
+
+<script type="text/html" id="messageModalFormTmpl">
+    <!-- version 1.0 -->
+    <div style='display:none'>
+        <div id='newMessage'> 
+            <div class="floatFieldsFormSetion messagesTabs">
+                <h1>Новое сообщение</h1>
+                <div class="floatFields1column">
+                    <div class="formItem sendToField">
+                        <label>Получатель:</label>
+                        <input type="text"  data-bind="value: dstUser"/>
+                        <!-- ko if: dstUserError -->
+                        <div class="error" data-bind="text:dstUserError"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem">
+                        <label>Тема сообщения:</label>
+                        <input type="text" data-bind="value: topicName"/>
+                        <!-- ko if: topicNameError -->
+                        <div class="error" data-bind="text: topicNameError"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem messageField">
+                        <label>Сообщение:</label>
+                        <textarea rows="5" data-bind="value: text"></textarea>
+                        <!-- ko if: textError -->
+                        <div class="error" data-bind="text: textError"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem copyToEmailField">
+                        <input type="checkbox" data-bind="value: copyMail"/> Выслать копию на E-mail 
+                    </div>
+
+                    <div class="formButBox">
+                        <table align="left">
+                            <tr>
+                                <td>
+                                    <button class="goButton approve" data-bind="click: ClickSend"><span></span>Отправить письмо</button>
+                                </td>
+                                <td width="20">&nbsp;</td>
+                            </tr>
+                        </table>
+                        <table align="right">
+                            <tr>
+                                <td>
+                                    <button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить</button>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="messageSimpleFormTmpl">
+    <!-- version 1.0 -->
+    <div></div>
+</script>
+
+<script type="text/html" id="messagePaginateTmpl">
+    <div class="paginationSmall">
+        <ul>
+            <li class="first"><a href="#"></a></li>
+            <li><a href="#">1</a></li>
+            <li class="curent">2</li>
+            <li><a href="#">3</a></li>
+            <li>...</li>
+            <li><a href="#">4</a></li>
+            <li class="last"><a href="#"></a></li>
+        </ul>
+    </div>
+</script>

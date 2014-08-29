@@ -150,7 +150,7 @@ var OrderListWidget = function() {
         },
         Menu: function() {
             Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function() {
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function() {
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
         }
