@@ -47,7 +47,8 @@ var JSSettings = {
         'widgets/AnimateSelectList-1.0.js',
         'widgets/AnimateBreadCrumb-1.0.js',
         'widgets/AnimateTab-1.0.js',
-        'widgets/AnimateOrderList-1.0.js'],
+        'widgets/AnimateOrderList-1.0.js',
+        'widgets/AnimateMessage-1.0.js'],
     inputParameters : {}
 }
 

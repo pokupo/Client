@@ -108,13 +108,13 @@
 <script type="text/html" id="messageModalFormTmpl">
     <!-- version 1.0 -->
     <div style='display:none'>
-        <div id='newMessage'> 
+        <div data-bind="attr: {id: idForm}"> 
             <div class="floatFieldsFormSetion messagesTabs">
                 <h1>Новое сообщение</h1>
                 <div class="floatFields1column">
                     <div class="formItem sendToField">
                         <label>Получатель:</label>
-                        <input type="text"  data-bind="value: dstUser"/>
+                        <input type="text"  data-bind="value: dstUser, event: { blur: OnBlurEvent }"/>
                         <!-- ko if: dstUserError -->
                         <div class="error" data-bind="text:dstUserError"></div>
                         <!-- /ko -->

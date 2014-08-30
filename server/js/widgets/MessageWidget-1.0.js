@@ -94,6 +94,32 @@ var MessageWidget = function() {
             self.CheckRouteMessage();
         });
         
+        EventDispatcher.AddEventListener('MessageWidget.check.login', function(form){
+            self.BaseLoad.UniqueUser('?username=' + encodeURIComponent(form.dstUser()), function(request){
+                if(request.check_username != 'on' && request.check_username != 'off')
+                    form.dstUserError(Config.Message.error.username.notFound);
+                else
+                    form.dstUserError('');
+            })
+        });
+        
+        EventDispatcher.AddEventListener('MessageWidget.add.message', function(topic){
+            var form = topic.modalForm();
+
+            self.BaseLoad.UniqueUser('?username=' + encodeURIComponent(form.dstUser()), function(request){
+                if(request.check_username != 'on' && request.check_username != 'off'){
+                    form.dstUserError(Config.Message.error.username.notFound);
+                }
+                else{
+                    
+                    form.dstUserError('');
+                    var str = '?name_topic=' + encodeURIComponent(form.topicName()) + '&dst_user=' + encodeURIComponent(form.dstUser()) + '&text_message=' + encodeURIComponent(form.text()) + '&copy_mail=' + (form.copyMail() ? 'yes' : 'no');
+                    self.BaseLoad.MessageAdd(str, function(data){
+                        console.log(data); 
+                    });
+                }
+            })
+        });
     };
     self.InsertContainer = {
         EmptyWidget : function(){
@@ -141,24 +167,24 @@ var MessageWidget = function() {
     self.Render = {
         Topic : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                try{
+//                try{
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Topic();
-                            self.Render.Topic(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Topic();
+//                            self.Render.Topic(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerId);
+//                    }
+//                }
             }
         },
         List : function(data){
@@ -185,25 +211,25 @@ var MessageWidget = function() {
         },
         EmptyList : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                try{
+//                try{
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-                    new AnimateMessage();
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.EmptyList();
-                            self.Render.EmptyList(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+                    
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.EmptyList();
+//                            self.Render.EmptyList(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerId);
+//                    }
+//                }
             }
         },
         EmptyWidget : function(){
@@ -226,17 +252,18 @@ var MessageWidget = function() {
 
 var TopicMessageViewModel = function(settings){
     var self = this;
+    self.animate = new AnimateMessage();
     self.messageError = ko.observable();
     self.messages = ko.observableArray();
     self.paging = ko.observableArray();
     self.countAll = null;
-    self.modalForm = new FormMessageViewModel();
+    self.modalForm = ko.observable(new FormMessageViewModel(self));
 
     self.SetErrorMessage = function(message){
-       self.messageError(message); 
+        self.messageError(message); 
     };
     self.ClickAdd = function(){
-        
+        self.animate.Init(self.modalForm().idForm)
     };
     self.ClickRead = function(){
         
@@ -259,20 +286,28 @@ var TopicMessageViewModel = function(settings){
     }
 };
 
-var FormMessageViewModel = function(){
+var FormMessageViewModel = function(topic){
     var self = this;
+    self.idForm = 'newMessage';
+    
     self.dstUser = ko.observable();
     self.dstUserError = ko.observable();
+    
     self.topicName = ko.observable();
     self.topicNameError = ko.observable();
+    
     self.text = ko.observable();
     self.textError = ko.observable();
+    
     self.copyMail = ko.observable();
     
     self.ClickSend = function(){
-        
+        if(self.Validate()){
+            EventDispatcher.DispatchEvent('MessageWidget.add.message', topic);
+        }
     };
     self.ClickCancel = function(){
+        topic.animate.Close();
         self.dstUser('');
         self.dstUserError('');
         self.topicName('');
@@ -280,6 +315,30 @@ var FormMessageViewModel = function(){
         self.text('');
         self.textError('');
         self.copyMail('');
+    };
+    self.OnBlurEvent  = function(){
+        EventDispatcher.DispatchEvent('MessageWidget.check.login', self);
+    };
+    self.Validate = function(){
+        if(!self.dstUser())
+            self.dstUserError(Config.Message.error.username.empty);
+        else
+            self.dstUserError();
+
+        if(!self.topicName())
+            self.topicNameError(Config.Message.error.topic.empty);
+        else
+            self.topicNameError('');
+        
+        if(!self.text())
+            self.textError(Config.Message.error.text.empty);
+        else
+            self.textError();
+        
+        if(self.dstUserError() || self.topicNameError() || self.textError())
+            return false
+        
+        return true;
     }
 }
 

@@ -1,12 +1,16 @@
-var AnimateMessage = function(){
-    $(".goButton").colorbox({
-        inline: true,
-        width: "50%",
-        className: "newMsgPopUp"
-    });
-    $("#newMessage .cancel").click(function() {
+var AnimateMessage = function() {
+    var self = this;
+    self.Init = function(id) {
+        $.colorbox({
+            href: '#' + id,
+            inline: true,
+            width: "50%",
+            className: "newMsgPopUp"
+        });
+    },
+    self.Close = function() {
         $.colorbox.close();
-    })
+    }
 };
 
 
