@@ -3,7 +3,7 @@
     <div class="horizontalSection"> 
         <div class="tabsContent active" id="tabContent_2">
             <div class="pageWidth">
-                <!-- form -->
+                <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
                 <div class="horizontalSection noborder messagesTabs">
                     <div class="newMessage">
                         <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
@@ -13,7 +13,9 @@
 
                         <div class="horizontalSection noborder">
                             <div class="itemsListTableRow tableHead messageList">
-                                <div class="col_act"><input type="checkbox"></div>
+                                <div class="col_act">
+                                    <input type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id: cssSelectAll}, checked: isSelectedAll "/>
+                                </div>
                                 <div class="col_icon">&nbsp;</div>
                                 <div class="col_1_summary">Отправитель</div>
                                 <div class="col_icon">&nbsp;</div>
@@ -24,36 +26,54 @@
                             </div>
                         </div>
                         
-                        <!-- for --> 
+                        <!-- ko foreach: messages -->
                         <div class="horizontalSection activeHoverElement">
-                            <div class="itemsListTableRow messageList new">
+                            <div class="itemsListTableRow messageList" data-bind="css : {'new' : IsNew}">
                                 <div class="messageAct">
-                                    <div class="col_act"><input type="checkbox"></div>
-                                    <div class="col_icon"><img src="images/_mail_wrap.png" width="16" height="16" align="top" title="Новое сообщение"></div>
+                                    <div class="col_act">
+                                        <input type="checkbox" data-bind="checked: isSelected, value: id">
+                                    </div>
+                                    <div class="col_icon">
+                                        <!-- ko if: IsNew -->
+                                            <img src="https://dev.pokupo.ru/images/_mail_wrap.png" width="16" height="16" align="top" title="Новое сообщение">
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: IsNew -->
+                                            <img src="https://dev.pokupo.ru/images/_readed_internet_mail.png" width="16" height="16" align="top" title="Новое сообщение">
+                                        <!-- /ko -->
+                                    </div>
                                 </div>
-                                <div class="col_userpic"><img width="24" height="24" src="images/sample-user-pic.jpg"></img></div>
+                                <div class="col_userpic">
+                                    <!-- ko if: logoSrcUser -->
+                                    <img width="24" height="24" src="images/sample-user-pic.jpg"/>
+                                    <!-- /ko -->
+                                </div>
                                 <a href="#">
-                                    <div class="col_1_summary"><span>admin<b></b></span></div>
-                                    <div class="col_2_summary"><span>(112) Тема Sample SubjectТема Sample Subject<b></b></span></div>
-                                    <div class="col_3_summary"><span>Текст сообщения Текст сообщения Текст сообщения Текст сообщения Текст сообщения Текст сообщения <b></b></span></div>
-                                    <div class="col_4_summary">10:24</div>
+                                    <div class="col_1_summary">
+                                        <span>
+                                            <!-- ko text: srcUser --><!-- /ko -->
+                                            <b></b>
+                                        </span>
+                                    </div>
+                                    <div class="col_2_summary"><span>(<!-- ko text: countMessage --><!-- /ko -->) <!-- ko text: nameTopic --><!-- /ko --><b></b></span></div>
+                                    <div class="col_3_summary"><span><!-- ko text: textMessage --><!-- /ko --><b></b></span></div>
+                                    <div class="col_4_summary"><!-- ko text: FormatDateMessage() --><!-- /ko --></div>
                                 </a>
                                 <div class="clear"></div>
                             </div>
                         </div>
-                        <!-- endfor -->
+                        <!-- /ko -->
 
                         <div class="horizontalSection">
                             <table width="100%">
                                 <tr>
                                     <td>
-                                        <button class="subButton left" >Отметить как прочитанное</button>
+                                        <button class="subButton left" data-bind="click: ClickRead">Отметить как прочитанное</button>
                                     </td>
                                     <td>
                                         <!-- paginate -->
                                     </td>
                                     <td>
-                                        <button class="subButton delete right" ><span></span>Удалить</button>
+                                        <button class="subButton delete right" data-bind="click: ClickDelete"><span></span>Удалить</button>
                                     </td>
                                 </tr>
                             </table>

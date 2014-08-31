@@ -1,7 +1,7 @@
 var MenuPersonalCabinetWidget = function(){
     var self = this;
     self.widgetName = 'MenuPersonalCabinetWidget';
-    self.version = 1.0;
+    self.version = 1.1;
     self.minWidgetVersion = 1.0;
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;

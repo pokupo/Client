@@ -32,7 +32,8 @@ var Config = {
         conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
         containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>', // темплейт модального окна с сообщением
         sourceParameters : 'object', // источник параметров (строка подключения скрипта 'string' или обьект 'object')
-        showCustomBlockOnDefault : false
+        showCustomBlockOnDefault : false,
+        toStringMonth : ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Декабря']
     },
     Containers : {  
         catalog : {widget: 'catalog', def: 'default_catalog', customClass: 'custom_block'}, // id контейнера каталога 
@@ -763,11 +764,14 @@ var Config = {
             }
         },
         message : {
-            noReult: "Писем нет :(",
+            noResult: "Писем нет :(",
             messageDelete : "Сообщение удалено.",
             topicDelete : "Тема Удалена.",
+            severalTopicDelete : "Выбранные темы успешно удалены.",
             confirmDeleteMessage : 'Вы уверены, что хотите удалить сообщение?',
-            confirmDeleteTopic : 'Вы уверены, что хотите удалить тему?'
+            confirmDeleteTopic : 'Вы уверены, что хотите удалить тему?',
+            confirmDeleteSeveralTopic : 'Вы уверены, что хотите удалить выбранные темы?',
+            error: 'Ошибка выполнения.'
         },
         style : {// стиль блока
             'position' : 'absolute', 
