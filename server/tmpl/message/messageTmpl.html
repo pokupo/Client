@@ -47,7 +47,7 @@
                                     <img width="24" height="24" src="images/sample-user-pic.jpg"/>
                                     <!-- /ko -->
                                 </div>
-                                <a href="#">
+                                <a href="#" data-bind="click: ClickTopic">
                                     <div class="col_1_summary">
                                         <span>
                                             <!-- ko text: srcUser --><!-- /ko -->
@@ -70,7 +70,9 @@
                                         <button class="subButton left" data-bind="click: ClickRead">Отметить как прочитанное</button>
                                     </td>
                                     <td>
-                                        <!-- paginate -->
+                                        <!-- ko if: paging().length > 1 -->
+                                        <!-- ko template: { name: 'messagePaginateTmpl' } --><!-- /ko -->
+                                        <!-- /ko -->
                                     </td>
                                     <td>
                                         <button class="subButton delete right" data-bind="click: ClickDelete"><span></span>Удалить</button>
@@ -189,13 +191,14 @@
 <script type="text/html" id="messagePaginateTmpl">
     <div class="paginationSmall">
         <ul>
-            <li class="first"><a href="#"></a></li>
-            <li><a href="#">1</a></li>
-            <li class="curent">2</li>
-            <li><a href="#">3</a></li>
-            <li>...</li>
-            <li><a href="#">4</a></li>
-            <li class="last"><a href="#"></a></li>
+            <!-- ko foreach: paging -->
+            <li data-bind="css: cssLink">
+                <!-- ko ifnot: current -->
+                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                <!-- /ko -->
+                <!-- ko text: current ? title : '' --><!-- /ko -->
+            </li>
+            <!-- /ko-->
         </ul>
     </div>
 </script>
