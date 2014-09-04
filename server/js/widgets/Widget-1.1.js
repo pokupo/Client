@@ -1312,7 +1312,7 @@ var Widget = function (){
         TopicInfo : function(id, fullInfo, callback){
             if(!fullInfo)
                 fullInfo = 'unread';
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/count/' + id + '/' + fullInfo), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/info/' + id + '/' + fullInfo), function(data){
                 Parameters.cache.message.topicInfo = null;
                 if(callback)
                     callback(data);

@@ -44,7 +44,7 @@
                                 </div>
                                 <div class="col_userpic">
                                     <!-- ko if: logoSrcUser -->
-                                    <img width="24" height="24" src="images/sample-user-pic.jpg"/>
+                                        <img data-bind="attr: {src: logoSrcUser}" width="24" height="24" src=""/>
                                     <!-- /ko -->
                                 </div>
                                 <a href="#" data-bind="click: ClickTopic">
@@ -93,7 +93,114 @@
 
 <script type="text/html" id="messageListTmpl">
     <!-- version 1.0 -->
-    <div></div>
+    <div class="horizontalSection">
+        <div class="tabsContent active" id="tabContent_2">
+            <div class="pageWidth">
+                <div class="horizontalSection noborder messagesTabs">
+                    <div class="tabsSubnav">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a data-bind="click: ClickBack" href="#">
+                            <img width="16" height="16" align="absmiddle" src="https://dev.pokupo.ru/images/_back_icon.png"/>
+                            Вернуться к списку писем                        
+                        </a>
+                    </div>
+                    <div class="htabsContent active" id="tabContent_1h" >
+
+                        <div class="horizontalSection">
+                            <a href="#" class="expandCollapse expand" data-bind="click: ClickExpand">Раскрыть все</a>
+                            <a href="#" class="expandCollapse collapse" data-bind="click: ClickCollapse">Свернуть все</a>
+                            <h1 data-bind="text: nameTopic"></h1>
+                        </div>
+
+                        <!-- ko foreach: messages -->
+                        <div class="horizontalSection activeHoverElement">
+                            <div class="itemsListTableRow messageList">
+                                <div class="col_userpic">
+                                    <img data-bind="attr: {src : logoSrcUser}" src="" width="24" height="24"/>
+                                </div>
+                                <div class="messageAct">
+                                    <div class="col_icon">
+                                        <!-- ko if: IsMy -->
+                                            <img src="https://dev.pokupo.ru/images/_up_icon.png" width="16" height="16"/>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: IsMy -->
+                                            <img src="https://dev.pokupo.ru/images/_down_icon.png" width="16" height="16"/>
+                                        <!-- /ko -->
+                                    </div>
+                                </div>
+                                <a href="#" class="actAreaShow" data-bind="click: ClickExpand">
+                                    <div class="col_1"><span><!-- ko text: srcUser --><!-- /ko --><b></b></span></div>
+                                    <div class="col_3"><!-- ko text: FormatDateMessage() --><!-- /ko --></div>
+                                    <div class="col_4"><span><!-- ko text: textMessage --><!-- /ko --><b></b></span></div>
+                                </a>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <div class="floatFieldsFormSetion" style="display:none">
+                            <div class="floatFields4columns">
+
+                                <a href="#" class="actAreaHide" data-bind="click: ClickCollapse">
+                                    <div class="formItem userpic">
+                                        <img data-bind="attr: {src : logoSrcUser}" src="" width="48" height="48"/>
+                                    </div>
+                                    <div class="formItem">
+                                        <div class="label">Отправитель:</div>
+                                        <span class="formValue"><!-- ko text: srcUser --><!-- /ko --></span>
+                                    </div>
+                                    <div class="formItem">
+                                        <div class="label">Дата:</div>
+                                        <span class="formValue"><!-- ko text: FormatDateMessage() --><!-- /ko --></span>
+                                    </div>
+                                </a>
+
+                                <div class="clear"></div>
+                                <div class="receiveMessageContent">
+                                    <p><!-- ko text: textMessage --><!-- /ko --></p>
+                                </div>
+
+                                <div class="clear"></div>
+                                <!-- ko ifnot: IsMy -->
+                                    <div class="formButBox">
+                                        <!-- ko if: IsNew -->
+                                            <table align="left">
+                                                <tr>
+                                                    <td>
+                                                        <button class="addButton reply" data-bind="click: ClickReply"><span></span>Ответить</button>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        <!-- /ko -->
+                                        <table align="right">
+                                            <tr>
+                                                <td>
+                                                    <!-- ko ifnot: IsNew -->
+                                                    <button class="subButton" >Отметить как НЕ прочитанное</button>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: IsNew -->
+                                                    <button class="subButton" >Отметить как прочитанное</button>
+                                                    <!-- /ko -->
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="clear"></div>
+                                    </div>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                        <!-- /ko -->
+     
+                        <!-- ko template: { name: 'messageSimpleFormTmpl', data: simpleForm } --><!-- /ko -->
+                    </div>
+                    <div class="tabsSubnav">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a data-bind="click: ClickBack" href="#">
+                            <img width="16" height="16" align="absmiddle" src="https://dev.pokupo.ru/images/_back_icon.png"></img>
+                            Вернуться к списку писем                        
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="messageEmptyListTmpl">
@@ -185,7 +292,40 @@
 
 <script type="text/html" id="messageSimpleFormTmpl">
     <!-- version 1.0 -->
-    <div></div>
+    <div class="floatFieldsFormSetion">
+        <div class="formSetionHeader">Ответить</div>
+        <div class="floatFields1column">
+            <div class="formItem messageField">
+                <label>Сообщение:</label>
+                <textarea rows="5" data-bind="value: text"></textarea>
+                <!-- ko if: textError -->
+                <div class="error" data-bind="text: textError"></div>
+                <!-- /ko -->
+            </div>
+
+            <div class="formItem copyToEmailField">
+                <input type="checkbox" data-bind="value: copyMail"/> Выслать копию на E-mail  
+            </div>
+
+            <div class="formButBox">
+                <table align="left">
+                    <tr>
+                        <td>
+                            <button class="goButton approve" data-bind="click: ClickSend"><span></span>Отправить письмо</button>
+                        </td>
+                    </tr>
+                </table>
+                <table align="right">
+                    <tr>
+                        <td>                                            
+                            <button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить</button>
+                        </td>
+                    </tr>
+                </table>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="messagePaginateTmpl">

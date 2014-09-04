@@ -156,7 +156,7 @@ var MessageWidget = function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('topic')).html()).children().hide();
         },
-        list: function() {
+        List: function() {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('list')).html()).children().hide();
         },
@@ -169,28 +169,24 @@ var MessageWidget = function() {
         Topic: function() {
             var start = (Routing.GetCurrentPage() - 1) * self.settings.paging.itemsPerPage;
             var query = start + '/' + self.settings.paging.itemsPerPage;
-            self.BaseLoad.TopicList(query, function(data) {
-                self.BaseLoad.TopicCount('', function(count) {
-                    
-                    TopicMessageViewModel.prototype = new Widget();
-                    var content = new TopicMessageViewModel(self.settings);
-                    if (!data.err) {
-                        content.countAll(count[0].count_topic);
-                        content.AddContent(data);
+            self.BaseLoad.TopicList(query, function(data) {   
+                TopicMessageViewModel.prototype = new Widget();
+                var content = new TopicMessageViewModel(self.settings);
+                if (!data.err) {
+                    content.AddContent(data);
 
-                        self.InsertContainer.Topic();
-                        self.Render.Topic(content);
-                    }
-                    else {
-                        var msg = Config.Message.message.noResult;
-                        if (data.msg)
-                            msg = data.msg;
-                        content.SetErrorMessage(msg);
+                    self.InsertContainer.Topic();
+                    self.Render.Topic(content);
+                }
+                else {
+                    var msg = Config.Message.message.noResult;
+                    if (data.msg)
+                        msg = data.msg;
+                    content.SetErrorMessage(msg);
 
-                        self.InsertContainer.EmptyList();
-                        self.Render.EmptyList(content);
-                    }
-                });
+                    self.InsertContainer.EmptyList();
+                    self.Render.EmptyList(content);
+                }
             });
         },
         List: function(id) {
@@ -198,7 +194,11 @@ var MessageWidget = function() {
             if(Routing.params.info)
                 fullInfo = Routing.params.info;
             self.BaseLoad.TopicInfo(id, fullInfo, function(data){
+                var content = new ListMessageViewModel();
+                content.AddContent(data);
                 
+                self.InsertContainer.List();
+                self.Render.List(content);
             });
         }
     };
@@ -230,6 +230,8 @@ var MessageWidget = function() {
 //                try {
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    var animate = new AnimateMessage();
+                    animate.ListMessage();
 //                }
 //                catch (e) {
 //                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
@@ -331,6 +333,9 @@ var TopicMessageViewModel = function(settings) {
         });
     };
     self.AddContent = function(data) {
+        var last = data.shift()
+        self.countAll(last.count_topic);
+        
         $.each(data, function(i) {
             self.messages.push(new TopicViewModel(data[i]));
         });
@@ -364,8 +369,8 @@ var TopicViewModel = function(data) {
     self.idTopic = ko.observable(data.id_topic);
     self.srcUser = ko.observable(data.src_user);
     self.dstUser = ko.observable(data.dst_user);
-    self.logoSrcUser = ko.observable(data.logo_src_user);
-    self.logoDstUser = ko.observable(data.logo_dst_user);
+    self.logoSrcUser = ko.observable(Parameters.pathToImages + data.logo_src_user);
+    self.logoDstUser = ko.observable(Parameters.pathToImages + data.logo_dst_user);
     self.textMessage = ko.observable(data.text_message);
     self.status = ko.observable(data.status);
     self.countMessage = ko.observable(data.count_message);
@@ -378,7 +383,7 @@ var TopicViewModel = function(data) {
         return false;
     }, this);
     self.ClickTopic = function(){
-        Routing.SetHash('message', self.nameTopic(), {blobk: 'list', id: self.idTopic()})
+        Routing.SetHash('messages', self.nameTopic(), {block: 'list', id: self.idTopic()})
     };
     self.FormatDateMessage = function() {
         var d = self.dateMessage().split(' ');
@@ -391,11 +396,11 @@ var TopicViewModel = function(data) {
 
         var period = (dateNow - date) / 1000 / 3600;
         if (period < 24 && date.getDay() == dateNow.getDay())
-            return date.getHours() + ':' + PadPithZeroes(date.getMinutes(), 2);
+            return date.getHours() + ':' + self.PadPithZeroes(date.getMinutes(), 2);
 
         return date.getDate() + ' ' + Config.Base.toStringMonth[date.getMonth()];
     };
-    function PadPithZeroes(number, length) {
+    self.PadPithZeroes = function(number, length) {
         var my_string = '' + number;
         while (my_string.length < length) {
             my_string = '0' + my_string;
@@ -403,7 +408,7 @@ var TopicViewModel = function(data) {
 
         return my_string;
     };
-}
+};
 
 var FormMessageViewModel = function(topic) {
     var self = this;
@@ -464,12 +469,108 @@ var FormMessageViewModel = function(topic) {
     };
 };
 
+var SimpleFormMessageViewModel = function(data){
+    var self = this;
+    self.text = ko.observable();
+    self.textError = ko.observable();
+    self.topicId = ko.observable(data.topicId);
+    self.copyMail = ko.observable(false);
+    
+    self.ClickSend = function(){
+        
+    };
+    self.ClickCancel = function(){
+        
+    };
+    self.ClearForm = function(){
+        
+    };
+    self.Validate = function(){
+        
+    };
+};
+
 var ListMessageViewModel = function(){
     var self = this;
     self.topicId = ko.observable();
     self.nameTopic = ko.observable();
-    self.srcUser = ko.observable();
     self.messages = ko.observableArray();
+    self.simpleForm = new SimpleFormMessageViewModel(self);
+    
+    self.AddContent = function(data){
+        self.topicId(data.id_topic);
+        self.nameTopic(data.name_topic);
+        $.each(data.messages, function(i){
+            self.messages.push(new MessageViewModel(data.messages[i]));
+        });
+    };
+    self.ClickBack = function(){
+        Routing.SetHash('messages', 'Сообщения', {block: 'topic'});
+    };
+    self.ClickExpand = function(){
+        
+    };
+    self.ClickCollapse = function(){
+        
+    };
+};
+
+var MessageViewModel = function(data){
+    var self = this;
+    self.id = ko.observable(data.id);
+    self.copyMail = ko.observable(data.copy_mail);
+    self.dateMessage = ko.observable(data.date_message);
+    self.dstUser = ko.observable(data.dst_user);
+    self.logoDstUser = ko.observable(Parameters.pathToImages + data.logo_dst_user);
+    self.srcUser = ko.observable(data.src_user);
+    self.logoSrcUser = ko.observable(Parameters.pathToImages + data.logo_src_user);
+    self.status = ko.observable(data.status);
+    self.textMessage = ko.observable(data.text_message);
+    
+    self.IsNew = ko.computed(function() {
+        if (self.status() == 'send')
+            return true;
+        return false;
+    }, this);
+    self.IsMy = ko.computed(function() {
+        var user = Parameters.cache.userInformation;
+        if(user.login == self.srcUser())
+            return true;
+        return false;
+    }, this);
+    self.FormatDateMessage = function() {
+        var d = self.dateMessage().split(' ');
+        var m = d[0].split('-');
+        var t = d[1].split(':');
+
+        var date = new Date(m[2], m[1].replace(/^0+/, '') - 1, m[0].replace(/^0+/, ''), t[0].replace(/^0+/, ''), t[1].replace(/^0+/, ''), t[2].replace(/^0+/, ''));
+
+        var dateNow = new Date();
+
+        var period = (dateNow - date) / 1000 / 3600;
+        if (period < 24 && date.getDay() == dateNow.getDay())
+            return date.getHours() + ':' + self.PadPithZeroes(date.getMinutes(), 2);
+
+        return date.getDate() + ' ' + Config.Base.toStringMonth[date.getMonth()];
+    };
+    self.PadPithZeroes = function (number, length) {
+        var my_string = '' + number;
+        while (my_string.length < length) {
+            my_string = '0' + my_string;
+        }
+
+        return my_string;
+    };
+    
+    self.ClickReply = function(){
+        
+    };
+    self.ClickExpand = function(){
+        
+    };
+    self.ClickCollapse = function(){
+        
+    };
 };
 
 var TestMessage = {
