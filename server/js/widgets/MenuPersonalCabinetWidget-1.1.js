@@ -17,6 +17,7 @@ var MenuPersonalCabinetWidget = function(){
     };
     self.active = null;
     self.subMenu = [];
+    self.countNewMessage = ko.observable(5);
     self.InitWidget = function(){
         self.settings.tmpl = Config.MenuPersonalCabinet.tmpl;
         self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
@@ -58,6 +59,14 @@ var MenuPersonalCabinetWidget = function(){
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteMenuProfile();
         });
+        
+        EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
+            var count = self.countNewMessage();
+            if(data == '+1')
+                self.countNewMessage(count + 1);
+            if(data == '-1')
+                self.countNewMessage(count - 1);
+        });
     };
     self.InsertContainer = {
         EmptyWidget : function(){
@@ -70,7 +79,7 @@ var MenuPersonalCabinetWidget = function(){
         }
     };
     self.Fill = function(){
-        var menu = new MenuPersonalCabinetViewModel();
+        var menu = new MenuPersonalCabinetViewModel(self);
         menu.AddSubMenu(self.subMenu, self.active);
         self.Render(menu);
     };
@@ -107,12 +116,15 @@ var MenuPersonalCabinetWidget = function(){
     };
 };
 
-var MenuPersonalCabinetViewModel = function(){
+var MenuPersonalCabinetViewModel = function(menu){
     var self = this;
     self.subMenu = ko.observableArray();
     var user = Parameters.cache.userInformation;
     self.avatar = Parameters.pathToImages + user.route_icon_user;
     self.username = user.login;
+    self.countNewMessage = ko.computed(function(){
+        return menu.countNewMessage();
+    }, this);
     
     self.AddSubMenu = function(subMenu, active){
         for(var key in subMenu){

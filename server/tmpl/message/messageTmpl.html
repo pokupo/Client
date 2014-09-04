@@ -5,9 +5,16 @@
             <div class="pageWidth">
                 <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
                 <div class="horizontalSection noborder messagesTabs">
-                    <div class="newMessage">
-                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    <div class="searchBar">
+                        <div class="newMessage">
+                            <a href="#newMessage" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                        </div>
+                        <form class="serch_form" action="">
+                            <input class="form_text" name="text" value="" placeholder="Поиск сообщений" type="text" data-bind="value: searchMessage">
+                            <input class="form_submit" value="" type="submit" data-bind="click: ClickSearch">
+                        </form>
                     </div>
+                    <div class="clear"></div>
 
                     <div class="htabsContent">
 
@@ -202,9 +209,16 @@
             <div class="pageWidth">
                 <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
                 <div class="horizontalSection noborder messagesTabs">
-                    <div class="newMessage">
-                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    <div class="searchBar">
+                        <div class="newMessage">
+                            <a href="#newMessage" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                        </div>
+                        <form class="serch_form" action="">
+                            <input class="form_text" name="text" value="" placeholder="Поиск сообщений" type="text" data-bind="value: searchMessage">
+                            <input class="form_submit" value="" type="submit" data-bind="click: ClickSearch">
+                        </form>
                     </div>
+                    <div class="clear"></div>
                     <div class="htabsContent">
                         <div class="horizontalSection">
                             <table width="100%">

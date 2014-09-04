@@ -102,6 +102,10 @@ var MessageWidget = function() {
                     form.dstUserError('');
             })
         });
+        
+        EventDispatcher.AddEventListener('MessageWidget.search.message', function(text){
+            self.Fill.Topic(text);
+        });
 
         EventDispatcher.AddEventListener('MessageWidget.add.message', function(topic) {
             var form = topic.modalForm();
@@ -127,9 +131,7 @@ var MessageWidget = function() {
             for (var i = 0; i <= topicArray.length - 1; i++) {
                 self.BaseLoad.TopicRead(topicArray[i].idTopic(), function(data) {
                     if (data.result != 'ok') {
-                        self.ShowMessage(Config.Message.message.error, function() {
-                            Routing.SetHash('message', 'Сообщения', {});
-                        }, false);
+                        self.QueryError(data, function(){EventDispatcher.DispatchEvent('MessageWidget.read.topic', topicArray)});
                     }
                 });
             }
@@ -140,7 +142,7 @@ var MessageWidget = function() {
                 self.BaseLoad.TopicDelete(topicArray[i].idTopic(), function(data) {
                     if (data.result != 'ok') {
                         self.ShowMessage(Config.Message.message.error, function() {
-                            Routing.SetHash('message', 'Сообщения', {});
+                            Routing.SetHash('messages', 'Сообщения', {});
                         }, false);
                     }
                 });
@@ -151,7 +153,7 @@ var MessageWidget = function() {
             self.BaseLoad.MessageSetRead(message.id(), function(data) {
                 if (data.result != 'ok') {
                     self.ShowMessage(Config.Message.message.error, function() {
-                        Routing.SetHash('message', topic.nameTopic(), {block:'list', id : topic.topicId()});
+                        Routing.SetHash('messages', topic.nameTopic(), {block:'list', id : topic.topicId()});
                     }, false);
                 }
             });
@@ -161,7 +163,7 @@ var MessageWidget = function() {
             self.BaseLoad.MessageSetUnread(message.id(), function(data) {
                 if (data.result != 'ok') {
                     self.ShowMessage(Config.Message.message.error, function() {
-                        Routing.SetHash('message', topic.nameTopic(), {block:'list', id : topic.topicId()});
+                        Routing.SetHash('messages', topic.nameTopic(), {block:'list', id : topic.topicId()});
                     }, false);
                 }
             });
@@ -202,14 +204,18 @@ var MessageWidget = function() {
         }
     };
     self.Fill = {
-        Topic: function() {
+        Topic: function(text) {
             var start = (Routing.GetCurrentPage() - 1) * self.settings.paging.itemsPerPage;
             var query = start + '/' + self.settings.paging.itemsPerPage;
+            if(text)
+                query = query + '/' + encodeURIComponent(text);
             self.BaseLoad.TopicList(query, function(data) {   
                 TopicMessageViewModel.prototype = new Widget();
                 var content = new TopicMessageViewModel(self.settings);
                 if (!data.err) {
                     content.AddContent(data);
+                    if(text)
+                        content.searchMessage(text);
 
                     self.InsertContainer.Topic();
                     self.Render.Topic(content);
@@ -219,6 +225,8 @@ var MessageWidget = function() {
                     if (data.msg)
                         msg = data.msg;
                     content.SetErrorMessage(msg);
+                    if(text)
+                        content.searchMessage(text);
 
                     self.InsertContainer.EmptyList();
                     self.Render.EmptyList(content);
@@ -263,26 +271,26 @@ var MessageWidget = function() {
         },
         List: function(data) {
             if ($("#" + self.settings.containerId).length > 0) {
-//                try {
+                try {
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                     var animate = new AnimateMessage();
                     animate.ListMessage();
-//                }
-//                catch (e) {
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
-//                    if (self.settings.tmpl.custom) {
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-//                            self.InsertContainer.List();
-//                            self.Render.List(data);
-//                        });
-//                    }
-//                    else {
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerId);
-//                    }
-//                }
+                }
+                catch (e) {
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
+                            self.InsertContainer.List();
+                            self.Render.List(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
         },
         EmptyList: function(data) {
@@ -335,6 +343,7 @@ var TopicMessageViewModel = function(settings) {
     self.modalForm = ko.observable(new FormMessageViewModel(self));
     self.cssSelectAll = "messagesSelectAll";
     self.isSelectedAll = ko.observable(false);
+    self.searchMessage = ko.observable();
 
     self.SetErrorMessage = function(message) {
         self.messageError(message);
@@ -347,14 +356,19 @@ var TopicMessageViewModel = function(settings) {
         ko.utils.arrayForEach(self.messages(), function(message) {
             if (message.isSelected())
                 topicArray.push(message);
-        })
+        });
 
         return topicArray;
+    };
+    self.ClickSearch = function(){
+        EventDispatcher.DispatchEvent('MessageWidget.search.message', self.searchMessage());
     };
     self.ClickRead = function() {
         var selected = self.GetSelected();
         $.each(selected, function(i) {
-            selected[i].status('read');
+            if(!selected[i].IsMy()){
+                selected[i].SetStatus('read');
+            }
             selected[i].isSelected(false);
         });
         EventDispatcher.DispatchEvent('MessageWidget.read.topic', selected);
@@ -417,6 +431,19 @@ var TopicViewModel = function(data) {
             return true;
         return false;
     }, this);
+    self.IsMy = ko.computed(function() {
+        var user = Parameters.cache.userInformation;
+        if(user.login == self.srcUser())
+            return true;
+        return false;
+    }, this);
+    self.SetStatus = function(status){
+        self.status(status)
+        if(status == 'read')
+            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
+        else
+            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
+    };
     self.ClickTopic = function(){
         Routing.SetHash('messages', self.nameTopic(), {block: 'list', id: self.idTopic()})
     };
@@ -592,6 +619,13 @@ var MessageViewModel = function(data, topic){
     self.timeout = data.text_message.length/250 * Config.Message.timer;
     self.stopTime = false;
     
+    self.SetStatus = function(status){
+        self.status(status)
+        if(status == 'read')
+            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
+        else
+            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
+    };
     self.IsNew = ko.computed(function() {
         if (self.status() == 'send')
             return true;
@@ -633,12 +667,14 @@ var MessageViewModel = function(data, topic){
         $('#' + id)[0].scrollIntoView(250);
     };
     self.ClickRead = function() {
-        EventDispatcher.DispatchEvent('MessageWidget.read.message', self, topic);
-        self.status('read');
+        if(!self.IsMy()){
+            EventDispatcher.DispatchEvent('MessageWidget.read.message', self, topic);
+            self.SetStatus('read');
+        }
     };
     self.ClickUnread = function(){
         EventDispatcher.DispatchEvent('MessageWidget.unread.message', self, topic);
-        self.status('send');
+        self.SetStatus('send');
     };
     self.ClickExpand = function(){
         if(self.status() == 'send'){
