@@ -104,15 +104,13 @@
                         </a>
                     </div>
                     <div class="htabsContent active" id="tabContent_1h" >
-
                         <div class="horizontalSection">
                             <a href="#" class="expandCollapse expand" data-bind="click: ClickExpand">Раскрыть все</a>
                             <a href="#" class="expandCollapse collapse" data-bind="click: ClickCollapse">Свернуть все</a>
                             <h1 data-bind="text: nameTopic"></h1>
                         </div>
-
                         <!-- ko foreach: messages -->
-                        <div class="horizontalSection activeHoverElement">
+                        <div class="horizontalSection activeHoverElement" data-bind="css : {'new' : IsNew}">
                             <div class="itemsListTableRow messageList">
                                 <div class="col_userpic">
                                     <img data-bind="attr: {src : logoSrcUser}" src="" width="24" height="24"/>
@@ -137,7 +135,6 @@
                         </div>
                         <div class="floatFieldsFormSetion" style="display:none">
                             <div class="floatFields4columns">
-
                                 <a href="#" class="actAreaHide" data-bind="click: ClickCollapse">
                                     <div class="formItem userpic">
                                         <img data-bind="attr: {src : logoSrcUser}" src="" width="48" height="48"/>
@@ -151,32 +148,28 @@
                                         <span class="formValue"><!-- ko text: FormatDateMessage() --><!-- /ko --></span>
                                     </div>
                                 </a>
-
                                 <div class="clear"></div>
                                 <div class="receiveMessageContent">
                                     <p><!-- ko text: textMessage --><!-- /ko --></p>
                                 </div>
-
                                 <div class="clear"></div>
                                 <!-- ko ifnot: IsMy -->
                                     <div class="formButBox">
-                                        <!-- ko if: IsNew -->
-                                            <table align="left">
-                                                <tr>
-                                                    <td>
-                                                        <button class="addButton reply" data-bind="click: ClickReply"><span></span>Ответить</button>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        <!-- /ko -->
+                                        <table align="left">
+                                            <tr>
+                                                <td>
+                                                    <button class="addButton reply" data-bind="click: ClickReply"><span></span>Ответить</button>
+                                                </td>
+                                            </tr>
+                                        </table>
                                         <table align="right">
                                             <tr>
                                                 <td>
                                                     <!-- ko ifnot: IsNew -->
-                                                    <button class="subButton" >Отметить как НЕ прочитанное</button>
+                                                    <button type="button" class="subButton" data-bind="click: ClickUnread">Отметить как НЕ прочитанное</button>
                                                     <!-- /ko -->
                                                     <!-- ko if: IsNew -->
-                                                    <button class="subButton" >Отметить как прочитанное</button>
+                                                    <button type="button" class="subButton" data-bind="click: ClickRead">Отметить как прочитанное</button>
                                                     <!-- /ko -->
                                                 </td>
                                             </tr>
@@ -187,7 +180,6 @@
                             </div>
                         </div>
                         <!-- /ko -->
-     
                         <!-- ko template: { name: 'messageSimpleFormTmpl', data: simpleForm } --><!-- /ko -->
                     </div>
                     <div class="tabsSubnav">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -292,7 +284,7 @@
 
 <script type="text/html" id="messageSimpleFormTmpl">
     <!-- version 1.0 -->
-    <div class="floatFieldsFormSetion">
+    <div class="floatFieldsFormSetion" data-bind="attr: {id: cssSimpleFormMessage}" style="display:none">
         <div class="formSetionHeader">Ответить</div>
         <div class="floatFields1column">
             <div class="formItem messageField">
@@ -304,7 +296,13 @@
             </div>
 
             <div class="formItem copyToEmailField">
-                <input type="checkbox" data-bind="value: copyMail"/> Выслать копию на E-mail  
+                <!-- ko if: copyMail -->
+                <input type="checkbox" checked="checked" data-bind="value: copyMail"/>
+                <!-- /ko -->
+                <!-- ko ifnot: copyMail -->
+                <input type="checkbox" data-bind="value: copyMail"/>
+                <!-- /ko -->
+                Выслать копию на E-mail  
             </div>
 
             <div class="formButBox">

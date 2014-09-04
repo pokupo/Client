@@ -146,6 +146,42 @@ var MessageWidget = function() {
                 });
             }
         });
+        
+        EventDispatcher.AddEventListener('MessageWidget.read.message', function(message, topic){
+            self.BaseLoad.MessageSetRead(message.id(), function(data) {
+                if (data.result != 'ok') {
+                    self.ShowMessage(Config.Message.message.error, function() {
+                        Routing.SetHash('message', topic.nameTopic(), {block:'list', id : topic.topicId()});
+                    }, false);
+                }
+            });
+        });
+        
+        EventDispatcher.AddEventListener('MessageWidget.unread.message', function(message, topic){
+            self.BaseLoad.MessageSetUnread(message.id(), function(data) {
+                if (data.result != 'ok') {
+                    self.ShowMessage(Config.Message.message.error, function() {
+                        Routing.SetHash('message', topic.nameTopic(), {block:'list', id : topic.topicId()});
+                    }, false);
+                }
+            });
+        });
+        
+        EventDispatcher.AddEventListener('MessageWidget.reply.message', function(message){
+            var str = '?id_topic=' + message.topic.topicId() + '&text_message=' + encodeURIComponent(message.text()) + '&copy_mail=' + (message.copyMail() ? 'yes' : 'no');           
+            self.BaseLoad.MessageAdd(str, function(data) {
+                if (!data.err) {
+                    message.ClearForm();
+                    message.topic.messages.push(new MessageViewModel(data, message.topic));
+                }
+                else{
+                    self.QueryError(
+                        data, 
+                        function(){EventDispatcher.DispatchEvent('MessageWidget.reply.message', message)},
+                        function(){message.ClearForm()});
+                }
+            });
+        });
     };
     self.InsertContainer = {
         EmptyWidget: function() {
@@ -349,16 +385,15 @@ var TopicMessageViewModel = function(settings) {
         var ClickLinkPage = function() {
             Loader.Indicator('MessageWidget', false);
             Routing.UpdateHash({page: this.pageId});
-        }
-        
+        };
         self.paging = Paging.GetPaging(self.countAll(), settings, ClickLinkPage);
-    }
+    };
     self.ClickSelectAll = function() {
         var check = $('#' + self.cssSelectAll).is(':checked');
         ko.utils.arrayForEach(self.messages(), function(message) {
             message.isSelected(check);
         });
-    }
+    };
 };
 
 var TopicViewModel = function(data) {
@@ -473,20 +508,33 @@ var SimpleFormMessageViewModel = function(data){
     var self = this;
     self.text = ko.observable();
     self.textError = ko.observable();
-    self.topicId = ko.observable(data.topicId);
+    self.topic = data;
     self.copyMail = ko.observable(false);
+    self.cssSimpleFormMessage = 'simple_form_message';
     
     self.ClickSend = function(){
-        
+        if (self.Validate()) {
+            EventDispatcher.DispatchEvent('MessageWidget.reply.message', self);
+        }
     };
     self.ClickCancel = function(){
-        
+        $('#' + self.cssSimpleFormMessage).hide(200);
+        self.ClearForm();
     };
     self.ClearForm = function(){
-        
+        self.text('');
+        self.textError('');
+        self.copyMail(false);
     };
     self.Validate = function(){
-        
+        if (!self.text())
+            self.textError(Config.Message.error.text.empty);
+        else
+            self.textError();
+            
+        if(self.textError())
+            return false
+        return true;
     };
 };
 
@@ -501,21 +549,35 @@ var ListMessageViewModel = function(){
         self.topicId(data.id_topic);
         self.nameTopic(data.name_topic);
         $.each(data.messages, function(i){
-            self.messages.push(new MessageViewModel(data.messages[i]));
+            self.messages.push(new MessageViewModel(data.messages[i], self));
         });
     };
     self.ClickBack = function(){
-        Routing.SetHash('messages', 'Сообщения', {block: 'topic'});
+        Routing.SetHash('messages', 'Сообщения', {block: 'topic', page: Routing.GetLastPageNumber()});
     };
     self.ClickExpand = function(){
-        
+        var newMessages = [];
+        $.each(self.messages(), function(i){
+            if(self.messages()[i].status() == 'send' && !self.messages()[i].IsMy())
+                newMessages.push(self.messages()[i]);
+        })
+        var timeout = 0;
+        $.each(newMessages, function(i){
+            setTimeout(function(){
+                newMessages[i].InitTimer()
+            }, timeout);
+            timeout = timeout + newMessages[i].timeout;
+        });
     };
     self.ClickCollapse = function(){
-        
+        $.each(self.messages(), function(i){
+            if(self.messages()[i].status() == 'send' && !self.messages()[i].IsMy())
+                self.messages()[i].stopTime = true;
+        })
     };
 };
 
-var MessageViewModel = function(data){
+var MessageViewModel = function(data, topic){
     var self = this;
     self.id = ko.observable(data.id);
     self.copyMail = ko.observable(data.copy_mail);
@@ -526,6 +588,9 @@ var MessageViewModel = function(data){
     self.logoSrcUser = ko.observable(Parameters.pathToImages + data.logo_src_user);
     self.status = ko.observable(data.status);
     self.textMessage = ko.observable(data.text_message);
+    self.time = 0;
+    self.timeout = data.text_message.length/250 * Config.Message.timer;
+    self.stopTime = false;
     
     self.IsNew = ko.computed(function() {
         if (self.status() == 'send')
@@ -563,13 +628,42 @@ var MessageViewModel = function(data){
     };
     
     self.ClickReply = function(){
-        
+        var id = topic.simpleForm.cssSimpleFormMessage;
+        $('#' + id).show(200);
+        $('#' + id)[0].scrollIntoView(250);
+    };
+    self.ClickRead = function() {
+        EventDispatcher.DispatchEvent('MessageWidget.read.message', self, topic);
+        self.status('read');
+    };
+    self.ClickUnread = function(){
+        EventDispatcher.DispatchEvent('MessageWidget.unread.message', self, topic);
+        self.status('send');
     };
     self.ClickExpand = function(){
-        
+        if(self.status() == 'send'){
+            self.time = 0;
+            self.stopTime = false;
+            self.InitTimer();
+        }
     };
     self.ClickCollapse = function(){
+        self.stopTime = true;
+    };
+    self.InitTimer = function(){
+        setTimeout(function(){
+            if(!self.stopTime){
+                self.time = self.time + 1;
+                if(self.time >= self.timeout){
+                    self.ClickRead();
+                    return true;
+                }
+                else
+                    self.InitTimer();
+            }
+        }, 1000);
         
+        return false;
     };
 };
 

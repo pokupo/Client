@@ -741,6 +741,7 @@ var Config = {
         }
     },
     Message : {
+        timer : 10,
         tmpl : {
             path : "message/messageTmpl.html", // файл шаблонов
             id : {
