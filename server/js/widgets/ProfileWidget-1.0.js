@@ -401,7 +401,7 @@
     }
     self.Info = {
         Menu : function(){
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
                 if (!Routing.params.info)
                      Routing.params.info = Config.Profile.menu.personalInformation.prefix;
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : Config.Profile.menu, active : Routing.params.info});
@@ -839,9 +839,8 @@
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function() {
-                for (var i = 0; i <= Config.Containers.authentication.length - 1; i++) {
-                    $("#" + Config.Containers.authentication[i]).css(self.settings.style);
-                }
+                if ($('#' + self.settings.containerFormId).length > 0)
+                    $('#' + self.settings.containerFormId).css(self.settings.style);
             });
         }
     };

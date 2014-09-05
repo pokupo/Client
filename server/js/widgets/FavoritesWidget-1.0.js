@@ -101,7 +101,7 @@ var FavoritesWidget = function() {
                 else{
                     if(!data.err)
                         data.err = Config.Favorites.message.failClearGoods;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear', opt)})
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear.one', opt)})
                 }
             })
         });
@@ -125,7 +125,7 @@ var FavoritesWidget = function() {
                 else{
                     if(!data.err)
                         data.err = Config.Favorites.message.failClearGoods;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear', opt)})
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear.all', opt)})
                 }
             })
         });
@@ -146,7 +146,7 @@ var FavoritesWidget = function() {
         },
         Menu : function(){
             Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
         },

@@ -1,7 +1,7 @@
 var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
-    
+
     host : "dev.pokupo.ru/",
     pathToJS : "server/js/",
     pathToTmpl : "server/tmpl/",
@@ -39,7 +39,8 @@ var JSSettings = {
         'widgets/AnimateSelectList-1.0.js',
         'widgets/AnimateBreadCrumb-1.0.js',
         'widgets/AnimateTab-1.0.js',
-        'widgets/AnimateOrderList-1.0.js'],
+        'widgets/AnimateOrderList-1.0.js',
+        'widgets/AnimateMessage-1.0.js'],
     inputParameters : {}
 }
 

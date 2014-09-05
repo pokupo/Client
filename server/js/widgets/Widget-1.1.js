@@ -57,6 +57,12 @@ Parameters = {
             security : {},
             info : {}
         },
+        message : {
+            topicList : {},
+            topicCount : {},
+            topicInfo : {},
+            messageInfo : {}
+        },
         lastPage : {},
         https : null,
         userInformation : null,
@@ -332,6 +338,7 @@ var Widget = function (){
                 shopPathApi : Config.Base.shopPathApi,
                 orderPathApi : Config.Base.orderPathApi,
                 paymentPathApi : Config.Base.paymentPathApi,
+                messagePathApi : Config.Base.messagePathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
@@ -1286,6 +1293,80 @@ var Widget = function (){
                 if(callback)
                     callback(data);
             }, true);
+        },
+        
+        TopicList : function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/list/' + str), function(data){
+                Parameters.cache.message.topicList = data;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        TopicCount : function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/count' + str), function(data){
+                Parameters.cache.message.topicCount = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        TopicInfo : function(id, fullInfo, callback){
+            if(!fullInfo)
+                fullInfo = 'unread';
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/info/' + id + '/' + fullInfo), function(data){
+                Parameters.cache.message.topicInfo = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        TopicRead : function(id, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/read/' + id), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        TopicDelete : function(id, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/delete/' + id), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        MessageInfo : function(id, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'info/' + id), function(data){
+                Parameters.cache.message.messageInfo = null;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        MessageSetRead : function(id, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'read/' + id), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        MessageSetUnread : function(id, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'unread/' + id), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        MessageAdd : function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'add/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        MessageDelete : function(id, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'delete/' + id), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        MessageCountUnread : function(callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'unread/count/'), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
         }
+        
     };
 };

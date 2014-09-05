@@ -11,6 +11,7 @@ var Config = {
         shopPathApi : "/api/shop/", // префикс API магазина
         orderPathApi : "/api/order/", // префикс API заказов
         paymentPathApi : "/api/payment/", // префикс API оплаты
+        messagePathApi : "/api/message/", // префикс API сообщений
         pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
         routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
@@ -31,7 +32,8 @@ var Config = {
         conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
         containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>', // темплейт модального окна с сообщением
         sourceParameters : 'object', // источник параметров (строка подключения скрипта 'string' или обьект 'object')
-        showCustomBlockOnDefault : false
+        showCustomBlockOnDefault : false,
+        toStringMonth : ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Декабря']
     },
     Containers : {  
         catalog : {widget: 'catalog', def: 'default_catalog', customClass: 'custom_block'}, // id контейнера каталога 
@@ -57,7 +59,8 @@ var Config = {
         favorites : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера избранного
         order : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера оформления заказа
         orderList : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера списка заказов
-        buttonPayment : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера страницы оплаты
+        buttonPayment : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера страницы оплаты
+        message : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера списка сообщений
     },
     Goods : {
         tmpl: {
@@ -727,6 +730,47 @@ var Config = {
             orderCancel : "Ваш заказ отменен.",
             confirmCancelOrder : 'Вы уверены, что хотите отменить заказ?',
             confirmDeleteOrder : 'Вы уверены, что хотите удалить заказ?'
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    Message : {
+        timer : 10,
+        tmpl : {
+            path : "message/messageTmpl.html", // файл шаблонов
+            id : {
+                topic : "messageTopicTmpl", //id шаблона списка тем
+                list : "messageListTmpl", //id шаблона списка сообщений
+                empty : 'messageEmptyListTmpl' //id шаблона пустого списка
+            }
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            username : {
+                empty : 'Поле обязательно для заполнения',
+                notFound : 'Получатель не найден.'
+            },
+            topic: {
+                empty : 'Поле обязательно для заполнения'
+            },
+            text: {
+                empty : 'Поле обязательно для заполнения'
+            }
+        },
+        message : {
+            noResult: "Писем нет :(",
+            messageDelete : "Сообщение удалено.",
+            topicDelete : "Тема Удалена.",
+            severalTopicDelete : "Выбранные темы успешно удалены.",
+            confirmDeleteMessage : 'Вы уверены, что хотите удалить сообщение?',
+            confirmDeleteTopic : 'Вы уверены, что хотите удалить тему?',
+            confirmDeleteSeveralTopic : 'Вы уверены, что хотите удалить выбранные темы?',
+            error: 'Ошибка выполнения.'
         },
         style : {// стиль блока
             'position' : 'absolute', 

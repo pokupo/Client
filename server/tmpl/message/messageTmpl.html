@@ -1,0 +1,356 @@
+<script type="text/html" id="messageTopicTmpl">
+    <!-- version 1.0 -->
+    <div class="horizontalSection"> 
+        <div class="tabsContent active" id="tabContent_2">
+            <div class="pageWidth">
+                <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
+                <div class="horizontalSection noborder messagesTabs">
+                    <div class="searchBar">
+                        <div class="newMessage">
+                            <a href="#newMessage" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                        </div>
+                        <form class="serch_form" action="">
+                            <input class="form_text" name="text" value="" placeholder="Поиск сообщений" type="text" data-bind="value: searchMessage">
+                            <input class="form_submit" value="" type="submit" data-bind="click: ClickSearch">
+                        </form>
+                    </div>
+                    <div class="clear"></div>
+
+                    <div class="htabsContent">
+
+                        <div class="horizontalSection noborder">
+                            <div class="itemsListTableRow tableHead messageList">
+                                <div class="col_act">
+                                    <input type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id: cssSelectAll}, checked: isSelectedAll "/>
+                                </div>
+                                <div class="col_icon">&nbsp;</div>
+                                <div class="col_1_summary">Отправитель</div>
+                                <div class="col_icon">&nbsp;</div>
+                                <div class="col_2_summary">Тема</div>
+                                <div class="col_3_summary">Сообщение</div>
+                                <div class="col_4_summary">Дата</div>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- ko foreach: messages -->
+                        <div class="horizontalSection activeHoverElement">
+                            <div class="itemsListTableRow messageList" data-bind="css : {'new' : IsNew}">
+                                <div class="messageAct">
+                                    <div class="col_act">
+                                        <input type="checkbox" data-bind="checked: isSelected, value: id">
+                                    </div>
+                                    <div class="col_icon">
+                                        <!-- ko if: IsNew -->
+                                            <img src="https://dev.pokupo.ru/images/_mail_wrap.png" width="16" height="16" align="top" title="Новое сообщение">
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: IsNew -->
+                                            <img src="https://dev.pokupo.ru/images/_readed_internet_mail.png" width="16" height="16" align="top" title="Новое сообщение">
+                                        <!-- /ko -->
+                                    </div>
+                                </div>
+                                <div class="col_userpic">
+                                    <!-- ko if: logoSrcUser -->
+                                        <img data-bind="attr: {src: logoSrcUser}" width="24" height="24" src=""/>
+                                    <!-- /ko -->
+                                </div>
+                                <a href="#" data-bind="click: ClickTopic">
+                                    <div class="col_1_summary">
+                                        <span>
+                                            <!-- ko text: srcUser --><!-- /ko -->
+                                            <b></b>
+                                        </span>
+                                    </div>
+                                    <div class="col_2_summary"><span>(<!-- ko text: countMessage --><!-- /ko -->) <!-- ko text: nameTopic --><!-- /ko --><b></b></span></div>
+                                    <div class="col_3_summary"><span><!-- ko text: textMessage --><!-- /ko --><b></b></span></div>
+                                    <div class="col_4_summary"><!-- ko text: FormatDateMessage() --><!-- /ko --></div>
+                                </a>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <!-- /ko -->
+
+                        <div class="horizontalSection">
+                            <table width="100%">
+                                <tr>
+                                    <td>
+                                        <button class="subButton left" data-bind="click: ClickRead">Отметить как прочитанное</button>
+                                    </td>
+                                    <td>
+                                        <!-- ko if: paging().length > 1 -->
+                                        <!-- ko template: { name: 'messagePaginateTmpl' } --><!-- /ko -->
+                                        <!-- /ko -->
+                                    </td>
+                                    <td>
+                                        <button class="subButton delete right" data-bind="click: ClickDelete"><span></span>Удалить</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="newMessage">
+                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</script>
+
+<script type="text/html" id="messageListTmpl">
+    <!-- version 1.0 -->
+    <div class="horizontalSection">
+        <div class="tabsContent active" id="tabContent_2">
+            <div class="pageWidth">
+                <div class="horizontalSection noborder messagesTabs">
+                    <div class="tabsSubnav">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a data-bind="click: ClickBack" href="#">
+                            <img width="16" height="16" align="absmiddle" src="https://dev.pokupo.ru/images/_back_icon.png"/>
+                            Вернуться к списку писем                        
+                        </a>
+                    </div>
+                    <div class="htabsContent active" id="tabContent_1h" >
+                        <div class="horizontalSection">
+                            <a href="#" class="expandCollapse expand" data-bind="click: ClickExpand">Раскрыть все</a>
+                            <a href="#" class="expandCollapse collapse" data-bind="click: ClickCollapse">Свернуть все</a>
+                            <h1 data-bind="text: nameTopic"></h1>
+                        </div>
+                        <!-- ko foreach: messages -->
+                        <div class="horizontalSection activeHoverElement" data-bind="css : {'new' : IsNew}">
+                            <div class="itemsListTableRow messageList">
+                                <div class="col_userpic">
+                                    <img data-bind="attr: {src : logoSrcUser}" src="" width="24" height="24"/>
+                                </div>
+                                <div class="messageAct">
+                                    <div class="col_icon">
+                                        <!-- ko if: IsMy -->
+                                            <img src="https://dev.pokupo.ru/images/_up_icon.png" width="16" height="16"/>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: IsMy -->
+                                            <img src="https://dev.pokupo.ru/images/_down_icon.png" width="16" height="16"/>
+                                        <!-- /ko -->
+                                    </div>
+                                </div>
+                                <a href="#" class="actAreaShow" data-bind="click: ClickExpand">
+                                    <div class="col_1"><span><!-- ko text: srcUser --><!-- /ko --><b></b></span></div>
+                                    <div class="col_3"><!-- ko text: FormatDateMessage() --><!-- /ko --></div>
+                                    <div class="col_4"><span><!-- ko text: textMessage --><!-- /ko --><b></b></span></div>
+                                </a>
+                                <div class="clear"></div>
+                            </div>
+                        </div>
+                        <div class="floatFieldsFormSetion" style="display:none">
+                            <div class="floatFields4columns">
+                                <a href="#" class="actAreaHide" data-bind="click: ClickCollapse">
+                                    <div class="formItem userpic">
+                                        <img data-bind="attr: {src : logoSrcUser}" src="" width="48" height="48"/>
+                                    </div>
+                                    <div class="formItem">
+                                        <div class="label">Отправитель:</div>
+                                        <span class="formValue"><!-- ko text: srcUser --><!-- /ko --></span>
+                                    </div>
+                                    <div class="formItem">
+                                        <div class="label">Дата:</div>
+                                        <span class="formValue"><!-- ko text: FormatDateMessage() --><!-- /ko --></span>
+                                    </div>
+                                </a>
+                                <div class="clear"></div>
+                                <div class="receiveMessageContent">
+                                    <p><!-- ko text: textMessage --><!-- /ko --></p>
+                                </div>
+                                <div class="clear"></div>
+                                <!-- ko ifnot: IsMy -->
+                                    <div class="formButBox">
+                                        <table align="left">
+                                            <tr>
+                                                <td>
+                                                    <button class="addButton reply" data-bind="click: ClickReply"><span></span>Ответить</button>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <table align="right">
+                                            <tr>
+                                                <td>
+                                                    <!-- ko ifnot: IsNew -->
+                                                    <button type="button" class="subButton" data-bind="click: ClickUnread">Отметить как НЕ прочитанное</button>
+                                                    <!-- /ko -->
+                                                    <!-- ko if: IsNew -->
+                                                    <button type="button" class="subButton" data-bind="click: ClickRead">Отметить как прочитанное</button>
+                                                    <!-- /ko -->
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="clear"></div>
+                                    </div>
+                                <!-- /ko -->
+                            </div>
+                        </div>
+                        <!-- /ko -->
+                        <!-- ko template: { name: 'messageSimpleFormTmpl', data: simpleForm } --><!-- /ko -->
+                    </div>
+                    <div class="tabsSubnav">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a data-bind="click: ClickBack" href="#">
+                            <img width="16" height="16" align="absmiddle" src="https://dev.pokupo.ru/images/_back_icon.png"></img>
+                            Вернуться к списку писем                        
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="messageEmptyListTmpl">
+    <!-- version 1.0 -->
+    <div class="horizontalSection"> 
+        <div class="tabsContent active" id="tabContent_2">
+            <div class="pageWidth">
+                <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
+                <div class="horizontalSection noborder messagesTabs">
+                    <div class="searchBar">
+                        <div class="newMessage">
+                            <a href="#newMessage" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                        </div>
+                        <form class="serch_form" action="">
+                            <input class="form_text" name="text" value="" placeholder="Поиск сообщений" type="text" data-bind="value: searchMessage">
+                            <input class="form_submit" value="" type="submit" data-bind="click: ClickSearch">
+                        </form>
+                    </div>
+                    <div class="clear"></div>
+                    <div class="htabsContent">
+                        <div class="horizontalSection">
+                            <table width="100%">
+                                <tr>
+                                    <td>
+                                        <div class="paginationSmall" data-bind="html: messageError"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="newMessage">
+                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</script>
+
+<script type="text/html" id="messageModalFormTmpl">
+    <!-- version 1.0 -->
+    <div style='display:none'>
+        <div data-bind="attr: {id: idForm}"> 
+            <div class="floatFieldsFormSetion messagesTabs">
+                <h1>Новое сообщение</h1>
+                <div class="floatFields1column">
+                    <div class="formItem sendToField">
+                        <label>Получатель:</label>
+                        <input type="text"  data-bind="value: dstUser, event: { blur: OnBlurEvent }"/>
+                        <!-- ko if: dstUserError -->
+                        <div class="error" data-bind="text:dstUserError"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem">
+                        <label>Тема сообщения:</label>
+                        <input type="text" data-bind="value: topicName"/>
+                        <!-- ko if: topicNameError -->
+                        <div class="error" data-bind="text: topicNameError"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem messageField">
+                        <label>Сообщение:</label>
+                        <textarea rows="5" data-bind="value: text"></textarea>
+                        <!-- ko if: textError -->
+                        <div class="error" data-bind="text: textError"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="formItem copyToEmailField">
+                        <input type="checkbox" data-bind="value: copyMail"/> Выслать копию на E-mail 
+                    </div>
+
+                    <div class="formButBox">
+                        <table align="left">
+                            <tr>
+                                <td>
+                                    <button class="goButton approve" data-bind="click: ClickSend"><span></span>Отправить письмо</button>
+                                </td>
+                                <td width="20">&nbsp;</td>
+                            </tr>
+                        </table>
+                        <table align="right">
+                            <tr>
+                                <td>
+                                    <button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить</button>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="messageSimpleFormTmpl">
+    <!-- version 1.0 -->
+    <div class="floatFieldsFormSetion" data-bind="attr: {id: cssSimpleFormMessage}" style="display:none">
+        <div class="formSetionHeader">Ответить</div>
+        <div class="floatFields1column">
+            <div class="formItem messageField">
+                <label>Сообщение:</label>
+                <textarea rows="5" data-bind="value: text"></textarea>
+                <!-- ko if: textError -->
+                <div class="error" data-bind="text: textError"></div>
+                <!-- /ko -->
+            </div>
+
+            <div class="formItem copyToEmailField">
+                <!-- ko if: copyMail -->
+                <input type="checkbox" checked="checked" data-bind="value: copyMail"/>
+                <!-- /ko -->
+                <!-- ko ifnot: copyMail -->
+                <input type="checkbox" data-bind="value: copyMail"/>
+                <!-- /ko -->
+                Выслать копию на E-mail  
+            </div>
+
+            <div class="formButBox">
+                <table align="left">
+                    <tr>
+                        <td>
+                            <button class="goButton approve" data-bind="click: ClickSend"><span></span>Отправить письмо</button>
+                        </td>
+                    </tr>
+                </table>
+                <table align="right">
+                    <tr>
+                        <td>                                            
+                            <button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить</button>
+                        </td>
+                    </tr>
+                </table>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="messagePaginateTmpl">
+    <div class="paginationSmall">
+        <ul>
+            <!-- ko foreach: paging -->
+            <li data-bind="css: cssLink">
+                <!-- ko ifnot: current -->
+                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                <!-- /ko -->
+                <!-- ko text: current ? title : '' --><!-- /ko -->
+            </li>
+            <!-- /ko-->
+        </ul>
+    </div>
+</script>
