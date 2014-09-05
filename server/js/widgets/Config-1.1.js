@@ -747,8 +747,6 @@ var Config = {
             id : {
                 topic : "messageTopicTmpl", //id шаблона списка тем
                 list : "messageListTmpl", //id шаблона списка сообщений
-                modal_form : "messageModalFormTmpl", // id шаблона поп ап формы
-                simple_form : "messageSimpleFormTmpl", // id шаблона простой формы
                 empty : 'messageEmptyListTmpl' //id шаблона пустого списка
             }
         },

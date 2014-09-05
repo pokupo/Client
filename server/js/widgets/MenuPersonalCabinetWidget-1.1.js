@@ -79,9 +79,12 @@ var MenuPersonalCabinetWidget = function(){
         }
     };
     self.Fill = function(){
-        var menu = new MenuPersonalCabinetViewModel(self);
-        menu.AddSubMenu(self.subMenu, self.active);
-        self.Render(menu);
+        self.BaseLoad.MessageCountUnread(function(data){
+            self.countNewMessage(parseInt(data.count_unread_topic));
+            var menu = new MenuPersonalCabinetViewModel(self);
+            menu.AddSubMenu(self.subMenu, self.active);
+            self.Render(menu);
+        });
     };
     self.Render = function(menu){
         if ($("#" + self.settings.containerMenuId).length > 0) {

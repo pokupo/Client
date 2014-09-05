@@ -1360,6 +1360,13 @@ var Widget = function (){
                 if(callback)
                     callback(data);
             }, true);
+        },
+        MessageCountUnread : function(callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'unread/count/'), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
         }
+        
     };
 };
