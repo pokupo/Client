@@ -26,9 +26,9 @@
                 <li data-bind="css: activeMessages ">
                     <a href="#" data-bind="click: ClickMessages">
                         <span>Сообщения</span>
-                     
+                        <!-- ko if: countNewMessage > 0 -->
                         <span class="informer">(+<!-- ko text: countNewMessage --><!-- /ko -->)</span>
-                        
+                        <!-- /ko -->
                     </a>
                 </li>
                 <li class="rightLink" ><a href="#" class="link" data-bind="click: ClickBecomeSeller">Стать продавцом</a></li>

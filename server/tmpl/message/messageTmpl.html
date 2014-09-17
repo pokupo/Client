@@ -24,7 +24,7 @@
                                     <input type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id: cssSelectAll}, checked: isSelectedAll "/>
                                 </div>
                                 <div class="col_icon">&nbsp;</div>
-                                <div class="col_1_summary">Отправитель</div>
+                                <div class="col_1_summary">Пользователь</div>
                                 <div class="col_icon">&nbsp;</div>
                                 <div class="col_2_summary">Тема</div>
                                 <div class="col_3_summary">Сообщение</div>
@@ -50,14 +50,26 @@
                                     </div>
                                 </div>
                                 <div class="col_userpic">
-                                    <!-- ko if: logoSrcUser -->
-                                        <img data-bind="attr: {src: logoSrcUser}" width="24" height="24" src=""/>
+                                    <!-- ko ifnot: IsMy -->
+                                        <!-- ko if: logoSrcUser -->
+                                            <img data-bind="attr: {src: logoSrcUser}" width="24" height="24" src=""/>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+                                    <!-- ko if: IsMy -->
+                                        <!-- ko if: logoSrcUser -->
+                                            <img data-bind="attr: {src: logoDstUser}" width="24" height="24" src=""/>
+                                        <!-- /ko -->
                                     <!-- /ko -->
                                 </div>
                                 <a href="#" data-bind="click: ClickTopic">
                                     <div class="col_1_summary">
                                         <span>
-                                            <!-- ko text: srcUser --><!-- /ko -->
+                                            <!-- ko ifnot: IsMy -->
+                                                <!-- ko text: srcUser --><!-- /ko -->
+                                            <!-- /ko -->
+                                            <!-- ko if: IsMy -->
+                                                <!-- ko text: dstUser --><!-- /ko -->
+                                            <!-- /ko -->
                                             <b></b>
                                         </span>
                                     </div>
@@ -112,12 +124,12 @@
                     </div>
                     <div class="htabsContent active" id="tabContent_1h" >
                         <div class="horizontalSection">
-                            <a href="#" class="expandCollapse expand" data-bind="click: ClickExpand">Раскрыть все</a>
-                            <a href="#" class="expandCollapse collapse" data-bind="click: ClickCollapse">Свернуть все</a>
+                            <a href="#" class="expandCollapse" data-bind="click: ClickExpand, css: cssExpandAll">Раскрыть все</a>
+                            <a href="#" class="expandCollapse" data-bind="click: ClickCollapse, css: cssCollapseAll">Свернуть все</a>
                             <h1 data-bind="text: nameTopic"></h1>
                         </div>
                         <!-- ko foreach: messages -->
-                        <div class="horizontalSection activeHoverElement" data-bind="css : {'new' : IsNew}">
+                        <div class="horizontalSection activeHoverElement" data-bind="css : cssPrevie">
                             <div class="itemsListTableRow messageList">
                                 <div class="col_userpic">
                                     <img data-bind="attr: {src : logoSrcUser}" src="" width="24" height="24"/>
@@ -140,15 +152,17 @@
                                 <div class="clear"></div>
                             </div>
                         </div>
-                        <div class="floatFieldsFormSetion" style="display:none">
+                        <div class="floatFieldsFormSetion" style="display:none" data-bind="css : cssFull">
                             <div class="floatFields4columns">
                                 <a href="#" class="actAreaHide" data-bind="click: ClickCollapse">
                                     <div class="formItem userpic">
                                         <img data-bind="attr: {src : logoSrcUser}" src="" width="48" height="48"/>
                                     </div>
                                     <div class="formItem">
-                                        <div class="label">Отправитель:</div>
-                                        <span class="formValue"><!-- ko text: srcUser --><!-- /ko --></span>
+                                        <div class="label">Пользователь:</div>
+                                        <span class="formValue">
+                                            <!-- ko text: srcUser --><!-- /ko -->
+                                        </span>
                                     </div>
                                     <div class="formItem">
                                         <div class="label">Дата:</div>
@@ -160,7 +174,6 @@
                                     <p><!-- ko text: textMessage --><!-- /ko --></p>
                                 </div>
                                 <div class="clear"></div>
-                                <!-- ko ifnot: IsMy -->
                                     <div class="formButBox">
                                         <table align="left">
                                             <tr>
@@ -169,6 +182,7 @@
                                                 </td>
                                             </tr>
                                         </table>
+                                        <!-- ko ifnot: IsMy -->
                                         <table align="right">
                                             <tr>
                                                 <td>
@@ -181,9 +195,9 @@
                                                 </td>
                                             </tr>
                                         </table>
+                                        <!-- /ko -->
                                         <div class="clear"></div>
                                     </div>
-                                <!-- /ko -->
                             </div>
                         </div>
                         <!-- /ko -->

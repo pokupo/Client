@@ -173,8 +173,10 @@ var MessageWidget = function() {
             var str = '?id_topic=' + message.topic.topicId() + '&text_message=' + encodeURIComponent(message.text()) + '&copy_mail=' + (message.copyMail() ? 'yes' : 'no');           
             self.BaseLoad.MessageAdd(str, function(data) {
                 if (!data.err) {
-                    message.ClearForm();
-                    message.topic.messages.push(new MessageViewModel(data, message.topic));
+                    var newMessage = new MessageViewModel(data, message.topic);
+                    message.topic.messages.push(newMessage);
+                    newMessage.ClickExpand();
+                    message.ClickCancel();
                 }
                 else{
                     self.QueryError(
@@ -271,26 +273,47 @@ var MessageWidget = function() {
         },
         List: function(data) {
             if ($("#" + self.settings.containerId).length > 0) {
-                try {
+//                try {
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                     var animate = new AnimateMessage();
                     animate.ListMessage();
-                }
-                catch (e) {
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
-                    if (self.settings.tmpl.custom) {
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-                            self.InsertContainer.List();
-                            self.Render.List(data);
-                        });
+                    var messages = data.messages();
+                    var newMessages = [];
+                    $.each(messages, function(i){
+                        if(messages[i].IsNew() && !messages[i].IsMy()){
+                            messages[i].ClickExpand();
+                            newMessages.push(messages[i]);
+                        }
+                    });
+                    
+                    if(messages.length == newMessages.length){
+                        $('.' + messages.cssExpandAll).hide();
+                        $('.' + messages.cssCollapseAll).show();
                     }
-                    else {
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+                    
+                    var timeout = 0;
+                    $.each(newMessages, function(i){
+                        setTimeout(function(){
+                            newMessages[i].InitTimer()
+                        }, timeout);
+                        timeout = timeout + newMessages[i].timeout;
+                    });
+//                }
+//                catch (e) {
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+//                    if (self.settings.tmpl.custom) {
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
+//                            self.InsertContainer.List();
+//                            self.Render.List(data);
+//                        });
+//                    }
+//                    else {
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerId);
+//                    }
+//                }
             }
         },
         EmptyList: function(data) {
@@ -426,14 +449,14 @@ var TopicViewModel = function(data) {
     self.copyMail = ko.observable(data.copyMail);
     self.isSelected = ko.observable(false);
 
-    self.IsNew = ko.computed(function() {
-        if (self.status() == 'send')
-            return true;
-        return false;
-    }, this);
     self.IsMy = ko.computed(function() {
         var user = Parameters.cache.userInformation;
         if(user.login == self.srcUser())
+            return true;
+        return false;
+    }, this);
+    self.IsNew = ko.computed(function() {
+        if (self.status() == 'send' && !self.IsMy())
             return true;
         return false;
     }, this);
@@ -571,6 +594,8 @@ var ListMessageViewModel = function(){
     self.nameTopic = ko.observable();
     self.messages = ko.observableArray();
     self.simpleForm = new SimpleFormMessageViewModel(self);
+    self.cssExpandAll = 'expand';
+    self.cssCollapseAll = 'collapse';
     
     self.AddContent = function(data){
         self.topicId(data.id_topic);
@@ -584,7 +609,10 @@ var ListMessageViewModel = function(){
     };
     self.ClickExpand = function(){
         var newMessages = [];
+        $('.' + self.cssExpandAll).hide();
+        $('.' + self.cssCollapseAll).show();
         $.each(self.messages(), function(i){
+            self.messages()[i].ClickExpand();
             if(self.messages()[i].status() == 'send' && !self.messages()[i].IsMy())
                 newMessages.push(self.messages()[i]);
         })
@@ -597,7 +625,10 @@ var ListMessageViewModel = function(){
         });
     };
     self.ClickCollapse = function(){
+        $('.' + self.cssExpandAll).show();
+        $('.' + self.cssCollapseAll).hide();
         $.each(self.messages(), function(i){
+            self.messages()[i].ClickCollapse();
             if(self.messages()[i].status() == 'send' && !self.messages()[i].IsMy())
                 self.messages()[i].stopTime = true;
         })
@@ -619,13 +650,6 @@ var MessageViewModel = function(data, topic){
     self.timeout = data.text_message.length/250 * Config.Message.timer;
     self.stopTime = false;
     
-    self.SetStatus = function(status){
-        self.status(status)
-        if(status == 'read')
-            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
-        else
-            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
-    };
     self.IsNew = ko.computed(function() {
         if (self.status() == 'send')
             return true;
@@ -637,6 +661,23 @@ var MessageViewModel = function(data, topic){
             return true;
         return false;
     }, this);
+    self.cssPrevieClear = 'previe_message_' + self.id();
+    self.cssPrevie = ko.computed(function() {
+        var str = self.cssPrevieClear;
+        if(self.IsNew())
+            str = str + ' new';
+        return str;
+    }, this);
+    self.cssFull = 'full_message_' + self.id();
+    self.isExpand = ko.observable(false);
+    
+    self.SetStatus = function(status){
+        self.status(status)
+        if(status == 'read')
+            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
+        else
+            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
+    };
     self.FormatDateMessage = function() {
         var d = self.dateMessage().split(' ');
         var m = d[0].split('-');
@@ -677,6 +718,9 @@ var MessageViewModel = function(data, topic){
         self.SetStatus('send');
     };
     self.ClickExpand = function(){
+        self.isExpand(true);
+        $('.' + self.cssPrevieClear).hide();
+        $('.' + self.cssFull).show();
         if(self.status() == 'send'){
             self.time = 0;
             self.stopTime = false;
@@ -684,6 +728,9 @@ var MessageViewModel = function(data, topic){
         }
     };
     self.ClickCollapse = function(){
+        self.isExpand(false);
+        $('.' + self.cssPrevieClear).show();
+        $('.' + self.cssFull).hide();
         self.stopTime = true;
     };
     self.InitTimer = function(){
