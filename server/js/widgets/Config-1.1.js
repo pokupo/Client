@@ -522,7 +522,8 @@ var Config = {
             title : 'never', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
             count : false, // отображать кол-во товара
             baseCost : false, // отображать сумму без скидок
-            finalCost : false // отображать конечную сумму
+            finalCost : false, // отображать конечную сумму
+            fullInfo : false // отображать информацию по товарам
         },
         tmpl : {
             path : "cart/cartTmpl.html", // файл шаблонов

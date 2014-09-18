@@ -17,7 +17,7 @@ var MenuPersonalCabinetWidget = function(){
     };
     self.active = null;
     self.subMenu = [];
-    self.countNewMessage = ko.observable(5);
+    self.countNewMessage = ko.observable();
     self.InitWidget = function(){
         self.settings.tmpl = Config.MenuPersonalCabinet.tmpl;
         self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
