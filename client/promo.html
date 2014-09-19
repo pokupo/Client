@@ -25,7 +25,7 @@ and open the template in the editor.
                     block: {count: 6, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/content/blockTmpl_promo.html'}},
                     content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/content/contentTmpl_promo.html'}}
                 },
-                search: {},
+                search: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/search/searchTmpl_promo.html'}},
                 searchResult: {content: {list: [10, 20, 50], defaultCount: 20}},
                 goods: {infoBlock: 1111111, show: ["selectionCount", "addToCart", "buy", "gallery", "shipping", "opinion"]},
                 userInformation: {show: ["icon", "raiting"], tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/userInformation/userInformationTmpl_promo.html'}},
@@ -60,7 +60,7 @@ and open the template in the editor.
         <script src="http://pokupo-server.asmsoft.ru/js/widgets/CatalogWidget-1.0.js" type="text/javascript"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/widgets/BreadCrumbWidget-1.0.js" type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/ContentWidget-1.1.js' type="text/javascript"></script>
-                <!--<script src="http://pokupo-server.asmsoft.ru/js/widgets/SearchWidget-1.0.js" type="text/javascript"></script>-->
+        <script src="http://pokupo-server.asmsoft.ru/js/widgets/SearchWidget-1.0.js" type="text/javascript"></script>
                 <!--<script src='http://pokupo-server.asmsoft.ru/js/widgets/SearchResultWidget-1.1.js' type="text/javascript"></script>-->
                 <!--<script src='http://pokupo-server.asmsoft.ru/js/widgets/GoodsWidget-1.2.js' type="text/javascript"></script>-->
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/UserInformationWidget-1.1.js' type="text/javascript"></script>
@@ -132,64 +132,10 @@ and open the template in the editor.
 
             </section>
             <!-- search -->
-            <section class="orange search">
-                <div class="container">
-                    <div class="b-search">
-                        <div class="b-search-holder">
-                            <input type="search" placeholder="Поиск по каталогу..." class="b-search__input">
-                        </div>
-                        <div class="b-location dropdown selector"><a href="javascript:void(0);" data-target="location" class="b-location__current dropdown__trigger selector__current">Все категории</a>
-                            <div data-target="location" class="dropdown__content hidden">
-                                <div class="b-location__catalog selector__options">
-                                    <ul class="menu">
-                                        <li class="menu__item active"><a href="#"><span>Все разделы</span></a>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Компьютерная техника</span></a>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Бытовая техника</span></a>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Телефоны и связь</span></a>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Фото и оптика</span></a>
-                                        </li>
-                                        <li class="menu__item with-submenu"><a href="#"><span>Одежда, обувь, акксессуары</span></a>
-                                            <ul class="submenu">
-                                                <li class="submenu__item"><a href="#"><span>Кроссовки</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Кеды</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Босоножки</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Туфли</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Ботильоны</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Сандалии</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Балетки</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Сапоги</span></a>
-                                                </li>
-                                                <li class="submenu__item"><a href="#"><span>Резиновая обувь</span></a>
-                                                </li>
-                                            </ul>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Подарки и праздники</span></a>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Книги, учебники и журналы</span></a>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Мебель, интерьеры и обиход</span></a>
-                                        </li>
-                                        <li class="menu__item"><a href="#"><span>Другое</span></a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <button type="button" class="b-search__button">Найти</button>
-                    </div>
-                </div>
+            <section class="orange search" id="search_block">
+
             </section>
+            
             <section class="advanced-search slidedown">
                 <div class="container">
                     <div class="advanced-search-trigger"><span data-target="search" class="advanced-search-trigger__text slidedown__trigger">Расширенный поиск</span>
@@ -266,10 +212,8 @@ and open the template in the editor.
             <!-- /slider -->
             
             <!-- content -->
-            <section class="store">
-                <div class="container">
-                    <div class="b-thermometer" id="breadCrumb_1"></div>
-                </div>
+            <section class="store" id="breadCrumb_1">
+
             </section>
             <!-- /content -->
             

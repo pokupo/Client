@@ -291,33 +291,33 @@ var ContentWidget = function(){
         },
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                try{
+//                try{
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     var f = data.filters;
                     new AnimateSelectList(f.sort.cssSortList);
                     $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.List(data.typeView);
-                            self.Render.List(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.List(data.typeView);
+//                            self.Render.List(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerId);
+//                    }
+//                }
             }
             delete data;
         },
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
-//                try{
+                try{
                     ko.applyBindings(data, $('#' + data.cssBlock)[0]);
                     self.Render.Animate.block.push({type: data.typeView, data : data})
                     self.testBlock.ready = self.testBlock.ready + 1;
@@ -326,21 +326,21 @@ var ContentWidget = function(){
                         self.WidgetLoader(true, self.settings.blockContainerId[data.typeView].widget);
                         self.Render.Animate.Do();
                     }
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Block(data.typeView);
-//                            self.Render.Block(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.blockContainerId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Block(data.typeView);
+                            self.Render.Block(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.blockContainerId);
+                    }
+                }
             }
             delete data;
         },
