@@ -19,8 +19,8 @@ var BreadCrumbWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.breadCrumb.widget;
         self.settings.customContainer = Config.Containers.breadCrumb.customClass;
-        self.settings.tmpl = Config.BreadCrumbs.tmpl;
-        self.settings.styleBreadCrumb = Config.BreadCrumbs.style;
+        self.settings.tmpl = Config.BreadCrumb.tmpl;
+        self.settings.styleBreadCrumb = Config.BreadCrumb.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.CheckRouteBreadCrumb();

@@ -106,7 +106,7 @@ var Config = {
             'background' : '#ddd'
         }
     },
-    BreadCrumbs : {
+    BreadCrumb : {
         tmpl: {
             path : "breadCrumb/breadCrumbTmpl.html", // путь к шаблонам
             id : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию

@@ -4,7 +4,11 @@ var ContentViewModel = function(data, i){
     self.uniq = EventDispatcher.GetUUID();
     self.chortName = data.chort_name;
     self.fullName = data.full_name;
-    self.routeImage = Parameters.pathToImages + data.route_image;
+    self.routeImage = ko.computed(function(){
+        if(data.route_image)
+            return Parameters.pathToImages + data.route_image
+        return null;
+    }, this);
     self.countTovars = data.count;
     self.sellGoods = data.sell_cost + " руб.";
     self.sellCost = data.sell_end_cost + " руб.";

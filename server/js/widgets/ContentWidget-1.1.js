@@ -311,7 +311,9 @@ var ContentWidget = function(){
         },
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
-                try{
+//                try{
+console.log(data.titleBlock);
+console.log(data.contentBlock()[0].str());
                     ko.applyBindings(data, $('#' + data.cssBlock)[0]);
                     self.Render.Animate.block.push({type: data.typeView, data : data})
                     self.testBlock.ready = self.testBlock.ready + 1;
@@ -320,21 +322,21 @@ var ContentWidget = function(){
                         self.WidgetLoader(true, self.settings.blockContainerId);
                         self.Render.Animate.Do();
                     }
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Block(data.typeView);
-                            self.Render.Block(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.blockContainerId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Block(data.typeView);
+//                            self.Render.Block(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.blockContainerId);
+//                    }
+//                }
             }
             delete data;
         },

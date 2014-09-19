@@ -2,6 +2,7 @@
     <!-- version 1.0 -->
 
     <div class="circles-menu">
+        <!-- ko if: isAuthorized -->
         <div class="circles-menu__item dropdown">
             <a href="javascript:void(0);" data-target="cart" class="with-icon icon__cart dropdown__trigger">
                 <!-- ko if: ShowCount() -->
@@ -14,28 +15,30 @@
                 <!-- ko if: ShowTitle() -->
                 <p data-bind="text: title"></p>
                 <!-- /ko -->
-                <div class="b-cart-menu__body"><i class="b-cart-menu__patch"></i>
+                <!-- ko if: goods.length > 0 -->
+                <div class="b-cart-menu__body">
+                    <i class="b-cart-menu__patch"></i>
                     <ol class="b-cart-menu__goods">
-                        
+                        <!-- ko foreach: goods -->
                         <li class="b-cart-menu__goods-item b-order-item">
                             <div class="b-order-item__name">
-                                <span>Converse Red</span>
+                                <span  data-bind="text: fullName"></span>
                             </div>
                             <div class="b-order-item__qty">
                                 <span class="b-increment-group">
-                                    <span class="b-increment-group__darr"></span>
-                                    <span class="b-increment-group__qty">2</span>
-                                    <span class="b-increment-group__uarr"></span>
+                                    <span class="b-increment-group__darr" data-bind="click: ClickMinus"></span>
+                                    <span class="b-increment-group__qty" data-bind="text: ordered"></span>
+                                    <span class="b-increment-group__uarr" data-bind="click: ClickPlus"></span>
                                 </span>
                             </div>
                             <div class="b-order-item__cost b-price">
-                                <span class="b-price__number">4900</span>
+                                <span class="b-price__number" data-bind="text: endSum"></span>
                                 <span class="b-price__thinsp">&nbsp;</span>
                                 <span class="b-price__rubl">Р</span>
                             </div>
-                            <div class="b-order-item__drop btn-circle btn-circle--drop"></div>
+                            <div class="b-order-item__drop btn-circle btn-circle--drop" data-bind="click: ClickRemove"></div>
                         </li>
-                        
+                        <!-- /ko -->
                     </ol>
                     <a href="#" class="btn btn-md b-cart-menu__order-button" data-bind="click: ClickCart">Оформить</a>
                     <p class="b-cart-menu__results">
@@ -54,7 +57,9 @@
                         </span>
                     </p>
                 </div>
+                <!-- /ko -->
             </div>
         </div>
+        <!-- /ko -->
     </div>
 </script>

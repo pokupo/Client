@@ -418,8 +418,8 @@ var RegistrationWidget = function() {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    $('input#' + form.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateRegistration();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
@@ -442,6 +442,7 @@ var RegistrationWidget = function() {
                 try{
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateRegistration();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
@@ -476,6 +477,7 @@ var RegistrationWidget = function() {
                         }
                     });
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateRegistration();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
@@ -611,6 +613,7 @@ var RegistrationWidget = function() {
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateRegistration();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');

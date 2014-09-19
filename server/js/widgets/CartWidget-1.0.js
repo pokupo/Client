@@ -67,7 +67,16 @@ var CartWidget = function(){
         }
         else{
             self.BaseLoad.CartInfo('', function(data){
-                EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
+                if(self.settings.showBlocks.fullInfo){
+                    self.BaseLoad.CartGoods('', function(goods){
+                        self.InsertContainer.Main();
+                        self.Fill({info : data, goods : goods});
+                    });
+                }
+                else{
+                    self.InsertContainer.Main();
+                    self.Fill({info : data});
+                }
             });
         }
     };
@@ -80,11 +89,6 @@ var CartWidget = function(){
         EventDispatcher.AddEventListener('CartWidget.onload.tmpl', function (){
             self.CheckRoute();
         });
-        
-        EventDispatcher.AddEventListener('CartWidget.onload.info', function(data){
-            self.InsertContainer.Main();
-            self.Fill(data);
-        })
         
         EventDispatcher.AddEventListener('widget.authentication.ok', function(){
             self.BaseLoad.CartInfo('', function(data){
@@ -143,6 +147,12 @@ var CartWidget = function(){
 var CartViewModel = function(){
     var self = this;
     self.title = Config.Cart.title;
+    self.goods = ko.observableArray();
+    self.isAuthorized = ko.computed(function(){
+        if(Parameters.cache.userInformation && !Parameters.cache.userInformation.err)
+            return true;
+        return false;
+    }, this);
     self.ShowTitle = ko.computed(function(){
         if(Config.Cart.showBlocks.title == 'never')
             return false;
@@ -173,10 +183,17 @@ var CartViewModel = function(){
     },this);
     
     self.AddContent = function(data){
-        if(!data.err){
+        var info = data.info;
+        var goods = data.goods;
+        if(!info.err){
             self.count(data.count);
             self.baseCost(data.base_cost);
             self.finalCost(data.final_cost);
+        }
+        if(goods && !goods.err){
+            $.each(goods, function(i){
+                self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i], self));
+            });
         }
     };
     self.ClickCart = function(){
@@ -186,6 +203,47 @@ var CartViewModel = function(){
         }
     };
 };
+
+var ShortBlockCartGoodsSellersViewModel = function(data, cart){
+    var self = this;
+    self.id = data.id;
+    self.fullName = data.full_name;
+    self.countReserv = data.count_reserv;
+    self.count = data.count;
+    self.sellCost = ko.observable(data.sell_cost);
+    self.sellEndCost = ko.observable(data.sell_end_cost);
+    self.routeImages = Parameters.pathToImages + data.route_image;
+    self.ordered = ko.observable(self.count);
+    self.sum = ko.computed(function(){
+        return (self.ordered() * self.sellCost()).toFixed(2);
+    }, this);
+    self.endSum = ko.computed(function(){
+        return (self.ordered() * self.sellEndCost()).toFixed(2);
+    }, this);
+    self.ClickPlus = function(){
+        if(self.ordered() < self.countReserv){
+            self.ordered(self.ordered() + 1);
+        }
+    };
+    self.ClickMinus = function(){
+        if(self.ordered() > 0){
+            self.ordered(self.ordered() - 1);
+        }
+    };
+    self.ClickGoods = function(){
+        Routing.SetHash('goods', self.fullName, {id : self.id});
+    };
+    self.ClickRemove = function(){
+//        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
+//        block.goods.remove(self);
+//        if(block.goods().length == 0){
+//            content.content.remove(block);
+//            if(content.content().length == 0){
+//                EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
+//            }
+//        }
+    };
+}
 
 var TestCart = {
     Init : function(){

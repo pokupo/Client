@@ -160,24 +160,24 @@ var UserInformationWidget = function(){
         },
         InfoBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
-//                try{
+                try{
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-//                }
-//                catch(e){
-//                    self.Exeption('Error of the template [' + self.GetTmplName('info') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.InfoBlock();
-//                            self.Render.InfoBlock(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Error of the template [' + self.GetTmplName('info') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.InfoBlock();
+                            self.Render.InfoBlock(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
             
         }
