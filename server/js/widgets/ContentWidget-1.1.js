@@ -81,7 +81,7 @@ var ContentWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content.content.widget;
         self.settings.customContainer = Config.Containers.content.content.customClass;
-        self.settings.blockContainerId = Config.Containers.content.block.widget;
+        self.settings.blockContainerId = Config.Containers.content.block;
         self.settings.customBlock = Config.Containers.content.block.customClass;
         self.settings.tmpl = Config.Content.tmpl;
         self.settings.countGoodsInBlock = Config.Content.countGoodsInBlock;
@@ -199,20 +199,26 @@ var ContentWidget = function(){
     };
     self.InsertContainer = {
         EmptyBlockWidget : function(){
-            var temp = $("#" + self.settings.blockContainerId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.blockContainerId).empty().html(temp);
+            var temp = $("#" + self.settings.blockContainerId.slider.widget).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.blockContainerId.slider.widget).empty().html(temp);
+            var temp = $("#" + self.settings.blockContainerId.carousel.widget).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.blockContainerId.carousel.widget).empty().html(temp);
+            var temp = $("#" + self.settings.blockContainerId.tile.widget).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.blockContainerId.tile.widget).empty().html(temp);
         },
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('slider', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.slider.widget).append($('script#' + self.GetTmplName('slider', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.slider.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
             }
             if(type == 'carousel'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('carusel', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.carousel.widget).append($('script#' + self.GetTmplName('carusel', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.carousel.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
             }
             if(type == 'tile'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('tile', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.tile.widget).append($('script#' + self.GetTmplName('tile', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.tile.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
             }
-            $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
         EmptyWidget : function(){
             var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
@@ -312,14 +318,12 @@ var ContentWidget = function(){
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
 //                try{
-console.log(data.titleBlock);
-console.log(data.contentBlock()[0].str());
                     ko.applyBindings(data, $('#' + data.cssBlock)[0]);
                     self.Render.Animate.block.push({type: data.typeView, data : data})
                     self.testBlock.ready = self.testBlock.ready + 1;
 
                     if(self.testBlock.IsReady()){
-                        self.WidgetLoader(true, self.settings.blockContainerId);
+                        self.WidgetLoader(true, self.settings.blockContainerId[data.typeView].widget);
                         self.Render.Animate.Do();
                     }
 //                }

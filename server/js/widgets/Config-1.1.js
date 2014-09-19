@@ -41,7 +41,11 @@ var Config = {
         breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
         content : {
             content : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, 
-            block: {widget: 'block', def: 'default_block', customClass: 'custom_block'}
+            block: {
+                slider: {widget: 'slider_block', def: 'slider_default_block', customClass: 'slider_custom_block'},
+                carousel: {widget: 'carousel_block', def: 'carousel_default_block', customClass: 'carousel_custom_block'},
+                tile: {widget: 'tile_block', def: 'tile_default_block', customClass: 'tile_custom_block'}
+            }
         }, // id контейнера контента
         searchResult : {
             form: {widget: 'advanced_search', def: 'default_advanced_search', customClass: 'custom_block'},

@@ -9,6 +9,11 @@ var ContentViewModel = function(data, i){
             return Parameters.pathToImages + data.route_image
         return null;
     }, this);
+    self.backgroundImage = ko.computed(function(){
+        if(data.route_image)
+            return "background: url('" + Parameters.pathToImages + data.route_image + "')";
+        return null;
+    }, this);
     self.countTovars = data.count;
     self.sellGoods = data.sell_cost + " руб.";
     self.sellCost = data.sell_end_cost + " руб.";
