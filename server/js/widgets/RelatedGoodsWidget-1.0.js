@@ -30,12 +30,6 @@ window.RelatedGoodsWidget = function(){
         uniq : null
     };
     self.InitWidget = function(){
-        self.settings.tmpl = Config.RelatedGoods.tmpl;
-        self.settings.relatedGoods.count = Config.RelatedGoods.countGoodsInBlock;
-        self.settings.relatedGoods.countTile = Config.RelatedGoods.countGoodsTileInStr;
-        self.settings.relatedGoods.typeView = Config.RelatedGoods.typeView;
-        self.settings.relatedGoods.orderBy = Config.RelatedGoods.orderBy;
-        self.settings.relatedGoods.start = Config.RelatedGoods.start;
         self.Loader();
         self.RegisterEvents();
         self.LoadTmpl();
@@ -44,6 +38,8 @@ window.RelatedGoodsWidget = function(){
         Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
+        self.settings.tmpl = Config.RelatedGoods.tmpl;
+        self.settings.relatedGoods = Config.RelatedGoods;
         self.settings.container = data.element;
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
@@ -110,28 +106,24 @@ window.RelatedGoodsWidget = function(){
         related.AddContent();
     };
     self.Render = function(data){
-        try{
+//        try{
             ko.applyBindings(data, $(self.settings.container).children()[0]);
-
-            if(self.settings.relatedGoods.typeView == 'slider')
-                    new AnimateSlider(data.cssBlockContainer);
-            if(self.settings.relatedGoods.typeView == 'carousel')
-                    new AnimateCarousel(data.cssBlockContainer);
-        }
-        catch(e){
-            self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
-            if(self.settings.tmpl.custom){
-                delete self.settings.tmpl.custom;
-                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                    self.InsertContainer.Content(data.typeView);
-                    self.Render.Content(data);
-                });
-            }
-            else{
-                self.InsertContainer.EmptyWidget();
-                self.WidgetLoader(true, self.settings.container);
-            }
-        }
+            new AnimateRelatedGoods();
+//        }
+//        catch(e){
+//            self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
+//            if(self.settings.tmpl.custom){
+//                delete self.settings.tmpl.custom;
+//                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                    self.InsertContainer.Content(data.typeView);
+//                    self.Render.Content(data);
+//                });
+//            }
+//            else{
+//                self.InsertContainer.EmptyWidget();
+//                self.WidgetLoader(true, self.settings.container);
+//            }
+//        }
     };
 }
 

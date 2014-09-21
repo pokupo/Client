@@ -226,8 +226,8 @@ var Config = {
                 carousel : "relatedGoodsCarouselTmpl" // id шаблона карусели
             }
         },
-        countGoodsInBlock : 6, // максимальное кол-во товаров в блоке
-        countGoodsTileInStr : 5, // кол-во плиток в строке 
+        count : 6, // максимальное кол-во товаров в блоке
+        countTile : 5, // кол-во плиток в строке 
         orderBy : 'rating', // сортировка
         start : 0, // начальная позиция в запросе
         typeView : 'carousel' // тип отображения по умолчанию

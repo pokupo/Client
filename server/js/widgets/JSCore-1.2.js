@@ -51,7 +51,8 @@ var JSSettings = {
         'widgets/AnimateMessage-1.0.js',
         'widgets/AnimateRegistration-1.0.js',
         'widgets/AnimateSearch-1.0.js',
-        'widgets/AnimateGoods-1.0.js'],
+        'widgets/AnimateGoods-1.0.js',
+        'widgets/AnimateRelatedGoods-1.0.js'],
     inputParameters : {}
 }
 

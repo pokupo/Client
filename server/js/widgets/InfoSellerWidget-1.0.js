@@ -78,23 +78,22 @@ window.InfoSellerWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){
-//        try{
-            console.log(data);
+        try{
             ko.applyBindings(data, $(self.settings.container).children()[0]);
-//        }
-//        catch(e){
-//            self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
-//            if(self.settings.tmpl.custom){
-//                delete self.settings.tmpl.custom;
-//                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                    self.InsertContainer.Content();
-//                    self.Render(data);
-//                });
-//            }
-//            else{
-//                self.InsertContainer.EmptyWidget();
-//            }
-//        }
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Content();
+                    self.Render(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+            }
+        }
     }
 }
 

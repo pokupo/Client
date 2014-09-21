@@ -12,11 +12,8 @@
         </div>
         <div class="second double column">
             <div class="content">
-                
-                
+
                 <div class="b-catalog-item__seller-info slidedown" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo, tmpl : {path: 'infoSeller/infoSellerTmpl_promo.html'}}}"></div>
-                
-                
                 
                 <div class="columns triple">
                     <div class="first double column">
@@ -94,7 +91,7 @@
                                 <p class="b-catalog-item__limits">На складе: <span class="value" data-bind="text: blocks.main.inStock"></span>
                                 </p>
                                 <!-- ko if: blocks.main.showSelectionCount -->
-                                <div class="b-increment-input">
+                                <div class="b-increment-input" style="margin-bottom:20px">
                                     <span class="b-increment-input__darr" data-bind="click: blocks.main.ClickMinus">−</span>
                                     <span class="b-increment-input__input-wrapper">
                                         <input type="text" value="1" maxlength="3" autocomplete="off" class="inline-input b-increment-input__input" data-bind="value: blocks.main.ordered"/>
@@ -136,7 +133,7 @@
             </div>
         </div>
     </div>
-
+    <div data-bind="embedWidget :{ widget : 'RelatedGoodsWidget-1.0', params : {id : id, typeView: 'carousel', count: 6, countTile : 6, tmpl : {path: 'relatedGoods/relatedGoodsTmpl_promo.html'}}}"></div>
 </script>
 
 
