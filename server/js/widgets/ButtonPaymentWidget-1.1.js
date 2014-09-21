@@ -180,6 +180,7 @@ window.ButtonPaymentWidget = function(){
     self.Render = {
         Button : function(data){
             try{
+                ko.cleanNode($(self.settings.containerButton).children()[0]);
                 ko.applyBindings(data, $(self.settings.containerButton).children()[0]);
             }
             catch(e){

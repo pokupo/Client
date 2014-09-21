@@ -152,6 +152,7 @@ var GoodsWidget = function(){
 //            try{
                 if($("#" + self.settings.containerId).length > 0){
                     self.InsertContainer.Content();
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     
                     if(self.hasButton){

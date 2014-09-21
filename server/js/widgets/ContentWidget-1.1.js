@@ -293,6 +293,7 @@ var ContentWidget = function(){
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     var f = data.filters;
                     new AnimateSelectList(f.sort.cssSortList);
@@ -319,6 +320,7 @@ var ContentWidget = function(){
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
                 try{
+                    ko.cleanNode($('#' + data.cssBlock)[0]);
                     ko.applyBindings(data, $('#' + data.cssBlock)[0]);
                     self.Render.Animate.block.push({type: data.typeView, data : data})
                     self.testBlock.ready = self.testBlock.ready + 1;
@@ -348,6 +350,7 @@ var ContentWidget = function(){
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                 }

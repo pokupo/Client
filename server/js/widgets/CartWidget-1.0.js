@@ -111,6 +111,7 @@ var CartWidget = function(){
     };
     self.Render = function(data){ 
         try{
+            ko.cleanNode($('#' + self.settings.containerId)[0]);
             ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
             self.WidgetLoader(true, self.settings.containerId);
         }

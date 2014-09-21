@@ -1,22 +1,14 @@
 var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
-
-    host : "pokupo-server.asmsoft.ru/",    
-    pathToJS : "js/",
-    pathToTmpl : "tmpl/",
-    pathToData : "services/DataProxy.php?query=",
-    pathToPostData : "services/DataPostProxy.php",
-    pathToCore: "index.html",
-    pathToPostCore : 'postData.html',
     
-//    host : "dev.pokupo.ru/",
-//    pathToJS : "server/js/",
-//    pathToTmpl : "server/tmpl/",
-//    pathToData : "server/services/DataProxy.php?query=",
-//    pathToPostData : "server/services/DataPostProxy.php",
-//    pathToCore: "server/index.html",
-//    pathToPostCore : 'server/postData.html',
+    host : "dev.pokupo.ru/",
+    pathToJS : "server/js/",
+    pathToTmpl : "server/tmpl/",
+    pathToData : "server/services/DataProxy.php?query=",
+    pathToPostData : "server/services/DataPostProxy.php",
+    pathToCore: "server/index.html",
+    pathToPostCore : 'server/postData.html',
     
     sourceData : 'api', //варианты api, proxy
     scripts : [

@@ -79,6 +79,7 @@ window.InfoSellerWidget = function(){
     };
     self.Render = function(data){
         try{
+            ko.cleanNode($(self.settings.container).children()[0]);
             ko.applyBindings(data, $(self.settings.container).children()[0]);
         }
         catch(e){

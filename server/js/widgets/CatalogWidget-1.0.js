@@ -113,6 +113,7 @@ var CatalogWidget = function(){
         Tree : function(data){ 
             if($("#" + self.settings.catalogContainerId).length > 0){
                 try{
+                    ko.cleanNode($('#' + self.settings.catalogContainerId )[0]);
                     ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
                     self.WidgetLoader(true, self.settings.catalogContainerId );
                 }

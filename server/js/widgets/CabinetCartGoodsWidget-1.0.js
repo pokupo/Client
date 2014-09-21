@@ -182,6 +182,7 @@ var CabinetCartGoodsWidget = function(){
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                 }

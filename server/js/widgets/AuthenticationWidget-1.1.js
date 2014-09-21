@@ -121,6 +121,7 @@ var AuthenticationWidget = function(){
         Authentication : function(form){
             if($("#" + self.settings.containerFormId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }

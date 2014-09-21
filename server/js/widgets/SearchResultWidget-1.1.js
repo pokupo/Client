@@ -211,6 +211,7 @@ var SearchResultWidget = function(){
         AdvancedSearchForm : function(data){
             if($("#" + self.settings.containerIdForAdvancedSearch).length){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
 
                     $("#" + self.settings.idTreeCategoriesForAdvancedSearchForm).dynatree({
@@ -247,6 +248,7 @@ var SearchResultWidget = function(){
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerIdForSearchResult)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
                     var f = data.filters;
                     new AnimateSelectList(f.sort.cssSortList);

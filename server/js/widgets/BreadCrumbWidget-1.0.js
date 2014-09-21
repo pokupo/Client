@@ -114,6 +114,7 @@ var BreadCrumbWidget = function(){
             for(var i=0; i<=self.settings.containerId.length-1; i++){
                 if($("#" + self.settings.containerId[i]).length > 0){
                     try{
+                        ko.cleanNode($('#' + self.settings.containerId[i])[0]);
                         ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
                         self.ShowContainer(self.settings.containerId[i]);
                         new AnimateBreadCrumb();

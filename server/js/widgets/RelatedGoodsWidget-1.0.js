@@ -106,24 +106,25 @@ window.RelatedGoodsWidget = function(){
         related.AddContent();
     };
     self.Render = function(data){
-//        try{
+        try{
+            ko.cleanNode($(self.settings.container).children()[0]);
             ko.applyBindings(data, $(self.settings.container).children()[0]);
             new AnimateRelatedGoods();
-//        }
-//        catch(e){
-//            self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
-//            if(self.settings.tmpl.custom){
-//                delete self.settings.tmpl.custom;
-//                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                    self.InsertContainer.Content(data.typeView);
-//                    self.Render.Content(data);
-//                });
-//            }
-//            else{
-//                self.InsertContainer.EmptyWidget();
-//                self.WidgetLoader(true, self.settings.container);
-//            }
-//        }
+        }
+        catch(e){
+            self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
+            if(self.settings.tmpl.custom){
+                delete self.settings.tmpl.custom;
+                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                    self.InsertContainer.Content(data.typeView);
+                    self.Render.Content(data);
+                });
+            }
+            else{
+                self.InsertContainer.EmptyWidget();
+                self.WidgetLoader(true, self.settings.container);
+            }
+        }
     };
 }
 

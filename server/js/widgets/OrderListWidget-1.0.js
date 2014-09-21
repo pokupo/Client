@@ -241,6 +241,7 @@ var OrderListWidget = function() {
         List: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     new AnimateOrderList();
                     self.WidgetLoader(true, self.settings.containerFormId);
@@ -268,6 +269,7 @@ var OrderListWidget = function() {
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }

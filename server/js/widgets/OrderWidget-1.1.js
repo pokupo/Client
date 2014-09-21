@@ -857,6 +857,7 @@ var OrderWidget = function() {
         Step1: function(form) {
             try{
                 if ($("#" + self.settings.containerFormId).length > 0) {
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                 }
                 $('input#' + form.registrationForm.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
@@ -882,6 +883,7 @@ var OrderWidget = function() {
         Step1Confirm: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true,  self.settings.containerFormId);
                 }
@@ -904,6 +906,7 @@ var OrderWidget = function() {
         Step1Profile: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
                         changeMonth: true,
@@ -939,6 +942,7 @@ var OrderWidget = function() {
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }
@@ -961,6 +965,7 @@ var OrderWidget = function() {
         Step2Form: function(delivery) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
                     $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
 
@@ -1104,6 +1109,7 @@ var OrderWidget = function() {
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }
@@ -1126,6 +1132,7 @@ var OrderWidget = function() {
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }
@@ -1148,6 +1155,7 @@ var OrderWidget = function() {
         Step5: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }
