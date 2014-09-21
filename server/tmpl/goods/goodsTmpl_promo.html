@@ -18,43 +18,49 @@
                 
                 
                 
-                <!-- ko with: blocks.main -->
                 <div class="columns triple">
                     <div class="first double column">
                         <div class="content">
                             <div class="b-catalog-item__description">
                                 <div class="b-stars">
-                                    <div class="b-stars__rating" data-bind="attr: {style: 'width:' + ratingGoods + '%'}"></div>
+                                    <div class="b-stars__rating" data-bind="attr: {style: 'width:' + blocks.main.ratingGoods + '%'}"></div>
                                 </div>
                                 
-                                <span class="pseudo-link">З отзыва</span>
-                                <p data-bind="html: fullName"></p>
-                                <p>Метки: <!-- ko text: keyWords --><!-- /ko -->
+                                <!-- ko foreach: moreBlock -->
+                                    <!-- ko if: key == 'opinion' --> 
+                                        <!-- ko if: content -->
+                                            <span class="pseudo-link"><!-- ko text: content.params.length --><!-- /ko --> отзыва</span>
+                                        <!-- /ko -->
+                                    <!-- /ko -->
+                                <!-- /ko -->
+                                
+                                <p data-bind="html: blocks.main.fullName"></p>
+                                <p>Метки: <!-- ko text: blocks.main.keyWords --><!-- /ko -->
                                 </p>
                                 <div class="b-item__price">
-                                    <!-- ko if: discount() > 0 -->
+                                    <!-- ko if: blocks.main.discount() > 0 -->
                                     <div class="b-price b-item__price--old">
-                                        <span class="b-price__number" data-bind="text: sellGoods"></span>
+                                        <span class="b-price__number" data-bind="text: blocks.main.sellGoods"></span>
                                         <span class="b-price__thinsp">&nbsp;</span>
                                         <span class="b-price__rubl">Р</span>
                                     </div>
                                     <div class="b-price">
-                                        <span class="b-price__number" data-bind="text: sellCost"></span>
+                                        <span class="b-price__number" data-bind="text: blocks.main.sellCost"></span>
                                         <span class="b-price__thinsp">&nbsp;</span>
                                         <span class="b-price__rubl">Р</span>
                                     </div>
                                     <!-- /ko -->
-                                    <!-- ko if: discount() == 0 -->
+                                    <!-- ko if: blocks.main.discount() == 0 -->
                                     <div class="b-price">
-                                        <span class="b-price__number" data-bind="text: sellCost"></span>
+                                        <span class="b-price__number" data-bind="text: blocks.main.sellCost"></span>
                                         <span class="b-price__thinsp">&nbsp;</span>
                                         <span class="b-price__rubl">Р</span>
                                     </div>
                                     <!-- /ko -->
                                 </div>
-                                <!-- ko if: discount() > 0 -->
+                                <!-- ko if: blocks.main.discount() > 0 -->
                                 <div class="b-item__price-comment">
-                                    <p>Ваша скидка <!-- ko text: discount --><!-- /ko --></p>
+                                    <p>Ваша скидка <!-- ko text: blocks.main.discount --><!-- /ko --></p>
                                 </div>
                                 <!-- /ko -->
                                 <div data-yasharel10n="ru" data-yasharetype="link" data-yasharequickservices="vkontakte,facebook,twitter,odnoklassniki,gplus" class="b-catalog-item__share yashare-auto-init">
@@ -85,83 +91,48 @@
                     <div class="third column">
                         <div class="content b-catalog-item__actions">
                             <div class="increase">
-                                <p class="b-catalog-item__limits">На складе: <span class="value" data-bind="text: inStock"></span>
+                                <p class="b-catalog-item__limits">На складе: <span class="value" data-bind="text: blocks.main.inStock"></span>
                                 </p>
-                                <!-- ko if: showSelectionCount -->
+                                <!-- ko if: blocks.main.showSelectionCount -->
                                 <div class="b-increment-input">
-                                    <span class="b-increment-input__darr" data-bind="click: ClickMinus">−</span>
+                                    <span class="b-increment-input__darr" data-bind="click: blocks.main.ClickMinus">−</span>
                                     <span class="b-increment-input__input-wrapper">
-                                        <input type="text" value="1" maxlength="3" autocomplete="off" class="inline-input b-increment-input__input" data-bind="value: ordered"/>
+                                        <input type="text" value="1" maxlength="3" autocomplete="off" class="inline-input b-increment-input__input" data-bind="value: blocks.main.ordered"/>
                                     </span>
-                                    <span class="b-increment-input__uarr" data-bind="click: ClickPlus">+</span>
+                                    <span class="b-increment-input__uarr" data-bind="click: blocks.main.ClickPlus">+</span>
                                 </div>
                                 <!-- /ko -->
                             </div>
-                            <!-- ko if: showAddToCart --> 
-                            <button type="button" class="btn" data-bind="click: AddToCart"><i class="icon icon-cart"></i>В&nbsp;корзину</button>
+                            <!-- ko if: blocks.main.showAddToCart --> 
+                            <button type="button" class="btn" data-bind="click: blocks.main.AddToCart"><i class="icon icon-cart"></i>В&nbsp;корзину</button>
                             <br>
                             <!-- /ko -->
-                            <!-- ko if: showBuy -->
-                            <button type="button" class="btn" data-bind="click: Buy">Купить сразу</button>
+                            <!-- ko if: blocks.main.showBuy -->
+                            <button type="button" class="btn" data-bind="click: blocks.main.Buy">Купить сразу</button>
                             <!-- /ko -->
 
                             <div class="like_button">
-                                <!-- ko if: IsFavorite -->
-                                    <a class="pseudo-link" href="#" data-bind="click: ClickFavorites">Избранный товар</a>
+                                <!-- ko if: blocks.main.IsFavorite -->
+                                    <a class="pseudo-link" href="#" data-bind="click: blocks.main.ClickFavorites">Избранный товар</a>
                                 <!-- /ko -->
-                                <!-- ko ifnot : IsFavorite -->
-                                    <a class="pseudo-link" href="#"  data-bind="click: AddFavorites">В избранное</a>
+                                <!-- ko ifnot : blocks.main.IsFavorite -->
+                                    <a class="pseudo-link" href="#"  data-bind="click:blocks.main.AddFavorites">В избранное</a>
                                 <!-- /ko -->
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- /ko -->
                 
                 <div class="b-catalog-item__aux" data-bind="template: { name: 'goodsMoreBlockTmpl' }"></div>
                 
-                <div class="b-catalog-item__aux b-reviews">
-                    <h1 class="with-button">Отзывы</h1>
-                    <button id="js-addReview" type="button" class="btn btn-xxs">Написать</button>
-                    <ul class="reviews-list">
-                        <li class="b-review">
-                            <div class="b-review__info">
-                                <div class="b-stars">
-                                    <div style="width:80%" class="b-stars__rating"></div>
-                                </div
-                                <span class="b-review__author">Борис</span>
-                                <span class="b-review__date">| 18 сентября</span>
-                            </div>
-                            <div class="b-review__text">
-                                <p>Кеды действительно яркие как на фото.38 размера не было ,заказала 37.Думала что не подойдут,но оказалось что чуть-чуть даже большемерят самый раз чтоб носочками носить .А так то все сделано аккуратно,и спасибо вам за быструю доставку.</p>
-                            </div>
-                        </li>
-                        <li class="b-review">
-                            <div class="b-review__info">
-                                <div class="b-stars">
-                                    <div style="width:100%" class="b-stars__rating"></div>
-                                </div>
-                                <span class="b-review__author">Наталья</span>
-                                <span class="b-review__date">| 16 сентября</span>
-                            </div>
-                            <div class="b-review__text">
-                                <p>Красные кеды яркие и красивые, очень нравятся, мой размер 36,5, приобрела 36 и оказались несколько свободны, можно было бы и 35 размер купить. Лучше чуть больше, чем маловаты, поэтому всё устраивает. 5 баллов.</p>
-                            </div>
-                        </li>
-                        <li class="b-review">
-                            <div class="b-review__info">
-                                <div class="b-stars">
-                                    <div style="width:100%" class="b-stars__rating"></div>
-                                </div>
-                                <span class="b-review__author">Аркадий</span>
-                                <span class="b-review__date">| 9 сентября</span>
-                            </div>
-                            <div class="b-review__text">
-                                <p>Кеды классные, яркие, но очень большемерят, потому отказ, очень жаль((( подожду, может появится нужный размер.</p>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
+                <!-- ko foreach: moreBlock -->
+                    <!-- ko if: key == 'opinion' --> 
+                        <!-- ko if: content -->
+                            <div class="b-catalog-item__aux b-reviews" data-bind="template: { name: 'goodsOpinionBlockTmpl' }"></div>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                <!-- /ko -->
+                
             </div>
         </div>
     </div>
@@ -170,82 +141,20 @@
 
 
 <script type="text/html" id="goodsGalleryBlockTmpl">
+    <!-- ko if: main.discount() > 0 -->
     <div class="b-catalog-item__badges">
-        <div class="b-catalog-item__badge b-catalog-item__badge--discount">-30%</div>
+        <div class="b-catalog-item__badge b-catalog-item__badge--discount">-<!-- ko text: main.discount --><!-- /ko --></div>
     </div>
+    <!-- /ko -->
 
-    <div class="b-catalog-item__photos fotorama fotorama1411294579239">
-        <div class="fotorama__wrap fotorama__wrap--css3 fotorama__wrap--slide fotorama__wrap--toggle-arrows fotorama__wrap--no-controls" style="width: 313px; min-width: 0px; max-width: 100%;">
-            <div class="fotorama__stage fotorama__pointer" style="width: 313px; height: 313px;">
-                <div class="fotorama__fullscreen-icon" tabindex="0" role="button">
-
-                </div>
-                <div class="fotorama__stage__shaft" style="transition: 0ms; -webkit-transition: 0ms; transform: translate3d(0px, 0px, 0px); width: 313px; margin-left: 0px;">
-                    <div class="fotorama__stage__frame fotorama__loaded fotorama__loaded--img" style="left: -315px;">
-                        <img src="images/catalog/item0000/03.jpg" class="fotorama__img" style="width: 313px; height: 313px; left: 0px; top: 0px;">
-                    </div>
-                    <div class="fotorama__stage__frame fotorama__loaded fotorama__loaded--img fotorama__active" style="left: 0px;">
-                        <img src="images/catalog/item0000/04.jpg" class="fotorama__img" style="width: 313px; height: 313px; left: 0px; top: 0px;">
-                    </div>
-                    <div class="fotorama__stage__frame fotorama__loaded fotorama__loaded--img" style="left: 315px;">
-                        <img src="images/catalog/item0000/05.jpg" class="fotorama__img" style="width: 313px; height: 313px; left: 0px; top: 0px;">
-                    </div>
-                </div>
-                <div class="fotorama__arr fotorama__arr--prev" tabindex="0" role="button" style="display: none;">
-
-                </div>
-                <div class="fotorama__arr fotorama__arr--next" tabindex="0" role="button" style="display: none;">
-
-                </div>
-                <div class="fotorama__video-close">
-
-                </div>
-
-            </div>
-            <div class="fotorama__nav-wrap">
-                <div class="fotorama__nav fotorama__nav--thumbs fotorama__shadows--left fotorama__shadows--right" style="width: 313px;">
-                    <div class="fotorama__nav__shaft fotorama__grab" style="transition: 0ms; -webkit-transition: 0ms; transform: translate3d(-86px, 0px, 0px);">
-                        <div class="fotorama__thumb-border" style="transition: 0ms; -webkit-transition: 0ms; transform: translate3d(210px, 0px, 0px); width: 57px;">
-
-                        </div>
-                        <div class="fotorama__nav__frame fotorama__nav__frame--thumb" tabindex="0" role="button" style="width: 65px;">
-                            <div class="fotorama__thumb fotorama__loaded fotorama__loaded--img">
-                                <img src="images/catalog/item0000/01.jpg" class="fotorama__img" style="width: 65px; height: 65px; left: 0px; top: -1px;">
-                            </div>
-                        </div>
-                        <div class="fotorama__nav__frame fotorama__nav__frame--thumb" tabindex="0" role="button" style="width: 65px;">
-                            <div class="fotorama__thumb fotorama__loaded fotorama__loaded--img">
-                                <img src="images/catalog/item0000/02.jpg" class="fotorama__img" style="width: 65px; height: 65px; left: 0px; top: -1px;">
-                            </div>
-                        </div>
-                        <div class="fotorama__nav__frame fotorama__nav__frame--thumb" tabindex="0" role="button" style="width: 65px;">
-                            <div class="fotorama__thumb fotorama__loaded fotorama__loaded--img">
-                                <img src="images/catalog/item0000/03.jpg" class="fotorama__img" style="width: 65px; height: 65px; left: 0px; top: -1px;">
-                            </div>
-                        </div>
-                        <div class="fotorama__nav__frame fotorama__nav__frame--thumb fotorama__active" tabindex="0" role="button" style="width: 65px;">
-                            <div class="fotorama__thumb fotorama__loaded fotorama__loaded--img">
-                                <img src="images/catalog/item0000/04.jpg" class="fotorama__img" style="width: 65px; height: 65px; left: 0px; top: -1px;">
-                            </div>
-                        </div>
-                        <div class="fotorama__nav__frame fotorama__nav__frame--thumb" tabindex="0" role="button" style="width: 65px;">
-                            <div class="fotorama__thumb fotorama__loaded fotorama__loaded--img">
-                                <img src="images/catalog/item0000/05.jpg" class="fotorama__img" style="width: 65px; height: 65px; left: 0px; top: -1px;">
-                            </div>
-                        </div>
-                        <div class="fotorama__nav__frame fotorama__nav__frame--thumb" tabindex="0" role="button" style="width: 65px;">
-                            <div class="fotorama__thumb fotorama__loaded fotorama__loaded--img">
-                                <img src="images/catalog/item0000/06.jpg" class="fotorama__img" style="width: 65px; height: 82px; left: 0px; top: -9px;">
-                            </div>
-                        </div>
-                        <div class="fotorama__nav__frame fotorama__nav__frame--thumb" tabindex="0" role="button" style="width: 65px;">
-                            <div class="fotorama__thumb fotorama__loaded fotorama__loaded--img">
-                                <img src="images/catalog/item0000/07.jpg" class="fotorama__img" style="width: 96px; height: 64px; left: -16px; top: 0px;">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <div class="b-catalog-item__photos">
+        <div class="b-catalog-item__photos">
+            <img src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }">
+            <!-- ko if: $parent.ShowGallery() -->
+                <!-- ko foreach: gallery -->
+                    <img src="" data-bind="attr: {src: thumb, title: title }">
+                <!-- /ko -->
+            <!-- /ko -->
         </div>
     </div>
 
@@ -254,22 +163,24 @@
 <script type="text/html" id="goodsMoreBlockTmpl">
     <dl class="tabs tabs--noskin">
         <!-- ko foreach: moreBlock --> 
-            <!-- ko if: content -->
-                <!-- ko if: $index() == 0 -->
-                    <dt class="tab__trigger selected">
-                        <span data-bind="text: title"></span>
-                    </dt>
-                    <dd class="tab__content selected">
-                        <div class="content" data-bind="template: { name: templateName }"></div>
-                    </dd>
-                <!-- /ko -->
-                <!-- ko if: $index() != 0 -->
-                    <dt class="tab__trigger">
-                        <span data-bind="text: title"></span>
-                    </dt>
-                    <dd class="tab__content">
-                        <div class="content" data-bind="template: { name: templateName }"></div>
-                    </dd>
+            <!-- ko ifnot: key == 'opinion' -->
+                <!-- ko if: content -->
+                    <!-- ko if: $index() == 0 -->
+                        <dt class="tab__trigger selected">
+                            <span data-bind="text: title"></span>
+                        </dt>
+                        <dd class="tab__content selected">
+                            <div class="content" data-bind="template: { name: templateName }"></div>
+                        </dd>
+                    <!-- /ko -->
+                    <!-- ko if: $index() != 0 -->
+                        <dt class="tab__trigger">
+                            <span data-bind="text: title"></span>
+                        </dt>
+                        <dd class="tab__content">
+                            <div class="content" data-bind="template: { name: templateName }"></div>
+                        </dd>
+                    <!-- /ko -->
                 <!-- /ko -->
             <!-- /ko -->
         <!-- /ko -->             
@@ -298,17 +209,20 @@
 </script>
 
 <script type="text/html" id="goodsOpinionBlockTmpl">
-    <!-- ko foreach: content.params -->
-    <div style="width: 100%; margin-bottom: 20px;">
-        <div style="float: left; width:30%">
-            <h3 style="margin-bottom: 10px" data-bind="text: name_user"></h3>
-            <p>Рейтинг покупателя в системе - <b data-bind="text: rating_user"></b></p>
-            <p>Оценка - <b data-bind="text: value_opinion"></b></p>
-        </div>
-        <div style="float: left; width:30%">
-            <p data-bind="text: desc_opinion"></p>
-        </div>
-        <div style="clear: both; width: 100%; "></div>
-    </div>
-    <!-- /ko -->
+    <h1 class="with-button">Отзывы</h1>
+    <ul class="reviews-list">
+        <!-- ko foreach: content.params -->
+        <li class="b-review">
+            <div class="b-review__info">
+                <div class="b-stars">
+                    <div style="width:80%" class="b-stars__rating" data-bind="attr: {style: 'width: ' + value_opinion + '0%'}"></div>
+                </div
+                <span class="b-review__author" data-bind="text: name_user"></span>
+            </div>
+            <div class="b-review__text">
+                <p data-bind="text: desc_opinion"></p>
+            </div>
+        </li>
+        <!-- /ko -->
+    </ul>
 </script>
