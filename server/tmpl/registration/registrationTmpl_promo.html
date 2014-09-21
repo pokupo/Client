@@ -30,9 +30,9 @@
                     </a>
                 </li>
             </ul>
-            <div class="b-wizard__holder" style="height: 681px;">
+            <div class="b-wizard__holder">
     
-                <div id="step-1" class="content" style="display: block;">
+                <div id="step-1" class="content">
                     <h2 class="b-wizard__step-title">Данные аккаунта</h2>
                     <p>Укажите свой уникальный псевдоним, почту и телефон</p>
                     <div class="input-holder tooltip">
@@ -147,7 +147,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#step-2" class="disabled" isdone="0" rel="2">
+                    <a href="#step-2" class="selected" isdone="0" rel="2">
                         <label class="b-wizard__step-num">2</label>
                     </a>
                 </li>
@@ -192,7 +192,7 @@
             </div>
             <div class="b-wizard__actions">
                 <div class="b-wizard__loader">Loading</div>
-                <a href="#" class="b-wizard__action btn-prev-step btn-disabled" data-bind="click: Back">Назад</a>
+                <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: Back">Назад</a>
                 <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
             </div>
         </div>
@@ -216,12 +216,12 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#step-2" class="disabled" isdone="0" rel="2">
+                    <a href="#step-2" class="selected" isdone="0" rel="2">
                         <label class="b-wizard__step-num">2</label>
                     </a>
                 </li>
                 <li>
-                    <a href="#step-3" class="disabled" isdone="0" rel="3">
+                    <a href="#step-3" class="selected" isdone="0" rel="3">
                         <label class="b-wizard__step-num">3</label>
                     </a>
                 </li>
@@ -231,7 +231,7 @@
                     </a>
                 </li>
             </ul>
-            <div class="b-wizard__holder" style="height: 681px;">
+            <div class="b-wizard__holder">
     
                 <div id="step-3" class="content">
                     <h2 class="b-wizard__step-title">Персональные данные</h2>
@@ -245,30 +245,55 @@
                             </div>
                         </div>
                         <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="family" value="" placeholder="Фамилия" class="block-input" id="i-41">
+                            <input type="text" name="family" value="" placeholder="Фамилия" class="block-input" id="i-41" data-bind="value: lastName"/>
                             <label for="41" class="label-floatlabel" style="display: none;">Фамилия</label>
+                            <!-- ko if: errorLastName-->
+                                <div class="form_error" data-bind="text: errorLastName"></div>
+                            <!-- /ko -->
                         </div>
                     </div>
                     <div class="input-holder">
                         <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="name" value="" placeholder="Имя" class="block-input" id="i-24">
+                            <input type="text" name="name" value="" placeholder="Имя" class="block-input" id="i-24" data-bind="value: firstName"/>
                             <label for="24" class="label-floatlabel  " style="display: none;">Имя</label>
+                            <!-- ko if: errorFirstName-->
+                                <div class="form_error" data-bind="text: errorFirstName"></div>
+                            <!-- /ko -->
                         </div>
                     </div>
                     <div class="input-holder">
                         <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="patronymic" value="" placeholder="Отчество" class="block-input" id="i-85">
+                            <input type="text" name="patronymic" value="" placeholder="Отчество" class="block-input" id="i-85" data-bind="value: middleName" />
                             <label for="85" class="label-floatlabel" style="display: none;">Отчество</label>
+                            <!-- ko if: errorMiddleName-->
+                                <div class="form_error" data-bind="text: errorMiddleName"></div>
+                            <!-- /ko -->
                         </div>
                     </div>
                     <div class="input-holder">
                         <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="date" value="" placeholder="Дата рождения" class="block-input" id="i-38">
+                            <input type="text" name="date" value="" placeholder="Дата рождения" class="block-input" id="i-38"  data-bind="value: birthDay, attr: {id: cssBirthDay}"/>
+                            <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
                             <label for="38" class="label-floatlabel" style="display: none;">Дата рождения</label>
+                            <!-- ko if: errorBirthDay-->
+                                <div class="form_error" data-bind="text: errorBirthDay"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <label for="85" class="block-label b-small-text">Ваш пол</label>
+                            <input name="gender" type="radio" value="m" class="radio" data-bind="checked: gender"/>
+                            <label for="gender" class="block-label b-small-text">Мужчина</label>
+                            <input name="gender" type="radio" value="ц" class="radio" data-bind="checked: gender"/>
+                            <label for="gender" class="block-label b-small-text">Женщина</label>
+                            <!-- ko if: errorGender-->
+                                <div class="form_error" data-bind="text: errorGender"></div>
+                            <!-- /ko -->
                         </div>
                     </div>
                     <div style="padding-top:13px" class="input-holder">
-                        <input id="skip_personal" name="skip_personal" type="checkbox" checked="" class="checkbox">
+                        <input id="skip_personal" name="skip_personal" type="checkbox" class="checkbox" data-bind="click: SpecifyLater">
                         <label for="skip_personal" class="block-label b-small-text">Указать позже</label>
                     </div>
                 </div>
@@ -276,9 +301,7 @@
             </div>
             <div class="b-wizard__actions">
                 <div class="b-wizard__loader">Loading</div>
-                <a href="#" class="b-wizard__action btn-prev-step btn-disabled">Назад</a>
-                <a href="#" class="b-wizard__action btn-next-step">Продолжить</a>
-                <a href="/store-cart.html" class="b-wizard__action btn-last-step btn-disabled">Отправить</a>
+                <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
             </div>
         </div>
     </form>
@@ -301,55 +324,82 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#step-2" class="disabled" isdone="0" rel="2">
+                    <a href="#step-2" class="selected" isdone="0" rel="2">
                         <label class="b-wizard__step-num">2</label>
                     </a>
                 </li>
                 <li>
-                    <a href="#step-3" class="disabled" isdone="0" rel="3">
+                    <a href="#step-3" class="selected" isdone="0" rel="3">
                         <label class="b-wizard__step-num">3</label>
                     </a>
                 </li>
                 <li>
-                    <a href="#step-4" class="disabled" isdone="0" rel="4">
+                    <a href="#step-4" class="selected" isdone="0" rel="4">
                         <label class="b-wizard__step-num">4</label>
                     </a>
                 </li>
             </ul>
-            <div class="b-wizard__holder" style="height: 681px;">
+            <div class="b-wizard__holder">
     
                 <div id="step-4" class="content">
                     <h2 class="b-wizard__step-title">Адрес доставки</h2>
                     <p>Для доставки покупок требуется указать почтовый адрес</p>
                     <div class="input-holder">
-                        <select name="country" value="" placeholder="Страна" style="display: none;">
-                            <option value="1" selected="">Россия</option>
-                            <option value="2">Украина</option>
-                            <option value="3">Белорусь</option>
+                        <select name="country" placeholder="Страна"  data-bind="value: country, attr:{id: cssCountryList}">
+                            <option value=""></option>
+                            <!-- ko foreach: countryList -->
+                            <option data-bind="text: name, value: id"></option>
+                            <!-- /ko -->
                         </select>
-                        <div class="chosen-container chosen-container-single chosen-container-single-nosearch" style="width: 100%;" title=""><a class="chosen-single" tabindex="-1"><span>Россия</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" readonly=""></div><ul class="chosen-results"></ul></div></div>
+                        <!-- ko if: errorCountry-->
+                            <div class="form_error" data-bind="text: errorCountry"></div>
+                        <!-- /ko -->
                     </div>
                     <div class="input-holder tooltip">
                         <div class="tooltip__trigger">?
                             <div class="tooltip__content">
-                                <p>Введите ваше имя на сайте.</p>
+                                <p>Введите ваш регион.</p>
                                 <div class="tooltip__before"></div>
                                 <div class="tooltip__after"></div>
                             </div>
                         </div>
-                        <div class="floatlabel-wrapper" style="position:relative"><input type="text" name="family" value="" placeholder="Регион" class="block-input" id="i-27" style="padding-top: 14px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="27" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Регион</label></div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="family" value="" placeholder="Регион" class="block-input" id="i-27" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country">
+                            <label for="27" class="label-floatlabel" style="display: none;">Регион</label>
+                            <!-- ko if: errorRegion-->
+                                <div class="form_error" data-bind="text: errorRegion"></div>"
+                            <!-- /ko -->
+                        </div>
                     </div>
                     <div class="input-holder">
-                        <div class="floatlabel-wrapper" style="position:relative"><input type="text" name="name" value="" placeholder="Город" class="block-input" id="i-4" style="padding-top: 14px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="4" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Город</label></div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="name" value="" placeholder="Город" class="block-input" id="i-4"  data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion">
+                            <label for="4" class="label-floatlabel  " style="display: none;">Город</label>
+                            <!-- ko if: errorCity-->
+                                <div class="form_error" data-bind="text: errorCity"></div>
+                            <!-- /ko -->
+                        </div>
                     </div>
                     <div class="input-holder">
-                        <div class="floatlabel-wrapper" style="position:relative"><input type="text" name="patronymic" value="" placeholder="Улица, дом, квартира" class="block-input" id="i-40" style="padding-top: 14px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="40" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Улица, дом, квартира</label></div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="patronymic" value="" placeholder="Улица, дом, квартира" class="block-input" id="i-40"  data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity">
+                            <label for="40" class="label-floatlabel" style="display: none;">Улица, дом, квартира</label>
+                            <!-- ko if: errorAddress-->
+                                <div class="form_error" data-bind="text: errorAddress"></div>
+                            <!-- /ko -->
+                        </div>
                     </div>
                     <div class="input-holder">
-                        <div class="floatlabel-wrapper" style="position:relative"><input type="text" name="date" value="" placeholder="Почтовый индекс" class="block-input" id="i-3" style="padding-top: 14px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="3" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Почтовый индекс</label></div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="date" value="" placeholder="Почтовый индекс" class="block-input" id="i-3" data-bind="value: postIndex, attr: {id: cssPostIndex}">
+                            <label for="3" class="label-floatlabel" style="display: none;">Почтовый индекс</label>
+                            <!-- ko if: errorPostIndex-->
+                                <div class="form_error" data-bind="text: errorPostIndex"></div>
+                            <!-- /ko -->
+                        </div>
                     </div>
                     <div style="padding-top:13px" class="input-holder">
-                        <input id="skip_address" name="skip_address" type="checkbox" checked="" class="checkbox">
+                        <input id="skip_address" name="skip_address" type="checkbox" class="checkbox" data-bind="click: SpecifyLater">
                         <label for="skip_address" class="block-label b-small-text">Указать позже</label>
                     </div>
                 </div>
@@ -357,9 +407,8 @@
             </div>
             <div class="b-wizard__actions">
                 <div class="b-wizard__loader">Loading</div>
-                <a href="#" class="b-wizard__action btn-prev-step btn-disabled">Назад</a>
-                <a href="#" class="b-wizard__action btn-next-step">Продолжить</a>
-                <a href="/store-cart.html" class="b-wizard__action btn-last-step btn-disabled">Отправить</a>
+                <a href="#" class="b-wizard__action btn-prev-step btn-disabled" data-bind="click: Back">Назад</a>
+                <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
             </div>
         </div>
     </form>

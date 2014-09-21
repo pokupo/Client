@@ -15,8 +15,8 @@ var ContentViewModel = function(data, i){
         return null;
     }, this);
     self.countTovars = data.count;
-    self.sellGoods = data.sell_cost + " руб.";
-    self.sellCost = data.sell_end_cost + " руб.";
+    self.sellGoods = data.sell_cost;
+    self.sellCost = data.sell_end_cost;
     self.description = ko.computed(function(){
         if(data.description)
             return data.description;

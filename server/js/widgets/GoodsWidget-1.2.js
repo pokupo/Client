@@ -149,7 +149,7 @@ var GoodsWidget = function(){
     };
     self.Render = {
         Goods: function(data){
-            try{
+//            try{
                 if($("#" + self.settings.containerId).length > 0){
                     self.InsertContainer.Content();
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
@@ -182,6 +182,7 @@ var GoodsWidget = function(){
                     }
 
                     new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
+                    new AnimateGoods();
 
                     if(data.ShowGallery())
                         new AnimateCarousel(Config.Goods.galleryId);
@@ -194,21 +195,21 @@ var GoodsWidget = function(){
                     Config.Goods.share.element = data.blocks.main.cssShareBlock
                     new Ya.share(Config.Goods.share);
                 }
-            }
-            catch(e){
-                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
-                if(self.settings.tmpl.custom){
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        self.InsertContainer.Content();
-                        self.Render.Goods(data);
-                    });
-                }
-                else{
-                    self.InsertContainer.EmptyWidget();
-                    self.WidgetLoader(true, self.settings.containerId);
-                }
-            }
+//            }
+//            catch(e){
+//                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+//                if(self.settings.tmpl.custom){
+//                    delete self.settings.tmpl.custom;
+//                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                        self.InsertContainer.Content();
+//                        self.Render.Goods(data);
+//                    });
+//                }
+//                else{
+//                    self.InsertContainer.EmptyWidget();
+//                    self.WidgetLoader(true, self.settings.containerId);
+//                }
+//            }
         }
     };
     self.AddGoodsInCookie = function(data){
@@ -329,7 +330,7 @@ var GoodsMainBlockViewModel = function(data){
         if(d > 0)
             return d + '%';
         else
-            return 'Нет';
+            return '';
     }, this);
     self.routeImages = Parameters.pathToImages + data.route_image;
     self.routeBigImages = Parameters.pathToImages + '/big' + data.route_image

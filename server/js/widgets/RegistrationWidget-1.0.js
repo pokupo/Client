@@ -416,25 +416,25 @@ var RegistrationWidget = function() {
     self.Render = {
         Step1: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
+//                try{
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                     new AnimateRegistration();
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step1();
-                            self.Render.Step1(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Step1();
+//                            self.Render.Step1(form);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerFormId);
+//                    }
+//                }
             }
         },
         Step2: function(form) {

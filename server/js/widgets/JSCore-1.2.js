@@ -2,19 +2,27 @@ var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
 
-    host : "dev.pokupo.ru/",
-    pathToJS : "server/js/",
-    pathToTmpl : "server/tmpl/",
-    pathToData : "server/services/DataProxy.php?query=",
-    pathToPostData : "server/services/DataPostProxy.php",
-    pathToCore: "server/index.html",
-    pathToPostCore : 'server/postData.html',
+    host : "pokupo-server.asmsoft.ru/",    
+    pathToJS : "js/",
+    pathToTmpl : "tmpl/",
+    pathToData : "services/DataProxy.php?query=",
+    pathToPostData : "services/DataPostProxy.php",
+    pathToCore: "index.html",
+    pathToPostCore : 'postData.html',
+    
+//    host : "dev.pokupo.ru/",
+//    pathToJS : "server/js/",
+//    pathToTmpl : "server/tmpl/",
+//    pathToData : "server/services/DataProxy.php?query=",
+//    pathToPostData : "server/services/DataPostProxy.php",
+//    pathToCore: "server/index.html",
+//    pathToPostCore : 'server/postData.html',
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
         'jquery-ui-1.10.2.custom.min.js',
         'easyXDM.min.js',
-        'knockout-2.2.0.js',
+        'knockout-3.2.0.js',
         'jquery.livequery.js',
         'DD_roundies_0.0.2a-min.js',
         'select.js',
@@ -41,7 +49,9 @@ var JSSettings = {
         'widgets/AnimateTab-1.0.js',
         'widgets/AnimateOrderList-1.0.js',
         'widgets/AnimateMessage-1.0.js',
-        'widgets/AnimateRegistration-1.0.js'],
+        'widgets/AnimateRegistration-1.0.js',
+        'widgets/AnimateSearch-1.0.js',
+        'widgets/AnimateGoods-1.0.js'],
     inputParameters : {}
 }
 

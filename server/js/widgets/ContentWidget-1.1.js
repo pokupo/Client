@@ -133,6 +133,7 @@ var ContentWidget = function(){
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
             self.BaseLoad.Info(Routing.GetActiveCategory(), function(data){
+                self.InsertContainer.EmptyBlockWidget();
                 EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
             })
         });
@@ -256,9 +257,9 @@ var ContentWidget = function(){
             else{
                 var content = new ListContentViewModel(self.settings);
                 content.AddCategoryInfo(data.categoryId);
-                if(content.filters.filterName != ''){
+                if(content.filters.filterName() != ''){
                     content.SetType('no_results');
-                    content.SetMessage(Config.Content.message.filter.replace(/%%filterName%%/g, content.filters.filterName));
+                    content.SetMessage(Config.Content.message.filter.replace(/%%filterName%%/g, content.filters.filterName()));
                 }
                 else{
                     content.SetType('no_results');
@@ -291,27 +292,27 @@ var ContentWidget = function(){
         },
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
-//                try{
+                try{
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     var f = data.filters;
                     new AnimateSelectList(f.sort.cssSortList);
                     $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.List(data.typeView);
-//                            self.Render.List(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.List(data.typeView);
+                            self.Render.List(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
             delete data;
         },
@@ -456,17 +457,25 @@ var ListContentViewModel = function(settings){
     };
     self.filters = {
         typeView : self.typeView,
-        filterName : Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName,
+        filterName :ko.observable(Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName),
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : ko.observableArray(),
         countOptionList : ko.observable(settings.listPerPage.length-1),
         sort : self.GetSort(),
         FilterNameGoods : function(data){
-            self.filters.filterName = settings.filterName = $(data.text).val();
+            settings.filterName = self.filters.filterName($(data.text).val());
 
             Loader.Indicator('ContentWidget', false);
             
-            Routing.UpdateMoreParameters({filterName : self.filters.filterName});
+            Routing.UpdateMoreParameters({filterName : self.filters.filterName()});
+            Routing.UpdateHash({page : 1});
+        },
+        ClickFilterNameGoods : function(){
+            settings.filterName = self.filters.filterName();
+
+            Loader.Indicator('ContentWidget', false);
+            
+            Routing.UpdateMoreParameters({filterName : self.filters.filterName()});
             Routing.UpdateHash({page : 1});
         },
         ViewSelectCount : function(){
