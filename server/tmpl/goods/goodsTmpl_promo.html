@@ -14,7 +14,7 @@
             <div class="content">
                 
                 
-                <!--<div class="b-catalog-item__seller-info slidedown" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo, tmpl : 'infoSellerTmpl'}}"></div>-->
+                <div class="b-catalog-item__seller-info slidedown" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo, tmpl : {path: 'infoSeller/infoSellerTmpl_promo.html'}}}"></div>
                 
                 
                 
@@ -148,14 +148,12 @@
     <!-- /ko -->
 
     <div class="b-catalog-item__photos">
-        <div class="b-catalog-item__photos">
-            <img src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }">
-            <!-- ko if: $parent.ShowGallery() -->
-                <!-- ko foreach: gallery -->
-                    <img src="" data-bind="attr: {src: thumb, title: title }">
-                <!-- /ko -->
+        <img src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }">
+        <!-- ko if: $parent.ShowGallery() -->
+            <!-- ko foreach: gallery -->
+                <img src="" data-bind="attr: {src: thumb, title: title }">
             <!-- /ko -->
-        </div>
+        <!-- /ko -->
     </div>
 
 </script>

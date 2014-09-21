@@ -1,47 +1,60 @@
 <script type="text/html" id="infoSellerTmpl">
     <!-- version 1.0 -->
-    <span data-target="info" class="slidedown__trigger">Информация о продавце</span>
-    <div data-target="info" class="slidedown__content hidden">
-        <div class="b-profile-info">
-            <div class="b-profile-info__actions">
-                <button type="button" class="btn btn-xs btn-inline">Задать вопрос</button>
-                <div class="b-support-info dropdown"><span class="b-support-info__title"><span data-target="support" class="dropdown__trigger"> Поддержка</span></span>
-                    <div data-target="support" class="b-support-info__content dropdown__content hidden">
-                        <p>
-                            <span class="label">Посетить сайт</span>
-                            <a href="http://pokupo.ru" target="_blank" class="action">pokupo.ru</a>
-                            <span class="label">Написать</span>
-                            <a href="mailto:support@pokupo.ru" class="action">support@pokupo.ru</a>
-                            <span class="label">Skype консультанта</span>
-                            <a href="skype:pokupo?chat" onclick="return skypeCheck()" class="action">pokupo</a>
-                            <span class="label">ICQ консультанта</span>
-                            <span class="action">14112415151</span>
-                            <span class="label">Позвонить</span>
-                            <a href="tel:+74953636393" class="action">+7 495 363-63-93</a>
-                        </p>
+    <div>
+        <span data-target="info" class="slidedown__trigger">Информация о продавце</span>
+        <div data-target="info" class="slidedown__content hidden">
+            <div class="b-profile-info">
+                <div class="b-profile-info__actions">
+                    <a type="button" class="btn btn-xs btn-inline" data-bind="attr: {href: mailtoShop}">Задать вопрос</a>
+                    <div class="b-support-info dropdown">
+                        <span class="b-support-info__title">
+                            <span data-target="support" class="dropdown__trigger"> Поддержка</span>  
+                        </span>
+                        <div data-target="support" class="b-support-info__content dropdown__content hidden">
+                            <p>
+                                <!-- ko if: siteSupportShop() -->
+                                <span class="label">Посетить сайт</span>
+                                <a href="#" target="_blank" class="action" data-bind="text: siteSupportShop, attr: {href : siteSupportShop}"></a>
+                                <!-- /ko -->
+                                <span class="label">Написать</span>
+                                <a href="" class="action" data-bind="attr: {href: mailtoShop}"></a>
+                                <!-- ko if: skypeSupportShop() -->
+                                <span class="label">Skype консультанта</span>
+                                <a href="skype:pokupo?chat" onclick="return skypeCheck()" class="action" data-bind="text: skypeSupportShop"></a>
+                                <!-- /ko -->
+                                <!-- ko if: icqSupportShop() -->
+                                <span class="label">ICQ консультанта</span>
+                                <span class="action" data-bind="text: icqSupportShop"></span>
+                                <!-- /ko -->
+                                <!-- ko if: phonesSupportShop() -->
+                                <span class="label">Позвонить</span>
+                                <a href="tel:+74953636393" class="action" data-bind="text: phonesSupportShop(), attr: {href: phonesSupportShop()}"></a>
+                                <!-- /ko -->
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="b-profile-info__summary">
-                <div class="b-profile-info__photo">
-                    <img src="images/pages/catalog/seller-logo.png">
+                <div class="b-profile-info__summary">
+                    <div class="b-profile-info__photo">
+                        <img src="" data-bind="attr: {src : routeLogoShop, title : nameShop}"/>
+                    </div>
+                    <h1 class="b-profile-info__title" data-bind="text: nameShop"></h1>
+                    <h2 class="b-profile-info__subtitle">ID <!-- ko text: shopId --><!-- /ko --></h2>
+                    <ul class="b-profile-info__characters-list">
+                        <li><span class="char">Рейтинг: </span>
+                            <span class="value value--orange" data-bind="text: ratingShop"></span>
+                        </li>
+                        <li><span class="char">Отзывы / претензии: </span>
+                            <span class="value">
+                                <span class="value--orange"><!-- ko text: positiveOpinion--><!-- /ko --> </span>/ <span class="value--green"><!-- ko text: negativeOpinion --><!-- /ko --></span>     
+                            </span>
+                        </li>
+                        <li>
+                            <span class="char">Товаров: </span>
+                            <span class="value" data-bind="text: allGoods"></span>
+                        </li>
+                    </ul>
                 </div>
-                <h1 class="b-profile-info__title">Торговая платформа Pokupo</h1>
-                <h2 class="b-profile-info__subtitle">ID 19158495</h2>
-                <ul class="b-profile-info__characters-list">
-                    <li><span class="char">Рейтинг: </span>
-                        <span class="value value--orange">+264</span>
-                    </li>
-                    <li><span class="char">Отзывы / претензии: </span>
-                        <span class="value">
-                            <span class="value--orange">12 </span>/ <span class="value--green">3</span>     
-                        </span>
-                    </li>
-                    <li>
-                        <span class="char">Товаров: </span>
-                        <span class="value">450</span>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>
