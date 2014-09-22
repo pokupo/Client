@@ -182,11 +182,7 @@ var GoodsWidget = function(){
                         });
                     }
 
-                    new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
                     new AnimateGoods();
-
-                    if(data.ShowGallery())
-                        new AnimateCarousel(Config.Goods.galleryId);
                 }
                 self.AddGoodsInCookie(data);
                 delete data;

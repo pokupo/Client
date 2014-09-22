@@ -1,5 +1,4 @@
 var AnimateGoods = function(){
-//    PKP.UI.init();
     $('.b-catalog-item__photos').fotorama({
         width: 313,
         allowfullscreen: true,

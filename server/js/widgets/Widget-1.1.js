@@ -150,7 +150,13 @@ var Loader = {
             for(var key in Config.Containers){
                 if(!Config.Containers[key].widget){
                     for(var i in Config.Containers[key]){
-                        $("#" + Config.Containers[key][i].widget).children().hide();
+                        if(!Config.Containers[key][i].widget){
+                            for(var j in Config.Containers[key][i]){
+                                $("#" + Config.Containers[key][i][j].widget).children().hide();
+                            }
+                        }
+                        else
+                            $("#" + Config.Containers[key][i].widget).children().hide();
                     }
                 }
                 else{

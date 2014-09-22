@@ -1,3 +1,3 @@
 function AnimateSlider(cssSliderContainer){
-    PKP.Sliders.init();
+//    PKP.Sliders.init();
 }

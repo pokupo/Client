@@ -10,7 +10,7 @@
 
         <div class="b-catalog__controls-item">Сортировать
             <div class="inline-sorter dropdown selector">
-                <span data-target="sort" class="selector__current dropdown__trigger">
+                <span data-target="sort" class="selector__current dropdown__trigger" id="content_sort">
                     <!-- ko foreach: sort.list -->
                         <!-- ko if: isActive -->
                             <!-- ko text: title --><!-- /ko -->
@@ -19,9 +19,16 @@
                 </span>
                 <div data-target="sort" class="dropdown__content selector__options hidden">
                     <ul data-bind="foreach: sort.list">
-                        <li class="menu__item" data-bind="css: {'active' : isActive}">
-                            <a href="#" data-bind="click: ClickSort, text: title"></a>
+                        <!-- ko if: isActive -->
+                        <li class="menu__item active">
+                            <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
                         </li>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isActive -->
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
+                        </li>
+                        <!-- /ko -->
                     </ul>
                 </div>
             </div>
@@ -179,12 +186,25 @@
 
         <div class="b-catalog__controls-item">Сортировать
             <div class="inline-sorter dropdown selector">
-                <span data-target="sort" class="selector__current dropdown__trigger">по&nbsp;названию</span>
+                <span data-target="sort" class="selector__current dropdown__trigger" id="content_sort">
+                    <!-- ko foreach: sort.list -->
+                        <!-- ko if: isActive -->
+                            <!-- ko text: title --><!-- /ko -->
+                        <!-- /ko -->
+                    <!-- /ko -->
+                </span>
                 <div data-target="sort" class="dropdown__content selector__options hidden">
                     <ul data-bind="foreach: sort.list">
-                        <li class="menu__item" data-bind="css: {'active' : isActive}">
+                        <!-- ko if: isActive -->
+                        <li class="menu__item active">
                             <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
                         </li>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isActive -->
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
+                        </li>
+                        <!-- /ko -->
                     </ul>
                 </div>
             </div>
@@ -339,13 +359,25 @@
 
         <div class="b-catalog__controls-item">Сортировать
             <div class="inline-sorter dropdown selector">
-                <span data-target="sort" class="selector__current dropdown__trigger">по&nbsp;названию</span>
+                <span data-target="sort" class="selector__current dropdown__trigger" id="content_sort">
+                    <!-- ko foreach: sort.list -->
+                        <!-- ko if: isActive -->
+                            <!-- ko text: title --><!-- /ko -->
+                        <!-- /ko -->
+                    <!-- /ko -->
+                </span>
                 <div data-target="sort" class="dropdown__content selector__options hidden">
                     <ul data-bind="foreach: sort.list">
-                        <li class="menu__item" data-bind="css: {'active' : isActive}">
+                        <!-- ko if: isActive -->
+                        <li class="menu__item active">
                             <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
                         </li>
-                    </ul>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isActive -->
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
+                        </li>
+                        <!-- /ko -->
                 </div>
             </div>
         </div>
@@ -499,12 +531,25 @@
 
         <div class="b-catalog__controls-item">Сортировать
             <div class="inline-sorter dropdown selector">
-                <span data-target="sort" class="selector__current dropdown__trigger">по&nbsp;названию</span>
+                <span data-target="sort" class="selector__current dropdown__trigger" id="content_sort">
+                    <!-- ko foreach: sort.list -->
+                        <!-- ko if: isActive -->
+                            <!-- ko text: title --><!-- /ko -->
+                        <!-- /ko -->
+                    <!-- /ko -->
+                </span>
                 <div data-target="sort" class="dropdown__content selector__options hidden">
                     <ul data-bind="foreach: sort.list">
-                        <li class="menu__item" data-bind="css: {'active' : isActive}">
+                        <!-- ko if: isActive -->
+                        <li class="menu__item active">
                             <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
                         </li>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isActive -->
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickSort, text: title">по&nbsp;названию</a>
+                        </li>
+                        <!-- /ko -->
                     </ul>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 var AnimateSelectList = function(id) {
-    PKP.UI.init();
+//    PKP.UI.init();
 }
 
 

@@ -1233,4 +1233,4 @@ PKP.Suggestions = {
 
 
 /* Поехали! */
-$($.proxy(PKP.init, PKP));
+//$($.proxy(PKP.init, PKP));

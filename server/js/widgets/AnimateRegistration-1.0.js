@@ -1,5 +1,4 @@
 var AnimateRegistration = function () {
-    PKP.UI.init();
     if (Routing.route == 'registration') {
         var step = Routing.params.step;
         var progress = 0;
