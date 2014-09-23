@@ -131,7 +131,7 @@ var OrderViewModel = function(){
         });
         var diff = sell - end;
         var d = Math.floor(diff * 100 / sell);
-        var discount = '0%';
+        var discount = 0;
         if (d > 0)
             discount = d + '%';
 
@@ -152,7 +152,7 @@ var OrderGoodsViewModel = function(data) {
     self.id = data.id;
     self.fullName = data.full_name;
     self.sellCost = data.sell_cost + ' руб';
-    self.itogSellCost = (data.sell_cost * data.count) + ' руб';
+    self.itogSellCost = (data.sell_cost * data.count).toFixed(2) + ' руб';
     self.finalCost = data.final_cost + ' руб';
     self.count = data.count + ' шт';
     self.routeImage = Config.Base.pathToImages + data.route_image;

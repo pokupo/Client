@@ -57,6 +57,16 @@ var OrderWidget = function() {
         if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.order) {
             input = WParameters.order;
         }
+        
+        if(input.tmpl){
+            if(input.tmpl.path)
+                self.settings.tmpl.path = input.tmpl.path;
+            if(input.tmpl.id){
+                for(var key in input.tmpl.id){
+                    self.settings.tmpl.id[key] = input.tmpl.id[key];
+                }
+            }
+        }
 
         self.settings.inputParameters = input;
     };
@@ -415,6 +425,7 @@ var OrderWidget = function() {
                         Parameters.cache.order.step2 = {};
                         Parameters.cache.delivery = null;
                         delivery.list.remove(delivery.address);
+                        
                     }, false);
                 }
                 else {
@@ -859,8 +870,8 @@ var OrderWidget = function() {
                 if ($("#" + self.settings.containerFormId).length > 0) {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    new AnimateOrder();
                 }
-                $('input#' + form.registrationForm.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
 
                 delete form;
                 self.WidgetLoader(true, self.settings.containerFormId);
@@ -886,6 +897,7 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true,  self.settings.containerFormId);
+                    new AnimateOrder();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Confirm') + ']');
@@ -908,19 +920,8 @@ var OrderWidget = function() {
                 try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                        changeMonth: true,
-                        changeYear: true,
-                        dateFormat: 'dd.mm.yy',
-                        defaultDate: '-24Y',
-                        yearRange: "c-77:c+6",
-                        minDate: '-101Y',
-                        maxDate: '-18Y',
-                        onClose: function(dateText, inst) {
-                            form.birthDay(dateText);
-                        }
-                    });
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateOrder();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Profile') + ']');
@@ -941,25 +942,26 @@ var OrderWidget = function() {
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-//                try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Step2();
-//                            self.Render.Step2(form);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerFormId);
-//                    }
-//                }
+                    new AnimateOrder();
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step2();
+                            self.Render.Step2(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
         },
         Step2Form: function(delivery) {
@@ -967,7 +969,7 @@ var OrderWidget = function() {
                 try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-                    $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+                     new AnimateOrder();
 
                     $('#' + delivery.cssRegionList).autocomplete({
                         source: function(request, response) {
@@ -1112,6 +1114,7 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateOrder();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
@@ -1135,6 +1138,7 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateOrder();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
@@ -1158,6 +1162,7 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    new AnimateOrder();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step5') + ']');
@@ -1295,7 +1300,7 @@ var OrderItemFormStep2ViewModel = function(data, list) {
 
     self.Delete = function() {
         self.Confirm(Config.Order.message.confirmDeleteAddressDelivery, function() {
-            EventDispatcher.DispatchEvent('OrderWidget.step3.delete', {address: self, list: list});
+            EventDispatcher.DispatchEvent('OrderWidget.step2.delete', {address: self, list: list.addressList});
         }, false);
     };
     self.ClickItem = function() {
