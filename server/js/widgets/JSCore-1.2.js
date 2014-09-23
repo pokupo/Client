@@ -50,7 +50,8 @@ var JSSettings = {
         'widgets/AnimateGoods-1.0.js',
         'widgets/AnimateRelatedGoods-1.0.js',
         'widgets/AnimateInfoSeller-1.0.js',
-        'widgets/AnimateContent-1.0.js'],
+        'widgets/AnimateContent-1.0.js',
+        'widgets/AnimateSearchResult-1.0.js'],
     inputParameters : {}
 }
 

@@ -26,7 +26,10 @@ and open the template in the editor.
                     content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/content/contentTmpl_promo.html'}}
                 },
                 search: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/search/searchTmpl_promo.html'}},
-                searchResult: {content: {list: [10, 20, 50], defaultCount: 20}},
+                searchResult: {
+                    form: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/searchResult/advancedSearchFormTmpl_promo.html'}},
+                    content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/searchResult/searchResultTmpl_promo.html'}}
+                },
                 goods: {infoBlock: 1111111, show: ["selectionCount", "addToCart", "buy", "gallery", "shipping", "opinion"], container: {widget: 'tile_block'}, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/goods/goodsTmpl_promo.html'}},
                 userInformation: {show: ["icon", "raiting"], tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/userInformation/userInformationTmpl_promo.html'}},
                 cart: {show: {title: "always", count: true, baseCost: true, finalCost: true, fullInfo: true}, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/cart/cartTmpl_promo.html'}},
@@ -61,7 +64,7 @@ and open the template in the editor.
         <script src="http://pokupo-server.asmsoft.ru/js/widgets/BreadCrumbWidget-1.0.js" type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/ContentWidget-1.1.js' type="text/javascript"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/widgets/SearchWidget-1.0.js" type="text/javascript"></script>
-                <!--<script src='http://pokupo-server.asmsoft.ru/js/widgets/SearchResultWidget-1.1.js' type="text/javascript"></script>-->
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/SearchResultWidget-1.1.js' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/GoodsWidget-1.2.js' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/UserInformationWidget-1.1.js' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/CartWidget-1.0.js' type="text/javascript"></script>
@@ -136,72 +139,8 @@ and open the template in the editor.
 
             </section>
             
-            <section class="advanced-search slidedown">
-                <div class="container">
-                    <div class="advanced-search-trigger"><span data-target="search" class="advanced-search-trigger__text slidedown__trigger">Расширенный поиск</span>
-                    </div>
-                    <div data-target="search" class="b-advanced-search slidedown__content hidden">
-                        <div class="columns triple">
-                            <div class="first column">
-                                <div class="content">
-                                    <div class="b-location dropdown"><a href="javascript:void(0);" data-target="location" class="b-location__current dropdown__trigger"><span id="js-multilocation" class="fancytree-checkbox part"></span>Все категории</a>
-                                        <div data-target="location" class="dropdown__content hidden">
-                                            <div class="b-location__catalog">
-                                                <div id="multilocation" style="text-align:left"><ul class="ui-fancytree fancytree-container" tabindex="0"><li class=""><span class="fancytree-node fancytree-folder fancytree-has-children fancytree-partsel fancytree-exp-c fancytree-ico-cf"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Компьютерная техника</span></span></li><li class=""><span class="fancytree-node fancytree-folder fancytree-has-children fancytree-partsel fancytree-selected fancytree-exp-c fancytree-ico-cf"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Бытовая техника</span></span></li><li class=""><span class="fancytree-node fancytree-exp-n fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Телефоны и связь</span></span></li><li class=""><span class="fancytree-node fancytree-folder fancytree-has-children fancytree-exp-c fancytree-ico-cf"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Фото и оптика</span></span></li><li class=""><span class="fancytree-node fancytree-expanded fancytree-folder fancytree-has-children fancytree-partsel fancytree-exp-e fancytree-ico-ef"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Одежда, обувь, аксессуары</span></span><ul><li class=""><span class="fancytree-node fancytree-exp-n fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Кроссовки</span></span></li><li class=""><span class="fancytree-node fancytree-expanded fancytree-folder fancytree-has-children fancytree-partsel fancytree-selected fancytree-exp-e fancytree-ico-ef"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Кеды</span></span><ul><li class=""><span class="fancytree-node fancytree-partsel fancytree-selected fancytree-exp-n fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Ботильоны</span></span></li><li class=""><span class="fancytree-node fancytree-partsel fancytree-selected fancytree-exp-n fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Босоножки</span></span></li><li class="fancytree-lastsib"><span class="fancytree-node fancytree-lastsib fancytree-partsel fancytree-selected fancytree-exp-nl fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Туфли</span></span></li></ul></li><li class=""><span class="fancytree-node fancytree-exp-n fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Сандалии</span></span></li><li class=""><span class="fancytree-node fancytree-exp-n fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Балетки</span></span></li><li class=""><span class="fancytree-node fancytree-exp-n fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Сапоги</span></span></li><li class="fancytree-lastsib"><span class="fancytree-node fancytree-lastsib fancytree-exp-nl fancytree-ico-c"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Резиновая обувь</span></span></li></ul></li><li class=""><span class="fancytree-node fancytree-folder fancytree-has-children fancytree-exp-c fancytree-ico-cf"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Подарки и праздники</span></span></li><li class=""><span class="fancytree-node fancytree-folder fancytree-has-children fancytree-exp-c fancytree-ico-cf"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Книги, учебники и журналы</span></span></li><li class=""><span class="fancytree-node fancytree-folder fancytree-has-children fancytree-partsel fancytree-selected fancytree-exp-c fancytree-ico-cf"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Мебель, интерьеры и обиход</span></span></li><li class="fancytree-lastsib"><span class="fancytree-node fancytree-folder fancytree-has-children fancytree-lastsib fancytree-lazy fancytree-exp-cdl fancytree-ico-cf"><span class="fancytree-expander"></span><span class="fancytree-checkbox"></span><span class="fancytree-title">Другое</span></span></li></ul></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-holder">
-                                        <select name="select" style="display: none;">
-                                            <option value="0" selected="">Все продавцы</option>
-                                            <option value="1">Частное лицо</option>
-                                            <option value="2">Компания</option>
-                                        </select><div class="chosen-container chosen-container-single chosen-container-single-nosearch" style="width: 100%;" title=""><a class="chosen-single" tabindex="-1"><span>Все продавцы</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" readonly=""></div><ul class="chosen-results"></ul></div></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="second column">
-                                <div class="content">
-                                    <div class="input-holder">
-                                        <div class="floatlabel-wrapper" style="position:relative"><input name="login" type="text" placeholder="Ключевые слова" class="inline-input" id="i-94" style="padding-top: 15px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="94" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Ключевые слова</label></div>
-                                    </div>
-                                    <div class="input-holder">
-                                        <div class="floatlabel-wrapper" style="position:relative"><input name="login" type="text" placeholder="Исключить слова" class="inline-input" id="i-86" style="padding-top: 15px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="86" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Исключить слова</label></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="third column">
-                                <div class="content">
-                                    <div class="input-holder">
-                                        <select name="select" style="display: none;">
-                                            <option value="0" selected="">Любое из слов</option>
-                                            <option value="1">Все слова</option>
-                                        </select><div class="chosen-container chosen-container-single chosen-container-single-nosearch" style="width: 100%;" title=""><a class="chosen-single" tabindex="-1"><span>Любое из слов</span><div><b></b></div></a><div class="chosen-drop"><div class="chosen-search"><input type="text" autocomplete="off" readonly=""></div><ul class="chosen-results"></ul></div></div>
-                                    </div>
-                                    <div class="input-holder hidden">
-                                        <label for="currency">Валюта</label>
-                                        <div class="radio-circles">
-                                            <ul class="menu">
-                                                <li class="menu__item active"><a href="javascript:void(0);"><i class="icon icon__currency--rub"></i></a>
-                                                </li>
-                                                <li class="menu__item"><a href="javascript:void(0);"><i class="icon icon__currency--dol"></i></a>
-                                                </li>
-                                                <li class="menu__item"><a href="javascript:void(0);"><i class="icon icon__currency--btc"></i></a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <div class="input-holder">
-                                        <label for="minPrice">Цена</label>
-                                        <div class="floatlabel-wrapper" style="position:relative"><input id="minPrice" name="minPrice" type="text" placeholder="от" class="inline-input inline-input--small" style="padding-top: 15px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="minPrice" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">от</label></div>
-                                        <label for="maxPrice" class="separator">—</label>
-                                        <div class="floatlabel-wrapper" style="position:relative"><input id="maxPrice" name="maxPrice" type="text" placeholder="до" class="inline-input inline-input--small" style="padding-top: 15px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="maxPrice" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">до</label></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div><span class="btn btn-block b-advanced-search__submit">Начать расширенный поиск <i class="icon icon-search"></i></span>
-                    </div>
-                </div>
+            <section class="advanced-search slidedown" id="advanced_search">
+                
             </section>
             <!-- /search -->
             

@@ -72,11 +72,26 @@ var SearchResultWidget = function(){
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
+                if(input.content.tmpl){
+                    if(input.content.tmpl.path)
+                        self.settings.tmpl.content.path = input.content.tmpl.path;
+                    if(input.content.tmpl.id)
+                        self.settings.tmpl.content.id = input.content.tmpl.id;
+                }
+            }
+            if(input.form){
+                if(input.form.tmpl){
+                    if(input.form.tmpl.path)
+                        self.settings.tmpl.form.path = input.form.tmpl.path;
+                    if(input.form.tmpl.id)
+                        self.settings.tmpl.form.id = input.form.tmpl.id;
+                }
             }
         }
         self.settings.inputParameters = input;
     };
     self.CheckRoutingSearch = function(){
+        EventDispatcher.DispatchEvent('searchResultWidget.show.form');
         if(Routing.route == 'search'){
             for(var key in Routing.params){
                 if(key == 'idSelectCategories'){
@@ -104,7 +119,7 @@ var SearchResultWidget = function(){
     };
     self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
-            if($("#" + self.settings.containerIdForAdvancedSearch).text() == ""){
+            if($.trim($("#" + self.settings.containerIdForAdvancedSearch).text()) == ""){
                 self.BaseLoad.Roots(function(){
                     EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
                 })
@@ -213,19 +228,7 @@ var SearchResultWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
-
-                    $("#" + self.settings.idTreeCategoriesForAdvancedSearchForm).dynatree({
-                        checkbox: true,
-                        selectMode: 3,
-                        children: data.categories,
-                        onSelect: function(select, node) {
-                            var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-                                return node.data.key;
-                            });
-
-                            Parameters.filter.idSelectCategories = selKeys;
-                        }
-                    });
+                    new AnimateSearchResult();
 
                     $("#" + self.settings.containerIdForAdvancedSearch).show();
                 }
@@ -247,27 +250,26 @@ var SearchResultWidget = function(){
         },
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
-                try{
+//                try{
                     ko.cleanNode($("#" + self.settings.containerIdForSearchResult)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
-                    var f = data.filters;
-                    new AnimateSelectList(f.sort.cssSortList);
+
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.SearchResult(data.typeView);
-                            self.Render.SearchResult(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerIdForSearchResult);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.SearchResult(data.typeView);
+//                            self.Render.SearchResult(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+//                    }
+//                }
             }
         }
     };
@@ -372,7 +374,6 @@ var AdvancedSearchFormViewModel = function(params){
         Parameters.filter.exceptWords = self.exceptWords;
         Parameters.filter.typeSeller = self.typeSeller();
         Parameters.filter.page = 1;
-        console.log(self.typeSearch());
         Routing.SetHash('search', 'Расширенный поиск', Parameters.filter);
     };
     self.FilterCategories = function(data){
@@ -456,7 +457,7 @@ var ListSearchResultViewModel = function(settings){
     self.filters = {
         typeView : self.typeView,
         sort : self.GetSort(),
-        filterName : Parameters.filter.filterName,
+        filterName : ko.observable(Parameters.filter.filterName),
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : ko.observableArray(),
         countOptionList : ko.observable(settings.listPerPage.length-1),
@@ -465,6 +466,13 @@ var ListSearchResultViewModel = function(settings){
             Parameters.filter.filterName = $(data.text).val();
 
             Routing.UpdateHash({page : 1, filterName : $(data.text).val()});
+        },
+        ClickFilterNameGoods : function(){
+            Loader.Indicator('SearchResultWidget', false);
+            Parameters.filter.filterName = self.filters.filterName();
+            
+            Routing.UpdateMoreParameters({filterName : self.filters.filterName()});
+            Routing.UpdateHash({page : 1});
         },
         ViewSelectCount : function(){
             self.filters.listPerPage = ko.observableArray();
