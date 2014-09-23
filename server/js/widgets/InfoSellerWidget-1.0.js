@@ -101,6 +101,7 @@ window.InfoSellerWidget = function(){
 
 var InfoSellerViewModel = function(data){
     var self = this;
+    console.log(data);
     self.sellerId = data.seller.id;
     self.nameSeller = data.seller.name_seller;
     self.websiteSeller = data.seller.website;

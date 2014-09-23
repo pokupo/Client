@@ -166,8 +166,9 @@ var CartViewModel = function(){
     }, this);
     self.count = ko.observable(0);
     self.ShowCount = ko.computed(function(){
-        if(Config.Cart.showBlocks.count && self.count() > 0)
+        if(Config.Cart.showBlocks.count && self.count() > 0){
             return true;
+        }
         return false;
     },this);
     self.baseCost = ko.observable(0);
@@ -187,13 +188,15 @@ var CartViewModel = function(){
         var info = data.info;
         var goods = data.goods;
         if(!info.err){
-            self.count(data.count);
-            self.baseCost(data.base_cost);
-            self.finalCost(data.final_cost);
+            self.count(info.count);
+            self.baseCost(info.base_cost);
+            self.finalCost(info.final_cost);
         }
         if(goods && !goods.err){
             $.each(goods, function(i){
-                self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i], self));
+                $.each(goods[i].goods, function(j){
+                    self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i].goods[j], self));
+                });
             });
         }
     };
@@ -221,14 +224,24 @@ var ShortBlockCartGoodsSellersViewModel = function(data, cart){
     self.endSum = ko.computed(function(){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
+    self.CartItog = ko.computed(function(){
+        var itog = 0;
+        $.each(cart.goods(), function(i){
+            itog = itog + parseInt(cart.goods()[i].endSum(), 10); 
+        });
+        cart.finalCost(itog);
+        return itog;
+    }, this);
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
             self.ordered(self.ordered() + 1);
+            self.CartItog();
         }
     };
     self.ClickMinus = function(){
         if(self.ordered() > 0){
             self.ordered(self.ordered() - 1);
+            self.CartItog();
         }
     };
     self.ClickGoods = function(){

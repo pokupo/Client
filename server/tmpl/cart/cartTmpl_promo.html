@@ -6,7 +6,7 @@
         <div class="circles-menu__item dropdown">
             <a href="javascript:void(0);" data-target="cart" class="with-icon icon__cart dropdown__trigger">
                 <!-- ko if: ShowCount() -->
-                    <!-- ko if: count > 0 -->
+                    <!-- ko if: count() > 0 -->
                     <sup class="circles-menu__num" data-bind="text: count"></sup>
                     <!-- /ko -->
                 <!-- /ko -->
@@ -15,7 +15,7 @@
                 <!-- ko if: ShowTitle() -->
                 <p data-bind="text: title"></p>
                 <!-- /ko -->
-                <!-- ko if: goods.length > 0 -->
+                <!-- ko if: goods().length > 0 -->
                 <div class="b-cart-menu__body">
                     <i class="b-cart-menu__patch"></i>
                     <ol class="b-cart-menu__goods">
