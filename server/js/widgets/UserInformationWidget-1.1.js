@@ -142,6 +142,7 @@ var UserInformationWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    new AnimateUserInformation();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('auth') + ']');
@@ -165,6 +166,7 @@ var UserInformationWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    new AnimateUserInformation();
                 }
                 catch(e){
                     self.Exeption('Error of the template [' + self.GetTmplName('info') + ']');

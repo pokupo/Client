@@ -1,5 +1,5 @@
 var AnimateSearch = function () {
-    $('body').on("click", '.dropdown__trigger', function (e) {
+    $('.search_dropdown__trigger').click( function (e) {
         e.preventDefault();
         var $this = $(this);
 
@@ -7,8 +7,8 @@ var AnimateSearch = function () {
             return false;
         }
 
-        if (0 < $('.dropdown__trigger.active').length) {
-            $('.dropdown__trigger.active')
+        if (0 < $('.search_dropdown__trigger.active').length) {
+            $('.search_dropdown__trigger.active')
                     .not(this).removeClass('active')
                     .closest('.dropdown')
                     .find('.dropdown__content').addClass('hidden');
@@ -20,18 +20,18 @@ var AnimateSearch = function () {
                 .toggleClass('hidden');
     });
 
-    $('body').on("click", '.dropdown__content a', function () {
+    $('.dropdown__content a').click( function () {
         $(this).closest('.dropdown__content').toggleClass('hidden').
-                siblings('.dropdown__trigger').toggleClass('active');
+                siblings('.search_dropdown__trigger').toggleClass('active');
     });
     $(document).click(function (e) {
         var $this = $(e.target);
 
-        if ($this.is('.dropdown__trigger')) {
+        if ($this.is('.search_dropdown__trigger')) {
             //
         } else {
             if (1 !== $this.parents().filter('.dropdown__content').length) {
-                $('.dropdown__trigger.active').
+                $('.search_dropdown__trigger.active').
                         removeClass('active').
                         siblings('.dropdown__content').addClass('hidden');
             }

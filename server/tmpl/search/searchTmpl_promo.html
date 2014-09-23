@@ -6,8 +6,8 @@
                 <input type="search" placeholder="Поиск по каталогу..." class="b-search__input" data-bind="value: text">
             </div>
             <div class="b-location dropdown selector">
-                <a href="#" data-target="location" class="b-location__current dropdown__trigger selector__current">Все категории</a>
-                <div data-target="location" class="dropdown__content hidden">
+                <a href="#" data-target="location" class="b-location__current dropdown__trigger selector__current search_dropdown__trigger">Все категории</a>
+                <div data-target="location" class="dropdown__content hidden search_dropdown__content">
                     <div class="b-location__catalog selector__options">
                         <ul class="menu" data-bind="css: cssSelectList, value: selectedCatigoriesId">
                             <!-- ko foreach: categoriesTree --> 

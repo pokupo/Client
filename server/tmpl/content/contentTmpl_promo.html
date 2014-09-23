@@ -402,14 +402,14 @@
 
         <div class="b-catalog__controls-item">Сортировать
             <div class="inline-sorter dropdown selector">
-                <span data-target="sort" class="selector__current dropdown__trigger" id="content_sort">
+                <span data-target="sort" class="selector__current dropdown__trigger content_folter_sort_dropdown__trigger" id="content_sort">
                     <!-- ko foreach: sort.list -->
                         <!-- ko if: isActive -->
                             <!-- ko text: title --><!-- /ko -->
                         <!-- /ko -->
                     <!-- /ko -->
                 </span>
-                <div data-target="sort" class="dropdown__content selector__options hidden">
+                <div data-target="sort" class="dropdown__content selector__options hidden content_folter_sort_dropdown__content">
                     <ul data-bind="foreach: sort.list">
                         <!-- ko if: isActive -->
                         <li class="menu__item active">

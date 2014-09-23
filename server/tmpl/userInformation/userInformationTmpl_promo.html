@@ -3,12 +3,12 @@
     <div class="logged-in">
         <div class="circles-menu">
             <div class="circles-menu__item dropdown">
-                <a href="javascript:void(0);" data-target="profile" class="with-icon icon__profile with-userpic dropdown__trigger" data-bind="attr: {style: background}">
+                <a href="#" data-target="profile" class="with-icon icon__profile with-userpic dropdown__trigger user_information_dropdown__trigger" data-bind="attr: {style: background}">
                     <!-- ko if: countNewMessage > 0 -->
                     <sup class="circles-menu__num" data-bind="click: countNewMessage"></sup>
                     <!-- /ko -->
                 </a>
-                <div data-target="profile" class="b-profile-menu dropdown__content hidden">
+                <div data-target="profile" class="b-profile-menu dropdown__content hidden user_information_dropdown__content">
                     <p class="b-profile-menu__name" data-bind="text: login"></p>
                     <ul class="menu">
                         <li class="menu__item">

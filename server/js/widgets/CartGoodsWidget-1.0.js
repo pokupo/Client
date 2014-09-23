@@ -164,6 +164,7 @@ var CartGoodsWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    new AnimateCartGoods();
 //                }
 //                catch(e){
 //                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
@@ -183,6 +184,7 @@ var CartGoodsWidget = function(){
         },
         EmptyCart : function(){
             self.WidgetLoader(true, self.settings.containerId);
+            new AnimateCartGoods()
         }
     };
     self.SetPosition = function(){
