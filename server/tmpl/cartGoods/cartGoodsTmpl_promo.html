@@ -20,8 +20,8 @@
 <script type="text/html" id="HeaderBlockTmpl">
     <li class="b-order-item b-thead">
         <div class="b-order-item__checkbox">
-            <!--<input id="js-select-all" type="checkbox" data-bind="checked: isSelectedAll"/>-->
-            <label for="js-select-all"></label>
+            <input id="js-select-all" type="checkbox" data-bind="attr: {id: cssSelectAll}"/>
+            <label for="js-select-all" data-bind="click: ClickSelectAll"></label>
         </div>
         <div class="b-order-item__img"></div>
         <div class="b-order-item__name">Наименование</div>
@@ -34,8 +34,8 @@
 <script type="text/html" id="GoodsBlockTmpl">
     <li class="b-order-item">
         <div class="b-order-item__checkbox">
-            <!--<input type="checkbox" data-bind="checked: isSelected, value: id"/>-->
-            <label for=""></label>
+            <input type="checkbox" data-bind="attr: {id: cssCheckboxOrder}"/>
+            <label for="" data-bind="click: ClickOrder"></label>
         </div>
         <div class="b-order-item__img">
             <img src="#" data-bind="attr: {src: routeImages, title: fullName }"/>
@@ -93,7 +93,7 @@
     <div class="b-order-list__actions bordered">
         <!-- ko ifnot: isDisabledButton -->
         <div class="like_button">
-            <span class="pseudo-link" data-bind="click: ClickButchRemove">Отложить выбранные товары</span>
+            <span class="pseudo-link" data-bind="click: ClickButchFavorites">Отложить выбранные товары</span>
         </div>
         <div class="drop_button">
             <span class="pseudo-link" data-bind="click: ClickButchRemove">Удалить выбранные товары</span>
@@ -132,6 +132,9 @@
     <div class="b-order-list__buttons">
         <a href="#" class="btn btn-grey btn-lg btn-inline" data-bind="click: ClickProceed">Продолжить покупки</a>
         <a href="#" class="btn btn-lg" data-bind="click: ClickIssueOrder">Оформить заказ</a>
+    </div>
+    <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
+        <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
     </div>
 </script>
 

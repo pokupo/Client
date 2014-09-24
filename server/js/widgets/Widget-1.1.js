@@ -418,9 +418,14 @@ var Widget = function (){
                 self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
-                        inputDate.data.IsFavorite(true);
+                        if($.isArray(inputDate.data)){
+                            $.each(inputDate.data, function(i){
+                                inputDate.data[i].IsFavorite(true);
+                            });
+                        }
+                        else
+                            inputDate.data.IsFavorite(true);
                         self.ShowMessage(Config.CartGoods.message.addFavorites, false, false);
-                        inputDate.data.Remove();
                     }
                     else{
                         self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, false);
