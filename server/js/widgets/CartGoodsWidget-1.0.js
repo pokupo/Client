@@ -160,26 +160,26 @@ var CartGoodsWidget = function(){
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-//                try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                     new AnimateCartGoods();
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Content();
-//                            self.Render.Content(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
         },
         EmptyCart : function(){
@@ -349,7 +349,7 @@ var BlockGoodsForSellerViewModel = function(content){
         }
         
         ko.utils.arrayForEach(self.goods(), function(goods) {
-            $('#' + goods.cssCheckboxOrder())[0].checked = val;
+            $('#' + goods.cssCheckboxGoods())[0].checked = val;
             goods.isSelected(val);
         });
     }
@@ -385,9 +385,9 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
     self.isSelected = ko.observable(false);
-    self.cssCheckboxOrder = ko.observable('order_' + self.id);
+    self.cssCheckboxGoods = ko.observable('goods_' + self.id);
     self.ClickOrder = function(order, elem){
-        var $checkBox = $('#' + order.cssCheckboxOrder());
+        var $checkBox = $('#' + order.cssCheckboxGoods());
         var isChecked = $checkBox.is(':checked');
         if(isChecked == false){
             $checkBox[0].checked = true;

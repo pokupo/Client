@@ -855,6 +855,9 @@ var OrderWidget = function() {
                 OrderViewModel.prototype.ClickStep4 = function() {
                     Routing.SetHash('order', 'Оформление заказа', {step: 4});
                 };
+                OrderViewModel.prototype.ClickAddAddress = function(){
+                    Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'add'});
+                };
                 form = new OrderViewModel();
                 
                 Parameters.cache.order.step5 = form;
@@ -1287,8 +1290,8 @@ var OrderItemFormStep2ViewModel = function(data, list) {
     self.contactPhone = data.contact_phone;
     self.list = list.addressList();
 
+    self.isDefault = ko.observable(true);
     if (data.is_default == 'yes') {
-        self.isDefault = ko.observable(true);
         self.cssIsDefault = ko.observable('delivery_address_is_default active');
         Parameters.cache.order.delivery = self;
         list.checked(self.id);
@@ -1482,6 +1485,9 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
     self.ClickStep1 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
     };
+    self.ClickStep2 = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 2});
+    };
 };
 
 var OrderFormStep3ViewModel = function() {
@@ -1529,6 +1535,9 @@ var OrderFormStep3ViewModel = function() {
     };
     self.ClickStep2 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 2});
+    };
+    self.ClickAddAddress = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
     };
 };
 
@@ -1634,6 +1643,9 @@ var OrderFormStep4ViewModel = function() {
     };
     self.ClickStep3 = function() {
         Routing.SetHash('order', 'Оформление заказа', {step: 3});
+    };
+    self.ClickAddAddress = function() {
+        Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
     };
 };
 

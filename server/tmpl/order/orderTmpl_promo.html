@@ -23,18 +23,18 @@
 
         <ul class="b-wizard__steps">
             <li>
-                <a href="#">
+                <a href="#" class="selected">
                     <label class="b-wizard__step-num">1</label>
                 </a>
             </li>
             <li>
                 <a href="#">
-                    <label class="b-wizard__step-num">2.1</label>
+                    <label class="b-wizard__step-num">2</label>
                 </a>
             </li>
             <li>
                 <a href="#">
-                    <label class="b-wizard__step-num">2.2</label>
+                    <label class="b-wizard__step-num">2.1</label>
                 </a>
             </li>
             <li>
@@ -123,12 +123,12 @@
 
         <ul class="b-wizard__steps">
             <li>
-                <a href="#">
-                    <label class="b-wizard__step-num">1</label>
+                <a href="#" class="selected">
+                    <label class="b-wizard__step-num" data-bind="click: ClickStep1">1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected">
                     <label class="b-wizard__step-num">2.1</label>
                 </a>
             </li>
@@ -169,7 +169,12 @@
                     <!-- ko foreach: addressList -->
                     <tr class="b-order-table__item" data-bind="click: ClickItem, css: cssIsDefault()">
                         <td class="b-order-table__action">
-
+                            <!-- ko if: isDefault()-->
+                            <input type="radio" name="is_default" checked="">
+                            <!-- /ko -->
+                            <!-- ko ifnot: isDefault()-->
+                            <input type="radio" name="is_default">
+                            <!-- /ko -->
                             <label for="is_default">Выбрать</label>
                         </td>
                         <td>
@@ -211,17 +216,17 @@
 
         <ul class="b-wizard__steps">
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep1">
                     <label class="b-wizard__step-num">1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep2">
                     <label class="b-wizard__step-num">2.1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected">
                     <label class="b-wizard__step-num">2.2</label>
                 </a>
             </li>
@@ -311,22 +316,22 @@
 
         <ul class="b-wizard__steps">
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep1">
                     <label class="b-wizard__step-num">1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep2">
                     <label class="b-wizard__step-num">2.1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickAddAddress">
                     <label class="b-wizard__step-num">2.2</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected">
                     <label class="b-wizard__step-num">3</label>
                 </a>
             </li>
@@ -373,7 +378,12 @@
                             <!-- /ko -->
                         </td>
                         <td class="b-order-table__action">
-
+                            <!-- ko if: isActive()-->
+                            <input type="radio" checked="" name="is_default">
+                            <!-- /ko -->
+                            <!-- ko ifnot: isActive()-->
+                            <input type="radio" name="is_default" >
+                            <!-- /ko -->
                             <label for="tr_11">Выбрать</label>
                         </td>
                     </tr>
@@ -395,27 +405,27 @@
 
         <ul class="b-wizard__steps">
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep1">
                     <label class="b-wizard__step-num">1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep2">
                     <label class="b-wizard__step-num">2.1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickAddAddress">
                     <label class="b-wizard__step-num">2.2</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep3">
                     <label class="b-wizard__step-num">3</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected">
                     <label class="b-wizard__step-num">4</label>
                 </a>
             </li>
@@ -463,8 +473,13 @@
                             </span>
                         </td>
                         <td class="b-order-table__action">
-                            <input id="tr_31" type="radio" value="1" name="radio3">
-                            <label for="tr_31">Выбрать</label>
+                            <!-- ko if: isActive()-->
+                                <input class="addrN" type="radio" checked="" name="is_default"/>
+                            <!-- /ko -->
+                            <!-- ko ifnot: isActive()-->
+                                <input class="addrN" type="radio" name="is_default"/>
+                            <!-- /ko -->
+                            <label for="is_default">Выбрать</label>
                         </td>
                     </tr>
                     <!-- /ko -->
@@ -485,32 +500,32 @@
 
         <ul class="b-wizard__steps">
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep1">
                     <label class="b-wizard__step-num">1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep2">
                     <label class="b-wizard__step-num">2.1</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickAddAddress">
                     <label class="b-wizard__step-num">2.2</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep3">
                     <label class="b-wizard__step-num">3</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected" data-bind="click: ClickStep4">
                     <label class="b-wizard__step-num">4</label>
                 </a>
             </li>
             <li>
-                <a href="#">
+                <a href="#" class="selected">
                     <label class="b-wizard__step-num">5</label>
                 </a>
             </li>

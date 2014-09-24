@@ -34,7 +34,7 @@
 <script type="text/html" id="GoodsBlockTmpl">
     <li class="b-order-item">
         <div class="b-order-item__checkbox">
-            <input type="checkbox" data-bind="attr: {id: cssCheckboxOrder}"/>
+            <input type="checkbox" data-bind="attr: {id: cssCheckboxGoods}"/>
             <label for="" data-bind="click: ClickOrder"></label>
         </div>
         <div class="b-order-item__img">
@@ -132,9 +132,6 @@
     <div class="b-order-list__buttons">
         <a href="#" class="btn btn-grey btn-lg btn-inline" data-bind="click: ClickProceed">Продолжить покупки</a>
         <a href="#" class="btn btn-lg" data-bind="click: ClickIssueOrder">Оформить заказ</a>
-    </div>
-    <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
-        <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
     </div>
 </script>
 
