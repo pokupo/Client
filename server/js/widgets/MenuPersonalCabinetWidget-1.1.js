@@ -32,6 +32,15 @@ var MenuPersonalCabinetWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.menuPersonalCabinet){
             input = WParameters.menuPersonalCabinet;
         }
+        if(input.tmpl){
+            if(input.tmpl.path)
+                self.settings.tmpl.path = input.tmpl.path;
+            if(input.tmpl.id){
+                for(var key in input.tmpl.id){
+                    self.settings.tmpl.id[key] = input.tmpl.id[key];
+                }
+            }
+        }
      };
     self.AddMenu = function(opt){
         if(opt){
@@ -56,9 +65,9 @@ var MenuPersonalCabinetWidget = function(){
         }
     };
     self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('widget.change.route', function() {
-            self.CheckRouteMenuProfile();
-        });
+//        EventDispatcher.AddEventListener('widget.change.route', function() {
+//            self.CheckRouteMenuProfile();
+//        });
         
         EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
             var count = self.countNewMessage();
@@ -131,6 +140,7 @@ var MenuPersonalCabinetViewModel = function(menu){
     }, this);
     
     self.AddSubMenu = function(subMenu, active){
+        self.subMenu = ko.observableArray();
         for(var key in subMenu){
             self.subMenu.push(new SubMenuViewModel(subMenu[key], active));
         }
@@ -191,6 +201,11 @@ var MenuPersonalCabinetViewModel = function(menu){
 var SubMenuViewModel = function(subMenu, active){
     var self = this;
     self.title = subMenu.title;
+    self.isActive = ko.computed(function(){
+        if(active == subMenu.prefix)
+            return true;
+        return false;
+    });
     self.activeSubMenu = ko.computed(function(){
         if(active == subMenu.prefix)
             return 'active';

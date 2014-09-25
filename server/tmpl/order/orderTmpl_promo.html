@@ -167,29 +167,16 @@
                 </thead>
                 <tbody>
                     <!-- ko foreach: addressList -->
-                    <tr class="b-order-table__item" data-bind="click: ClickItem, css: cssIsDefault()">
-                        <td class="b-order-table__action">
-                            <!-- ko if: isDefault()-->
-                            <input type="radio" name="is_default" checked="">
-                            <!-- /ko -->
-                            <!-- ko ifnot: isDefault()-->
-                            <input type="radio" name="is_default">
-                            <!-- /ko -->
-                            <label for="is_default">Выбрать</label>
-                        </td>
-                        <td>
-                            <!-- ko text: postCode --><!-- /ko -->,
-                            <!-- ko text: country --><!-- /ko -->,
-                            <!-- ko text: region --><!-- /ko -->,
-                            <!-- ko text: city --><!-- /ko -->,
-                            <!-- ko text: address --><!-- /ko -->
-                        </td>
-                        <td class="b-order-table__name" data-bind="text: addressee"></td>
-                        <td class="b-order-table__phone" data-bind="text: contactPhone"></td>
-                        <td class="b-order-table__drop">
-                            <div class="b-order-item__drop btn-circle btn-circle--drop" data-bind="click: Delete"></div>
-                        </td>
-                    </tr>
+                        <!-- ko if: isDefault -->
+                            <tr class="b-order-table__item active" data-bind="click: ClickItem, css: cssIsDefault()">
+                                <!-- ko template: {name: 'orderFormRowStep2Tmpl' } --><!-- /ko -->
+                            </tr>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isDefault -->
+                            <tr class="b-order-table__item" data-bind="click: ClickItem, css: cssIsDefault()">
+                                <!-- ko template: {name: 'orderFormRowStep2Tmpl' } --><!-- /ko -->
+                            </tr>
+                        <!-- /ko -->
                     <!-- /ko -->
                 </tbody>
                 <tfoot>
@@ -207,6 +194,30 @@
             <a href="#" class="b-wizard__action btn-next-step" data-bind="click: Submit">Продолжить</a>
         </div>
     </div>
+</script>
+
+<script type="text/html" id="orderFormRowStep2Tmpl">
+    <td class="b-order-table__action">
+        <!-- ko if: isDefault()-->
+        <input type="radio" checked="" data-bind="attr: {'name': 'is_default_' + id }"/>
+        <!-- /ko -->
+        <!-- ko ifnot: isDefault()-->
+        <input type="radio" data-bind="attr: {'name': 'is_default_' + id }"/>
+        <!-- /ko -->
+        <label rel="tooltip" title="Выбрать" data-bind="attr: {'for': 'is_default_' + id }">&nbsp;</label>
+    </td>
+    <td>
+        <!-- ko text: postCode --><!-- /ko -->,
+        <!-- ko text: country --><!-- /ko -->,
+        <!-- ko text: region --><!-- /ko -->,
+        <!-- ko text: city --><!-- /ko -->,
+        <!-- ko text: address --><!-- /ko -->
+    </td>
+    <td class="b-order-table__name" data-bind="text: addressee"></td>
+    <td class="b-order-table__phone" data-bind="text: contactPhone"></td>
+    <td class="b-order-table__drop">
+        <div class="b-order-item__drop btn-circle btn-circle--drop" data-bind="click: Delete"></div>
+    </td>
 </script>
 
 <script type="text/html" id="orderDeliveryFormStep2Tmpl">
@@ -360,7 +371,7 @@
                 </thead>
                 <tbody>
                     <!-- ko foreach: shipping() -->
-                    <tr class="b-order-table__item active" data-bind="click: ClickItem, css: cssActive()">
+                    <tr class="b-order-table__item" data-bind="click: ClickItem">
                         <td class="b-order-table__logo">
                             <img src="#" data-bind="attr: {src: logoShippingCompany}"/>
                         </td>
@@ -474,10 +485,10 @@
                         </td>
                         <td class="b-order-table__action">
                             <!-- ko if: isActive()-->
-                                <input class="addrN" type="radio" checked="" name="is_default"/>
+                            <input class="addrN" type="radio" checked="" name="is_default"/>
                             <!-- /ko -->
                             <!-- ko ifnot: isActive()-->
-                                <input class="addrN" type="radio" name="is_default"/>
+                            <input class="addrN" type="radio" name="is_default"/>
                             <!-- /ko -->
                             <label for="is_default">Выбрать</label>
                         </td>
@@ -585,7 +596,7 @@
                     </div>
                 </li>
                 <!-- /ko -->
-                
+
                 <!-- ko if: realShipping -->
                 <li class="b-tech__item">
                     <div class="b-tech__char"><span>Доставка: <i><!-- ko text: nameMethodShipping --><!-- /ko --></i></span>
@@ -599,7 +610,7 @@
                     </div>
                 </li>
                 <!-- /ko -->
-                
+
                 <li class="b-tech__item">
                     <div class="b-tech__char"><span>Способ оплаты: <i><!-- ko text: namePayment --><!-- /ko --></i></span>
                     </div>

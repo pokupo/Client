@@ -5,9 +5,9 @@
             <a type="button" class="btn btn-xs btn-inline" data-bind="attr: {href: mailtoShop}">Задать вопрос</a>
             <div class="b-support-info dropdown">
                 <span class="b-support-info__title">
-                    <span data-target="support" class="dropdown__trigger"> Поддержка</span>  
+                    <span data-target="support" class="dropdown__trigger" id="info_seller_dropdown__trigger"> Поддержка</span>  
                 </span>
-                <div data-target="support" class="b-support-info__content dropdown__content hidden">
+                <div data-target="support" class="b-support-info__content dropdown__content hidden" id="info_seller_dropdown__content">
                     <p>
                         <!-- ko if: siteSupportShop() -->
                         <span class="label">Посетить сайт</span>

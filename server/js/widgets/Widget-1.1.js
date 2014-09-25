@@ -100,6 +100,7 @@ var Loader = {
     Indicator : function(widget, isReady, container){
         if(widget){
             this.widgets[widget] = isReady;
+            console.log(this.widgets);
             this.countAll = 0;
             this.readyCount = 0;
 
@@ -467,6 +468,9 @@ var Widget = function (){
                     EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
                 });
             }
+        };
+        ko.global = {
+            route : Routing.route
         };
     };
     this.WidgetLoader = function(test, container){

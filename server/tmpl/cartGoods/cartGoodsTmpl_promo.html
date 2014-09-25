@@ -1,8 +1,9 @@
 <script type="text/html" id="cartGoodsTmpl">
     <!-- version 1.0 -->
-    <h1 class="b-catalog-item__title">Моя корзина</h1>
+    <div class="b-catalog-item">
+        <h1 class="b-catalog-item__title">Моя корзина</h1>
 
-    <!-- ko foreach: sellerBlock -->
+        <!-- ko foreach: sellerBlock -->
         <div class="b-profile-info" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo, tmpl : {path: 'infoSeller/infoSellerTmpl_promo.html'}}}"></div> 
 
         <ol class="b-order-list">   
@@ -14,7 +15,8 @@
         </ol>
 
         <!--  ko template: { name: 'FooterBlockTmpl' } --><!-- /ko -->
-    <!-- /ko -->
+        <!-- /ko -->
+    </div>
 </script>
 
 <script type="text/html" id="HeaderBlockTmpl">
@@ -73,20 +75,20 @@
             </span>
         </div>
         <div class="b-order-item__delay">
-                <!-- ko if: IsFavorite -->
-                <div class="like_button active">
-                    <a href="#" class="pseudo-link active" data-bind="click: ClickFavorites">Избранный товар</a>
-                </div>
-                <!-- /ko -->
-                <!-- ko ifnot : IsFavorite -->
-                <div class="like_button">
-                    <a href="#" class="pseudo-link" data-bind="click: AddFavorites">В избранное</a>
-                </div>
-                <!-- /ko -->
+            <!-- ko if: IsFavorite -->
+            <div class="like_button active">
+                <a href="#" class="pseudo-link active" data-bind="click: ClickFavorites">Избранный товар</a>
             </div>
+            <!-- /ko -->
+            <!-- ko ifnot : IsFavorite -->
+            <div class="like_button">
+                <a href="#" class="pseudo-link" data-bind="click: AddFavorites">В избранное</a>
+            </div>
+            <!-- /ko -->
         </div>
-        <div class="b-order-item__drop btn-circle btn-circle--drop" data-bind="click: ClickRemove"></div>
-    </li>
+    </div>
+    <div class="b-order-item__drop btn-circle btn-circle--drop" data-bind="click: ClickRemove"></div>
+</li>
 </script>
 
 <script type="text/html" id="FooterBlockTmpl">

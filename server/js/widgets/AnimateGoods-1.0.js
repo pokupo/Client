@@ -1,4 +1,4 @@
-var AnimateGoods = function(){
+var AnimateGoods = function () {
     $('.b-catalog-item__photos').fotorama({
         width: 313,
         allowfullscreen: true,
@@ -13,6 +13,15 @@ var AnimateGoods = function(){
         arrows: false,
         shadows: true,
         transition: 'slide',
+    });
+
+    $('#more_block .tab__trigger').click(function () {
+        var $this = $(this);
+        $this.siblings()
+                .removeClass('selected');
+        $this.addClass('selected')
+                .next()
+                .addClass('selected');
     });
 }
 

@@ -119,14 +119,10 @@ var SearchResultWidget = function(){
     };
     self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
-            if($.trim($("#" + self.settings.containerIdForAdvancedSearch).text()) == ""){
-                self.BaseLoad.Roots(function(){
-                    EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
-                })
-            }
-            else{
-                $("#" + self.settings.containerIdForAdvancedSearch).html("");
-            }
+            $("#" + self.settings.containerIdForAdvancedSearch).html("");
+            self.BaseLoad.Roots(function(){
+                EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
+            })
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
@@ -178,8 +174,7 @@ var SearchResultWidget = function(){
                 });
             }
             else{
-                self.WidgetLoader(true);
-                $("#" + self.settings.containerIdForAdvancedSearch).html("");
+                EventDispatcher.DispatchEvent('searchResultWidget.show.form');
             }
         });
     };
@@ -250,26 +245,26 @@ var SearchResultWidget = function(){
         },
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
-//                try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerIdForSearchResult)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
-
+                    new AnimateSearchResult();
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.SearchResult(data.typeView);
-//                            self.Render.SearchResult(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerIdForSearchResult);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.SearchResult(data.typeView);
+                            self.Render.SearchResult(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+                    }
+                }
             }
         }
     };

@@ -1,58 +1,39 @@
 var AnimateAddToCart = function(goodsId) {
     if($('#' + Config.Cart.cartId).length){
-        var imageElement = document.getElementById('goodsToCart_' + goodsId);
-        var imageToFly = $(imageElement);
-        var width = imageToFly.width();
-        var height = imageToFly.height();
-        var position = imageToFly.offset();
-        var flyImage = imageToFly.clone().insertBefore(imageToFly);
-    
-        var cartPosition = $('#' + Config.Cart.cartId).offset();
+        $('.b-item__order-button .btn').on('click', function () {
+            var $this = $(this);
+            var item = $this.closest('.b-item__popover');
 
-        flyImage.appendTo('body').css({
-            "position": "absolute",
-            "left": position.left,
-            "top": position.top,
-            "z-index": 10000,
-            "width": width,
-            "height": height
+            var x = item.offset().left,
+                    y = item.offset().top,
+                    tx = $('.menu-login').offset().left + 60;
+
+
+            item.clone()
+                    .appendTo($('body'))
+                    .addClass('hallucination')
+                    .css({
+                        position: 'absolute',
+                        left: x,
+                        top: y,
+                        zIndex: 999
+                    })
+                    .animate({
+                        opacity: 0.5,
+                        left: tx,
+                        top: 0,
+                        width: 50,
+                        height: 100
+                    },
+                    600,
+                            function () {
+                                $(this).remove();
+                            }
+                    );
+
+            console.log(item);
+            // $this.effect( "bounce", {times:3, distance:10}, 300 );
         });
-        flyImage.animate({
-            width: 0,
-            height: 0,
-            left: cartPosition.left,
-            top: cartPosition.top
-        }, 600, 'linear');
-
-        setTimeout(function() {
-            flyImage.remove()
-        }, 600);
-        
-        var titleElement = document.getElementById('goodsTilteToCart_' + goodsId);
-        var titleToFly = $(titleElement);
-        var widthTitle = titleToFly.width();
-        var heightTitle = titleToFly.height();
-        var positionTitle = titleToFly.offset();
-        var flyTitle = titleToFly.clone().insertBefore(titleToFly);
- 
-        flyTitle.appendTo('body').css({
-            "position": "absolute",
-            "left": positionTitle.left,
-            "top": positionTitle.top,
-            "z-index": 10000,
-            "width": widthTitle,
-            "height": heightTitle
-        });
-        flyTitle.animate({
-            width: 0,
-            height: 0,
-            left: cartPosition.left,
-            top: cartPosition.top
-        }, 600, 'linear');
-
-        setTimeout(function() {
-            flyTitle.remove()
-        }, 600); 
     }
 }
 

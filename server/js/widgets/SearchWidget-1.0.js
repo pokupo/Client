@@ -117,8 +117,8 @@ var SearchWidget = function(){
             try{
                 ko.cleanNode($("#" + self.settings.containerId)[0]);
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                self.WidgetLoader(true, self.settings.containerId);
                 new AnimateSearch();
+                self.WidgetLoader(true, self.settings.containerId);
             }
             catch(e){
                 self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

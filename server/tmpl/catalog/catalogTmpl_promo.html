@@ -1,15 +1,16 @@
 <script type="text/html" id="catalogTmpl">
     <!-- version 1.0 -->
-    <div data-target="sidebar" class="b-sidebar__dropdown">
-        <!-- ko foreach: tab -->
+    <aside class="b-sidebar dropdown">
+        <div data-target="sidebar" class="b-sidebar__dropdown">
+            <!-- ko foreach: tab -->
             <h1 class="b-sidebar__title" data-bind="text: title, css: tabClass, click: ClickTab"></h1>
-        <!-- /ko -->
-        
-        <!-- ko foreach: tab -->
-        <ul class="menu"  data-bind='css: listClass, visible: isActive'>
-            <!-- ko foreach: children -->
-            <li class="menu__item with-submenu" data-bind="css : liClass">
-                <!-- ko ifnot: hasChildren -->
+            <!-- /ko -->
+
+            <!-- ko foreach: tab -->
+            <ul class="menu"  data-bind='css: listClass, visible: isActive'>
+                <!-- ko foreach: children -->
+                <li class="menu__item with-submenu" data-bind="css : liClass">
+                    <!-- ko ifnot: hasChildren -->
                 <u><span data-bind="html: titleWithCount, click: ClickItem"></span></u>
                 <!--/ko-->
                 <!-- ko if: hasChildren -->
@@ -25,9 +26,10 @@
                     <!-- /ko -->
                 </ul>
                 <!-- /ko -->
-            </li>
+                </li>
+                <!-- /ko -->
+            </ul>
             <!-- /ko -->
-        </ul>
-        <!-- /ko -->
+        </div>
     </div>
 </script>
