@@ -295,7 +295,6 @@ var ContentWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    var f = data.filters;
                     new AnimateContent();
                     $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
@@ -326,7 +325,9 @@ var ContentWidget = function(){
                     self.testBlock.ready = self.testBlock.ready + 1;
 
                     if(self.testBlock.IsReady()){
-                        self.WidgetLoader(true, self.settings.blockContainerId[data.typeView].widget);
+                        $.each(self.settings.blockContainerId, function(i){
+                            self.WidgetLoader(true, self.settings.blockContainerId[i].widget);
+                        });
                         self.Render.Animate.Do();
                     }
                 }

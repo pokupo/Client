@@ -57,6 +57,7 @@ Parameters = {
             security : {},
             info : {}
         },
+        profileMenu : null,
         message : {
             topicList : {},
             topicCount : {},
@@ -406,10 +407,12 @@ var Widget = function (){
         });
         
         EventDispatcher.AddEventListener('widget.onload.menuPersonalCabinet', function(opt){
-            MenuPersonalCabinetWidget.prototype = new Widget();
-            var menu = new MenuPersonalCabinetWidget();
-            menu.AddMenu(opt);
-            menu.Init(menu);
+            if(!Parameters.cache.profileMenu){
+                MenuPersonalCabinetWidget.prototype = new Widget();
+                Parameters.cache.profileMenu = new MenuPersonalCabinetWidget();
+                Parameters.cache.profileMenu.Init(Parameters.cache.profileMenu);
+            }
+            Parameters.cache.profileMenu.AddMenu(opt);
         });
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){

@@ -15,30 +15,31 @@ and open the template in the editor.
         <link rel="stylesheet" href="http://dev.pokupo.ru/new/styles/main.css" type="text/css" media="screen" />
 
         <script type="text/javascript">
+            var pkpWHost = 'http://pokupo-server.asmsoft.ru';
             var WParameters = {
-                authentication: {https: 'login', container: {widget: 'authentication_block'}, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/authentication/authenticationTmpl_promo.html'}},
-                registration: {geoShop: 0, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/registration/registrationTmpl_promo.html'}},
+                authentication: {https: 'login', container: {widget: 'authentication_block'}, tmpl: {path: pkpWHost + '/tmpl/authentication/authenticationTmpl_promo.html'}},
+                registration: {geoShop: 0, tmpl: {path: pkpWHost + '/tmpl/registration/registrationTmpl_promo.html'}},
                 core: {shopId: 1},
-                catalog: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/catalog/catalogTmpl_promo.html'}},
-                breadCrumb: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/breadCrumb/breadCrumbTmpl_promo.html'}},
+                catalog: {tmpl: {path: pkpWHost + '/tmpl/catalog/catalogTmpl_promo.html'}},
+                breadCrumb: {tmpl: {path: pkpWHost + '/tmpl/breadCrumb/breadCrumbTmpl_promo.html'}},
                 content: {
-                    block: {count: 6, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/content/blockTmpl_promo.html'}},
-                    content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/content/contentTmpl_promo.html'}}
+                    block: {count: 6, tmpl: {path: pkpWHost + '/tmpl/content/blockTmpl_promo.html'}},
+                    content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: pkpWHost + '/tmpl/content/contentTmpl_promo.html'}}
                 },
-                search: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/search/searchTmpl_promo.html'}},
+                search: {tmpl: {path: pkpWHost + '/tmpl/search/searchTmpl_promo.html'}},
                 searchResult: {
-                    form: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/searchResult/advancedSearchFormTmpl_promo.html'}},
-                    content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/searchResult/searchResultTmpl_promo.html'}}
+                    form: {tmpl: {path: pkpWHost + '/tmpl/searchResult/advancedSearchFormTmpl_promo.html'}},
+                    content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: pkpWHost + '/tmpl/searchResult/searchResultTmpl_promo.html'}}
                 },
-                goods: {infoBlock: 1111111, show: ["selectionCount", "addToCart", "buy", "gallery", "shipping", "opinion"], tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/goods/goodsTmpl_promo.html'}},
-                userInformation: {show: ["icon", "raiting"], tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/userInformation/userInformationTmpl_promo.html'}},
-                cart: {show: {title: "always", count: true, baseCost: true, finalCost: true, fullInfo: true}, tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/cart/cartTmpl_promo.html'}},
-                cartGoods: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/cartGoods/cartGoodsTmpl_promo.html'}},
-                profile: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/profile/profileTmpl_promo.html'}},
+                goods: {infoBlock: 1111111, show: ["selectionCount", "addToCart", "buy", "gallery", "shipping", "opinion"], tmpl: {path: pkpWHost + '/tmpl/goods/goodsTmpl_promo.html'}},
+                userInformation: {show: ["icon", "raiting"], tmpl: {path: pkpWHost + '/tmpl/userInformation/userInformationTmpl_promo.html'}},
+                cart: {show: {title: "always", count: true, baseCost: true, finalCost: true, fullInfo: true}, tmpl: {path: pkpWHost + '/tmpl/cart/cartTmpl_promo.html'}},
+                cartGoods: {tmpl: {path: pkpWHost + '/tmpl/cartGoods/cartGoodsTmpl_promo.html'}},
+                profile: {tmpl: {path: pkpWHost + '/tmpl/profile/profileTmpl_promo.html'}},
                 favorites: {show: ["infoShop", "addToCart", "buy"]},
                 cabinetCartGoods: {},
-                menuPersonalCabinet: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/menuPersonalCabinet/menuPersonalCabinetTmpl_promo.html'}},
-                order: {tmpl: {path: 'http://pokupo-server.asmsoft.ru/tmpl/order/orderTmpl_promo.html'}},
+                menuPersonalCabinet: {tmpl: {path: pkpWHost + '/tmpl/menuPersonalCabinet/menuPersonalCabinetTmpl_promo.html'}},
+                order: {tmpl: {path: pkpWHost + '/tmpl/order/orderTmpl_promo.html'}},
                 orderList: {},
                 buttonPayment: {title: "Оплатить"},
                 message: {defaultCount: 10}

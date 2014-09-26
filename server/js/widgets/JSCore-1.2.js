@@ -236,20 +236,11 @@ var XDMTransport = {
             var url = XDMTransport.GetProtocol() +  JSSettings.host +  JSSettings.pathToTmpl + data;
             if(/^(https?|ftp)\:\/\/(www\.)?([a-zA-Z0-9\.\-]+\.[a-z]{2,})(\/.+)$/.test(data))
                 url = data;
-            if(JSSettings.sourceData == 'api'){
-                XDMTransport.Load.FromApi({
-                    type: 'html',
-                    url : url,
-                    callback : callback
-                })
-            }
-            if(JSSettings.sourceData == 'proxy'){
-                XDMTransport.Load.FromProxy({
-                    url : url,
-                    callback : callback,
-                    protocol : null
-                })
-            }
+            XDMTransport.Load.FromProxy({
+                url : url,
+                callback : callback,
+                protocol : null
+            })
         },
         Data: function(data, callback, protocol){
             var hash = EventDispatcher.HashCode(data + callback.toString());

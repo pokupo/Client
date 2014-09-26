@@ -65,9 +65,9 @@ var MenuPersonalCabinetWidget = function(){
         }
     };
     self.RegisterEvents = function() {
-//        EventDispatcher.AddEventListener('widget.change.route', function() {
-//            self.CheckRouteMenuProfile();
-//        });
+        EventDispatcher.AddEventListener('widget.change.route', function() {
+            self.CheckRouteMenuProfile();
+        });
         
         EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
             var count = self.countNewMessage();
@@ -84,7 +84,7 @@ var MenuPersonalCabinetWidget = function(){
         },
         Content : function(){
             self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerMenuId).append($('script#' + self.GetTmplName()).html()).children().hide();
+            $("#" + self.settings.containerMenuId).html($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
     self.Fill = function(){

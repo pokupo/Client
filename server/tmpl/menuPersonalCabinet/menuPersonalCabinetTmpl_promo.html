@@ -1,60 +1,62 @@
 <script type="text/html" id="menuPersonalCabinetTmpl">
     <!-- version 1.1 -->
-    <div class="profile-nav grey">
-        <div class="container">
-            <a href="#" class="btn btn-sm">
-                <i class="icon icon-store--small"></i>Стать продавцом
-            </a>
-            <ul class="menu b-profile-nav">
-                <li data-bind="attr: {class: 'menu__item ' + activeProfile()}">
-                    <a href="#" class="icon__profile" data-bind="click: ClickProfile">
-                        <span>Профиль</span>
-                    </a>
-                </li>
-                <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeFavorites()}">
-                    <a href="#" class="icon__favorites" data-bind="click: ClickFavorites">
-                        <span>Избранное</span>
-                    </a>
-                </li>
-                <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeCart()}">
-                    <a href="#" class="icon__cart" data-bind="click: ClickCart">
-                        <span>Корзина</span>
-                    </a>
-                </li>
-                <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activePurchases()}">
-                    <a href="#" class="icon__order" data-bind="click: ClickPurchases">
-                        <span>Заказы</span>
-                    </a>
-                </li>
-                <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeMessages()}">
-                    <a href="#" class="icon__mail" data-bind="click: ClickMessages">
-                        <span>Сообщения
-                            <!-- ko if: countNewMessage > 0 -->
-                            <sup class="menu__item__num" data-bind="text: countNewMessage"></sup>
-                            <!-- /ko -->
-                        </span>
-                    </a>
-                </li>
-            </ul>
+    <div>
+        <div class="profile-nav grey">
+            <div class="container">
+                <a href="#" class="btn btn-sm">
+                    <i class="icon icon-store--small"></i>Стать продавцом
+                </a>
+                <ul class="menu b-profile-nav">
+                    <li data-bind="attr: {class: 'menu__item ' + activeProfile()}">
+                        <a href="#" class="icon__profile" data-bind="click: ClickProfile">
+                            <span>Профиль</span>
+                        </a>
+                    </li>
+                    <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeFavorites()}">
+                        <a href="#" class="icon__favorites" data-bind="click: ClickFavorites">
+                            <span>Избранное</span>
+                        </a>
+                    </li>
+                    <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeCart()}">
+                        <a href="#" class="icon__cart" data-bind="click: ClickCart">
+                            <span>Корзина</span>
+                        </a>
+                    </li>
+                    <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activePurchases()}">
+                        <a href="#" class="icon__order" data-bind="click: ClickPurchases">
+                            <span>Заказы</span>
+                        </a>
+                    </li>
+                    <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeMessages()}">
+                        <a href="#" class="icon__mail" data-bind="click: ClickMessages">
+                            <span>Сообщения
+                                <!-- ko if: countNewMessage > 0 -->
+                                <sup class="menu__item__num" data-bind="text: countNewMessage"></sup>
+                                <!-- /ko -->
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
-    </div>
-    <div class="container">
-        <!-- ko if: subMenu().length > 0 -->
-        <dl class="tabs tabs--withline">
-            <!-- ko foreach: subMenu -->
+        <div class="container">
+            <!-- ko if: subMenu().length > 0 -->
+            <dl class="tabs tabs--withline">
+                <!-- ko foreach: subMenu -->
                 <!-- ko if: isActive -->
                 <dt class="tab__trigger selected">
-                    <span data-bind="css: activeSubMenu, click: ClickSubMenu, text: title"</span>
+                    <span data-bind="css: activeSubMenu, click: ClickSubMenu, text: title"></span>
                 </dt>
                 <dd class="tab__content selected"></dd>
                 <!-- /ko -->
                 <!-- ko ifnot: isActive -->
                 <dt class="tab__trigger">
-                    <span data-bind="css: activeSubMenu, click: ClickSubMenu, text: title"</span>
+                <span data-bind="css: activeSubMenu, click: ClickSubMenu, text: title"></span>
                 </dt>
                 <!-- /ko -->
+                <!-- /ko -->
+            </dl>
             <!-- /ko -->
-        </dl>
-        <!-- /ko -->
+        </div>
     </div>
 </script>

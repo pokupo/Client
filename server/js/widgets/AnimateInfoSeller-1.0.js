@@ -40,7 +40,6 @@ var AnimateInfoSeller = function () {
             //
         } else {
             if (1 !== $this.parents().filter('#info_seller_dropdown__content').length) {
-                console.log('fff');
                 $('#info_seller_dropdown__trigger.active').
                         removeClass('active').
                         siblings('#info_seller_dropdown__content').addClass('hidden');
