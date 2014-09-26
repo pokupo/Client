@@ -100,7 +100,6 @@ var Loader = {
     Indicator : function(widget, isReady, container){
         if(widget){
             this.widgets[widget] = isReady;
-            console.log(this.widgets);
             this.countAll = 0;
             this.readyCount = 0;
 
