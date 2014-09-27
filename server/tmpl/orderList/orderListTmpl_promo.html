@@ -131,18 +131,39 @@
 
 <script type="text/html" id="orderListPagenationTmpl">
     <!-- ko if: paging().length > 1 -->
-    <div class="horizontalSection">
-        <div class="pageWidth">
-            <div class="pagination">
-                <ul >
-                    <!-- ko foreach: paging -->
-                    <li data-bind="css: cssLink">
-                        <!-- ko ifnot: current -->
-                        <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+    <div class="content" style="margin-top: 20px;">
+        <div class="input-holder pagination">
+            <div class="radio-circles">
+                <ul class="menu">
+                <!-- ko foreach: paging -->
+                    <!-- ko if: current -->
+                    <li class="menu__item active">
+                        <!-- ko if: title == '...' -->
+                            ...
                         <!-- /ko -->
-                        <!-- ko text: current ? title : '' --><!-- /ko -->
+                        <!-- ko ifnot: title == '...' -->
+                            <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                        <!-- /ko -->
                     </li>
-                    <!-- /ko-->
+                    <!-- /ko -->
+                    <!-- ko ifnot: current -->
+                        <!-- ko if: cssLink() == "first" -->
+                            <li class="menu__item">
+                                <a href="#" data-bind="click: ClickLinkPage"><</a>
+                            </li>
+                        <!-- /ko -->
+                        <!-- ko if: cssLink() == "last" -->
+                            <li class="menu__item">
+                                <a href="#" data-bind="click: ClickLinkPage">></a>
+                            </li>
+                        <!-- /ko -->
+                        <!-- ko if: cssLink() != "last" && cssLink() != "first" -->
+                            <li class="menu__item">
+                                <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                            </li>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                <!-- /ko -->
                 </ul>
             </div>
         </div>
