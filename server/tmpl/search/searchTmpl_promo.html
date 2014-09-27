@@ -1,6 +1,6 @@
 <script type="text/html" id="searchTmpl">
     <!-- version 1.0 -->
-    <!-- ko if: ko.global.route != 'profile' -->
+    <!-- ko if: ko.global.route != 'profile' && ko.global.route != 'purchases' -->
     <section class="orange search">
         <div class="container">
             <div class="b-search">
@@ -39,7 +39,7 @@
         </div>
     </section>
     <!-- /ko -->
-    <!-- ko if: ko.global.route == 'profile' -->
+    <!-- ko if: ko.global.route == 'profile' && ko.global.route != 'purchases' -->
     <section class="search"></section>
     <!-- /ko -->
 </script>

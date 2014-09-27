@@ -48,7 +48,8 @@ var JSSettings = {
         'widgets/AnimateUserInformation-1.0.js',
         'widgets/AnimateCartGoods-1.0.js',
         'widgets/AnimateOrder-1.0.js',
-        'widgets/AnimateProfile-1.0.js'],
+        'widgets/AnimateProfile-1.0.js',
+        'widgets/AnimateButtonPayment-1.0.js'],
     inputParameters : {}
 }
 
