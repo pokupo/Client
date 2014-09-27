@@ -55,7 +55,15 @@ window.ButtonPaymentWidget = function(){
         for(var key in data.options.params){
             switch (key){
                 case 'tmpl':
-                    self.settings.tmpl = data.options.params['tmpl']; 
+                    if(data.options.params['tmpl']){
+                        if(data.options.params['tmpl'].path)
+                            self.settings.tmpl.path = data.options.params['tmpl'].path;
+                        if(data.options.params['tmpl'].id){
+                            for(var key in data.options.params['tmpl'].id){
+                                self.settings.tmpl.id[key] = data.options.params['tmpl'].id[key];
+                            }
+                        }
+                    }
                     break;
                 case 'title':
                     self.settings.title = data.options.params['title'];
@@ -96,6 +104,7 @@ window.ButtonPaymentWidget = function(){
             self.WidgetLoader(true);
     };
     self.LoadTmpl = function(){
+        console.log(self.settings.tmpl);
         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
             EventDispatcher.DispatchEvent('ButtonPayment.onload.tmpl_' + self.settings.uniq)
         });

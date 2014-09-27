@@ -360,37 +360,61 @@ var Widget = function (){
             Parameters.shopId = JSSettings.inputParameters['shopId'];
         }
     };
+    this.CheckNameConfigParameter = function(config, name){
+        try{
+            var parameter = config[name];
+            return parameter;
+        }
+        catch(e){
+            this.Exeption('Error. Non-existent parameter [' + config.toString() + '[' + name + ']]');
+            return false;
+        }
+    };
     this.UpdateSettings = function(){
         if(typeof WParameters !== 'undefined'){
             for(var key in WParameters){
                 if(WParameters[key].hasOwnProperty('tmpl')){
-                    Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl.custom = WParameters[key].tmpl;
+                    var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
+                    if(parameter)
+                        parameter.tmpl.custom = WParameters[key].tmpl;
                 }
                 else{
                     for(var key2 in WParameters[key]){
                         if(WParameters[key][key2].hasOwnProperty('tmpl')){
-                            Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl[key2].custom = WParameters[key][key2].tmpl;
+                            var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
+                            if(parameter){
+                                var parameter = this.CheckNameConfigParameter(parameter.tmpl, key2);
+                                if(parameter)
+                                    parameter.custom = WParameters[key][key2].tmpl;
+                            }
                         }
                     }
                 }
                 
                 if(WParameters[key].hasOwnProperty('container')){
-                    if(WParameters[key].container.widget)
-                        Config.Containers[key].widget = WParameters[key].container.widget;
-                    if(WParameters[key].container.def)
-                        Config.Containers[key].def = WParameters[key].container.def;
-                    if(WParameters[key].container.customClass)
-                        Config.Containers[key].customClass = WParameters[key].container.customClass;
+                    var parameter = this.CheckNameConfigParameter(Config.Containers, key);
+                    if(parameter){
+                        if(WParameters[key].container.widget)
+                            parameter.widget = WParameters[key].container.widget;
+                        if(WParameters[key].container.def)
+                            parameter.def = WParameters[key].container.def;
+                        if(WParameters[key].container.customClass)
+                            parameter.customClass = WParameters[key].container.customClass;
+                    }
                 }
                 else{
                     for(var key2 in WParameters[key]){
                         if(WParameters[key][key2].hasOwnProperty('container')){
-                            if(WParameters[key][key2].container.widget)
-                                Config.Containers[key][key2].widget = WParameters[key][key2].container.widget;
-                            if(WParameters[key][key2].container.def)
-                                Config.Containers[key][key2].def = WParameters[key][key2].container.def;
-                            if(WParameters[key][key2].container.customClass)
-                                Config.Containers[key][key2].customClass = WParameters[key][key2].container.customClass;
+                            var parameter = this.CheckNameConfigParameter(Config.Containers, key);
+                            if(parameter){
+                                var parameter = this.CheckNameConfigParameter(parameter, key2);
+                                if(WParameters[key][key2].container.widget)
+                                    parameter.widget = WParameters[key][key2].container.widget;
+                                if(WParameters[key][key2].container.def)
+                                    parameter.def = WParameters[key][key2].container.def;
+                                if(WParameters[key][key2].container.customClass)
+                                    parameter.customClass = WParameters[key][key2].container.customClass;
+                            }
                         }
                     }
                 }

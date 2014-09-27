@@ -268,25 +268,26 @@ var OrderListWidget = function() {
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
+//                try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Detail();
-                            self.Render.Detail(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
+                    new AnimateOrderList();
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Detail();
+//                            self.Render.Detail(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerFormId);
+//                    }
+//                }
             }
             
         }
@@ -409,8 +410,10 @@ var OrderListDetailViewModel = function(data) {
             return 'Отменен';
         return false;
     };
+    self.statusPay = data.status_pay;
     self.statusPayName = self.GetNamePay(data.status_pay);
     self.statusPayIcon = self.GetIconPay(data.status_pay);
+    self.statusOrder = data.status_order;
     self.statusOrderName = self.GetNameOrder(data.status_order);
     self.statusOrderIcon = self.GetIconOrder(data.status_order);
 
