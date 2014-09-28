@@ -42,7 +42,7 @@ and open the template in the editor.
                 order: {tmpl: {path: pkpWHost + '/tmpl/order/orderTmpl_promo.html'}},
                 orderList: {tmpl: {path: pkpWHost + '/tmpl/orderList/orderListTmpl_promo.html'}},
                 buttonPayment: {title: "Оплатить"},
-                message: {defaultCount: 10}
+                message: {defaultCount: 10, tmpl: {path: pkpWHost + '/tmpl/message/messageTmpl_promo.html'}}
             }
         </script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -78,7 +78,7 @@ and open the template in the editor.
         <!--<script src='http://pokupo-server.asmsoft.ru/js/widgets/CabinetCartGoodsWidget-1.0.js' type="text/javascript"></script>-->
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/OrderWidget-1.1.js' type="text/javascript"></script>
         <script src='http://pokupo-server.asmsoft.ru/js/widgets/OrderListWidget-1.0.js' type="text/javascript"></script>
-        <!--<script src='http://pokupo-server.asmsoft.ru/js/widgets/MessageWidget-1.0.js' type="text/javascript"></script>-->
+        <script src='http://pokupo-server.asmsoft.ru/js/widgets/MessageWidget-1.0.js' type="text/javascript"></script>
 
         <script src="http://yandex.st/share/share.js" charset="utf-8" type="text/javascript"></script>
 
@@ -131,6 +131,7 @@ and open the template in the editor.
                             </ul>
                         </li>
                     </ul>
+                    
                     <div class="submenu-bg"></div>
                 </div>
             </section>

@@ -1,0 +1,175 @@
+<script type="text/html" id="messageTopicTmpl">
+    <!-- version 1.0 -->
+    <div class="columns triple">
+        <div class="first double column">
+            <div class="content">
+                <h1 class="b-profile__header with-num">Сообщения<sup class="menu__item__num">25</sup></h1>
+                <div class="b-mail__selectall">
+                    <!--<input id="select_all" type="checkbox" name="select_all" data-bind="attr:{id: cssSelectAll}, checked: isSelectedAll">-->
+                    <label for="select_all" data-bind="ClickSelectAll">Выбрать все</label>
+                </div>
+            </div>
+        </div>
+        <div class="third column">
+            <div class="content">
+                <button type="button" data-target="modal-message" class="btn btn-lg btn-inline b-mail__addbtn b-mail__addbtn--top open-modal" data-bind="click: ClickAdd">
+                    <i class="icon icon-addmail"></i>Новое сообщение
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="b-mail">
+        
+        <!-- ko foreach: messages -->
+        <div class="b-mail__item b-dialog" data-bind="css : {'unread' : IsNew}">
+            <div class="b-dialog__checkbox">
+                <input id="i-01" type="checkbox" name="i-01">
+                <label for="i-01">&nbsp;</label>
+            </div>
+            <div class="b-dialog__drop">
+                <span rel="tooltip" title="Удалить" data-target="modal-confirm" class="open-modal btn-circle btn-circle--trash"></span>
+            </div>
+            <div class="b-dialog__body">
+                <div class="b-dialog__userpic">
+                    <a href="#" class="b-profile-info__photo" data-bind="click: ClickTopic">
+                    <!-- ko ifnot: IsMy -->
+                        <!-- ko if: logoSrcUser -->
+                            <img data-bind="attr: {src: logoSrcUser}" src=""/>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko if: IsMy -->
+                        <!-- ko if: logoSrcUser -->
+                            <img data-bind="attr: {src: logoDstUser}" src=""/>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                    </a>
+                </div>
+                <div class="b-dialog__author">
+                    <!-- ko ifnot: IsMy -->
+                        <!-- ko text: srcUser --><!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko if: IsMy -->
+                        <!-- ko text: dstUser --><!-- /ko -->
+                    <!-- /ko -->
+                    <span class="b-dialog__date"><!-- ko text: FormatDateMessage() --><!-- /ko --></span>
+                </div>
+                <div class="b-dialog__title">
+                    <a href="#" data-bind="click: ClickTopic, text: nameTopic"></a>
+                    <span class="b-dialog__title-num">(<!-- ko text: countMessage --><!-- /ko -->)</span>
+                </div>
+                <div class="b-dialog__preview" data-bind="html: textMessage">
+                </div>
+            </div>
+        </div>
+        <!-- /ko -->
+
+        <div class="b-order-list__actions">
+            <div class="check_button">
+                <span class="pseudo-link" data-bind="click: ClickRead">Отметить как прочитанное</span>
+            </div>
+            <div class="drop_button">
+                <span class="pseudo-link" data-bind="click: ClickDelete">Удалить выбранные сообщения</span>
+            </div>
+        </div>
+    </div>
+    <div class="columns triple">
+        <div class="first double column">
+            <!-- ko if: paging().length > 1 -->
+            <!-- ko template: {name: "messagePaginateTmpl" } --><!-- /ko -->
+            <!-- /ko -->
+        </div>
+        <div class="third column">
+            <div class="content">
+                <button type="button" data-target="modal-message" class="btn btn-lg btn-inline b-mail__addbtn open-modal" data-bind="click: ClickAdd"><i class="icon icon-addmail"></i>Новое сообщение</button>
+            </div>
+        </div>
+    </div>
+    <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
+</script>
+
+<script type="text/html" id="messageListTmpl">
+    <!-- version 1.0 -->
+
+</script>
+
+<script type="text/html" id="messageEmptyListTmpl">
+    <!-- version 1.0 -->
+
+</script>
+
+<script type="text/html" id="messageModalFormTmpl">
+    <!-- version 1.0 -->
+    <div id="modal-message" class="modal fade in">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header"><span class="close-modal btn-circle btn-circle--drop btn-circle--orange"></span>
+                    <h2 class="b-profile__headline">Новое сообщение</h2>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="input-holder">
+                            <div class="floatlabel-wrapper" style="position:relative"><input type="text" placeholder="Адресат" name="msg_to" value="jiexa@tabrisov.ru" class="block-input active-floatlabel" id="i-19" style="padding-top: 14px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="19" class="label-floatlabel  " style="position: absolute; top: -20px; left: 20px; display: block; opacity: 1; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Адресат</label></div>
+                        </div>
+                        <div class="input-holder">
+                            <div class="floatlabel-wrapper" style="position:relative"><input type="text" placeholder="Тема беседы" name="msg_topic" value="" class="block-input" id="i-98" style="padding-top: 14px; -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;"><label for="98" class="label-floatlabel  " style="position: absolute; top: 0px; left: 20px; display: none; opacity: 0; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); -webkit-transition: all 0.1s ease-in-out; transition: all 0.1s ease-in-out;">Тема беседы</label></div>
+                        </div>
+                        <div style="padding:0" class="input-holder">
+                            <textarea name="msg_text" rows="5"></textarea>
+                        </div>
+                        <div class="input-holder">
+                            <input id="carboncopy" type="checkbox" name="carboncopy" checked="checked">
+                            <label for="carboncopy">Выслать копию на e-mail</label>
+                        </div>
+                        <button type="button" class="btn btn-lg btn-grey btn-inline close-modal">Отмена</button>
+                        <button type="reset" class="btn btn-lg">Отправить</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="messageSimpleFormTmpl">
+    <!-- version 1.0 -->
+
+</script>
+
+<script type="text/html" id="messagePaginateTmpl">
+    <div class="content">
+        <div class="input-holder pagination">
+            <div class="radio-circles">
+                <ul class="menu">
+                    <!-- ko foreach: paging -->
+                    <!-- ko if: current -->
+                    <li class="menu__item active">
+                        <!-- ko if: title == '...' -->
+                        ...
+                        <!-- /ko -->
+                        <!-- ko ifnot: title == '...' -->
+                        <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                        <!-- /ko -->
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko ifnot: current -->
+                    <!-- ko if: cssLink() == "first" -->
+                    <li class="menu__item">
+                        <a href="#" data-bind="click: ClickLinkPage"><</a>
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: cssLink() == "last" -->
+                    <li class="menu__item">
+                        <a href="#" data-bind="click: ClickLinkPage">></a>
+                    </li>
+                    <!-- /ko -->
+                    <!-- ko if: cssLink() != "last" && cssLink() != "first" -->
+                    <li class="menu__item">
+                        <a href="#" data-bind="text: title, click: ClickLinkPage"></a>
+                    </li>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- /ko -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</script>

@@ -1,6 +1,5 @@
 var AnimateUserInformation = function(){
     $('.user_information_dropdown__trigger').click(function (e) {
-        e.preventDefault();
         var $this = $(this);
 
         if ($this.is('.disabled')) {
@@ -32,7 +31,7 @@ var AnimateUserInformation = function(){
             //
         } else {
             if (1 !== $this.parents().filter('.user_information_dropdown__content').length) {
-                $('.user_information_dropdown__trigger.active').
+                $('.user_information_dropdown__trigger').
                         removeClass('active').
                         siblings('.user_information_dropdown__content').addClass('hidden');
             }

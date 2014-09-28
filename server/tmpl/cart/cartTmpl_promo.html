@@ -4,14 +4,14 @@
     <div class="circles-menu">
         <!-- ko if: isAuthorized -->
         <div class="circles-menu__item dropdown">
-            <a href="#" data-target="cart" class="with-icon icon__cart dropdown__trigger cart_dropdown__trigger" id="cart_dropdown__trigger">
+            <a href="#" data-target="cart" class="with-icon icon__cart" id="cart_dropdown__trigger">
                 <!-- ko if: ShowCount() -->
                     <!-- ko if: count() > 0 -->
                     <sup class="circles-menu__num" data-bind="text: count"></sup>
                     <!-- /ko -->
                 <!-- /ko -->
             </a>
-            <div data-target="cart" class="b-cart-menu dropdown__content hidden cart_dropdown__content" id="cart_dropdown__content">
+            <div data-target="cart" class="b-cart-menu dropdown__content hidden" id="cart_dropdown__content">
                 <!-- ko if: ShowTitle() -->
                 <p data-bind="text: title"></p>
                 <!-- /ko -->
