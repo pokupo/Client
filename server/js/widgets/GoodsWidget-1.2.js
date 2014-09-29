@@ -105,7 +105,8 @@ var GoodsWidget = function(){
                 else
                     self.Fill.Block(key, data[key]);
             }
-            self.goods.blocks.main.sellerId = data.seller.id
+            self.goods.blocks.main.sellerId = data.seller.id;
+            self.goods.blocks.main.shopId = data.shop.id
             self.goods.SetListMoreBlock(); 
             self.Render.Goods(self.goods);
         },
@@ -291,6 +292,7 @@ var GoodsMainBlockViewModel = function(data){
     var self = this;
     self.id = data.id;
     self.sellerId = 0;
+    self.shopId = 0;
     self.chortName =  data.chort_name;
     self.fullName = data.full_name;
     self.description = data.description;
@@ -385,7 +387,7 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.sellerId, goodsId: self.id, count: self.ordered()});
+         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
     };
     self.ReportAvailability = function(){
 
@@ -475,7 +477,7 @@ var BuyButtonViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: data.sellerId, goodsId: data.id, count: data.ordered()});
+         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: data.shopId, goodsId: data.id, count: data.ordered()});
     };
 };
 
