@@ -3,8 +3,8 @@ var JSSettings = {
     protocolHTTPS : 'https://',
     
     host : "dev.pokupo.ru/",
-    pathToJS : "server/js/",
-    pathToTmpl : "server/tmpl/",
+    pathToJS : "widgets/js/",
+    pathToTmpl : "widgets/tmpl/",
     pathToData : "server/services/DataProxy.php?query=",
     pathToPostData : "server/services/DataPostProxy.php",
     pathToCore: "server/index.html",
