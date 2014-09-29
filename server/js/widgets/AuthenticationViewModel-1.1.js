@@ -23,7 +23,11 @@ var AuthenticationViewModel = function(){
         window.location.href = 'https://' + window.location.hostname + '/resetting/request'
     };
     self.CloseForm = function(){
-        EventDispatcher.DispatchEvent('widget.authentication.close');
+        var last = Parameters.cache.lastPage;
+        if(last.route == 'login' || !last.route)
+            Routing.SetHash('default', 'Домашняя', {});
+        else
+            Routing.SetHash(last.route, last.title, last.data);
     };
 };
 

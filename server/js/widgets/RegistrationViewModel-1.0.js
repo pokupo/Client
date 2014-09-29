@@ -154,9 +154,9 @@ var RegistrationConfirmFormViewModel = function(cache) {
 
     self.isEmptyPhone = ko.computed(function() {
         if (!$.isEmptyObject(cache) && cache.phone())
-            return true;
+            return false;
         self.phoneConfirmLater(true);
-        return false;
+        return true;
     }, this);
 
     self.submitEvent = ko.observable();
@@ -174,7 +174,6 @@ var RegistrationConfirmFormViewModel = function(cache) {
             test = false;
         if (!self.EmptyConfirm())
             test = false;
-
         return test;
     };
     self.EmailTokenValidation = function() {
@@ -202,6 +201,8 @@ var RegistrationConfirmFormViewModel = function(cache) {
     self.EmptyConfirm = function() {
         if (self.phoneConfirmLater() && self.mailConfirmLater()) {
             self.errorConfirmLater(Config.Registration.error.confirmLater.empty);
+            self.errorEmailConfirm(null);
+            self.errorPhoneConfirm(null);
             return false;
         }
         else
