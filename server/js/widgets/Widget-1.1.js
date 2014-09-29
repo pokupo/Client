@@ -1087,10 +1087,11 @@ var Widget = function (){
             var str = '';
             if(sellerId){
                 str = sellerId + '/';
-                if(goodsId){
-                    str = str + '?idGoods=' + goodsId;
-                }
             }
+            if(goodsId){
+                str = str + '?idGoods=' + goodsId;
+            }
+            
             XDMTransport.Load.Data(opt.host + self.settings.cartPathApi + 'clear/' + Parameters.shopId + '/' + str, function(data){
                 if(callback)
                     callback(data);

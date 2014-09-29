@@ -103,6 +103,12 @@ var CartWidget = function(){
         EventDispatcher.AddEventListener('widgets.cart.infoUpdate', function(data){
              self.LoadTmpl();
         });
+        EventDispatcher.AddEventListener('widgets.cart.clear', function(data){
+            var goodsId = data.goodsId ? data.goodsId : false;
+            self.BaseLoad.ClearCart(data.sellerId, goodsId, function(data){
+                 //EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
+            });
+        });
     };
     self.Fill = function(data){
         var info = new CartViewModel();
@@ -237,26 +243,24 @@ var ShortBlockCartGoodsSellersViewModel = function(data, cart){
         if(self.ordered() < self.countReserv){
             self.ordered(self.ordered() + 1);
             self.CartItog();
+            cart.count(cart.count() + 1);
         }
     };
     self.ClickMinus = function(){
         if(self.ordered() > 0){
             self.ordered(self.ordered() - 1);
             self.CartItog();
+            cart.count(cart.count()- 1);
         }
     };
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
     self.ClickRemove = function(){
-//        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
-//        block.goods.remove(self);
-//        if(block.goods().length == 0){
-//            content.content.remove(block);
-//            if(content.content().length == 0){
-//                EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
-//            }
-//        }
+        EventDispatcher.DispatchEvent('widgets.cart.clear', {goodsId:self.id, sellerId: false});
+        cart.goods
+        cart.goods.remove(self);
+        cart.count(cart.count()- self.ordered());
     };
 }
 
