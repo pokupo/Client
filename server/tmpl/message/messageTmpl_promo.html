@@ -6,7 +6,7 @@
                 <div class="first double column">
                     <div class="content">
                         <h1 class="b-profile__header with-num">Сообщения
-                            <!-- ko if: countNewMessage -->
+                            <!-- ko if: countNewMessage() > 0 -->
                             <sup class="menu__item__num" data-bind="text: countNewMessage"></sup>
                             <!-- /ko -->
                         </h1>
@@ -103,7 +103,7 @@
             <a href="#" data-bind="click: ClickTopic, text: nameTopic"></a>
             <span class="b-dialog__title-num">(<!-- ko text: countMessage --><!-- /ko -->)</span>
         </div>
-        <div class="b-dialog__preview" data-bind="html: textMessage">
+        <div class="b-dialog__preview"><p data-bind="html: textMessage"></p>
         </div>
     </div>
 </script>
@@ -123,28 +123,74 @@
                 </div>
                 <div class="fourth column">
                     <div class="content b-chat-actions">
-                        <span id="js-toggleChat" data-state="1" class="b-chat-actions__item close-all active pseudo-link" data-bind="click: ClickExpand">Свернуть всё</span>
-                        <span id="js-toggleChat" data-state="1" class="b-chat-actions__item close-all pseudo-link" data-bind="click: ClickExpand">Свернуть всё</span>
+                        <span id="js-toggleChat-collapse" data-state="1" class="b-chat-actions__item close-all pseudo-link" data-bind="click: ClickExpand">Развернуть всё</span>
+                        <span id="js-toggleChat-expand" data-state="1" class="b-chat-actions__item close-all active pseudo-link" style="display: none" data-bind="click: ClickCollapse">Свернуть всё</span>
+
                         <span rel="tooltip" title="Удалить" class="b-chat-actions__item btn-circle btn-circle--trash" data-bind="click: ClickDelete"></span>
                     </div>
                 </div>
             </div>
             <div class="b-chat">
                 <!-- ko foreach: messages -->
-                    <!-- ko if: isExpand -->
-                    <div class="b-chat__item b-dialog outgoing closed">
-                         <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
-                    </div>
+                    <!-- ko if: IsNew -->
+                        <!-- ko if: IsMy -->
+                            <!-- ko if: isExpand -->
+                                <div class="b-chat__item b-dialog outgoing unread" data-bind="click: ClickCollapse">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                            <!-- ko ifnot: isExpand -->
+                                <div class="b-chat__item b-dialog outgoing closed unread" data-bind="click: ClickExpand">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                        <!-- /ko -->
+
+                        <!-- ko ifnot: IsMy -->
+                            <!-- ko if: isExpand -->
+                                <div class="b-chat__item b-dialog incoming unread" data-bind="click: ClickCollapse">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                            <!-- ko ifnot: isExpand -->
+                                <div class="b-chat__item b-dialog incoming closed unread" data-bind="click: ClickExpand">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                        <!-- /ko -->
                     <!-- /ko -->
-                    <!-- ko ifnot: isExpand -->
-                    <div class="b-chat__item b-dialog outgoing">
-                         <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
-                    </div>
+                    
+                    <!-- ko ifnot: IsNew -->
+                        <!-- ko if: IsMy -->
+                            <!-- ko if: isExpand -->
+                                <div class="b-chat__item b-dialog outgoing" data-bind="click: ClickCollapse">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                            <!-- ko ifnot: isExpand -->
+                                <div class="b-chat__item b-dialog outgoing closed" data-bind="click: ClickExpand">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                        <!-- /ko -->
+
+                        <!-- ko ifnot: IsMy -->
+                            <!-- ko if: isExpand -->
+                                <div class="b-chat__item b-dialog incoming" data-bind="click: ClickCollapse">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                            <!-- ko ifnot: isExpand -->
+                                <div class="b-chat__item b-dialog incoming closed" data-bind="click: ClickExpand">
+                                    <!-- ko template: {name: "messageItemTmpl"} --><!-- /ko -->
+                                </div>
+                            <!-- /ko -->
+                        <!-- /ko -->
                     <!-- /ko -->
                 <!-- /ko -->
             </div>
             <!-- ko template: { name: 'messageSimpleFormTmpl', data: simpleForm } --><!-- /ko -->
-            
+
         </div>
     </section>
 </script>
@@ -153,12 +199,12 @@
     <div class="b-dialog__body">
         <div class="b-dialog__status">
             <!-- ko if: IsNew -->
-                <span class="pseudo-link">Получатель не прочёл</span>
+            <span class="pseudo-link">Получатель не прочёл</span>
             <!-- /ko -->
             <!-- ko ifnot: IsNew -->
-                <span class="pseudo-link">Получатель прочёл</span>
+            <span class="pseudo-link">Получатель прочёл</span>
             <!-- /ko -->
-    
+
         </div>
         <div class="b-dialog__userpic">
             <div class="b-profile-info__photo">
@@ -176,7 +222,7 @@
 
 <script type="text/html" id="messageEmptyListTmpl">
     <!-- version 1.0 -->
-    
+
 </script>
 
 <script type="text/html" id="messageModalFormTmpl">

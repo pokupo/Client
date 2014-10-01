@@ -62,7 +62,8 @@ Parameters = {
             topicList : {},
             topicCount : {},
             topicInfo : {},
-            messageInfo : {}
+            messageInfo : {},
+            countNewMessage : ko.observable()
         },
         lastPage : {},
         https : null,
@@ -100,6 +101,7 @@ var Loader = {
     action : null,
     Indicator : function(widget, isReady, container){
         if(widget){
+            console.log(this.widgets);
             this.widgets[widget] = isReady;
             this.countAll = 0;
             this.readyCount = 0;
@@ -299,7 +301,6 @@ var Widget = function (){
         paymentPathApi : null,
         containerIdForTmpl : null
     };
-    this.countNewMessage = ko.observable();
     this.Init = function(widget, noindicate){
         if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
             
@@ -483,11 +484,11 @@ var Widget = function (){
         });
         
         EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
-            var count = this.countNewMessage();
+            var count = Parameters.cache.message.countNewMessage();
             if(data == '+1')
-                this.countNewMessage(count + 1);
+                Parameters.cache.message.countNewMessage(count + 1);
             if(data == '-1')
-                this.countNewMessage(count - 1);
+                Parameters.cache.message.countNewMessage(count - 1);
         });
     };
     this.CreateContainer = function(){

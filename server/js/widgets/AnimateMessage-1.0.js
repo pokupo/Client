@@ -35,6 +35,14 @@ var AnimateMessage = function () {
             $('body').removeClass('modal-open');
         }
     });
+    $('#js-toggleChat-collapse').click(function(){
+        $(this).hide();
+        $('#js-toggleChat-expand').show();
+    })
+    $('#js-toggleChat-expand').click(function(){
+        $(this).hide();
+        $('#js-toggleChat-collapse').show();
+    })
 };
 
 

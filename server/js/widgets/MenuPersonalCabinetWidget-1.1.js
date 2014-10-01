@@ -80,7 +80,7 @@ var MenuPersonalCabinetWidget = function(){
     };
     self.Fill = function(){
         self.BaseLoad.MessageCountUnread(function(data){
-            self.countNewMessage(parseInt(data.count_unread_topic));
+            Parameters.cache.message.countNewMessage(parseInt(data.count_unread_topic));
             var menu = new MenuPersonalCabinetViewModel(self);
             menu.AddSubMenu(self.subMenu, self.active);
             self.Render(menu);
@@ -89,6 +89,7 @@ var MenuPersonalCabinetWidget = function(){
     self.Render = function(menu){
         if ($("#" + self.settings.containerMenuId).length > 0) {
             try{
+                self.WidgetLoader(true, self.settings.containerMenuId);
                 ko.cleanNode($("#" + self.settings.containerMenuId)[0]);
                 ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
                 self.WidgetLoader(true, self.settings.containerMenuId);
@@ -127,7 +128,7 @@ var MenuPersonalCabinetViewModel = function(menu){
     self.avatar = Parameters.pathToImages + user.route_icon_user;
     self.username = user.login;
     self.countNewMessage = ko.computed(function(){
-        return menu.countNewMessage();
+        return Parameters.cache.message.countNewMessage();
     }, this);
     
     self.AddSubMenu = function(subMenu, active){

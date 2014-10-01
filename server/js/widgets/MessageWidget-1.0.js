@@ -83,7 +83,6 @@ var MessageWidget = function () {
                 self.Fill.List(Routing.params.id);
         },
         Menu: function () {
-            Loader.Indicator('MenuPersonalCabinetWidget', false);
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function () {
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
             });
@@ -148,6 +147,20 @@ var MessageWidget = function () {
                     }
                 });
             }
+        });
+        
+        EventDispatcher.AddEventListener('MessageWidget.delete.oneTopic', function (topicId) {
+            self.Confirm(Config.Message.message.confirmDeleteTopic, function () {
+                self.BaseLoad.TopicDelete(topicId, function (data) {
+                    if (data.result != 'ok') {
+                        self.ShowMessage(Config.Message.message.error, function () {
+                        }, false);
+                    }
+                    else{
+                         Routing.SetHash('messages', 'Сообщения', {});
+                    }
+                });
+            });
         });
 
         EventDispatcher.AddEventListener('MessageWidget.read.message', function (message, topic) {
@@ -281,6 +294,7 @@ var MessageWidget = function () {
         List: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
 //                try {
+                ko.cleanNode($("#" + self.settings.containerId)[0]);
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                 self.WidgetLoader(true, self.settings.containerId);
                 new AnimateMessage();
@@ -326,6 +340,7 @@ var MessageWidget = function () {
         EmptyList: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
                 try {
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                 }
@@ -370,7 +385,7 @@ var TopicMessageViewModel = function (widget) {
     self.paging = null;
     self.countAll = ko.observable();
     self.countNewMessage = ko.computed(function () {
-        return widget.countNewMessage();
+        return Parameters.cache.message.countNewMessage();
     }, this);
     self.modalForm = ko.observable(new FormMessageViewModel(self));
     self.cssSelectAll = "messagesSelectAll";
@@ -648,7 +663,7 @@ var ListMessageViewModel = function () {
         Routing.SetHash('messages', 'Сообщения', {block: 'topic', page: Routing.GetLastPageNumber()});
     };
     self.ClickDelete = function(){
-        
+        EventDispatcher.DispatchEvent('MessageWidget.delete.oneTopic', self.topicId());
     };
     self.ClickExpand = function () {
         var newMessages = [];

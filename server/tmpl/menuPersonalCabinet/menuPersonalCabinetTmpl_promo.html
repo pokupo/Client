@@ -30,7 +30,7 @@
                     <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeMessages()}">
                         <a href="#" class="icon__mail" data-bind="click: ClickMessages">
                             <span>Сообщения
-                                <!-- ko if: countNewMessage > 0 -->
+                                <!-- ko if: countNewMessage() > 0 -->
                                 <sup class="menu__item__num" data-bind="text: countNewMessage"></sup>
                                 <!-- /ko -->
                             </span>

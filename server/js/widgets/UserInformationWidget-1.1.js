@@ -119,9 +119,9 @@ var UserInformationWidget = function(){
         },
         InfoBlock : function(data){
             self.BaseLoad.MessageCountUnread(function(messages){
-                self.countNewMessage(parseInt(messages.count_unread_topic));
+                Parameters.cache.message.countNewMessage(parseInt(messages.count_unread_topic));
                 UserInformationBlockViewModel.prototype = new Widget();
-                var block = new UserInformationBlockViewModel(data, self);
+                var block = new UserInformationBlockViewModel(data);
                 self.Render.InfoBlock(block);
             });
         }
@@ -205,13 +205,13 @@ var UserAuthorizationBlockViewModel = function(){
     };
 };
 
-var UserInformationBlockViewModel = function(data, info){
+var UserInformationBlockViewModel = function(data){
     var self = this;
     self.email = data.email;
     self.login = data.login;
     self.phone = data.phone;
     self.countNewMessage = ko.computed(function(){
-        return info.countNewMessage();
+        return Parameters.cache.message.countNewMessage();
     }, this);
     self.showIcon = function(){
         if(!data.route_icon_user || $.inArray('icon', Config.UserInformation.showBlocks) < 0)
