@@ -17,7 +17,6 @@ var MenuPersonalCabinetWidget = function(){
     };
     self.active = null;
     self.subMenu = [];
-    self.countNewMessage = ko.observable();
     self.InitWidget = function(){
         self.settings.tmpl = Config.MenuPersonalCabinet.tmpl;
         self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
@@ -67,14 +66,6 @@ var MenuPersonalCabinetWidget = function(){
     self.RegisterEvents = function() {
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteMenuProfile();
-        });
-        
-        EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
-            var count = self.countNewMessage();
-            if(data == '+1')
-                self.countNewMessage(count + 1);
-            if(data == '-1')
-                self.countNewMessage(count - 1);
         });
     };
     self.InsertContainer = {

@@ -20,7 +20,6 @@ var UserInformationWidget = function(){
         style : null,
         customContainer: null
     };
-    self.countNewMessage = ko.observable();
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.userInformation.widget; 
         self.settings.customContainer = Config.Containers.userInformation.customClass;
@@ -82,14 +81,6 @@ var UserInformationWidget = function(){
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
                 EventDispatcher.DispatchEvent('onload.userInformation.tmpl');
             });
-        });
-        
-        EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
-            var count = self.countNewMessage();
-            if(data == '+1')
-                self.countNewMessage(count + 1);
-            if(data == '-1')
-                self.countNewMessage(count - 1);
         });
     };
     self.CheckAuthorization = function(data){

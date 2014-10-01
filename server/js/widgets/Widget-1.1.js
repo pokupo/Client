@@ -299,6 +299,7 @@ var Widget = function (){
         paymentPathApi : null,
         containerIdForTmpl : null
     };
+    this.countNewMessage = ko.observable();
     this.Init = function(widget, noindicate){
         if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
             
@@ -479,6 +480,14 @@ var Widget = function (){
                     EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
                 }
             });
+        });
+        
+        EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
+            var count = this.countNewMessage();
+            if(data == '+1')
+                this.countNewMessage(count + 1);
+            if(data == '-1')
+                this.countNewMessage(count - 1);
         });
     };
     this.CreateContainer = function(){
