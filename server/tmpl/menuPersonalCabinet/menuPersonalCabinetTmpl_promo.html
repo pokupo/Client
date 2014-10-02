@@ -12,6 +12,16 @@
                             <span>Профиль</span>
                         </a>
                     </li>
+                    <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeFavorites()}">
+                        <a href="#" class="icon__favorites" data-bind="click: ClickFavorites">
+                            <span>Избранное</span>
+                        </a>
+                    </li>
+                    <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeCart()}">
+                        <a href="#" class="icon__cart" data-bind="click: ClickCart">
+                            <span>Корзина</span>
+                        </a>
+                    </li>
                     <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activePurchases()}">
                         <a href="#" class="icon__order" data-bind="click: ClickPurchases">
                             <span>Заказы</span>
@@ -35,7 +45,7 @@
                 <!-- ko foreach: subMenu -->
                 <!-- ko if: isActive -->
                 <dt class="tab__trigger selected">
-                    <span data-bind="css: activeSubMenu, click: ClickSubMenu, text: title"></span>
+                <span data-bind="css: activeSubMenu, click: ClickSubMenu, text: title"></span>
                 </dt>
                 <dd class="tab__content selected"></dd>
                 <!-- /ko -->

@@ -258,8 +258,26 @@ var BlockFavoritesForSellerViewModel = function(content){
     self.goods = ko.observableArray();
 
     self.uniq = EventDispatcher.GetUUID();
-    self.cssSelectAll = "favoritesSelectAll_" + self.uniq;
-    self.isChecked = ko.observable(false);
+    self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
+    self.isSelectedAll = ko.observable(false);
+    self.ClickSelectAll = function(){
+        var all = $('#' + self.cssSelectAll);
+        var check = all.is(':checked');
+        var val;
+        if(check){
+            all[0].checked = false;
+            val = false;
+        }
+        else{
+            all[0].checked = true;
+            val = true;
+        }
+        
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods())[0].checked = val;
+            goods.isSelected(val);
+        });
+    }
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
@@ -298,12 +316,6 @@ var BlockFavoritesForSellerViewModel = function(content){
             EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:ids, goods:removedGoods, content:content, block:self});
         });
     };
-    self.ClickSelectAll = function(block){
-        var check = $('#' + self.cssSelectAll).is(':checked');
-        ko.utils.arrayForEach(self.goods(), function(goods) {
-            goods.isSelected(check);
-        });
-    }
     self.DisabledButton = ko.computed(function(){
         var countGoods = self.goods().length;
         var selectedGoods = [];
@@ -330,6 +342,19 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
     self.sellEndCost = ko.observable(data.sell_end_cost);
     self.routeImages = Parameters.pathToImages + data.route_image;
     self.isSelected = ko.observable(false);
+    self.cssCheckboxGoods = ko.observable('goods_' + self.id);
+    self.ClickOrder = function(order, elem){
+        var $checkBox = $('#' + order.cssCheckboxGoods());
+        var isChecked = $checkBox.is(':checked');
+        if(isChecked == false){
+            $checkBox[0].checked = true;
+            self.isSelected(true);
+        }
+        else{
+            $checkBox[0].checked = false;
+            self.isSelected(false);
+        }
+    }
     self.showAddToCart = ko.computed(function(){
         if($.inArray('addToCart', Config.Favorites.showBlocks) >= 0)
             return true;
