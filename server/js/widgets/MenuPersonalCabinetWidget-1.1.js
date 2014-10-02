@@ -23,7 +23,6 @@ var MenuPersonalCabinetWidget = function () {
         self.settings.customContainer = Config.Containers.menuPersonalCabinet.customClass;
         self.settings.style = Config.MenuPersonalCabinet.style;
         self.RegisterEvents();
-        self.CheckRouteMenuProfile();
         self.SetPosition();
     };
     self.SetInputParameters = function () {
@@ -65,13 +64,11 @@ var MenuPersonalCabinetWidget = function () {
     };
     self.RegisterEvents = function () {
         EventDispatcher.AddEventListener('widget.change.route', function () {
-            console.log('menu1');
             if (Routing.route != 'profile'
                     && Routing.route != 'favorites'
                     && Routing.route != 'cabinet_cart'
                     && Routing.route != 'purchases'
                     && Routing.route != 'messages') {
-                console.log('menu2');
                 $("#" + self.settings.containerMenuId).empty();
                 self.WidgetLoader(true);
             }

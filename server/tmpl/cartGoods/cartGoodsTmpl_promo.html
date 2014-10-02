@@ -4,7 +4,7 @@
         <h1 class="b-catalog-item__title">Моя корзина</h1>
 
         <!-- ko foreach: sellerBlock -->
-        <div class="b-profile-info" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo, tmpl : {path: 'infoSeller/infoSellerTmpl_promo.html'}}}"></div> 
+        <div class="b-profile-info" data-bind="embedWidget :{ widget : 'InfoSellerWidget-1.0', params : {data : sellerInfo, tmpl : {path: 'infoSeller/infoSellerTmpl_promo.html', id : 'infoSellerTmpl'}}}"></div> 
 
         <ol class="b-order-list">   
             <!--  ko template: { name: 'HeaderBlockTmpl' } --><!-- /ko -->
@@ -15,6 +15,9 @@
         </ol>
 
         <!--  ko template: { name: 'FooterBlockTmpl' } --><!-- /ko -->
+        <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
+                <textarea name="comment" rows="10" cols="50" data-bind="value : comment"></textarea>
+            </div>
         <!-- /ko -->
     </div>
 </script>
@@ -68,11 +71,25 @@
             </div>
         </div>
         <div class="b-order-item__cost">
-            <span class="b-price">
-                <span class="b-price__number" data-bind="text: endSum"></span>
+            <!-- ko if: discount() != 0 -->
+            <div class="b-price b-item__price--old">
+                <span class="b-price__number" data-bind="text: sellGoods"></span>
                 <span class="b-price__thinsp">&nbsp;</span>
                 <span class="b-price__rubl">Р</span>
-            </span>
+            </div>
+            <div class="b-price">
+                <span class="b-price__number" data-bind="text: sellCost"></span>
+                <span class="b-price__thinsp">&nbsp;</span>
+                <span class="b-price__rubl">Р</span>
+            </div>
+            <!-- /ko -->
+            <!-- ko if: discount() == 0 -->
+            <div class="b-price">
+                <span class="b-price__number" data-bind="text: sellCost"></span>
+                <span class="b-price__thinsp">&nbsp;</span>
+                <span class="b-price__rubl">Р</span>
+            </div>
+            <!-- /ko -->
         </div>
         <div class="b-order-item__delay">
             <!-- ko if: IsFavorite -->

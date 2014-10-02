@@ -145,9 +145,8 @@ var FavoritesWidget = function() {
             });
         },
         Menu : function(){
-            Loader.Indicator('MenuPersonalCabinetWidget', false);
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
-                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
+                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : {}, active : ''});
             });
         },
     };

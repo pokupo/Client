@@ -398,6 +398,13 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
             self.isSelected(false);
         }
     }
+    self.discount = ko.computed(function(){
+        var d = 100 -Math.floor(self.sellEndCost()*100/self.sellCost());
+        if(d > 0)
+            return d + '%';
+        else
+            return 0;
+    }, this);
     self.comment = ko.observable();
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
