@@ -106,7 +106,7 @@
                                     <!-- /ko -->
                                 </div>
                                 <!-- ko if: blocks.main.showAddToCart --> 
-                                <button type="button" class="btn" data-bind="click: blocks.main.AddToCart"><i class="icon icon-cart"></i>В&nbsp;корзину</button>
+                                <button id='btn_to_cart' type="button" class="btn" data-bind="click: blocks.main.AddToCart"><i class="icon icon-cart"></i>В&nbsp;корзину</button>
                                 <br>
                                 <!-- /ko -->
                                 <!-- ko if: blocks.main.showBuy -->
@@ -151,7 +151,7 @@
     <!-- /ko -->
 
     <div class="b-catalog-item__photos">
-        <img src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }">
+        <img src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }" id='main_img_goods'>
         <!-- ko if: $parent.ShowGallery() -->
         <!-- ko foreach: gallery -->
         <img src="" data-bind="attr: {src: thumb, title: title }">
