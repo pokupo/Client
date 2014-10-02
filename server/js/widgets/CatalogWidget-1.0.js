@@ -116,6 +116,7 @@ var CatalogWidget = function(){
                     ko.cleanNode($('#' + self.settings.catalogContainerId )[0]);
                     ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
                     self.WidgetLoader(true, self.settings.catalogContainerId );
+                    new AnimateCatalog();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

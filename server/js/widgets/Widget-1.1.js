@@ -101,7 +101,6 @@ var Loader = {
     action : null,
     Indicator : function(widget, isReady, container){
         if(widget){
-            console.log(this.widgets);
             this.widgets[widget] = isReady;
             this.countAll = 0;
             this.readyCount = 0;
@@ -438,6 +437,7 @@ var Widget = function (){
                 Parameters.cache.profileMenu = new MenuPersonalCabinetWidget();
                 Parameters.cache.profileMenu.Init(Parameters.cache.profileMenu);
             }
+            Parameters.cache.profileMenu.CheckRouteMenuProfile();
             Parameters.cache.profileMenu.AddMenu(opt);
         });
         

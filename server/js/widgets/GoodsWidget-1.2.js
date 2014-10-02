@@ -188,11 +188,7 @@ var GoodsWidget = function(){
                 self.AddGoodsInCookie(data);
                 delete data;
 
-                self.WidgetLoader(true, self.settings.containerId);
-                if(Ya != undefined){
-                    Config.Goods.share.element = data.blocks.main.cssShareBlock
-                    new Ya.share(Config.Goods.share);
-                }
+                self.WidgetLoader(true, self.settings.containerId); 
 //            }
 //            catch(e){
 //                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

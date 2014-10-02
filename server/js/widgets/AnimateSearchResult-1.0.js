@@ -8,7 +8,8 @@ var AnimateSearchResult = function () {
                 .find('.slidedown__content[data-target="' + $this.data('target') + '"]')
                 .slideToggle(500);
     });
-    $('#advansed_search_form__category_dropdown__trigger').click(function(e){
+
+    $('#advansed_search_form__category_dropdown__trigger').click(function (e) {
         e.preventDefault();
         var $this = $(this);
 
@@ -32,7 +33,7 @@ var AnimateSearchResult = function () {
         $(this).closest('#advansed_search_form__category_dropdown__content').toggleClass('hidden').
                 siblings('#advansed_search_form__category_dropdown__trigger').toggleClass('active');
     });
-    
+
     $(document).click(function (e) {
         var $this = $(e.target);
 
@@ -46,10 +47,10 @@ var AnimateSearchResult = function () {
             }
         }
     });
-    
-    
-    
-    
+
+
+
+
     $('#typeSearch').chosen({
         disable_search_threshold: 6,
         width: '100%'
@@ -58,34 +59,74 @@ var AnimateSearchResult = function () {
         disable_search_threshold: 6,
         width: '100%'
     });
-    
-    $("#multilocation").fancytree({
-            minExpandLevel: 1,
-            rootVisible: false,
-            checkbox: true,
-            selectMode: 3,
-            icons: false,
-            loadChildren: function (event, ctx) {
-                // ctx.node.fixSelection3AfterClick();
-            },
-            select: function (event, data) {
-                // Get a list of all selected nodes, and convert to a key array:
-                var selKeys = $.map(data.tree.getSelectedNodes(), function (node) {
-                    return parseInt(node.key.substring(1), 10);
-                });
-                Parameters.filter.idSelectCategories  = selKeys;
 
-                $("#js-multilocation").removeClass('checked').addClass('part');
-                if (data.tree.getSelectedNodes().length === 0) {
-                    $("#js-multilocation").removeClass('part');
-                }
-            },
-            keydown: function (event, data) {
-                if (event.which === 32) {
-                    data.node.toggleSelected();
-                    return false;
-                }
+    $("#multilocation").fancytree({
+        minExpandLevel: 1,
+        rootVisible: false,
+        checkbox: true,
+        selectMode: 3,
+        icons: false,
+        loadChildren: function (event, ctx) {
+            // ctx.node.fixSelection3AfterClick();
+        },
+        select: function (event, data) {
+            // Get a list of all selected nodes, and convert to a key array:
+            var selKeys = $.map(data.tree.getSelectedNodes(), function (node) {
+                return parseInt(node.key.substring(1), 10);
+            });
+            Parameters.filter.idSelectCategories = selKeys;
+
+            $("#js-multilocation").removeClass('checked').addClass('part');
+            if (data.tree.getSelectedNodes().length === 0) {
+                $("#js-multilocation").removeClass('part');
             }
-        });
+        },
+        keydown: function (event, data) {
+            if (event.which === 32) {
+                data.node.toggleSelected();
+                return false;
+            }
+        }
+    });
+
+
+    $('#content_sort').click(function (e) {
+        e.preventDefault();
+        var $this = $(this);
+
+        if ($this.is('.disabled')) {
+            return false;
+        }
+
+        if (0 < $('#content_sort.active').length) {
+            $('#content_sort.active')
+                    .not(this).removeClass('active')
+                    .closest('.dropdown')
+                    .find('.dropdown__content').addClass('hidden');
+        }
+
+        $this.toggleClass('active')
+                .closest('.dropdown')
+                .find('.dropdown__content')
+                .toggleClass('hidden');
+    });
+    $('.dropdown__content  a').click(function () {
+        $(this).closest('.dropdown__content ').toggleClass('hidden').
+                siblings('#content_sort').toggleClass('active');
+    });
+
+    $(document).click(function (e) {
+        var $this = $(e.target);
+
+        if ($this.is('#content_sort')) {
+            //
+        } else {
+            if (1 !== $this.parents().filter('.dropdown__content').length) {
+                $('#content_sort.active').
+                        removeClass('active').
+                        siblings('.dropdown__content').addClass('hidden');
+            }
+        }
+    });
 }
 

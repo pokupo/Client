@@ -91,7 +91,6 @@ var SearchResultWidget = function(){
         self.settings.inputParameters = input;
     };
     self.CheckRoutingSearch = function(){
-        EventDispatcher.DispatchEvent('searchResultWidget.show.form');
         if(Routing.route == 'search'){
             for(var key in Routing.params){
                 if(key == 'idSelectCategories'){
@@ -114,8 +113,10 @@ var SearchResultWidget = function(){
             }
             EventDispatcher.DispatchEvent('widget.change.route')
         }
-        else
+        else{
+            EventDispatcher.DispatchEvent('searchResultWidget.show.form');
             self.WidgetLoader(true);  
+        }
     };
     self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
@@ -127,7 +128,6 @@ var SearchResultWidget = function(){
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
             self.BaseLoad.Tmpl(self.settings.tmpl.form, function(){
-                new Dyn();
                 self.InsertContainer.AdvancedSearchForm();
                 if(Routing.route != 'search')
                     Parameters.SetDefaultFilterParameters();
@@ -173,9 +173,8 @@ var SearchResultWidget = function(){
                     EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
                 });
             }
-            else{
+            else
                 EventDispatcher.DispatchEvent('searchResultWidget.show.form');
-            }
         });
     };
     self.InsertContainer = {
@@ -221,6 +220,7 @@ var SearchResultWidget = function(){
         AdvancedSearchForm : function(data){
             if($("#" + self.settings.containerIdForAdvancedSearch).length){
                 try{
+                    ko.global.route = Routing.route;
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     new AnimateSearchResult();
@@ -250,6 +250,7 @@ var SearchResultWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
                     new AnimateSearchResult();
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+                    EventDispatcher.DispatchEvent('searchResultWidget.show.form');
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');

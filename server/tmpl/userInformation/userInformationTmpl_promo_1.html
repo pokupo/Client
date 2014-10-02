@@ -12,16 +12,13 @@
                     <p class="b-profile-menu__name" data-bind="text: login"></p>
                     <ul class="menu">
                         <li class="menu__item">
-                            <a href="#" data-bind="click: ClickPrivateOffice">Профиль</a>
-                        </li>
-<!--                        <li class="menu__item">
-                            <a href="#" data-bind="click: ClickFavorites">Избранное</a>
-                        </li>-->
-                        <li class="menu__item">
-                            <a href="#" data-bind="click: ClickPurchases">Заказы</a>
+                            <a href="/shop#/profile/">Профиль</a>
                         </li>
                         <li class="menu__item">
-                            <a href="#" data-bind="click: ClickMessages">
+                            <a href="/shop#/purchases/block=list">Заказы</a>
+                        </li>
+                        <li class="menu__item">
+                            <a href="/shop#/messages/">
                                 Сообщения
                                 <!-- ko if: countNewMessage() > 0 -->
                                 <sup class="menu__item__num" data-bind="text: countNewMessage"></sup>

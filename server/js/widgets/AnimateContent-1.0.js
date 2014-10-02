@@ -47,22 +47,22 @@ var AnimateContent = function () {
                 .toggleClass('active');
     });
 
-    $('#js-nosidebar').on('click', function () {
-        var li = $(this).closest('.menu__item');
-
-        $('aside.b-sidebar')
-                .find('a.btn')
-                .toggleClass('dropdown__trigger')
-                .siblings('.b-sidebar__dropdown')
-                .toggleClass('content_folter_sort_dropdown__content hidden');
-
-        if (li.is('.active')) {
-            li.toggleClass('active');
-        }
-
-
-        $('section.store').toggleClass('nosidebar');
-    });
+//    $('#js-nosidebar').on('click', function () {
+//        var li = $(this).closest('.menu__item');
+//
+//        $('aside.b-sidebar')
+//                .find('a.btn')
+//                .toggleClass('dropdown__trigger')
+//                .siblings('.b-sidebar__dropdown')
+//                .toggleClass('content_folter_sort_dropdown__content hidden');
+//
+//        if (li.is('.active')) {
+//            li.toggleClass('active');
+//        }
+//
+//
+//        $('section.store').toggleClass('nosidebar');
+//    });
 
     $('.chain-slider').owlCarousel({
         items: 3,
