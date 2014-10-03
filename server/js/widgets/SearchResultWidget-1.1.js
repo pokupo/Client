@@ -248,7 +248,6 @@ var SearchResultWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerIdForSearchResult)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
-                    new AnimateSearchResult();
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
                     EventDispatcher.DispatchEvent('searchResultWidget.show.form');
                 }

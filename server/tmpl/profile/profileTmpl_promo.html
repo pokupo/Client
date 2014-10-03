@@ -82,14 +82,16 @@
                 </div>
             </div>
         </fieldset>
-        <div data-for="fieldset-id" class="b-status b-status--fieldset b-status--done">
-            <!-- ko if: checkInfo() == 'yes' -->
-            Данные проверены
-            <!-- /ko -->
-            <!-- ko if: checkInfo() == 'no' -->
-            Данные не проверены
-            <!-- /ko -->
-        </div>
+        <!-- ko if: checkInfo() == 'yes' -->
+            <div data-for="fieldset-id" class="b-status b-status--fieldset b-status--done">
+                Данные проверены
+            </div>
+        <!-- /ko -->
+        <!-- ko if: checkInfo() == 'no' -->
+            <div data-for="fieldset-id" class="b-status b-status--fieldset b-status--warning">
+                Данные не проверены
+            </div>
+        <!-- /ko -->
         <h2 class="b-profile__headline with-divider">Персональные данные</h2>
 
         <fieldset class="b-fieldset">
@@ -137,7 +139,9 @@
                             <div class="form_error" data-bind="text: errorBirthDay"></div>
                             <!-- /ko -->
                         </div>
-                        <a class="input-action pseudo-link" data-bind="click: Submit">Сохранить</a>
+                        <div class="b-order-list__buttons">
+                        <div class="btn btn-lg btn-inline" data-bind="click: Submit">Сохранить</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -146,14 +150,16 @@
 </script>
 
 <script type="text/html" id="postDataTmpl">
-    <div data-for="another-fieldset-id" class="b-status b-status--fieldset b-status--done">
-        <!-- ko if: checkInfo() == 'yes' -->
-        Адрес подтверждён
-        <!-- /ko -->
-        <!-- ko if: checkInfo() == 'no' -->
-        Адрес не подтверждён
-        <!-- /ko -->
-    </div>
+    <!-- ko if: checkInfo() == 'yes' -->
+        <div data-for="another-fieldset-id" class="b-status b-status--fieldset b-status--done">
+            Данные проверены
+        </div>
+    <!-- /ko -->
+    <!-- ko if: checkInfo() == 'no' -->
+        <div data-for="another-fieldset-id" class="b-status b-status--fieldset b-status--warning">
+            Данные не проверены
+        </div>
+    <!-- /ko -->
     <h2 class="b-profile__headline with-divider">Почтовый адрес</h2>
     <fieldset class="b-fieldset">
         <!--<input id="address" type="text" placeholder="Введите адрес в свободной форме" data-label="Адрес в свободной форме" class="no-label block-input">-->
@@ -202,7 +208,9 @@
                         <div class="form_error" data-bind="text: errorPostIndex"></div>
                         <!-- /ko -->
                     </div>
-                    <a class="input-action pseudo-link" data-bind="click: Submit">Сохранить</a>
+                    <div class="b-order-list__buttons">
+                        <div style="margin-top: 0" class="btn btn-lg btn-inline" data-bind="click: Submit">Сохранить</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -225,12 +233,15 @@
                         <!-- ko if: errorEmail-->
                         <div class="form_error" data-bind="text: errorEmail"></div>
                         <!-- /ko -->
+                        
+                        <div class="b-status b-status--done" data-bind="visible: emailIsConfirm()">E-mail подтверждён</div>
+                        <div class="b-status b-status--warning" data-bind="visible: !emailIsConfirm()">E-mail не подтверждён</div>
+                        <!-- ko if: !emailIsConfirm() && isExistEmail -->
+                        <span class="pseudo-link input-action input-action--right" data-bind="click: SendMailToken">Выслать код подтверждения</span>
+                        <!-- /ko -->
                     </div>
-                    <div class="b-status b-status--done" data-bind="visible: emailIsConfirm()">E-mail подтверждён</div>
+                    
                     <div data-bind="visible: !emailIsConfirm()">
-                        <div data-bind="visible: isExistEmail">
-                            <span class="pseudo-link input-action input-action--right" data-bind="click: SendMailToken">Выслать код подтверждения</span>
-                        </div>
                         <div class="input-holder" data-bind="visible: sentEmailCode">
                             <input  type="text" placeholder="Код из смс-сообщения" name="account__sms" class="block-input"data-bind="value:emailToken"/>
                             <!-- ko if: errorEmailToken-->
@@ -253,12 +264,15 @@
                         <!-- ko if: errorPhone-->
                         <div class="form_error" data-bind="text: errorPhone"></div>
                         <!-- /ko -->
+                        
+                        <div class="b-status b-status--done" data-bind="visible: phoneIsConfirm()">Телефон подтвержден</div>
+                        <div class="b-status b-status--warning" data-bind="visible: !phoneIsConfirm()">Телефон не подтверждён</div>
+                        <!-- ko if: !phoneIsConfirm() && isExistPhone -->
+                        <span class="pseudo-link input-action input-action--right" data-bind="click: SendPhoneToken">Выслать код подтверждения</span>
+                        <!-- /ko -->
                     </div>
-                    <div class="b-status b-status--done" data-bind="visible: phoneIsConfirm()">Телефон подтвержден</div>
+                    
                     <div data-bind="visible: !phoneIsConfirm()">
-                        <div data-bind="visible: isExistPhone">
-                            <span class="pseudo-link input-action input-action--right" data-bind="click: SendPhoneToken">Выслать код подтверждения</span>
-                        </div>
                         <div class="input-holder" data-bind="visible: sentCode">
                             <input type="text" placeholder="Код из смс-сообщения" name="account__sms" class="block-input"data-bind="value:phoneToken"/>
                             <!-- ko if: errorPhoneToken-->
@@ -268,8 +282,8 @@
                     </div>
                     <span class="input-action pseudo-link" data-bind="click: SubmitPhoneToken, visible: sentCode">Подтвердить</span>
 
-                    <div data-bind="visible: !phoneIsConfirm() || !emailIsConfirm()">
-                        <span class="input-action pseudo-link" data-bind="click: SubmitForm">Сохранить</span>
+                    <div style="clear: both" class="b-order-list__buttons" data-bind="visible: !phoneIsConfirm() || !emailIsConfirm()">
+                        <div class="btn btn-lg btn-inline" data-bind="click: SubmitForm">Сохранить</div>
                     </div>
                 </div>
             </div>
@@ -421,10 +435,10 @@
                                 </div>
                                 <button type="reset" class="btn btn-grey btn-lg btn-inline" data-bind="click: Back">Назад</button>
                                 <!-- ko if: id -->
-                                <button type="submit" class="btn btn-lg" data-bind="click: Edit">Сохранить</button>
+                                <div class="btn btn-lg btn-inline" data-bind="click: Edit">Сохранить</div>
                                 <!-- /ko -->
                                 <!-- ko ifnot: id -->
-                                <button type="submit" class="btn btn-lg" data-bind="click: Submit">Сохранить</button>
+                                <div class="btn btn-lg btn-inline" data-bind="click: Submit">Сохранить</div>
                                 <!-- /ko -->
                             </div>
                         </div>

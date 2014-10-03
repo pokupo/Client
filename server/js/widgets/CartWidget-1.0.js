@@ -213,6 +213,11 @@ var CartViewModel = function(){
             Routing.SetHash('cart', Config.CartGoods.title, {});
         }
     };
+    self.ClickIssueOrder = function(){
+        if(self.count() > 0){
+//            Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
+        }
+    };
 };
 
 var ShortBlockCartGoodsSellersViewModel = function(data, cart){

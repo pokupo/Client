@@ -90,7 +90,8 @@ var AnimateSearchResult = function () {
     });
 
 
-    $('#content_sort').click(function (e) {
+    /* «Выпадайка» */
+    $('.content_filter_sort_dropdown__trigger').click(function (e) {
         e.preventDefault();
         var $this = $(this);
 
@@ -98,35 +99,43 @@ var AnimateSearchResult = function () {
             return false;
         }
 
-        if (0 < $('#content_sort.active').length) {
-            $('#content_sort.active')
-                    .not(this).removeClass('active')
+        if (0 < $('.content_filter_sort_dropdown__trigger.active').length) {
+            $('.content_filter_sort_dropdown__trigger.active')
+                    .not(this)
+                    .removeClass('active')
                     .closest('.dropdown')
-                    .find('.dropdown__content').addClass('hidden');
+                    .find('.content_filter_sort_dropdown__content')
+                    .addClass('hidden');
         }
 
         $this.toggleClass('active')
                 .closest('.dropdown')
-                .find('.dropdown__content')
+                .find('.content_filter_sort_dropdown__content[data-target="' + $this.data('target') + '"]')
                 .toggleClass('hidden');
     });
-    $('.dropdown__content  a').click(function () {
-        $(this).closest('.dropdown__content ').toggleClass('hidden').
-                siblings('#content_sort').toggleClass('active');
-    });
 
+    /* Скрываем выпадайку по клику мимо неё */
     $(document).click(function (e) {
         var $this = $(e.target);
 
-        if ($this.is('#content_sort')) {
+        if ($this.is('.content_filter_sort_dropdown__trigger')) {
             //
         } else {
-            if (1 !== $this.parents().filter('.dropdown__content').length) {
-                $('#content_sort.active').
-                        removeClass('active').
-                        siblings('.dropdown__content').addClass('hidden');
+            if (1 !== $this.parents().filter('.content_filter_sort_dropdown__content').length) {
+                $('.content_filter_sort_dropdown__trigger.active')
+                        .removeClass('active').
+                        siblings('.content_filter_sort_dropdown__content')
+                        .addClass('hidden');
             }
         }
+    });
+
+    /* По клику на внутреннюю ссылку «выпадайка» закрывается */
+    $('.content_filter_sort_dropdown__content a').click(function () {
+        $(this).closest('.content_filter_sort_dropdown__content')
+                .toggleClass('hidden').
+                siblings('.content_filter_sort_dropdown__trigger')
+                .toggleClass('active');
     });
 }
 
