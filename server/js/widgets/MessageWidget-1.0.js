@@ -269,72 +269,72 @@ var MessageWidget = function () {
     self.Render = {
         Topic: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
-//                try{
-                ko.cleanNode($("#" + self.settings.containerId)[0]);
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                self.WidgetLoader(true, self.settings.containerId);
-                new AnimateMessage();
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Topic();
-//                            self.Render.Topic(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerId);
-//                    }
-//                }
+                try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                    new AnimateMessage();
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Topic();
+                            self.Render.Topic(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
         },
         List: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
-//                try {
-                ko.cleanNode($("#" + self.settings.containerId)[0]);
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                self.WidgetLoader(true, self.settings.containerId);
-                new AnimateMessage();
+                try {
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
+                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    self.WidgetLoader(true, self.settings.containerId);
+                    new AnimateMessage();
 
-                var messages = data.messages();
-                var newMessages = [];
-                $.each(messages, function (i) {
-                    if (messages[i].IsNew() && !messages[i].IsMy()) {
-                        messages[i].ClickExpand();
-                        newMessages.push(messages[i]);
+                    var messages = data.messages();
+                    var newMessages = [];
+                    $.each(messages, function (i) {
+                        if (messages[i].IsNew() && !messages[i].IsMy()) {
+                            messages[i].ClickExpand();
+                            newMessages.push(messages[i]);
+                        }
+                    });
+
+                    if (messages.length == newMessages.length) {
+                        $('.' + messages.cssExpandAll).hide();
+                        $('.' + messages.cssCollapseAll).show();
                     }
-                });
 
-                if (messages.length == newMessages.length) {
-                    $('.' + messages.cssExpandAll).hide();
-                    $('.' + messages.cssCollapseAll).show();
+                    var timeout = 0;
+                    $.each(newMessages, function (i) {
+                        setTimeout(function () {
+                            newMessages[i].InitTimer()
+                        }, timeout);
+                        timeout = timeout + newMessages[i].timeout;
+                    });
                 }
-
-                var timeout = 0;
-                $.each(newMessages, function (i) {
-                    setTimeout(function () {
-                        newMessages[i].InitTimer()
-                    }, timeout);
-                    timeout = timeout + newMessages[i].timeout;
-                });
-//                }
-//                catch (e) {
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
-//                    if (self.settings.tmpl.custom) {
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-//                            self.InsertContainer.List();
-//                            self.Render.List(data);
-//                        });
-//                    }
-//                    else {
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerId);
-//                    }
-//                }
+                catch (e) {
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function() {
+                            self.InsertContainer.List();
+                            self.Render.List(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
         },
         EmptyList: function (data) {

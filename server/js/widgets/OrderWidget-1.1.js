@@ -969,10 +969,10 @@ var OrderWidget = function() {
         },
         Step2Form: function(delivery) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
+//                    try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-                     new AnimateOrder();
+                    new AnimateOrder();
 
                     $('#' + delivery.cssRegionList).autocomplete({
                         source: function(request, response) {
@@ -1092,21 +1092,21 @@ var OrderWidget = function() {
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step2Form();
-                            self.Render.Step2Form(delivery);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Step2Form();
+//                            self.Render.Step2Form(delivery);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerFormId);
+//                    }
+//                }
             }
 
             

@@ -243,7 +243,7 @@
                     
                     <div data-bind="visible: !emailIsConfirm()">
                         <div class="input-holder" data-bind="visible: sentEmailCode">
-                            <input  type="text" placeholder="Код из смс-сообщения" name="account__sms" class="block-input"data-bind="value:emailToken"/>
+                            <input  type="text" placeholder="Код из email-сообщения" name="account__sms" class="block-input"data-bind="value:emailToken"/>
                             <!-- ko if: errorEmailToken-->
                             <div class="form_error" data-bind="text: errorEmailToken"></div>
                             <!-- /ko -->
@@ -457,7 +457,7 @@
                 <h2 class="b-profile__headline">Изменить пароль</h2>
                 <form data-bind="attr: {id: cssSequrityForm}" method="POST" target="upload_target" enctype="multipart/form-data">
                     <div class="input-holder">
-                        <input id="password" type="password" name="old_password" value="" placeholder="Текущий пароль" class="block-input" data-bind="value: oldPassword, attr : {id: cssOldPassword}">
+                        <input id="password" type="password" name="password" value="" placeholder="Текущий пароль" class="block-input" data-bind="value: oldPassword, attr : {id: cssOldPassword}">
                         <!-- ko if: errorOldPassword-->
                         <div class="form_error" data-bind="text: errorOldPassword"></div>
                         <!-- /ko -->
@@ -469,7 +469,7 @@
                         <!-- /ko -->
                     </div>
                     <div class="input-holder">
-                        <input id="newpassword" value="" placeholder="Повтор нового пароля" class="block-input" type="password" data-bind="value: newPassword, attr : {id: cssNewPassword}">
+                        <input id="newpassword" value="" placeholder="Повтор нового пароля" class="block-input" type="password" data-bind="value: confirmPassword, attr : {id: cssConfirmPassword}">
                         <!-- ko if: errorConfirmPassword-->
                         <div class="form_error" data-bind="text: errorConfirmPassword"></div>
                         <!-- /ko -->

@@ -34,11 +34,6 @@
             </li>
             <li>
                 <a href="#">
-                    <label class="b-wizard__step-num">2.1</label>
-                </a>
-            </li>
-            <li>
-                <a href="#">
                     <label class="b-wizard__step-num">3</label>
                 </a>
             </li>
@@ -129,12 +124,7 @@
             </li>
             <li>
                 <a href="#" class="selected">
-                    <label class="b-wizard__step-num">2.1</label>
-                </a>
-            </li>
-            <li>
-                <a href="#">
-                    <label class="b-wizard__step-num">2.2</label>
+                    <label class="b-wizard__step-num">2</label>
                 </a>
             </li>
             <li>
@@ -233,12 +223,7 @@
             </li>
             <li>
                 <a href="#" class="selected" data-bind="click: ClickStep2">
-                    <label class="b-wizard__step-num">2.1</label>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="selected">
-                    <label class="b-wizard__step-num">2.2</label>
+                    <label class="b-wizard__step-num">2</label>
                 </a>
             </li>
             <li>
@@ -333,12 +318,7 @@
             </li>
             <li>
                 <a href="#" class="selected" data-bind="click: ClickStep2">
-                    <label class="b-wizard__step-num">2.1</label>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="selected" data-bind="click: ClickAddAddress">
-                    <label class="b-wizard__step-num">2.2</label>
+                    <label class="b-wizard__step-num">2</label>
                 </a>
             </li>
             <li>
@@ -422,12 +402,7 @@
             </li>
             <li>
                 <a href="#" class="selected" data-bind="click: ClickStep2">
-                    <label class="b-wizard__step-num">2.1</label>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="selected" data-bind="click: ClickAddAddress">
-                    <label class="b-wizard__step-num">2.2</label>
+                    <label class="b-wizard__step-num">2</label>
                 </a>
             </li>
             <li>
@@ -517,12 +492,7 @@
             </li>
             <li>
                 <a href="#" class="selected" data-bind="click: ClickStep2">
-                    <label class="b-wizard__step-num">2.1</label>
-                </a>
-            </li>
-            <li>
-                <a href="#" class="selected" data-bind="click: ClickAddAddress">
-                    <label class="b-wizard__step-num">2.2</label>
+                    <label class="b-wizard__step-num">2</label>
                 </a>
             </li>
             <li>
@@ -659,6 +629,33 @@
                 </tbody>
             </table>
             <!-- /ko -->
+            
+            
+            
+            <h2 class="b-wizard__step-title">Оплата</h2>
+            <table class="b-order-table b-order-table--header">
+                <thead>
+                    <tr>
+                        <th colspan="2">Способ оплаты</th>
+                        <th>Описание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="b-order-table__item">
+                        <td class="b-order-table__logo">
+                            <img src="" data-bind="attr: {src: logoPayment}">
+                        </td>
+                        <td class="b-order-table__title">
+                            <b><!-- ko text: namePayment --><!-- /ko --></b>
+                        </td>
+                        <td data-bind="text: descPayment"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            
+            
+            
             <div style="margin-bottom: 60px" class="comment">
                 <textarea name="comment" value="" placeholder="Примечания к заказу" width="100%" rows="2" data-bind="value: commentBuyer"></textarea>
             </div>

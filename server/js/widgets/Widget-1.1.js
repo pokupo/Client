@@ -51,6 +51,7 @@ Parameters = {
             step5 : {},
             list : {}
         },
+        orderList : {},
         profile : {
             personal : {},
             delivery : {},
@@ -1293,16 +1294,17 @@ var Widget = function (){
                     callback(data);
             }, true);
         },
-        OrderList : function(callback){
-            if(!Parameters.cache.orderList){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId), function(data){
-                    Parameters.cache.orderList = data;
+        OrderList : function(query, callback){
+            var queryHash = EventDispatcher.HashCode(query);
+            if(!Parameters.cache.orderList[queryHash]){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId + query), function(data){
+                    Parameters.cache.orderList[queryHash] = data;
                     if(callback)
                         callback(data);
                 }, true);
             }
             else
-                callback(Parameters.cache.orderList);
+                callback(Parameters.cache.orderList[queryHash]);
         },
         RepeatOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){

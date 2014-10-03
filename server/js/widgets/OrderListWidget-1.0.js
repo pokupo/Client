@@ -142,8 +142,8 @@ var OrderListWidget = function() {
         Content: function() {
             self.WidgetLoader(false);
             if (Routing.params.block == 'list') {
-                self.Fill.List();
                 self.currentPage = Routing.GetCurrentPage();
+                self.Fill.List();
             }
             else if (Routing.params.block == 'detail' && Routing.params.id)
                 self.Fill.Detail(Routing.params.id);
@@ -174,14 +174,12 @@ var OrderListWidget = function() {
     };
     self.Fill = {
         List: function() {
-            self.BaseLoad.OrderList(function(data) {
+            var start = Routing.GetCurrentPage() * Config.Paging.itemsPerPage - Config.Paging.itemsPerPage;
+            var query = '/' + start + '/' + Config.Paging.itemsPerPage; 
+            self.BaseLoad.OrderList(query, function(data) {
                 if (!data.err) {
                     self.InsertContainer.List();
-                    var list = Parameters.cache.order.list;
-                    if ($.isEmptyObject(list)) {
-                        list = new OrderListViewModel();
-                        Parameters.cache.order.list = list;
-                    }
+                    var list = new OrderListViewModel();
                     list.AddContent(data);
                     self.Render.List(list);
                 }
@@ -267,26 +265,26 @@ var OrderListWidget = function() {
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-//                try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
                     new AnimateOrderList();
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Detail();
-//                            self.Render.Detail(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerFormId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Detail();
+                            self.Render.Detail(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
             
         }
@@ -314,16 +312,12 @@ var OrderListViewModel = function() {
 
     self.AddContent = function(data) {
         self.list = ko.observableArray();
-        var start = Routing.GetCurrentPage() * Config.Paging.itemsPerPage - Config.Paging.itemsPerPage;
-        var end = Routing.GetCurrentPage() * Config.Paging.itemsPerPage - 1;
-        self.count = data.count_order;
-        if (end > self.count - 1)
-            end = self.count - 1;
-        if (start <= self.count - 1) {
-            for (var i = start; i <= end; i++) {
+        $.each(data, function(i){
+            if(i == 'count_order')
+                self.count = data[i];
+            else
                 self.list.push(new OrderListDetailViewModel(data[i]));
-            }
-        }
+        });
         self.AddPages();
     };
     self.AddPages = function() {
