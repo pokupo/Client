@@ -80,7 +80,7 @@
                     <!-- /ko -->
                 </div>
                 <div class="input-holder">
-                    <input type="text" placeholder="Дата рождения" class="block-input" data-bind="value: birthDay, attr: {id: cssBirthDay}">
+                    <input id="birthDay" type="text" placeholder="Дата рождения" class="block-input" data-bind="value: birthDay, attr: {id: cssBirthDay}">
                     <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
                     <!-- ko if: errorBirthDay-->
                     <div class="form_error" data-bind="text: errorBirthDay"></div>
@@ -247,7 +247,7 @@
             <h2 class="b-wizard__step-title">Адрес доставки</h2>
             <p>Для доставки покупок требуется указать почтовый адрес</p>
             <div class="input-holder">
-                <select name="country" placeholder="Страна"  data-bind="value: idCountry, attr: {id: cssCountryList}">
+                <select data-placeholder="Выберите страну..." name="country" placeholder="Страна"  data-bind="value: idCountry, attr: {id: cssCountryList}">
                     <option value=""></option>
                     <!-- ko foreach: countryList -->
                     <option data-bind="text: name, value: id"></option>

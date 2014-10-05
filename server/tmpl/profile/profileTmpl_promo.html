@@ -169,7 +169,7 @@
                     <div class="input-holder">
                         <div class="floatlabel-wrapper" style="position:relative">
                             <label class="label-floatlabel " for="city_list" style="position: absolute; top: -20px; left: 20px; display: block; opacity: 1; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); transition: all 0.1s ease-in-out 0s;">Страна</label>
-                            <select name="address__country" id="country_list_profile" class="suggestion-input block-input" data-bind="value: idCountry, attr: {id: cssCountryList}">
+                            <select data-placeholder="Выберите страну..." name="address__country" id="country_list_profile" class="suggestion-input block-input" data-bind="value: idCountry, attr: {id: cssCountryList}">
                                 <option value=""></option>
                                 <!-- ko foreach: countryList -->
                                 <option data-bind="text: name, value: id"></option>
@@ -378,7 +378,7 @@
                                 <div class="input-holder">
                                     <div class="floatlabel-wrapper" style="position:relative">
                                         <label class="label-floatlabel " for="city_list" style="position: absolute; top: -20px; left: 20px; display: block; opacity: 1; font-size: 12px; font-weight: normal; color: rgb(153, 153, 153); transition: all 0.1s ease-in-out 0s;">Страна</label>
-                                        <select name="address__country" id="country_list_profile" class="suggestion-input block-input" data-bind="value: idCountry, attr: {id: cssCountryList}">
+                                        <select data-placeholder="Выберите страну..." name="address__country" id="country_list_profile" class="suggestion-input block-input" data-bind="value: idCountry, attr: {id: cssCountryList}">
                                             <option value=""></option>
                                             <!-- ko foreach: countryList -->
                                             <option data-bind="text: name, value: id"></option>
