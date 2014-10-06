@@ -55,6 +55,7 @@ var Config = {
         userInformation : {widget: 'user_information', def: 'default_user_information', customClass: 'custom_block'}, // id контейнера информации о пользователе
         authentication : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, //id контейнеров авторизации
         registration : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации
+        registrationSeller : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации продавца
         cart : {widget: 'cart_information', def: 'default_cart_information', customClass: 'custom_block'}, // id контейнера корзины
         cartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера реестра товаров корзины
         cabinetCartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'},
@@ -384,6 +385,81 @@ var Config = {
             'background' : '#ddd'
         }
     },
+    RegistrationSeller : {
+        tmpl : {
+            path : "registrationSeller/registrationSellerTmpl.html", // файл шаблонов
+            id: {
+                step1 : "registrationSellerFromStep1Tmpl", //id шаблона формы регистрации шаг 1
+                step2 : "registrationSellerFromStep2Tmpl", //id шаблона формы регистрации шаг 2
+                step3 : "registrationSellerFromStep3Tmpl"  //id шаблона формы регистрации шаг 3
+            }
+        },
+        regular : { // регулярные выражения полей
+            username : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
+            email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+            phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            username : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 4 символа',
+                maxLength : 'Максимум 40 символов',
+                regular : 'Только буквы латинского или русского алфавита',
+                uniq: 'К сожалению это имя уже занято, попробуйте указать другой вариант'
+            },
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                maxLength : 'Максимум 64 символа',
+                regular : 'Строка не является адресом электронной почты',
+                uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            phone : {
+                regular : 'Не верный формат телефона',
+                uniq : 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            isChecked : {
+                empty : 'Вам необходимо прочитать и принять условия соглашения'
+            },
+            emailToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            phoneToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            confirmLater : {
+                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи',
+            }
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     MenuPersonalCabinet : {
         tmpl : {
             path : "menuPersonalCabinet/menuPersonalCabinetTmpl.html", // файл шаблонов

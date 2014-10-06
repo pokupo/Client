@@ -38,6 +38,11 @@ Parameters = {
             step3 : {},
             step4 : {}
         },
+        regShop : {
+            step1 : {},
+            step2 : {},
+            step3 : {}
+        },
         order : {
             step1 : {
                 login : {},
@@ -1116,6 +1121,12 @@ var Widget = function (){
         },
         Registration : function( str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'reg/' + Parameters.shopId + '/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        RegistrationSeller : function( str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'reg/seller/' + str), function(data){
                 if(callback)
                     callback(data);
             }, true);
