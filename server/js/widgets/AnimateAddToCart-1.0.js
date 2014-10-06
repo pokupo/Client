@@ -1,5 +1,0 @@
-var AnimateAddToCart = function (goodsId) {
-
-}
-
-

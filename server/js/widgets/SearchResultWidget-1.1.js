@@ -28,6 +28,10 @@ var SearchResultWidget = function(){
                 id : null
             }
         },
+        animate: {
+            content: null,
+            form: null
+        },
         idAdvancedSearchForm : null,
         idTreeCategoriesForAdvancedSearchForm : 'tree_categories_for_advanced_search',
         inputParameters : {},
@@ -78,6 +82,8 @@ var SearchResultWidget = function(){
                     if(input.content.tmpl.id)
                         self.settings.tmpl.content.id = input.content.tmpl.id;
                 }
+                if(input.content.animate)
+                    self.settings.animate.content = input.content.animate;
             }
             if(input.form){
                 if(input.form.tmpl){
@@ -86,6 +92,8 @@ var SearchResultWidget = function(){
                     if(input.form.tmpl.id)
                         self.settings.tmpl.form.id = input.form.tmpl.id;
                 }
+                if(input.form.animate)
+                    self.settings.animate.form = input.form.animate;
             }
         }
         self.settings.inputParameters = input;
@@ -223,9 +231,9 @@ var SearchResultWidget = function(){
                     ko.global.route = Routing.route;
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
-                    new AnimateSearchResult();
-
                     $("#" + self.settings.containerIdForAdvancedSearch).show();
+                    if(self.settings.animate.form)
+                        self.settings.animate.form();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
@@ -250,6 +258,8 @@ var SearchResultWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
                     EventDispatcher.DispatchEvent('searchResultWidget.show.form');
+                    if(self.settings.animate.content)
+                        self.settings.animate.content();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');

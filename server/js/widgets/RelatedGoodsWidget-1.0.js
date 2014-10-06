@@ -17,6 +17,7 @@ window.RelatedGoodsWidget = function(){
                 carousel : null
             }
         },
+        animate: null,
         inputParameters : {},
         container : null,
         relatedGoods : {
@@ -50,6 +51,8 @@ window.RelatedGoodsWidget = function(){
             }
             else if (key == 'uniq' && data.options.params['uniq'])
                 self.settings.uniq = data.options.params['uniq'];
+            else if (key == 'animate' && data.options.params['animate'])
+                self.settings.animate = data.options.params['animate'];
             else if(key == 'id')
                 self.settings.relatedGoods.id = data.options.params['id'];
             self.settings.relatedGoods[key] = data.options.params[key];
@@ -109,7 +112,8 @@ window.RelatedGoodsWidget = function(){
         try{
             ko.cleanNode($(self.settings.container).children()[0]);
             ko.applyBindings(data, $(self.settings.container).children()[0]);
-            new AnimateRelatedGoods();
+            if(self.settings.animate)
+                self.settings.animate();
         }
         catch(e){
             self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');

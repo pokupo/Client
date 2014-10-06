@@ -13,6 +13,7 @@ var CartGoodsWidget = function(){
             content : null,
             empty : null,
         },
+        animate: null,
         inputParameters : {},
         style : null,
         containerId : null,
@@ -55,6 +56,8 @@ var CartGoodsWidget = function(){
                     }
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
     };
     self.CheckCartGoodsRoute = function(){
@@ -164,7 +167,8 @@ var CartGoodsWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-                    new AnimateCartGoods();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
@@ -184,7 +188,8 @@ var CartGoodsWidget = function(){
         },
         EmptyCart : function(){
             self.WidgetLoader(true, self.settings.containerId);
-            new AnimateCartGoods()
+            if(self.settings.animate)
+                self.settings.animate();
         }
     };
     self.SetPosition = function(){

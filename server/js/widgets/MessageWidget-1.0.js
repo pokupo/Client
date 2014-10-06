@@ -14,6 +14,7 @@ var MessageWidget = function () {
                 empty: null
             }
         },
+        animate: null,
         inputParameters: {},
         paging: null,
         style: null,
@@ -44,7 +45,10 @@ var MessageWidget = function () {
         }
 
         if (!$.isEmptyObject(input)) {
-            self.settings.paging.itemsPerPage = input.defaultCount;
+            if(input.defaultCount)
+                self.settings.paging.itemsPerPage = input.defaultCount;
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -273,7 +277,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-                    new AnimateMessage();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
@@ -297,7 +302,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-                    new AnimateMessage();
+                    if(self.settings.animate)
+                        self.settings.animate();
 
                     var messages = data.messages();
                     var newMessages = [];
@@ -343,6 +349,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch (e) {
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty') + ']');

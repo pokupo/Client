@@ -1,7 +1,7 @@
 var AuthenticationWidget = function(){
     var self = this;
     self.widgetName = 'AuthenticationWidget';
-    self.version = 1.0;
+    self.version = 1.1;
     self.minWidgetVersion = 1.0;
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
@@ -13,6 +13,7 @@ var AuthenticationWidget = function(){
             id : null
         },
         inputParameters : {},
+        animate: null,
         https : null,
         style : null,
         customContainer: null
@@ -44,9 +45,10 @@ var AuthenticationWidget = function(){
                 self.settings.https = input.https;
                 Parameters.cache.https = input.https;
             }
-            if(input.container && input.container.widget){
+            if(input.container && input.container.widget)
                 self.settings.containerFormId = input.container.widget; 
-            }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -124,6 +126,8 @@ var AuthenticationWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

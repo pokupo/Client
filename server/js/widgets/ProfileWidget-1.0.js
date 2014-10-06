@@ -17,6 +17,7 @@
                 security : null
             }
         },
+        animate: null,
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -56,6 +57,8 @@
                     }
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -497,10 +500,11 @@
     self.Render = {
         Personal : function(form){ 
             if ($("#" + self.settings.containerFormId).length > 0) {
-//                try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    new AnimateProfile();
+                    if(self.settings.animate)
+                        self.settings.animate();
                     
                     $('#' + form.postalAddress.cssCountryList).change(function() {
                         var v =  $('#' + form.postalAddress.cssCountryList + " option:selected").val();
@@ -625,21 +629,21 @@
                     if(Routing.params.edit == 'postal_address'){
                         self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
                     }
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Personal();
-//                            self.Render.Personal(form);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerFormId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Personal();
+                            self.Render.Personal(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
         },
         DeliveryList : function(delivery){
@@ -648,7 +652,8 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateProfile();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
@@ -672,7 +677,8 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateProfile();
+                    if(self.settings.animate)
+                        self.settings.animate();
             
                     $('#' + delivery.cssRegionList).autocomplete({
                         source: function(request, response) {
@@ -813,7 +819,8 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateProfile();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('security') + ']');

@@ -70,7 +70,7 @@ var AnimateRegistration = function () {
         minDate: '-101Y',
         maxDate: '-18Y',
         onClose: function (dateText, inst) {
-            $("#birthDay").val(dateText);
+            $("#bdate").val(dateText);
         }
     });
 };

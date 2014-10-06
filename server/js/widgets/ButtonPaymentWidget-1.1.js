@@ -14,6 +14,7 @@ window.ButtonPaymentWidget = function () {
                 skin: null
             }
         },
+        animate: null,
         inputParameters: {},
         containerId: null,
         containerButton: null,
@@ -49,6 +50,8 @@ window.ButtonPaymentWidget = function () {
             }
             if (input.title)
                 self.settings.title = input.title;
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
 
@@ -190,7 +193,8 @@ window.ButtonPaymentWidget = function () {
             try {
                 ko.cleanNode($(self.settings.containerButton).children()[0]);
                 ko.applyBindings(data, $(self.settings.containerButton).children()[0]);
-                new AnimateButtonPayment();
+                if(self.settings.animate)
+                    self.settings.animate();
             }
             catch (e) {
                 self.Exeption('Ошибка шаблона [' + self.GetTmplName('skin') + ']');
@@ -217,9 +221,10 @@ window.ButtonPaymentWidget = function () {
                             $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
                         }
                     });
-                    new AnimateButtonPayment();
                     $("#" + self.settings.containerId).show();
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch (e) {
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('skin') + ']');

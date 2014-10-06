@@ -15,6 +15,7 @@ var FavoritesWidget = function() {
                 empty : null
             }
         },
+        animate: null,
         showBlocks : null,
         inputParameters: {},
         style: null,
@@ -51,6 +52,8 @@ var FavoritesWidget = function() {
                        self.settings.showBlocks.splice(self.settings.showBlocks.indexOf(self.settings.showBlocks[i]), 1);
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -202,6 +205,8 @@ var FavoritesWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
@@ -221,6 +226,8 @@ var FavoritesWidget = function() {
         },
         EmptyFaforites : function(){
             self.WidgetLoader(true, self.settings.containerId);
+            if(self.settings.animate)
+                self.settings.animate();
         }
     };
     self.SetPosition = function() {

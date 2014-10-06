@@ -12,6 +12,7 @@ var CartWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         inputParameters : {},
         containerId : null,
         showBlocks : null,
@@ -48,6 +49,8 @@ var CartWidget = function(){
                      self.settings.showBlocks[key] = input.show[key];
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -120,7 +123,8 @@ var CartWidget = function(){
             ko.cleanNode($('#' + self.settings.containerId)[0]);
             ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
             self.WidgetLoader(true, self.settings.containerId);
-            new AnimateCart();
+            if(self.settings.animate)
+                self.settings.animate();
         }
         catch(e){
             self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

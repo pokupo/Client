@@ -12,6 +12,7 @@ var CatalogWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         inputParameters : {},
         styleCatalog : null,
         customContainer: null,
@@ -38,6 +39,10 @@ var CatalogWidget = function(){
         }
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.catalog){
             input = WParameters.catalog;
+        }
+        if(!$.isEmptyObject(input)){
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -116,7 +121,8 @@ var CatalogWidget = function(){
                     ko.cleanNode($('#' + self.settings.catalogContainerId )[0]);
                     ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
                     self.WidgetLoader(true, self.settings.catalogContainerId );
-                    new AnimateCatalog();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

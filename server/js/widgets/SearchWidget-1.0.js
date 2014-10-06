@@ -12,6 +12,7 @@ var SearchWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         inputParameters : {},
         style : null,
         customContainer: null
@@ -39,6 +40,8 @@ var SearchWidget = function(){
         if(!$.isEmptyObject(input)){
             if (input.tmpl)
                 self.settings.tmplPath = 'search/' + input.tmpl + '.html';
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -117,8 +120,9 @@ var SearchWidget = function(){
             try{
                 ko.cleanNode($("#" + self.settings.containerId)[0]);
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                new AnimateSearch();
                 self.WidgetLoader(true, self.settings.containerId);
+                if(self.settings.animate)
+                    self.settings.animate();
             }
             catch(e){
                 self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

@@ -12,6 +12,7 @@ var MenuPersonalCabinetWidget = function () {
             path: null,
             id: null
         },
+        animate: null,
         style: null,
         customContainer: null
     };
@@ -38,6 +39,8 @@ var MenuPersonalCabinetWidget = function () {
                     self.settings.tmpl.id[key] = input.tmpl.id[key];
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
     };
     self.AddMenu = function (opt) {
@@ -98,6 +101,8 @@ var MenuPersonalCabinetWidget = function () {
                 self.WidgetLoader(true, self.settings.containerMenuId);
                 ko.cleanNode($("#" + self.settings.containerMenuId)[0]);
                 ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
+                if(self.settings.animate)
+                    self.settings.animate();
             }
             catch (e) {
                 self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');

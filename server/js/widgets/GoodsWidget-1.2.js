@@ -14,6 +14,7 @@ var GoodsWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         showBlocks : null,
         inputParameters : {},
         styleGoods : null,
@@ -57,6 +58,8 @@ var GoodsWidget = function(){
                     }
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -183,7 +186,8 @@ var GoodsWidget = function(){
                         });
                     }
 
-                    new AnimateGoods();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 self.AddGoodsInCookie(data);
                 delete data;

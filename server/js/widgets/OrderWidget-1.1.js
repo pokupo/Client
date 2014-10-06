@@ -21,6 +21,7 @@ var OrderWidget = function() {
                 step5 : null
             }
         },
+        animate: null,
         inputParameters: {},
         style: null,
         customContainer: null
@@ -58,14 +59,18 @@ var OrderWidget = function() {
             input = WParameters.order;
         }
         
-        if(input.tmpl){
-            if(input.tmpl.path)
-                self.settings.tmpl.path = input.tmpl.path;
-            if(input.tmpl.id){
-                for(var key in input.tmpl.id){
-                    self.settings.tmpl.id[key] = input.tmpl.id[key];
+        if(!$.isEmptyObject(input)){
+            if(input.tmpl){
+                if(input.tmpl.path)
+                    self.settings.tmpl.path = input.tmpl.path;
+                if(input.tmpl.id){
+                    for(var key in input.tmpl.id){
+                        self.settings.tmpl.id[key] = input.tmpl.id[key];
+                    }
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -873,7 +878,8 @@ var OrderWidget = function() {
                 if ($("#" + self.settings.containerFormId).length > 0) {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
 
                 delete form;
@@ -900,7 +906,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true,  self.settings.containerFormId);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Confirm') + ']');
@@ -924,7 +931,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Profile') + ']');
@@ -949,7 +957,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
@@ -969,10 +978,11 @@ var OrderWidget = function() {
         },
         Step2Form: function(delivery) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-//                    try{
+                    try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
 
                     $('#' + delivery.cssRegionList).autocomplete({
                         source: function(request, response) {
@@ -1092,21 +1102,21 @@ var OrderWidget = function() {
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Step2Form();
-//                            self.Render.Step2Form(delivery);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerFormId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Step2Form();
+                            self.Render.Step2Form(delivery);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
 
             
@@ -1117,7 +1127,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
@@ -1141,7 +1152,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
@@ -1165,7 +1177,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateOrder();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step5') + ']');

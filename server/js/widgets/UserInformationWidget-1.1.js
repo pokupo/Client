@@ -15,6 +15,7 @@ var UserInformationWidget = function(){
                 auth : null 
             }
         },
+        animate: null,
         inputParameters : {},
         showBlocks : null,
         style : null,
@@ -50,6 +51,8 @@ var UserInformationWidget = function(){
                         self.settings.showBlocks.push(input.show[i]);
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -133,7 +136,8 @@ var UserInformationWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-                    new AnimateUserInformation();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('auth') + ']');
@@ -157,7 +161,8 @@ var UserInformationWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
-                    new AnimateUserInformation();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Error of the template [' + self.GetTmplName('info') + ']');

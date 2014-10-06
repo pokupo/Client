@@ -317,7 +317,7 @@
                     <div class="input-holder">
                         <div class="floatlabel-wrapper" style="position:relative">
                             <input type="text" name="birthDay" value="" placeholder="Дата рождения" class="block-input" id="birthDay"  data-bind="value: birthDay, attr: {id: cssBirthDay}"/>
-                            <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
+                            <input name="bdate" id="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
                             <label for="birthDay" class="label-floatlabel" style="display: none;">Дата рождения</label>
                             <!-- ko if: errorBirthDay-->
                                 <div class="form_error" data-bind="text: errorBirthDay"></div>

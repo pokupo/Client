@@ -34,6 +34,10 @@ var ContentWidget = function(){
                 }
             }
         },
+        animate: {
+            content: null,
+            block: null
+        },
         inputParameters : {},
         styleCatalog : {},
         countGoodsInBlock : null,
@@ -67,13 +71,18 @@ var ContentWidget = function(){
         
         if(!$.isEmptyObject(input)){
             if(input.block){
-                self.settings.countGoodsInBlock = input.block.count;
+                if(input.block.count)
+                    self.settings.countGoodsInBlock = input.block.count;
+                if(input.block.animate)
+                    self.settings.animate.block = input.block.animate;
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
+                if(input.content.animate)
+                    self.settings.animate.content = input.content.animate;
             }
         }
         self.settings.inputParameters = input;
@@ -277,12 +286,8 @@ var ContentWidget = function(){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
                         $('#' + b[i].data.cssBlock).show();
-                        if(b[i].type == 'slider'){
-                            new AnimateContent();
-                        }
-                        if(b[i].type == 'carousel'){
-                            new AnimateContent();
-                        }                        
+                        if(self.settings.animate.block)
+                            self.settings.animate.block();                     
                     })
                 }
                 else{
@@ -295,9 +300,10 @@ var ContentWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    new AnimateContent();
                     $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate.content)
+                        self.settings.animate.content();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
@@ -353,8 +359,9 @@ var ContentWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    new AnimateContent();
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate.content)
+                        self.settings.animate.content();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']');

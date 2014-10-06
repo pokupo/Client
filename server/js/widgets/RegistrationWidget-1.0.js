@@ -17,6 +17,7 @@ var RegistrationWidget = function() {
                 step4: null
             }
         },
+        animate: null,
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -47,6 +48,8 @@ var RegistrationWidget = function() {
         if(!$.isEmptyObject(input)){
             if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -420,7 +423,8 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateRegistration();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
@@ -444,7 +448,8 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateRegistration();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
@@ -467,20 +472,9 @@ var RegistrationWidget = function() {
                 try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                        changeMonth: true,
-                        changeYear: true,
-                        dateFormat: 'dd.mm.yy',
-                        defaultDate: '-24Y',
-                        yearRange: "c-77:c+6",
-                        minDate : '-101Y',
-                        maxDate : '-18Y',
-                        onClose: function(dateText, inst) {
-                            form.birthDay(dateText);
-                        }
-                    });
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateRegistration();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
@@ -617,7 +611,8 @@ var RegistrationWidget = function() {
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateRegistration();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');

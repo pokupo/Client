@@ -1,5 +1,0 @@
-var AnimateBreadCrumb = function(){
-
-}
-
-

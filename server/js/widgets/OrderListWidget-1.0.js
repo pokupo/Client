@@ -17,6 +17,7 @@ var OrderListWidget = function() {
                 detail : null
             }
         },
+        animate: null,
         inputParameters: {},
         style: null,
         customContainer: null
@@ -41,6 +42,10 @@ var OrderListWidget = function() {
         }
         if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.order) {
             input = WParameters.order;
+        }
+        if(!$.isEmptyObject(input)){
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -240,8 +245,9 @@ var OrderListWidget = function() {
                 try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
-                    new AnimateOrderList();
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
@@ -262,6 +268,8 @@ var OrderListWidget = function() {
         },
         EmptyList: function() {
             self.WidgetLoader(true, self.settings.containerFormId);
+            if(self.settings.animate)
+                self.settings.animate();
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -269,7 +277,8 @@ var OrderListWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    new AnimateOrderList();
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');

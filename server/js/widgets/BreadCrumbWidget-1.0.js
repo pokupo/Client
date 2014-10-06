@@ -12,6 +12,7 @@ var BreadCrumbWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         inputParameters : {},
         styleBreadCrumb : null,
         customContainer : null
@@ -36,6 +37,9 @@ var BreadCrumbWidget = function(){
         }
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.breadCrumb){
             input = WParameters.breadCrumb;
+        }
+        if(input.animate){
+            self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -117,8 +121,9 @@ var BreadCrumbWidget = function(){
                         ko.cleanNode($('#' + self.settings.containerId[i])[0]);
                         ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
                         self.ShowContainer(self.settings.containerId[i]);
-                        new AnimateBreadCrumb();
                         self.WidgetLoader(true );
+                        if(self.settings.animate)
+                            self.settings.animate();
                     }
                     catch(e){
                         self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
