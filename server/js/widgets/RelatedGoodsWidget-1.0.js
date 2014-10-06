@@ -42,6 +42,17 @@ window.RelatedGoodsWidget = function(){
         self.settings.tmpl = Config.RelatedGoods.tmpl;
         self.settings.relatedGoods = Config.RelatedGoods;
         self.settings.container = data.element;
+        
+        var input = {};
+        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.relatedGoods) {
+            input = WParameters.relatedGoods;
+        }
+        if (!$.isEmptyObject(input)) {
+            if(input.animate)
+                self.settings.animate = input.animate;
+        }
+        self.settings.inputParameters = input;
+        
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
                 if(data.options.params['tmpl']['path'])
