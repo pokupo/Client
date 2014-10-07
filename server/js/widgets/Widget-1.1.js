@@ -38,7 +38,7 @@ Parameters = {
             step3 : {},
             step4 : {}
         },
-        regShop : {
+        regSeller : {
             step1 : {},
             step2 : {},
             step3 : {}
@@ -1133,6 +1133,12 @@ var Widget = function (){
         },
         ActivateUser : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'rega/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        ActivateSeller : function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'rega/seller/' + str), function(data){
                 if(callback)
                     callback(data);
             }, true);

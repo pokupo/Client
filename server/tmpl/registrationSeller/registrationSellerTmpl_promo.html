@@ -133,35 +133,36 @@
 
 
                     <!-- ko ifnot: isEmptyPhone -->
-                    <!-- ko ifnot: phoneConfirmLater -->
-                    <div class="input-holder tooltip">
-                        <div class="tooltip__trigger">?
-                            <div class="tooltip__content">
-                                <p>Код, высланный в SMS</p>
-                                <div class="tooltip__before"></div>
-                                <div class="tooltip__after"></div>
+                        <!-- ko ifnot: phoneConfirmLater -->
+                        <div class="input-holder tooltip">
+                            <div class="tooltip__trigger">?
+                                <div class="tooltip__content">
+                                    <p>Код, высланный в SMS</p>
+                                    <div class="tooltip__before"></div>
+                                    <div class="tooltip__after"></div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="code" value="" placeholder="Ваш e-mail код" class="block-input" id="i-37" data-bind="value: phoneToken">
-                            <label for="37" class="label-floatlabel  " style="display: none;">Ваш SMS код</label>
-                        </div>
+                            <div class="floatlabel-wrapper" style="position:relative">
+                                <input type="text" name="code" value="" placeholder="Ваш e-mail код" class="block-input" id="i-37" data-bind="value: phoneToken">
+                                <label for="37" class="label-floatlabel  " style="display: none;">Ваш SMS код</label>
+                            </div>
 
-                        <!-- ko if: phoneIsConfirm -->
-                        <div class="b-status b-status--done">Телефон подтверждён</div>
+                            <!-- ko if: phoneIsConfirm -->
+                            <div class="b-status b-status--done">Телефон подтверждён</div>
+                            <!-- /ko -->
+
+                            <!-- ko if: errorPhoneConfirm-->
+                            <div class="form_error" data-bind="text: errorPhoneConfirm"></div>
+                            <!-- /ko -->
+                        </div>
                         <!-- /ko -->
 
-                        <!-- ko if: errorPhoneConfirm-->
-                        <div class="form_error" data-bind="text: errorPhoneConfirm"></div>
-                        <!-- /ko -->
-                    </div>
-                    <!-- /ko -->
+                        <div style="padding-top:13px" class="input-holder">
+                            <input id="skip-phone" name="skip-email" type="checkbox" checked="" class="checkbox"  data-bind="checked: phoneConfirmLater">
+                            <label for="skip-phone" class="block-label b-small-text">Подтвердить телефон позднее</label>
+                        </div>
                     <!-- /ko -->
 
-                    <div style="padding-top:13px" class="input-holder">
-                        <input id="skip-phone" name="skip-email" type="checkbox" checked="" class="checkbox"  data-bind="checked: phoneConfirmLater">
-                        <label for="skip-phone" class="block-label b-small-text">Подтвердить телефон позднее</label>
-                    </div>
                 </div>
             </div>
             <div class="b-wizard__actions">
@@ -203,22 +204,37 @@
                 <h2 class="b-wizard__step-title">Завершение регистрации</h2>
                 <div class="b-wizard__step-content">
                     <div id="clienttype" class="input-holder">
-                        <input id="clienttype-private" type="radio" name="clienttype" value="PRIVATE" class="inline">
+                        <input id="clienttype-private" type="radio" name="clienttype" value="person" class="inline" data-bind="checked: typeSeller"/>
                         <label for="clienttype-private">Частное лицо</label>
-                        <input id="clienttype-corporate" type="radio" name="clienttype" value="CORPORATE" class="inline">
+                        <input id="clienttype-corporate" type="radio" name="clienttype" value="company" class="inline" data-bind="checked: typeSeller"/>
                         <label for="clienttype-corporate">Компания</label>
+                        <!-- ko if: errorGender-->
+                            <div class="form_error" data-bind="text: errorTypeSeller"></div>
+                        <!-- /ko -->
+                    </div>
+                    <!-- ko ifnot: confirmLater -->
+                    <div class="input-holder">
+                        <input type="text" name="family" value="" placeholder="Адрес сайта (если есть)" class="block-input" data-bind="value: site"/>
+                        <!-- ko if: errorSite-->
+                            <div class="form_error" data-bind="text: errorSite"></div>
+                        <!-- /ko -->
                     </div>
                     <div class="input-holder">
-                        <input type="text" name="family" value="" placeholder="Адрес сайта (если есть)" class="block-input">
+                        <input type="text" name="code" value="" placeholder="Код приглашения" class="block-input" data-bind="value: invite"/>
+                        <!-- ko if: errorGender-->
+                            <div class="form_error" data-bind="text: errorInvite"></div>
+                        <!-- /ko -->
                     </div>
-                    <div class="input-holder">
-                        <input type="text" name="code" value="" placeholder="Код приглашения" class="block-input">
-                    </div>
+                    <!-- /ko -->
                     <div style="padding-top:13px" class="input-holder">
-                        <input id="skip_personal" name="skip_personal" type="checkbox" checked class="checkbox">
+                        <input id="skip_personal" name="skip_personal" type="checkbox" class="checkbox" data-bind="checked: confirmLater"/>
                         <label for="skip_personal" class="block-label b-small-text">Указать позже</label>
                     </div>
                 </div>
+            </div>
+            <div class="b-wizard__actions">
+                <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: Back">Назад</a>
+                <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
             </div>
         </div>
     </form>

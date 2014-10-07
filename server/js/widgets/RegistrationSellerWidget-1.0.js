@@ -52,6 +52,8 @@ var RegistrationSellerWidget = function () {
     };
     self.CheckRouteRegistrationSeller = function () {
         if (Routing.route == 'registration_seller') {
+            if (!Routing.params.step)
+                Routing.params.step = 1;
             self.BaseLoad.Tmpl(self.settings.tmpl, function () {
                 if (Routing.params.step == 1)
                     self.Step.Step1();
@@ -81,13 +83,51 @@ var RegistrationSellerWidget = function () {
                 params.push('email_seller=' + step1.email());
             if (params.length > 0)
                 var str = '?' + params.join('&');
-            self.BaseLoad.Registration(str, function (data) {
-                if(data.result == 'ok'){
+            self.BaseLoad.RegistrationSeller(str, function (data) {
+                if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step1.register', step1)})) {
                     Parameters.cache.regSeller.step1 = step1;
-                    Routing.SetHash('registration_shop', 'Регистрация нового аккаунта', {step: 2});
+                    Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 2});
                 }
             });
-
+        });
+        
+        EventDispatcher.AddEventListener('RegistrationSellerWidget.step2.checking', function(step2){
+            Parameters.cache.regSeller.step2 = step2;
+            Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 3});
+        });
+        
+        EventDispatcher.AddEventListener('RegistrationSellerWidget.step3.checking', function(step3){
+            var step1 = Parameters.cache.regSeller.step1;
+            var step2 = Parameters.cache.regSeller.step2;
+            Parameters.cache.regSeller.step3 = step3;
+            
+            var params = [];
+            if (step1.nameSeller())
+                params.push('name_seller=' + encodeURIComponent(step1.nameSeller()));
+            params.push('mail_token=' + encodeURIComponent(step2.mailToken() ? step2.mailToken() : 1));
+            params.push('sms_token=' + encodeURIComponent(step2.smsToken() ? step2.smsToken() : 1));
+            if(step3.typeSeller())
+                params.push('type_seller=' + step3.typeSeller());
+            if(step3.invite())
+                params.push('invite=' + encodeURIComponent(step3.invite()));
+            if(step3.site())
+                params.push('site=' + encodeURIComponent(step3.site()));
+            var str = '?' + params.join('&');
+            
+            self.BaseLoad.ActivateSeller(str, function(data){
+                if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', step3)})) {
+                    Parameters.cache.regSeller = {
+                        step1: {},
+                        step2: {},
+                        step3: {}
+                    }
+                    var link = Parameters.cache.lastPage;
+                    if (!$.isEmptyObject(link))
+                        Routing.SetHash(link.route, link.title, link.data, true);
+                    else
+                        Routing.SetHash('default', 'Домашняя', {});
+                }
+            })
         });
     };
     self.Step = {
@@ -124,7 +164,7 @@ var RegistrationSellerWidget = function () {
     };
     self.Fill = {
         Step1: function () {
-            var form = Parameters.cache.regShop.step1;
+            var form = Parameters.cache.regSeller.step1;
             if ($.isEmptyObject(form)) {
                 RegistrationSellerFormViewModel.prototype.Back = function () {
                     Parameters.cache.history.pop();
@@ -140,7 +180,7 @@ var RegistrationSellerWidget = function () {
         },
         Step2: function () {
             if (Routing.params.name_seller && Routing.params.mail_token) {
-                RegistrationSellerFormViewModel.prototype.Back = function() {
+                RegistrationSellerFormViewModel.prototype.Back = function () {
                     Parameters.cache.history.pop();
                     var link = Parameters.cache.history.pop();
                     if (link)
@@ -149,36 +189,25 @@ var RegistrationSellerWidget = function () {
                         Routing.SetHash('default', 'Домашняя', {});
                 };
                 var step1 = new RegistrationSellerFormViewModel();
-                step1.nameSeller(Routing.params.username);
+                step1.nameSeller(Routing.params.name_seller);
                 Parameters.cache.regSeller.step1 = step1;
             }
 
-            RegistrationConfirmFormViewModel.prototype.Back = function() {
-                EventDispatcher.DispatchEvent('RegistrationSellerWidget.step1.view');
-            };
-            var form = new RegistrationConfirmFormViewModel(Parameters.cache.regSeller.step1);
-            form.submitEvent('RegistrationSellerWidget.step2.checking');
-            
+            var form = new RegistrationSellerConfirmFormViewModel(Parameters.cache.regSeller.step1);
+
             if (Routing.params.name_seller && Routing.params.mail_token) {
                 form.mailToken(Routing.params.mail_token);
                 EventDispatcher.DispatchEvent('RegistrationSellerWidget.step2.checking', form);
             }
-            
+
             self.Render.Step2(form);
         },
         Step3: function () {
-//            var form = Parameters.cache.reg.step3;
-//            if ($.isEmptyObject(form)){
-//                RegistrationProfileFormViewModel.prototype.Back = function() {
-//                    EventDispatcher.DispatchEvent('RegistrationWidget.step2.view');
-//                };
-//                RegistrationProfileFormViewModel.prototype.SpecifyLater = function() {
-//                    EventDispatcher.DispatchEvent('RegistrationWidget.step3.later');
-//                };
-//                form = new RegistrationProfileFormViewModel();
-//                form.submitEvent('RegistrationWidget.step3.checking');
-//            }
-            self.Render.Step3();
+            var form = Parameters.cache.regSeller.step3;
+            if ($.isEmptyObject(form)){
+                form = new RegistrationSellerFinishFormViewModel();
+            }
+            self.Render.Step3(form);
         }
     };
     self.Render = {
@@ -308,19 +337,19 @@ var RegistrationSellerFormViewModel = function () {
     };
     self.NameValidation = function () {
         if (!self.nameSeller()) {
-            self.errorNameSeller(Config.RegistrationSeller.error.username.empty);
+            self.errorNameSeller(Config.RegistrationSeller.error.nameSeller.empty);
             return false;
         }
         if (self.nameSeller().length < 3) {
-            self.errorNameSeller(Config.RegistrationSeller.error.username.minLength);
+            self.errorNameSeller(Config.RegistrationSeller.error.nameSeller.minLength);
             return false;
         }
         if (self.nameSeller().length > 40) {
-            self.errorNameSeller(Config.RegistrationSeller.error.username.maxLength);
+            self.errorNameSeller(Config.RegistrationSeller.error.nameSeller.maxLength);
             return false;
         }
-        if (!Config.RegistrationSeller.regular.username.test(self.nameSeller())) {
-            self.errorNameSeller(Config.Registration.error.username.regular);
+        if (!Config.RegistrationSeller.regular.nameSeller.test(self.nameSeller())) {
+            self.errorNameSeller(Config.Registration.error.nameSeller.regular);
             return false;
         }
         self.errorNameSeller(null);
@@ -368,6 +397,149 @@ var RegistrationSellerFormViewModel = function () {
     self.police = 'http://' + window.location.hostname + '/police';
     self.refund = 'http://' + window.location.hostname + '/refund';
 };
+
+var RegistrationSellerConfirmFormViewModel = function (cache) {
+    var self = this;
+//    self.nameSeller = cache.nameSeller();
+ self.nameSeller = 'test';
+
+    self.cssMailToken = 'mail_token_block';
+    self.mailToken = ko.observable();
+    self.mailIsConfirm = ko.observable(false);
+    self.errorEmailConfirm = ko.observable(null);
+    self.mailConfirmLater = ko.observable(false);
+
+    self.cssPhoneToken = 'phone_token_block';
+    self.phoneToken = ko.observable();
+    self.phoneIsConfirm = ko.observable(false);
+    self.errorPhoneConfirm = ko.observable(null);
+    self.phoneConfirmLater = ko.observable(false);
+
+    self.errorConfirmLater = ko.observable(null);
+
+    self.isEmptyPhone = ko.computed(function () {
+//        if (!$.isEmptyObject(cache) && cache.phone())
+//            return false;
+        self.phoneConfirmLater(true);
+        return true;
+    }, this);
+
+    self.submitEvent = ko.observable();
+
+    self.SubmitForm = function () {
+        if (self.ValidationForm()) {
+            EventDispatcher.DispatchEvent('RegistrationSellerWidget.step2.checking', self);
+        }
+    };
+    self.ValidationForm = function () {
+        var test = true;
+        if (!self.EmailTokenValidation())
+            test = false;
+        if (!self.PhoneTokenValidation())
+            test = false;
+        if (!self.EmptyConfirm())
+            test = false;
+        return test;
+    };
+    self.EmailTokenValidation = function () {
+        if (!self.mailConfirmLater()) {
+            if (!self.mailToken()) {
+                self.errorEmailConfirm(Config.Registration.error.emailToken.empty);
+                return false;
+            }
+        }
+
+        self.errorEmailConfirm(null);
+        return true;
+    };
+    self.PhoneTokenValidation = function () {
+        if (!self.phoneConfirmLater()) {
+            if (!self.phoneToken()) {
+                self.errorPhoneConfirm(Config.Registration.error.phoneToken.empty);
+                return false;
+            }
+        }
+
+        self.errorPhoneConfirm(null);
+        return true;
+    };
+    self.EmptyConfirm = function () {
+        if (self.phoneConfirmLater() && self.mailConfirmLater()) {
+            self.errorConfirmLater(Config.Registration.error.confirmLater.empty);
+            self.errorEmailConfirm(null);
+            self.errorPhoneConfirm(null);
+            return false;
+        }
+        else
+            self.errorConfirmLater(null);
+
+        return true;
+    };
+    self.Back = function () {
+        Parameters.cache.regSeller.step3 = self;
+        Routing.SetHash('registration_seller', 'Регистрация пользователя', {step: 1});
+    };
+};
+
+var RegistrationSellerFinishFormViewModel = function(){
+    var self = this;
+    self.typeSeller = ko.observable();
+    self.errorTypeSeller = ko.observable();
+    
+    self.invite = ko.observable();
+    self.errorInvite = ko.observable();
+    
+    self.site = ko.observable();
+    self.errorSite = ko.observable();
+    
+    self.confirmLater = ko.observable(false);
+    self.errorConfirmLater = ko.observable(null);
+    
+    self.SubmitForm = function () {
+        if (self.ValidationForm()) {
+            EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', self);
+        }
+    };
+    self.ValidationForm = function () {
+        var test = true;
+        if (!self.TypeSellerValidation())
+            test = false;
+        if (!self.InviteValidation())
+            test = false;
+        if (!self.SiteValidation())
+            test = false;
+        return test;
+    };
+    self.Back = function () {
+        Routing.SetHash('registration_seller', 'Регистрация пользователя', {step: 2});
+    };
+    self.TypeSellerValidation = function(){
+        if(!self.typeSeller()){
+            self.errorTypeSeller(Config.RegistrationSeller.error.typeSeller.empty);
+            return false;
+        }
+        self.errorTypeSeller(null);
+        return true;
+    };
+    self.InviteValidation = function(){
+        if(self.invite()){
+            if (self.invite().length < 5) {
+                self.errorInvite(Config.RegistrationSeller.error.invite.minLength);
+                return false;
+            }
+            if (self.invite().length > 40) {
+                self.errorInvite(Config.RegistrationSeller.error.invite.maxLength);
+                return false;
+            }
+        }
+        self.errorInvite(null);
+        return true;
+    };
+    self.SiteValidation = function(){
+        self.errorSite(null);
+        return true;
+    };
+}
 
 
 var TestRegistrationSeller = {
