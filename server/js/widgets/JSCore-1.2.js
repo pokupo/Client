@@ -14,7 +14,7 @@ var JSSettings = {
     scripts : [
         'jquery-ui-1.10.2.custom.min.js',
         'easyXDM.min.js',
-        'knockout-3.2.0.js',
+        'knockout-2.2.0.js',
         'jquery.cookie.js',
         'jquery.textchange.min.js',
         'widgets/Config-1.1.js',

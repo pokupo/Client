@@ -263,6 +263,12 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
     self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
     self.isSelectedAll = ko.observable(false);
+    self.isSelectedAll.subscribe(function(check) {
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods() )[0].checked = check;
+            goods.isSelected(check);
+        });
+    });
     self.ClickSelectAll = function(){
         var all = $('#' + self.cssSelectAll);
         var check = all.is(':checked');
@@ -400,6 +406,19 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
     self.isSelected = ko.observable(false);
+    self.isSelected.subscribe(function(check) {
+        var countGoods = block.goods().length;
+        var selectedGoods = [];
+        
+        for(var i = 0; i <= countGoods-1; i++) {
+            if(block.goods()[i].isSelected())
+              selectedGoods.push(block.goods()[i].id);
+        };
+        if(selectedGoods.length < countGoods)
+            $('#' + block.cssSelectAll )[0].checked = false;
+        else
+            $('#' + block.cssSelectAll )[0].checked = true;
+    });
     self.cssCheckboxGoods = ko.observable('goods_' + self.id);
     self.ClickOrder = function(order, elem){
         var $checkBox = $('#' + order.cssCheckboxGoods());

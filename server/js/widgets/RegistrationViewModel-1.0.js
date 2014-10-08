@@ -282,19 +282,19 @@ var RegistrationProfileFormViewModel = function() {
     };
     self.FirstNameValidation = function() {
         if (!self.firstName()) {
-            self.errorFirstName(Config.Order.error.firstName.empty);
+            self.errorFirstName(Config.Registration.error.firstName.empty);
             return false;
         }
         if (self.firstName().length < 2) {
-            self.errorFirstName(Config.Order.error.firstName.minLength);
+            self.errorFirstName(Config.Registration.error.firstName.minLength);
             return false;
         }
         if (self.firstName().length > 20) {
-            self.errorFirstName(Config.Order.error.firstName.maxLength);
+            self.errorFirstName(Config.Registration.error.firstName.maxLength);
             return false;
         }
         if (!Config.Registration.regular.firstName.test(self.firstName())) {
-            self.errorFirstName(Config.Order.error.firstName.regular);
+            self.errorFirstName(Config.Registration.error.firstName.regular);
             return false;
         }
         self.errorFirstName(null);
@@ -302,19 +302,19 @@ var RegistrationProfileFormViewModel = function() {
     };
     self.LastNameValidation = function() {
         if (!self.lastName()) {
-            self.errorLastName(Config.Order.error.lastName.empty);
+            self.errorLastName(Config.Registration.error.lastName.empty);
             return false;
         }
         if (self.lastName().length < 2) {
-            self.errorLastName(Config.Order.error.lastName.minLength);
+            self.errorLastName(Config.Registration.error.lastName.minLength);
             return false;
         }
         if (self.lastName().length > 20) {
-            self.errorLastName(Config.Order.error.lastName.maxLength);
+            self.errorLastName(Config.Registration.error.lastName.maxLength);
             return false;
         }
         if (!Config.Registration.regular.lastName.test(self.lastName())) {
-            self.errorLastName(Config.Order.error.lastName.regular);
+            self.errorLastName(Config.Registration.error.lastName.regular);
             return false;
         }
         self.errorLastName(null);
@@ -323,15 +323,15 @@ var RegistrationProfileFormViewModel = function() {
     self.MiddleNameValidation = function() {
         if (self.middleName()) {
             if (self.middleName().length < 2) {
-                self.errorMiddleName(Config.Order.error.middleName.minLength);
+                self.errorMiddleName(Config.Registration.error.middleName.minLength);
                 return false;
             }
             if (self.middleName().length > 20) {
-                self.errorMiddleName(Config.Order.error.middleName.maxLength);
+                self.errorMiddleName(Config.Registration.error.middleName.maxLength);
                 return false;
             }
-            if (!Config.Order.regular.middleName.test(self.middleName())) {
-                self.errorMiddleName(Config.Order.error.middleName.regular);
+            if (!Config.Registration.regular.middleName.test(self.middleName())) {
+                self.errorMiddleName(Config.Registration.error.middleName.regular);
                 return false;
             }
         }
@@ -340,11 +340,11 @@ var RegistrationProfileFormViewModel = function() {
     };
     self.BirthDayValidation = function() {
         if (!self.birthDay()) {
-            self.errorBirthDay(Config.Order.error.birthDay.empty);
+            self.errorBirthDay(Config.Registration.error.birthDay.empty);
             return false;
         }
-        if (!Config.Order.regular.birthDay.test(self.birthDay())) {
-            self.errorBirthDay(Config.Order.error.birthDay.regular);
+        if (!Config.Registration.regular.birthDay.test(self.birthDay())) {
+            self.errorBirthDay(Config.Registration.error.birthDay.regular);
             return false;
         }
         var dateArray = self.birthDay().split('.');
@@ -353,14 +353,14 @@ var RegistrationProfileFormViewModel = function() {
         var now = new Date();
         var minDate = new Date(now.getYear() - 18, now.getMonth(), now.getDate());
         if (minDate < date) {
-            self.errorBirthDay(Config.Order.error.birthDay.minDate);
+            self.errorBirthDay(Config.Registration.error.birthDay.minDate);
             return false;
         }
 
         var now = new Date();
         var maxDate = new Date(now.getYear() - 101, now.getMonth(), now.getDate());
         if (maxDate > date) {
-            self.errorBirthDay(Config.Order.error.birthDay.maxDate);
+            self.errorBirthDay(Config.Registration.error.birthDay.maxDate);
             return false;
         }
 
@@ -369,11 +369,11 @@ var RegistrationProfileFormViewModel = function() {
     };
     self.GanderValidation = function() {
         if (!self.gender()) {
-            self.errorGender(Config.Order.error.gender.empty);
+            self.errorGender(Config.Registration.error.gender.empty);
             return false;
         }
-        if (!Config.Order.regular.gender.test(self.gender())) {
-            self.errorGender(Config.Order.error.gender.regular);
+        if (!Config.Registration.regular.gender.test(self.gender())) {
+            self.errorGender(Config.Registration.error.gender.regular);
             return false;
         }
         self.errorGender(null);

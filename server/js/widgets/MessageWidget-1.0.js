@@ -273,27 +273,27 @@ var MessageWidget = function () {
     self.Render = {
         Topic: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
-                try{
+//                try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                     if(self.settings.animate)
                         self.settings.animate();
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Topic();
-                            self.Render.Topic(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Topic();
+//                            self.Render.Topic(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerId);
+//                    }
+//                }
             }
         },
         List: function (data) {
@@ -398,6 +398,12 @@ var TopicMessageViewModel = function (widget) {
     self.modalForm = ko.observable(new FormMessageViewModel(self));
     self.cssSelectAll = "messagesSelectAll";
     self.isSelectedAll = ko.observable(false);
+    self.isSelectedAll.subscribe(function(check) {
+        ko.utils.arrayForEach(self.messages(), function(messages) {
+            $('#' + messages.cssCheckboxMessage() )[0].checked = check;
+            messages.isSelected(check);
+        });
+    });
     self.searchMessage = ko.observable();
 
     self.SetErrorMessage = function (message) {
@@ -450,7 +456,7 @@ var TopicMessageViewModel = function (widget) {
     };
     self.NewTopic = function (data) {
         TopicViewModel.prototype = new Widget();
-        return new TopicViewModel(data, self.messages);
+        return new TopicViewModel(data, self);
     };
     self.AddPages = function () {
         var ClickLinkPage = function () {
@@ -494,6 +500,19 @@ var TopicViewModel = function (data, list) {
     self.countMessage = ko.observable(data.count_message);
     self.copyMail = ko.observable(data.copyMail);
     self.isSelected = ko.observable(false);
+    self.isSelected.subscribe(function(check) {
+        var count = list.messages().length;
+        var selected = [];
+        
+        for(var i = 0; i <= count-1; i++) {
+            if(list.messages()[i].isSelected())
+              selected.push(list.messages()[i].id);
+        };
+        if(selected.length < count)
+            $('#' + list.cssSelectAll )[0].checked = false;
+        else
+            $('#' + list.cssSelectAll )[0].checked = true;
+    });
     self.cssCheckboxMessage = ko.observable('message_item_' + self.id);
 
     self.IsMy = ko.computed(function () {
@@ -532,7 +551,7 @@ var TopicViewModel = function (data, list) {
     self.ClickDelete = function () {
         self.Confirm(Config.Message.message.confirmDeleteSeveralTopic, function () {
             EventDispatcher.DispatchEvent('MessageWidget.delete.topic', [self]);
-            list.remove(self);
+            list.messages.remove(self);
         });
     };
     self.FormatDateMessage = function () {

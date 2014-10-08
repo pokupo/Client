@@ -201,27 +201,27 @@ var FavoritesWidget = function() {
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                try{
+//                try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                     if(self.settings.animate)
                         self.settings.animate();
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Content();
-                            self.Render.Content(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Content();
+//                            self.Render.Content(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerId);
+//                    }
+//                }
             }
         },
         EmptyFaforites : function(){
@@ -266,6 +266,12 @@ var BlockFavoritesForSellerViewModel = function(content){
     self.uniq = EventDispatcher.GetUUID();
     self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
     self.isSelectedAll = ko.observable(false);
+    self.isSelectedAll.subscribe(function(check) {
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods )[0].checked = check;
+            goods.isSelected(check);
+        });
+    });
     self.ClickSelectAll = function(){
         var all = $('#' + self.cssSelectAll);
         var check = all.is(':checked');
@@ -280,7 +286,7 @@ var BlockFavoritesForSellerViewModel = function(content){
         }
         
         ko.utils.arrayForEach(self.goods(), function(goods) {
-            $('#' + goods.cssCheckboxGoods())[0].checked = val;
+            $('#' + goods.cssCheckboxGoods )[0].checked = val;
             goods.isSelected(val);
         });
     }
@@ -348,16 +354,29 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
     self.sellEndCost = ko.observable(data.sell_end_cost);
     self.routeImages = Parameters.pathToImages + data.route_image;
     self.isSelected = ko.observable(false);
-    self.cssCheckboxGoods = ko.observable('goods_' + self.id);
-    self.ClickOrder = function(order, elem){
-        var $checkBox = $('#' + order.cssCheckboxGoods());
-        var isChecked = $checkBox.is(':checked');
+    self.isSelected.subscribe(function(check) {
+        var countGoods = block.goods().length;
+        var selectedGoods = [];
+        
+        for(var i = 0; i <= countGoods-1; i++) {
+            if(block.goods()[i].isSelected())
+              selectedGoods.push(block.goods()[i].id);
+        };
+        if(selectedGoods.length < countGoods)
+            $('#' + block.cssSelectAll )[0].checked = false;
+        else
+            $('#' + block.cssSelectAll )[0].checked = true;
+    });
+    self.cssCheckboxGoods = 'goods_' + self.id;
+    self.ClickOrder = function(){
+        var checkBox = $('#' + self.cssCheckboxGoods);
+        var isChecked = checkBox.is(':checked');
         if(isChecked == false){
-            $checkBox[0].checked = true;
+            checkBox[0].checked = true;
             self.isSelected(true);
         }
         else{
-            $checkBox[0].checked = false;
+            checkBox[0].checked = false;
             self.isSelected(false);
         }
     }

@@ -84,7 +84,7 @@ var RegistrationSellerWidget = function () {
             if (params.length > 0)
                 var str = '?' + params.join('&');
             self.BaseLoad.RegistrationSeller(str, function (data) {
-                if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step1.register', step1)})) {
+                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step1.register', step1)})) {
                     Parameters.cache.regSeller.step1 = step1;
                     Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 2});
                 }
@@ -115,7 +115,7 @@ var RegistrationSellerWidget = function () {
             var str = '?' + params.join('&');
             
             self.BaseLoad.ActivateSeller(str, function(data){
-                if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', step3)})) {
+                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', step3)})) {
                     Parameters.cache.regSeller = {
                         step1: {},
                         step2: {},
@@ -400,8 +400,7 @@ var RegistrationSellerFormViewModel = function () {
 
 var RegistrationSellerConfirmFormViewModel = function (cache) {
     var self = this;
-//    self.nameSeller = cache.nameSeller();
- self.nameSeller = 'test';
+    self.nameSeller = cache.nameSeller();
 
     self.cssMailToken = 'mail_token_block';
     self.mailToken = ko.observable();
@@ -418,8 +417,8 @@ var RegistrationSellerConfirmFormViewModel = function (cache) {
     self.errorConfirmLater = ko.observable(null);
 
     self.isEmptyPhone = ko.computed(function () {
-//        if (!$.isEmptyObject(cache) && cache.phone())
-//            return false;
+        if (!$.isEmptyObject(cache) && cache.phone())
+            return false;
         self.phoneConfirmLater(true);
         return true;
     }, this);

@@ -163,27 +163,27 @@ var CartGoodsWidget = function(){
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-                try{
+//                try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                     if(self.settings.animate)
                         self.settings.animate();
-                }
-                catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Content();
-                            self.Render.Content(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+//                }
+//                catch(e){
+//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+//                    if(self.settings.tmpl.custom){
+//                        delete self.settings.tmpl.custom;
+//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+//                            self.InsertContainer.Content();
+//                            self.Render.Content(data);
+//                        });
+//                    }
+//                    else{
+//                        self.InsertContainer.EmptyWidget();
+//                        self.WidgetLoader(true, self.settings.containerId);
+//                    }
+//                }
             }
         },
         EmptyCart : function(){
@@ -340,6 +340,12 @@ var BlockGoodsForSellerViewModel = function(content){
     
     self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
     self.isSelectedAll = ko.observable(false);
+    self.isSelectedAll.subscribe(function(check) {
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods() )[0].checked = check;
+            goods.isSelected(check);
+        });
+    });
     self.ClickSelectAll = function(block){
         var all = $('#' + self.cssSelectAll);
         var check = all.is(':checked');
@@ -390,6 +396,19 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
     self.isSelected = ko.observable(false);
+    self.isSelected.subscribe(function(check) {
+        var countGoods = block.goods().length;
+        var selectedGoods = [];
+        
+        for(var i = 0; i <= countGoods-1; i++) {
+            if(block.goods()[i].isSelected())
+              selectedGoods.push(block.goods()[i].id);
+        };
+        if(selectedGoods.length < countGoods)
+            $('#' + block.cssSelectAll )[0].checked = false;
+        else
+            $('#' + block.cssSelectAll )[0].checked = true;
+    });
     self.cssCheckboxGoods = ko.observable('goods_' + self.id);
     self.ClickOrder = function(order, elem){
         var $checkBox = $('#' + order.cssCheckboxGoods());
