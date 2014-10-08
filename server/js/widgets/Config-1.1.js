@@ -1,19 +1,19 @@
 var Config = {
     Base : {
-        hostApi : "http://api.pokupo.ru", // урл API
-        httpsHostApi : "https://api.pokupo.ru",
-        catalogPathApi : "/catalog/", // префикс API каталога 
-        goodsPathApi : "/goods/", // префикс API товаров
-        userPathApi : "/user/", // префикс API пользователя
-        cartPathApi : "/cart/", // префикс API корзины
-        favPathApi : "/fav/", // префикс API избранное
-        geoPathApi : "/geo/", // префикс API гео локации
-        shopPathApi : "/shop/", // префикс API магазина
-        orderPathApi : "/order/", // префикс API заказов
-        paymentPathApi : "/payment/", // префикс API оплаты
-        messagePathApi : "/message/", // префикс API сообщений
-        pathToImages : "http://api.pokupo.ru/images", // путь к папке с изображениями
-        routIconAuction : "http://api.pokupo.ru/images/ico_30.png", // иконка аукциона
+        hostApi : "http://dev.pokupo.ru", // урл API
+        httpsHostApi : "https://dev.pokupo.ru",
+        catalogPathApi : "/api/catalog/", // префикс API каталога 
+        goodsPathApi : "/api/goods/", // префикс API товаров
+        userPathApi : "/api/user/", // префикс API пользователя
+        cartPathApi : "/api/cart/", // префикс API корзины
+        favPathApi : "/api/fav/", // префикс API избранное
+        geoPathApi : "/api/geo/", // префикс API гео локации
+        shopPathApi : "/api/shop/", // префикс API магазина
+        orderPathApi : "/api/order/", // префикс API заказов
+        paymentPathApi : "/api/payment/", // префикс API оплаты
+        messagePathApi : "/api/message/", // префикс API сообщений
+        pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
+        routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
         containerIdForTmpl : "container_tmpl", // id контейнера в который будут загружены все шаблоны
         loading : "/loading50.gif", // иконка загрузщика

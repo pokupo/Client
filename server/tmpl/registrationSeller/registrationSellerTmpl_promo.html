@@ -143,7 +143,7 @@
                                 </div>
                             </div>
                             <div class="floatlabel-wrapper" style="position:relative">
-                                <input type="text" name="code" value="" placeholder="Ваш e-mail код" class="block-input" id="i-37" data-bind="value: phoneToken">
+                                <input type="text" name="code" value="" placeholder="Ваш SMS код" class="block-input" id="i-37" data-bind="value: phoneToken">
                                 <label for="37" class="label-floatlabel  " style="display: none;">Ваш SMS код</label>
                             </div>
 
@@ -208,7 +208,7 @@
                         <label for="clienttype-private">Частное лицо</label>
                         <input id="clienttype-corporate" type="radio" name="clienttype" value="company" class="inline" data-bind="checked: typeSeller"/>
                         <label for="clienttype-corporate">Компания</label>
-                        <!-- ko if: errorGender-->
+                        <!-- ko if: errorTypeSeller-->
                             <div class="form_error" data-bind="text: errorTypeSeller"></div>
                         <!-- /ko -->
                     </div>
@@ -221,7 +221,7 @@
                     </div>
                     <div class="input-holder">
                         <input type="text" name="code" value="" placeholder="Код приглашения" class="block-input" data-bind="value: invite"/>
-                        <!-- ko if: errorGender-->
+                        <!-- ko if: errorTypeSeller-->
                             <div class="form_error" data-bind="text: errorInvite"></div>
                         <!-- /ko -->
                     </div>

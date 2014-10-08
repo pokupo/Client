@@ -500,7 +500,7 @@
     self.Render = {
         Personal : function(form){ 
             if ($("#" + self.settings.containerFormId).length > 0) {
-//                try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     if(self.settings.animate)
@@ -629,21 +629,21 @@
                     if(Routing.params.edit == 'postal_address'){
                         self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
                     }
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Personal();
-//                            self.Render.Personal(form);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerFormId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Personal();
+                            self.Render.Personal(form);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
         },
         DeliveryList : function(delivery){

@@ -88,6 +88,8 @@ var RegistrationSellerWidget = function () {
                     Parameters.cache.regSeller.step1 = step1;
                     Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 2});
                 }
+                else
+                    Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 1});
             });
         });
         
@@ -105,7 +107,7 @@ var RegistrationSellerWidget = function () {
             if (step1.nameSeller())
                 params.push('name_seller=' + encodeURIComponent(step1.nameSeller()));
             params.push('mail_token=' + encodeURIComponent(step2.mailToken() ? step2.mailToken() : 1));
-            params.push('sms_token=' + encodeURIComponent(step2.smsToken() ? step2.smsToken() : 1));
+            params.push('sms_token=' + encodeURIComponent(step2.phoneToken() ? step2.phoneToken() : 1));
             if(step3.typeSeller())
                 params.push('type_seller=' + step3.typeSeller());
             if(step3.invite())
@@ -127,6 +129,8 @@ var RegistrationSellerWidget = function () {
                     else
                         Routing.SetHash('default', 'Домашняя', {});
                 }
+                else
+                    Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 3});
             })
         });
     };
@@ -349,7 +353,7 @@ var RegistrationSellerFormViewModel = function () {
             return false;
         }
         if (!Config.RegistrationSeller.regular.nameSeller.test(self.nameSeller())) {
-            self.errorNameSeller(Config.Registration.error.nameSeller.regular);
+            self.errorNameSeller(Config.RegistrationSeller.error.nameSeller.regular);
             return false;
         }
         self.errorNameSeller(null);
@@ -492,6 +496,12 @@ var RegistrationSellerFinishFormViewModel = function(){
     self.errorSite = ko.observable();
     
     self.confirmLater = ko.observable(false);
+    self.confirmLater.subscribe(function(check) {
+        if(!check){
+            self.invite('');
+            self.site('');
+        }
+    });
     self.errorConfirmLater = ko.observable(null);
     
     self.SubmitForm = function () {

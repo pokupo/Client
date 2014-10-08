@@ -163,27 +163,27 @@ var CartGoodsWidget = function(){
     self.Render = {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
-//                try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
                     if(self.settings.animate)
                         self.settings.animate();
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.Content();
-//                            self.Render.Content(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyWidget();
-//                        self.WidgetLoader(true, self.settings.containerId);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
         },
         EmptyCart : function(){

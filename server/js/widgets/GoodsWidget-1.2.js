@@ -153,7 +153,7 @@ var GoodsWidget = function(){
     };
     self.Render = {
         Goods: function(data){
-//            try{
+            try{
                 if($("#" + self.settings.containerId).length > 0){
                     self.InsertContainer.Content();
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
@@ -193,21 +193,21 @@ var GoodsWidget = function(){
                 delete data;
 
                 self.WidgetLoader(true, self.settings.containerId); 
-//            }
-//            catch(e){
-//                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
-//                if(self.settings.tmpl.custom){
-//                    delete self.settings.tmpl.custom;
-//                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                        self.InsertContainer.Content();
-//                        self.Render.Goods(data);
-//                    });
-//                }
-//                else{
-//                    self.InsertContainer.EmptyWidget();
-//                    self.WidgetLoader(true, self.settings.containerId);
-//                }
-//            }
+            }
+            catch(e){
+                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                if(self.settings.tmpl.custom){
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                        self.InsertContainer.Content();
+                        self.Render.Goods(data);
+                    });
+                }
+                else{
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true, self.settings.containerId);
+                }
+            }
         }
     };
     self.AddGoodsInCookie = function(data){
