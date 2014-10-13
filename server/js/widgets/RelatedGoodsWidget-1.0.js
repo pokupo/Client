@@ -85,6 +85,9 @@ window.RelatedGoodsWidget = function(){
         EventDispatcher.AddEventListener('RelatedGoodsWidget.fill.block_' + self.settings.uniq, function (data){
             self.Render(data);
         });
+        EventDispatcher.AddEventListener('widget.change.route', function() {
+            self.WidgetLoader(true);
+        });
     };
     self.InsertContainer = {
         EmptyWidget : function(){
@@ -125,6 +128,7 @@ window.RelatedGoodsWidget = function(){
             ko.applyBindings(data, $(self.settings.container).children()[0]);
             if(self.settings.animate)
                 self.settings.animate();
+            self.WidgetLoader(true, self.settings.container);
         }
         catch(e){
             self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');

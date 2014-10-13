@@ -6,7 +6,9 @@ var AnimateInfoSeller = function () {
                 .closest('.slidedown')
                 .toggleClass('active')
                 .find('.slidedown__content[data-target="' + $this.data('target') + '"]')
-                .slideToggle(500);
+                .slideToggle(500, function(){
+                    $(this).css('overflow', 'inherit');
+                });
     });
     $('.info_seller_dropdown__trigger').unbind('click');
     $('.info_seller_dropdown__trigger').click(function (e) {

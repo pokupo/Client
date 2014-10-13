@@ -79,7 +79,7 @@ var OrderListWidget = function() {
             self.BaseLoad.RepeatOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.repeat', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderRepeat, function() {
-                        Parameters.cache.orderList = null;
+                        Parameters.cache.orderList = {};
                         console.log(data);
                         EventDispatcher.DispatchEvent('OrderList.order.edit', {id: data.id});
                     }, false);
@@ -91,7 +91,7 @@ var OrderListWidget = function() {
             self.BaseLoad.ReturnOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.return', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderReturn, function() {
-                        Parameters.cache.orderList = null;
+                        Parameters.cache.orderList = {};
                         Routing.SetHash('cart', 'Моя корзина')
                     }, false);
                 }
@@ -103,7 +103,7 @@ var OrderListWidget = function() {
                 self.BaseLoad.CancelOrder(opt.id, function(data) {
                     if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.cancel', opt)})){
                         self.ShowMessage(Config.OrderList.message.orderCancel, function() {
-                            Parameters.cache.orderList = null;
+                            Parameters.cache.orderList = {};
                             opt.fn()
                         }, false);
                     }
@@ -115,7 +115,7 @@ var OrderListWidget = function() {
             self.BaseLoad.ConfirmOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderCheck, function() {
-                        Parameters.cache.orderList = null;
+                        Parameters.cache.orderList = {};
                         opt.fn()
                     }, false);
                 }
@@ -127,7 +127,7 @@ var OrderListWidget = function() {
                 self.BaseLoad.DeleteOrder(opt.id, function(data) {
                     if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
                         self.ShowMessage(Config.OrderList.message.orderDelete, function() {
-                            Parameters.cache.orderList = null;
+                            Parameters.cache.orderList = {};
                             opt.fn()
                         }, false);
                     }
@@ -339,7 +339,7 @@ var OrderListViewModel = function() {
         self.paging = Paging.GetPaging(self.count, {paging: Config.Paging}, ClickLinkPage);
     }
     self.ClickRefresh = function(){
-        Parameters.cache.orderList = null;
+        Parameters.cache.orderList = {};
         Routing.SetHash('purchases', 'Мои покупки', {block:'list'})
     };
 };

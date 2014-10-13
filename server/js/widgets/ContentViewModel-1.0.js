@@ -44,7 +44,6 @@ var ContentViewModel = function(data, i){
         else
             return 0;
     },this);
-    self.routIconAuction = Parameters.routIconAuction;
     self.imageHref = '#' + (i+1);
     self.cssBlock = 'views-row views-row-' + (i+1);
     self.cssToCart = 'goodsToCart_' + self.uniq;

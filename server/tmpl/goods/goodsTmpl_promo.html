@@ -113,13 +113,19 @@
                                 <button type="button" class="btn" data-bind="click: blocks.main.Buy">Купить сразу</button>
                                 <!-- /ko -->
 
-                                <div class="like_button">
-                                    <!-- ko if: blocks.main.IsFavorite -->
-                                    <a class="pseudo-link" href="#" data-bind="click: blocks.main.ClickFavorites">Избранный товар</a>
-                                    <!-- /ko -->
-                                    <!-- ko ifnot : blocks.main.IsFavorite -->
-                                    <a class="pseudo-link" href="#"  data-bind="click:blocks.main.AddFavorites">В избранное</a>
-                                    <!-- /ko -->
+                                <!-- ko if: blocks.main.IsFavorite -->
+                                    <div class="like_button active">
+                                        <a class="pseudo-link" href="#" data-bind="click: blocks.main.ClickFavorites">Избранный товар</a>
+                                    </div>
+                                <!-- /ko -->
+                                <!-- ko ifnot : blocks.main.IsFavorite -->
+                                    <div class="like_button">
+                                        <a class="pseudo-link" href="#"  data-bind="click:blocks.main.AddFavorites">В избранное</a>
+                                    </div>
+                                <!-- /ko -->
+                                
+                                <div style="display: none" id="dialog-form-batch" title="Добавить комментарий к избранному товару.">
+                                    <textarea name="comment" rows="10" cols="50" data-bind="value : blocks.main.comment"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -151,10 +157,10 @@
     <!-- /ko -->
 
     <div class="b-catalog-item__photos">
-        <img src="" data-bind="attr: {src: main.routeImages, title: main.chortName, id : main.cssToCart }" id='main_img_goods'>
+        <img src="" data-bind="attr: {src: main.routeBigImages, title: main.chortName, id : main.cssToCart }" id='main_img_goods'>
         <!-- ko if: $parent.ShowGallery() -->
         <!-- ko foreach: gallery -->
-        <img src="" data-bind="attr: {src: thumb, title: title }">
+        <img src="" data-bind="attr: {src: image, title: title }">
         <!-- /ko -->
         <!-- /ko -->
     </div>

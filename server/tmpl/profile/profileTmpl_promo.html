@@ -224,7 +224,7 @@
                 <div class="content">
                     <div class="input-holder">
                         <!-- ko if: emailIsConfirm() -->
-                        <input id="account__email" disabled type="email" class="suggestion-input block-input" data-bind="value: email">
+                        <input id="account__email" disabled placeholder="Электронная почта" type="email" class="suggestion-input block-input" data-bind="value: email">
                         <!-- /ko -->
                         <!-- ko ifnot: emailIsConfirm() -->
                         <input id="account__email" type="email" placeholder="Электронная почта" name="account__email" class="suggestion-input block-input" data-bind="value: email">
@@ -255,10 +255,10 @@
                 <div class="content">
                     <div class="input-holder">
                         <!-- ko if: phoneIsConfirm() -->
-                        <input type="tel" disabled class="masked-phone block-input" data-bind="value: phone, visible">
+                        <input id="account__phone" type="tel" placeholder="Телефон" name="account__phone" disabled class="block-input" data-bind="value: phone"/>
                         <!-- /ko -->
                         <!-- ko ifnot: phoneIsConfirm() -->
-                        <input id="account__phone" type="tel" placeholder="Телефон" name="account__phone" class="masked-phone block-input" data-bind="value: phone, attr: {id : cssPhone}">
+                        <input id="account__phone" type="tel" placeholder="Телефон" name="account__phone" class="masked-phone block-input" data-bind="value: phone, attr: {id : cssPhone}"/>
                         <!-- /ko -->
                         <!-- ko if: errorPhone-->
                         <div class="form_error" data-bind="text: errorPhone"></div>
@@ -273,7 +273,7 @@
 
                     <div data-bind="visible: !phoneIsConfirm()">
                         <div class="input-holder" data-bind="visible: sentCode">
-                            <input type="text" placeholder="Код из смс-сообщения" name="account__sms" class="block-input"data-bind="value:phoneToken"/>
+                            <input type="text" placeholder="Код из смс-сообщения" name="account__sms" class="block-input" data-bind="value:phoneToken"/>
                             <!-- ko if: errorPhoneToken-->
                             <div class="form_error" data-bind="text: errorPhoneToken"></div>
                             <!-- /ko -->

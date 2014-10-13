@@ -222,7 +222,41 @@
 
 <script type="text/html" id="messageEmptyListTmpl">
     <!-- version 1.0 -->
-
+    <div class="profile">
+        <div class="container">
+            <div class="columns triple">
+                <div class="first double column">
+                    <div class="content">
+                        <h1 class="b-profile__header with-num">Сообщения</h1>
+                    </div>
+                </div>
+                <div class="third column">
+                    <div class="content">
+                        <button type="button" data-target="modal-message" class="btn btn-lg btn-inline b-mail__addbtn b-mail__addbtn--top open-modal btn_add_message">
+                            <i class="icon icon-addmail"></i>Новое сообщение
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="b-mail">
+                <div class="b-mail__item b-dialog unread">
+                    <div class="b-dialog__body">
+                        <div data-bind="html: messageError"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="columns triple">
+                <div class="third column">
+                    <div class="content">
+                        <button type="button" data-target="modal-message" class="btn btn-lg btn-inline b-mail__addbtn open-modal btn_add_message">
+                            <i class="icon icon-addmail"></i>Новое сообщение
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- ko template: { name: 'messageModalFormTmpl', data: modalForm } --><!-- /ko -->
+        </div>
+    </div>
 </script>
 
 <script type="text/html" id="messageModalFormTmpl">

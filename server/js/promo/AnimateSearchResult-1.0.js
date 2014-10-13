@@ -6,7 +6,9 @@ var AnimateSearchResult = function () {
                 .closest('.slidedown')
                 .toggleClass('active')
                 .find('.slidedown__content[data-target="' + $this.data('target') + '"]')
-                .slideToggle(500);
+                .slideToggle(500, function(){
+                    $(this).css('overflow', 'inherit');
+                });
     });
 
     $('#advansed_search_form__category_dropdown__trigger').click(function (e) {

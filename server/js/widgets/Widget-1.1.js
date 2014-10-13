@@ -1,6 +1,5 @@
 Parameters = {
     pathToImages : null,
-    routIconAuction : null,
     sortingBlockContainer : null,
     loading : null,
     listSort : {
@@ -142,7 +141,7 @@ var Loader = {
             this.HideContent();
             if(!Routing.IsDefault())
                 if($('#loadingContainer').length == 0)
-                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.loading + '"/></div>');
         }
         else{
             this.ShowContent();
@@ -150,7 +149,7 @@ var Loader = {
         }
     },
     InsertContainer : function(container){
-        $(container).append('<div style="width: 100%;text-align: center;padding: 15px 0;"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+        $(container).append('<div style="width: 100%;text-align: center;padding: 15px 0;"><img src="' + Parameters.loading + '"/></div>');
     },
     HideContent : function(){
         if(this.action != 'hide'){
@@ -356,9 +355,11 @@ var Widget = function (){
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
-            Parameters.routIconAuction = Config.Base.routIconAuction;
             Parameters.sortingBlockContainer = Config.Base.sortingBlockContainer;
+            
             Parameters.loading = Config.Base.loading;
+            if(JSSettings.inputParameters['imgLoader'])
+                Parameters.loading = JSSettings.inputParameters['imgLoader'];
             
             this.RegistrCustomBindings();
             this.UpdateSettings();
@@ -512,7 +513,8 @@ var Widget = function (){
             }
         };
         ko.global = {
-            route : Routing.route
+            route : Routing.route,
+            pathToImages : Config.Base.pathToImages
         };
     };
     this.WidgetLoader = function(test, container){
@@ -729,7 +731,7 @@ var Widget = function (){
         },
         Section : function(parentId, callback){
             if(!Parameters.cache.childrenCategory[parentId]){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/noblock/active'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/noblock/active/'), function(data){
                     Parameters.cache.childrenCategory[parentId] = data;
                     if(callback)
                         callback({
@@ -748,7 +750,7 @@ var Widget = function (){
         },
         Blocks : function(parentId, callback){
             if(!Parameters.cache.block[parentId]){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/block/active'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/block/active/'), function(data){
                     Parameters.cache.block[parentId] = data;
                     if(callback)
                         callback(data);
@@ -963,7 +965,7 @@ var Widget = function (){
         Path : function(categoryId, callback){
             if(categoryId){
                 if(!Parameters.cache.path[categoryId]){
-                    XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + categoryId + '/path'), function(data){
+                    XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + categoryId + '/path/'), function(data){
                         Parameters.cache.path[categoryId] = data;
                         if(callback)
                             callback(data['path']);
@@ -1038,7 +1040,7 @@ var Widget = function (){
             }
         },
         Logout : function(callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'logout'), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'logout/'), function(data){
                 Parameters.cache.userInformation = null;
                 if(callback)
                     callback(data);
@@ -1065,7 +1067,7 @@ var Widget = function (){
             if(sellerId){
                 str = sellerId + '/';
                 if(count >= 0)
-                    str = str + count;
+                    str = str + count + '/';
             }
             
             XDMTransport.Load.Data(opt.host + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
@@ -1077,8 +1079,8 @@ var Widget = function (){
             var opt = self.ProtocolPreparation();
             var str = '';
             if(comment)
-               str = '/' + encodeURIComponent(comment);
-            str = str + '/?idGoods=' + goodId
+               str = '/' + encodeURIComponent(comment) + '/';
+            str = str + '?idGoods=' + goodId
             XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.favPathApi + 'add/' + Parameters.shopId + str), function(data){
                 if(callback)
                     callback(data);
@@ -1180,14 +1182,14 @@ var Widget = function (){
             }, true);
         },
         SendToken : function(type, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'code/' + Parameters.shopId + '/' + type), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'code/' + Parameters.shopId + '/' + type + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         Country : function(shopId, callback){
             if(!Parameters.cache.country){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + shopId  + '/country'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + shopId  + '/country/'), function(data){
                     Parameters.cache.country = data;
                     if(callback)
                         callback(data);
@@ -1222,7 +1224,7 @@ var Widget = function (){
         },
         DeliveryAddressList : function(callback){
             if(!Parameters.cache.delivery){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info/'), function(data){
                     Parameters.cache.delivery = data;
                     if(callback)
                         callback(data);
@@ -1374,7 +1376,7 @@ var Widget = function (){
             }, true);
         },
         TopicCount : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/count' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/count/' + str), function(data){
                 Parameters.cache.message.topicCount = null;
                 if(callback)
                     callback(data);
@@ -1390,32 +1392,32 @@ var Widget = function (){
             }, true);
         },
         TopicRead : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/read/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/read/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         TopicDelete : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/delete/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/delete/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         MessageInfo : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'info/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'info/' + id + '/'), function(data){
                 Parameters.cache.message.messageInfo = null;
                 if(callback)
                     callback(data);
             }, true);
         },
         MessageSetRead : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'read/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'read/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         MessageSetUnread : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'unread/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'unread/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
@@ -1427,7 +1429,7 @@ var Widget = function (){
             }, true);
         },
         MessageDelete : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'delete/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'delete/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);

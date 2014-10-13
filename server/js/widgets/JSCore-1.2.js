@@ -2,13 +2,13 @@ var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
     
-    host : "dev.pokupo.ru/",    
-    pathToJS : "widgets/js/",
-    pathToTmpl : "widgets/tmpl/",
-    pathToData : "server/services/DataProxy.php?query=",
-    pathToPostData : "server/services/DataPostProxy.php",
-    pathToCore: "server/index.html",
-    pathToPostCore : 'server/postData.html',
+    host : "server.pokupo.ru/prod/server/",    
+    pathToJS : "js/",
+    pathToTmpl : "tmpl/",
+    pathToData : "prod/server/services/DataProxy.php?query=",
+    pathToPostData : "prod/server/services/DataPostProxy.php",
+    pathToCore: "index.html",
+    pathToPostCore : 'postData.html',
     
     sourceData : 'api', //варианты api, proxy
     scripts : [

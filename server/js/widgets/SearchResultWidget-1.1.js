@@ -227,28 +227,27 @@ var SearchResultWidget = function(){
     self.Render = {
         AdvancedSearchForm : function(data){
             if($("#" + self.settings.containerIdForAdvancedSearch).length){
-//                try{
+                try{
                     ko.global.route = Routing.route;
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
-//                    $("#" + self.settings.containerIdForAdvancedSearch).show();
                     if(self.settings.animate.form)
                         self.settings.animate.form();
-//                }
-//                catch(e){
-//                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
-//                    if(self.settings.tmpl.custom){
-//                        delete self.settings.tmpl.custom;
-//                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-//                            self.InsertContainer.AdvancedSearchForm();
-//                            self.Render.AdvancedSearchForm(data);
-//                        });
-//                    }
-//                    else{
-//                        self.InsertContainer.EmptyFormWidget();
-//                        self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
-//                    }
-//                }
+                }
+                catch(e){
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.AdvancedSearchForm();
+                            self.Render.AdvancedSearchForm(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyFormWidget();
+                        self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+                    }
+                }
             }
         },
         SearchResult : function(data){
