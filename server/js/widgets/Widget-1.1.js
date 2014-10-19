@@ -1014,12 +1014,18 @@ var Widget = function (){
                     callback(Parameters.cache.relatedGoods[queryHash]);
             }
         },
-        LoginForProxy : function(){
+        LoginForProxy : function(username, password, remember_me, callback){
             var opt = self.ProtocolPreparation();
+            var str = "";
+            if(username && password)
+                str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
             XDMTransport.Load.FromProxy({
-                url : encodeURIComponent(opt.host + self.settings.userPathApi + 'login/'),
-                protocol : opt.protocol,
-                callback : function(data){}
+                url : encodeURIComponent(opt.host + self.settings.userPathApi + 'login/' + str),
+                protocol :  opt.protocol,
+                callback : function(data){
+                    if(callback)
+                        callback(data);
+                }
             })
         },
         Login : function(username, password, remember_me, callback){
@@ -1030,6 +1036,8 @@ var Widget = function (){
                     str = '?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) +'&remember_me=' + remember_me;
                 XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.userPathApi + 'login/' + str), function(data){
                     Parameters.cache.userInformation = data;
+                    if(str)
+                        self.BaseLoad.LoginForProxy(username, password, remember_me, function(request2){});
                     if(callback)
                         callback(data);
                 }, opt.protocol);
@@ -1039,8 +1047,20 @@ var Widget = function (){
                     callback(Parameters.cache.userInformation);
             }
         },
+        LogoutForProxy : function(callback){
+            var opt = self.ProtocolPreparation();
+            XDMTransport.Load.FromProxy({
+                url : encodeURIComponent(opt.host + self.settings.userPathApi + 'logout/'),
+                protocol :  opt.protocol,
+                callback : function(data){
+                    if(callback)
+                        callback(data);
+                }
+            })
+        },
         Logout : function(callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'logout/'), function(data){
+            var opt = self.ProtocolPreparation();
+            XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.userPathApi + 'logout/'), function(data){
                 Parameters.cache.userInformation = null;
                 if(callback)
                     callback(data);

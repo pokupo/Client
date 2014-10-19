@@ -269,10 +269,10 @@
                     <h2 class="b-profile__headline">Новое сообщение</h2>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form data-bind="attr: {id: cssFormMessage}" method="POST" target="upload_target" enctype="multipart/form-data">
                         <div class="input-holder">
                             <div class="floatlabel-wrapper">
-                                <input type="text" placeholder="Адресат" class="block-input active-floatlabel" id="topic_user" data-bind="value: dstUser, event: { blur: OnBlurEvent }">
+                                <input name="dst_user" type="text" placeholder="Адресат" class="block-input active-floatlabel" id="topic_user" data-bind="value: dstUser, event: { blur: OnBlurEvent }">
                                 <label for="" class="label-floatlabel">Адресат</label>
                                 <!-- ko if: dstUserError -->
                                 <div class="error" data-bind="text:dstUserError"></div>
@@ -281,7 +281,7 @@
                         </div>
                         <div class="input-holder">
                             <div class="floatlabel-wrapper">
-                                <input type="text" placeholder="Тема беседы" value="" class="block-input" id="topic_name" data-bind="value: topicName">
+                                <input name="name_topic" type="text" placeholder="Тема беседы" value="" class="block-input" id="topic_name" data-bind="value: topicName">
                                 <label for="" class="label-floatlabel">Тема беседы</label>
                                 <!-- ko if: topicNameError -->
                                 <div class="error" data-bind="text: topicNameError"></div>
@@ -289,13 +289,18 @@
                             </div>
                         </div>
                         <div style="padding:0" class="input-holder">
-                            <textarea name="msg_text" rows="5" data-bind="value: text" id="topic_text"></textarea>
+                            <textarea name="text_message" rows="5" data-bind="value: text" id="topic_text"></textarea>
                             <!-- ko if: textError -->
                             <div class="error" data-bind="text: textError"></div>
                             <!-- /ko -->
                         </div>
                         <div class="input-holder">
-                            <input id="carboncopy" type="checkbox" name="carboncopy" checked="checked" data-bind="value: copyMail">
+                            <!-- ko if: copyMail -->
+                            <input id="carboncopy" type="checkbox" name="copy_mail" value="yes" checked="checked" data-bind="checked: copyMail"/>
+                            <!-- /ko -->
+                            <!-- ko ifnot: copyMail -->
+                            <input id="carboncopy" type="checkbox" name="copy_mail" value="no" data-bind="checked: copyMail"/>
+                            <!-- /ko -->
                             <label for="carboncopy">Выслать копию на e-mail</label>
                         </div>
                         <button type="button" class="btn btn-lg btn-grey btn-inline close-modal">Отмена</button>
@@ -310,20 +315,23 @@
 <script type="text/html" id="messageSimpleFormTmpl">
     <!-- version 1.0 -->
     <h2 class="b-profile__headline">Ответить</h2>
-    <textarea width="100%" rows="5" placeholder="Текст сообщения" data-bind="value: text"></textarea>
-    <!-- ko if: textError -->
-    <div class="error" data-bind="text: textError"></div>
-    <!-- /ko -->
-    <div class="input-holder">
-        <!-- ko if: copyMail -->
-        <input id="carboncopy" type="checkbox" name="carboncopy" checked="checked" data-bind="value: copyMail"/>
+    <form data-bind="attr: {id: cssFormMessage}" method="POST" target="upload_target" enctype="multipart/form-data">
+        <input type="hidden" name="id_topic" data-bind="value: topic.topicId()"/>
+        <textarea name="text_message" width="100%" rows="5" placeholder="Текст сообщения" data-bind="value: text"></textarea>
+        <!-- ko if: textError -->
+        <div class="error" data-bind="text: textError"></div>
         <!-- /ko -->
-        <!-- ko ifnot: copyMail -->
-        <input id="carboncopy" type="checkbox" name="carboncopy" data-bind="value: copyMail"/>
-        <!-- /ko -->
-        <label for="carboncopy">Выслать копию на e-mail</label>
-    </div>
-    <button type="submit" class="btn btn-lg" data-bind="click: ClickSend">Отправить</button>
+        <div class="input-holder">
+            <!-- ko if: copyMail -->
+            <input id="carboncopy" type="checkbox" name="copy_mail" value="yes" checked="checked" data-bind="checked: copyMail"/>
+            <!-- /ko -->
+            <!-- ko ifnot: copyMail -->
+            <input id="carboncopy" type="checkbox" name="copy_mail" value="no" data-bind="checked: copyMail"/>
+            <!-- /ko -->
+            <label for="carboncopy">Выслать копию на e-mail</label>
+        </div>
+        <button type="submit" class="btn btn-lg" data-bind="click: ClickSend">Отправить</button>
+    </form>
 </script>
 
 <script type="text/html" id="messagePaginateTmpl">

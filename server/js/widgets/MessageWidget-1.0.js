@@ -119,8 +119,7 @@ var MessageWidget = function () {
                 }
                 else {
                     form.dstUserError('');
-                    var str = '?name_topic=' + encodeURIComponent(form.topicName()) + '&dst_user=' + encodeURIComponent(form.dstUser()) + '&text_message=' + encodeURIComponent(form.text()) + '&copy_mail=' + (form.copyMail() ? 'yes' : 'no');
-                    self.BaseLoad.MessageAdd(str, function (data) {
+                    self.BaseLoad.MessageAdd($('form#'+ form.cssFormMessage), function (data) {
                         data.count_message = 1;
                         topic.AddNewInContent(data);
                         form.ClearForm();
@@ -189,7 +188,8 @@ var MessageWidget = function () {
 
         EventDispatcher.AddEventListener('MessageWidget.reply.message', function (message) {
             var str = '?id_topic=' + message.topic.topicId() + '&text_message=' + encodeURIComponent(message.text()) + '&copy_mail=' + (message.copyMail() ? 'yes' : 'no');
-            self.BaseLoad.MessageAdd(str, function (data) {
+            self.BaseLoad.MessageAdd($('form#'+ form.cssFormMessage), function (data) {
+                        
                 if (!data.err) {
                     var newMessage = new MessageViewModel(data, message.topic);
                     message.topic.messages.push(newMessage);
@@ -423,13 +423,18 @@ var TopicMessageViewModel = function (widget) {
     };
     self.ClickRead = function () {
         var selected = self.GetSelected();
+        var real = [];
         $.each(selected, function (i) {
-            if (!selected[i].IsMy()) {
+            if (!selected[i].IsMy() && selected[i].IsNew()) {
                 selected[i].SetStatus('read');
+                real[i] = selected[i];
             }
             selected[i].isSelected(false);
         });
-        EventDispatcher.DispatchEvent('MessageWidget.read.topic', selected);
+        if(real.length > 0){
+            EventDispatcher.DispatchEvent('MessageWidget.read.topic', real);
+            EventDispatcher.DispatchEvent('widget.change.countMessage');
+        }
     };
     self.ClickDelete = function () {
         self.Confirm(Config.Message.message.confirmDeleteSeveralTopic, function () {
@@ -438,6 +443,7 @@ var TopicMessageViewModel = function (widget) {
                 self.messages.remove(selected[i]);
             });
             EventDispatcher.DispatchEvent('MessageWidget.delete.topic', selected);
+            EventDispatcher.DispatchEvent('widget.change.countMessage');
         });
     };
     self.AddContent = function (data) {
@@ -499,6 +505,7 @@ var TopicViewModel = function (data, list) {
     self.status = ko.observable(data.status);
     self.countMessage = ko.observable(data.count_message);
     self.copyMail = ko.observable(data.copyMail);
+    self.cssCheckboxMessage = ko.observable('message_item_' + self.id);
     self.isSelected = ko.observable(false);
     self.isSelected.subscribe(function(check) {
         var count = list.messages().length;
@@ -512,8 +519,8 @@ var TopicViewModel = function (data, list) {
             $('#' + list.cssSelectAll )[0].checked = false;
         else
             $('#' + list.cssSelectAll )[0].checked = true;
+        $('#' + self.cssCheckboxMessage() )[0].checked = check;
     });
-    self.cssCheckboxMessage = ko.observable('message_item_' + self.id);
 
     self.IsMy = ko.computed(function () {
         var user = Parameters.cache.userInformation;
@@ -527,11 +534,7 @@ var TopicViewModel = function (data, list) {
         return false;
     }, this);
     self.SetStatus = function (status) {
-        self.status(status)
-        if (status == 'read')
-            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
-        else
-            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
+        self.status(status);
     };
     self.ClickTopic = function () {
         Routing.SetHash('messages', self.nameTopic(), {block: 'list', id: self.idTopic()})
@@ -592,6 +595,7 @@ var FormMessageViewModel = function (topic) {
     self.textError = ko.observable();
 
     self.copyMail = ko.observable();
+    self.cssFormMessage = 'simple_form_message';
 
     self.ClickSend = function () {
         if (self.Validate()) {
@@ -642,7 +646,7 @@ var SimpleFormMessageViewModel = function (data) {
     self.textError = ko.observable();
     self.topic = data;
     self.copyMail = ko.observable(false);
-    self.cssSimpleFormMessage = 'simple_form_message';
+    self.cssFormMessage = 'simple_form_message';
 
     self.ClickSend = function () {
         if (self.Validate()) {
@@ -761,10 +765,10 @@ var MessageViewModel = function (data, topic) {
 
     self.SetStatus = function (status) {
         self.status(status)
-        if (status == 'read')
-            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
-        else
-            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
+//        if (status == 'read')
+//            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
+//        else
+//            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
     };
     self.FormatDateMessage = function () {
         var d = self.dateMessage().split(' ');
