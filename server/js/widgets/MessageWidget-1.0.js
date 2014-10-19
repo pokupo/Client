@@ -120,9 +120,16 @@ var MessageWidget = function () {
                 else {
                     form.dstUserError('');
                     self.BaseLoad.MessageAdd($('form#'+ form.cssFormMessage), function (data) {
-                        data.count_message = 1;
-                        topic.AddNewInContent(data);
-                        form.ClearForm();
+                        if(!data.err){
+                            data.count_message = 1;
+                            topic.AddNewInContent(data);
+                            form.ClearForm();
+                        }
+                        else {
+                            self.QueryError(data, function () {
+                                EventDispatcher.DispatchEvent('MessageWidget.add.message', topic)
+                            });
+                        }
                     });
                 }
             })
@@ -136,6 +143,8 @@ var MessageWidget = function () {
                             EventDispatcher.DispatchEvent('MessageWidget.read.topic', topicArray)
                         });
                     }
+                    else
+                        EventDispatcher.DispatchEvent('widget.change.countMessage');
                 });
             }
         });
@@ -148,6 +157,8 @@ var MessageWidget = function () {
                             Routing.SetHash('messages', 'Сообщения', {});
                         }, false);
                     }
+                    else
+                        EventDispatcher.DispatchEvent('widget.change.countMessage');
                 });
             }
         });
@@ -160,7 +171,8 @@ var MessageWidget = function () {
                         }, false);
                     }
                     else{
-                         Routing.SetHash('messages', 'Сообщения', {});
+                        EventDispatcher.DispatchEvent('widget.change.countMessage');
+                        Routing.SetHash('messages', 'Сообщения', {});
                     }
                 });
             });
@@ -173,6 +185,8 @@ var MessageWidget = function () {
                         Routing.SetHash('messages', topic.nameTopic(), {block: 'list', id: topic.topicId()});
                     }, false);
                 }
+                else
+                    EventDispatcher.DispatchEvent('widget.change.countMessage');
             });
         });
 
@@ -183,27 +197,28 @@ var MessageWidget = function () {
                         Routing.SetHash('messages', topic.nameTopic(), {block: 'list', id: topic.topicId()});
                     }, false);
                 }
+                else
+                    EventDispatcher.DispatchEvent('widget.change.countMessage');
             });
         });
 
-        EventDispatcher.AddEventListener('MessageWidget.reply.message', function (message) {
-            var str = '?id_topic=' + message.topic.topicId() + '&text_message=' + encodeURIComponent(message.text()) + '&copy_mail=' + (message.copyMail() ? 'yes' : 'no');
+        EventDispatcher.AddEventListener('MessageWidget.reply.message', function (form) {
             self.BaseLoad.MessageAdd($('form#'+ form.cssFormMessage), function (data) {
                         
                 if (!data.err) {
-                    var newMessage = new MessageViewModel(data, message.topic);
-                    message.topic.messages.push(newMessage);
+                    var newMessage = new MessageViewModel(data, form.topic);
+                    form.topic.messages.push(newMessage);
                     newMessage.ClickExpand();
-                    message.ClickCancel();
+                    form.ClickCancel();
                 }
                 else {
                     self.QueryError(
                             data,
                             function () {
-                                EventDispatcher.DispatchEvent('MessageWidget.reply.message', message)
+                                EventDispatcher.DispatchEvent('MessageWidget.reply.message', form)
                             },
                             function () {
-                                message.ClearForm()
+                                form.ClearForm()
                             });
                 }
             });
@@ -433,7 +448,6 @@ var TopicMessageViewModel = function (widget) {
         });
         if(real.length > 0){
             EventDispatcher.DispatchEvent('MessageWidget.read.topic', real);
-            EventDispatcher.DispatchEvent('widget.change.countMessage');
         }
     };
     self.ClickDelete = function () {
@@ -443,7 +457,6 @@ var TopicMessageViewModel = function (widget) {
                 self.messages.remove(selected[i]);
             });
             EventDispatcher.DispatchEvent('MessageWidget.delete.topic', selected);
-            EventDispatcher.DispatchEvent('widget.change.countMessage');
         });
     };
     self.AddContent = function (data) {
@@ -764,11 +777,7 @@ var MessageViewModel = function (data, topic) {
     self.isExpand = ko.observable(false);
 
     self.SetStatus = function (status) {
-        self.status(status)
-//        if (status == 'read')
-//            EventDispatcher.DispatchEvent('widget.change.countMessage', '-1');
-//        else
-//            EventDispatcher.DispatchEvent('widget.change.countMessage', '+1');
+        self.status(status);
     };
     self.FormatDateMessage = function () {
         var d = self.dateMessage().split(' ');

@@ -490,12 +490,11 @@ var Widget = function (){
             });
         });
         
-        EventDispatcher.AddEventListener('widget.change.countMessage', function(data) {
-            var count = Parameters.cache.message.countNewMessage();
-            if(data == '+1')
-                Parameters.cache.message.countNewMessage(count + 1);
-            if(data == '-1')
-                Parameters.cache.message.countNewMessage(count - 1);
+        EventDispatcher.AddEventListener('widget.change.countMessage', function() {
+            self.BaseLoad.MessageCountUnread(
+                function(data){
+                    Parameters.cache.message.countNewMessage(data.count_unread_topic);
+                });
         });
     };
     this.CreateContainer = function(){
@@ -1442,11 +1441,14 @@ var Widget = function (){
                     callback(data);
             }, true);
         },
-        MessageAdd : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'add/' + str), function(data){
+        MessageAdd : function(form, callback){
+            if(form.find('#add_message_query').length == 0)
+                form.append('<input type="text" id="add_message_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.messagePathApi + 'add/"/>');
+            EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
                 if(callback)
-                    callback(data);
-            }, true);
+                    callback(data)
+            });
+            XDMTransport.Load.DataPost(form, true);
         },
         MessageDelete : function(id, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'delete/' + id + '/'), function(data){
