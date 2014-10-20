@@ -1,0 +1,669 @@
+<script type="text/html" id="orderFormStep1Tmpl">
+    <!-- version 1.0 -->
+    <p>test</p>
+</script>
+
+<script type="text/html" id="orderLoginFormStep1Tmpl">
+
+</script>
+
+<script type="text/html" id="orderRegistrationFormStep1Tmpl">
+
+</script>
+
+<script type="text/html" id="orderConfirmFormStep1Tmpl">
+    <!-- version 1.0 -->
+
+</script>
+
+<script type="text/html" id="orderProfileFormStep1Tmpl">
+    <!-- version 1.0 -->
+    <h1>Оформление заказа</h1>
+    <div id="orderWizard" class="b-wizard">
+
+        <ul class="b-wizard__steps">
+            <li>
+                <a href="#" class="selected">
+                    <label class="b-wizard__step-num">1</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">2</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">3</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">4</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">5</label>
+                </a>
+            </li>
+        </ul>
+
+
+        <div id="step-1">
+            <form  data-bind="attr: {id: cssRegistrationDataForm}" enctype="multipart/form-data" target="upload_target" method="POST">
+                <h2 class="b-wizard__step-title">Персональные данные</h2>
+                <p>Укажите свои персональные данные</p>
+                <div class="input-holder tooltip">
+                    <div class="tooltip__trigger">?
+                        <div class="tooltip__content">
+                            <p>Введите ваше имя на сайте.</p>
+                            <div class="tooltip__before"></div>
+                            <div class="tooltip__after"></div>
+                        </div>
+                    </div>
+                    <input type="text" name="sname" value="" placeholder="Фамилия" class="block-input" data-bind="value: lastName"/>
+                    <!-- ko if: errorLastName-->
+                    <div class="form_error" data-bind="text: errorLastName"></div>
+                    <!-- /ko -->
+                </div>
+                <div class="input-holder">
+                    <input type="text" name="fname" value="" placeholder="Имя" class="block-input" data-bind="value: firstName"/>
+                    <!-- ko if: errorFirstName-->
+                    <div class="form_error" data-bind="text: errorFirstName"></div>
+                    <!-- /ko -->
+                </div>
+                <div class="input-holder">
+                    <input type="text" value="" placeholder="Отчество" class="block-input" name="mname" data-bind="value: middleName"/>
+                    <!-- ko if: errorMiddleName-->
+                    <div class="form_error" data-bind="text: errorMiddleName"></div>
+                    <!-- /ko -->
+                </div>
+                <div class="input-holder">
+                    <input id="birthDay" type="text" placeholder="Дата рождения" class="block-input" data-bind="value: birthDay, attr: {id: cssBirthDay}">
+                    <input name="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
+                    <!-- ko if: errorBirthDay-->
+                    <div class="form_error" data-bind="text: errorBirthDay"></div>
+                    <!-- /ko -->
+                </div>
+                <div class="input-holder">
+                    <div class="floatlabel-wrapper" style="position:relative">
+                        <label for="85" class="block-label b-small-text">Ваш пол</label>
+                        <input name="gender" type="radio" value="m" class="radio" data-bind="checked: gender"/>
+                        <label for="gender" class="block-label b-small-text">Мужчина</label>
+                        <input name="gender" type="radio" value="ц" class="radio" data-bind="checked: gender"/>
+                        <label for="gender" class="block-label b-small-text">Женщина</label>
+                        <!-- ko if: errorGender-->
+                        <div class="form_error" data-bind="text: errorGender"></div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+                <div style="padding-top:13px" class="input-holder">
+                    <input id="skip_personal" name="skip_personal" type="checkbox" class="checkbox" data-bind="click: SpecifyLater">
+                    <label for="skip_personal" class="block-label b-small-text">Указать позже</label>
+                </div>
+            </form>
+        </div>
+        <div class="b-wizard__actions">
+            <div class="b-wizard__loader">Loading</div>
+            <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="orderFormStep2Tmpl">
+    <!-- version 1.0 -->
+    <h1>Оформление заказа</h1>
+    <div id="orderWizard" class="b-wizard">
+
+        <ul class="b-wizard__steps">
+            <li>
+                <a href="#" class="selected">
+                    <label class="b-wizard__step-num" data-bind="click: ClickStep1">1</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected">
+                    <label class="b-wizard__step-num">2</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">3</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">4</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">5</label>
+                </a>
+            </li>
+        </ul>
+        <div id="step-22">
+            <h2 class="b-wizard__step-title">Выберите адрес доставки</h2>
+            <table class="b-order-table">
+                <thead>
+                    <tr>
+                        <th class="b-order-table__action"></th>
+                        <th>Адрес</th>
+                        <th class="b-order-table__name">Получатель</th>
+                        <th class="b-order-table__phone">Контактный телефон</th>
+                        <th class="b-order-table__drop"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ko foreach: addressList -->
+                        <!-- ko if: isDefault -->
+                            <tr class="b-order-table__item active" data-bind="click: ClickItem, css: cssIsDefault()">
+                                <!-- ko template: {name: 'orderFormRowStep2Tmpl' } --><!-- /ko -->
+                            </tr>
+                        <!-- /ko -->
+                        <!-- ko ifnot: isDefault -->
+                            <tr class="b-order-table__item" data-bind="click: ClickItem, css: cssIsDefault()">
+                                <!-- ko template: {name: 'orderFormRowStep2Tmpl' } --><!-- /ko -->
+                            </tr>
+                        <!-- /ko -->
+                    <!-- /ko -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5">
+                            <button type="button" class="btn btn-xs" data-bind="click: ClickAddAddress">Добавить новый адрес</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="b-wizard__actions">
+            <div class="b-wizard__loader">Loading</div>
+            <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: Back">Назад</a>
+            <a href="#" class="b-wizard__action btn-next-step" data-bind="click: Submit">Продолжить</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="orderFormRowStep2Tmpl">
+    <td class="b-order-table__action">
+        <!-- ko if: isDefault()-->
+        <input type="radio" checked="" data-bind="attr: {'name': 'is_default_' + id }"/>
+        <!-- /ko -->
+        <!-- ko ifnot: isDefault()-->
+        <input type="radio" data-bind="attr: {'name': 'is_default_' + id }"/>
+        <!-- /ko -->
+        <label rel="tooltip" title="Выбрать" data-bind="attr: {'for': 'is_default_' + id }">&nbsp;</label>
+    </td>
+    <td>
+        <!-- ko text: postCode --><!-- /ko -->,
+        <!-- ko text: country --><!-- /ko -->,
+        <!-- ko text: region --><!-- /ko -->,
+        <!-- ko text: city --><!-- /ko -->,
+        <!-- ko text: address --><!-- /ko -->
+    </td>
+    <td class="b-order-table__name" data-bind="text: addressee"></td>
+    <td class="b-order-table__phone" data-bind="text: contactPhone"></td>
+    <td class="b-order-table__drop">
+        <div class="b-order-item__drop btn-circle btn-circle--drop" data-bind="click: Delete"></div>
+    </td>
+</script>
+
+<script type="text/html" id="orderDeliveryFormStep2Tmpl">
+    <!-- version 1.0 -->
+    <h1>Оформление заказа</h1>
+    <div id="orderWizard" class="b-wizard">
+
+        <ul class="b-wizard__steps">
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep1">
+                    <label class="b-wizard__step-num">1</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep2">
+                    <label class="b-wizard__step-num">2</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">3</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">4</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">5</label>
+                </a>
+            </li>
+        </ul>
+
+        <div id="step-21">
+            <h2 class="b-wizard__step-title">Адрес доставки</h2>
+            <p>Для доставки покупок требуется указать почтовый адрес</p>
+            <div class="input-holder">
+                <select data-placeholder="Выберите страну..." name="country" placeholder="Страна"  data-bind="value: idCountry, attr: {id: cssCountryList}">
+                    <option value=""></option>
+                    <!-- ko foreach: countryList -->
+                    <option data-bind="text: name, value: id"></option>
+                    <!-- /ko -->
+                </select>
+                <!-- ko if: errorCountry-->
+                <div class="form_error" data-bind="text: errorCountry"></div>
+                <!-- /ko -->
+            </div>
+            <div class="input-holder">
+                <input type="text" placeholder="Регион" class="block-input" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country"/>
+                <!-- ko if: errorRegion-->
+                <div class="form_error" data-bind="text: errorRegion"></div>
+                <!-- /ko -->
+            </div>
+            <div class="input-holder">
+                <input type="text" placeholder="Город" class="block-input" data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion"/>
+                <!-- ko if: errorCity-->
+                <div class="form_error" data-bind="text: errorCity"></div>
+                <!-- /ko -->
+            </div>
+            <div class="input-holder">
+                <input type="text" placeholder="Улица, дом, квартира" class="block-input" data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity"/>
+                <!-- ko if: errorAddress-->
+                <div class="form_error" data-bind="text: errorAddress"></div>
+                <!-- /ko -->
+            </div>
+            <div class="input-holder">
+                <input type="text" placeholder="Почтовый индекс" class="block-input" data-bind="value: postCode, attr: {id: cssPostCode}"/>
+                <!-- ko if: errorPostCode-->
+                <div class="form_error" data-bind="text: errorPostCode"></div>
+                <!-- /ko -->
+            </div>
+            <div class="input-holder">
+                <input type="text" placeholder="ФИО получателя" class="block-input" data-bind="value: addressee"/>
+                <!-- ko if: errorAddressee-->
+                <div class="form_error" data-bind="text: errorAddressee"></div>
+                <!-- /ko -->
+            </div>
+            <div class="input-holder">
+                <input type="text" placeholder="Телефон покупателя" class="block-input masked-phone" data-bind="value: contactPhone, attr:{id:cssContactPhone}"/>
+                <!-- ko if: errorContactPhone-->
+                <div class="form_error" data-bind="text: errorContactPhone"></div>
+                <!-- /ko -->
+            </div>
+            <div style="padding-top:13px" class="input-holder">
+                <input id="set_main_address" type="checkbox" checked="" class="checkbox" data-bind="checked: isDefault"/>
+                <label for="set_main_address" class="block-label b-small-text">Основной адрес</label>
+            </div>
+        </div>
+        <div class="b-wizard__actions">
+            <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: Back">Назад</a>
+            <a href="#" class="b-wizard__action btn-next-step" data-bind="click: Submit">Продолжить</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="orderFormStep3Tmpl">
+    <!-- version 1.0 -->
+    <h1>Оформление заказа</h1>
+    <div id="orderWizard" class="b-wizard">
+
+        <ul class="b-wizard__steps">
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep1">
+                    <label class="b-wizard__step-num">1</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep2">
+                    <label class="b-wizard__step-num">2</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected">
+                    <label class="b-wizard__step-num">3</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">4</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">5</label>
+                </a>
+            </li>
+        </ul>
+
+        <div id="step-3">
+            <h2 class="b-wizard__step-title">Выберите способ доставки</h2>
+            <table class="b-order-table">
+                <thead>
+                    <tr>
+                        <th class="b-order-table__logo"></th>
+                        <th>Способ доставки</th>
+                        <th class="b-order-table__price">Стоимость</th>
+                        <th class="b-order-table__action"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ko foreach: shipping() -->
+                    <tr class="b-order-table__item" data-bind="click: ClickItem">
+                        <td class="b-order-table__logo">
+                            <img src="#" data-bind="attr: {src: logoShippingCompany}"/>
+                        </td>
+                        <td>
+                            <b data-bind="text: nameMethodShipping"></b>
+                            <br><!-- ko text: descMethodShipping --><!-- /ko -->
+                        </td>
+                        <td class="b-order-table__price">
+                            <!-- ko if: costShipping -->
+                            <span class="b-price">
+                                <span class="b-price__number" data-bind="text: costShipping"></span>
+                                <span class="b-price__thinsp">&nbsp;</span>
+                                <span class="b-price__rubl">Р</span> 
+                            </span>
+                            <!-- /ko -->
+                        </td>
+                        <td class="b-order-table__action">
+                            <!-- ko if: isActive()-->
+                            <input type="radio" checked="" name="is_default">
+                            <!-- /ko -->
+                            <!-- ko ifnot: isActive()-->
+                            <input type="radio" name="is_default" >
+                            <!-- /ko -->
+                            <label for="tr_11">Выбрать</label>
+                        </td>
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+        <div class="b-wizard__actions">
+            <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: Back">Назад</a>
+            <a href="#" class="b-wizard__action btn-next-step" data-bind="click: Submit">Продолжить</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="orderFormStep4Tmpl">
+    <!-- version 1.0 -->
+    <h1>Оформление заказа</h1>
+    <div id="orderWizard" class="b-wizard">
+
+        <ul class="b-wizard__steps">
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep1">
+                    <label class="b-wizard__step-num">1</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep2">
+                    <label class="b-wizard__step-num">2</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep3">
+                    <label class="b-wizard__step-num">3</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected">
+                    <label class="b-wizard__step-num">4</label>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <label class="b-wizard__step-num">5</label>
+                </a>
+            </li>
+        </ul>
+        <div id="step-4">
+            <h2 class="b-wizard__step-title">Выберите способ оплаты</h2>
+            <table class="b-order-table">
+                <thead>
+                    <tr>
+                        <th class="b-order-table__logo"></th>
+                        <th>Способ оплаты</th>
+                        <th class="b-order-table__price">К оплате</th>
+                        <th class="b-order-table__action"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ko foreach: payment -->
+                    <tr class="b-order-table__item" data-bind="click: ClickItem, css: cssActive()">
+                        <td class="b-order-table__logo">
+                            <img src="#" data-bind="attr: {src: logoPayment }"/> 
+                        </td>
+                        <td>
+                            <div class="b-order-table__text tooltip">
+                                <div class="tooltip__trigger">?
+                                    <div class="tooltip__content">
+                                        <p data-bind="text: instrPayment"></p>
+                                        <div class="tooltip__before"></div>
+                                        <div class="tooltip__after"></div>
+                                    </div>
+                                </div>
+                                <b data-bind="text: namePayment"></b>
+                                <br><!-- ko text: descPayment --><!-- /ko -->
+                            </div>
+                        </td>
+                        <td class="b-order-table__price">
+                            <span class="b-price">
+                                <span class="b-price__number" data-bind="text: costPayment"></span>
+                                <span class="b-price__thinsp">&nbsp;</span>
+                                <span class="b-price__rubl">Р</span>
+                            </span>
+                        </td>
+                        <td class="b-order-table__action">
+                            <!-- ko if: isActive()-->
+                            <input class="addrN" type="radio" checked="" name="is_default"/>
+                            <!-- /ko -->
+                            <!-- ko ifnot: isActive()-->
+                            <input class="addrN" type="radio" name="is_default"/>
+                            <!-- /ko -->
+                            <label for="is_default">Выбрать</label>
+                        </td>
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+        </div>
+        <div class="b-wizard__actions">
+            <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: Back">Назад</a>
+            <a href="#" class="b-wizard__action btn-next-step" data-bind="click: Submit">Продолжить</a>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="orderFormStep5Tmpl">
+    <!-- version 1.0 -->
+    <h1>Оформление заказа</h1>
+    <div id="orderWizard" class="b-wizard">
+
+        <ul class="b-wizard__steps">
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep1">
+                    <label class="b-wizard__step-num">1</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep2">
+                    <label class="b-wizard__step-num">2</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep3">
+                    <label class="b-wizard__step-num">3</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected" data-bind="click: ClickStep4">
+                    <label class="b-wizard__step-num">4</label>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="selected">
+                    <label class="b-wizard__step-num">5</label>
+                </a>
+            </li>
+        </ul>
+        <div id="step-5">
+            <h2 class="b-wizard__step-title">Подтвердите заказ</h2>
+            <table class="b-order-table b-order-table--header b-cart-table">
+                <thead>
+                    <tr>
+                        <th class="b-order-table__thumb"></th>
+                        <th>Наименование</th>
+                        <th class="b-order-table__title">Цена</th>
+                        <th class="b-order-table__action">Количество</th>
+                        <th class="b-order-table__price">Сумма</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- ko foreach: goods -->
+                    <tr class="b-order-table__item">
+                        <td class="b-order-table__thumb">
+                            <img src="" data-bind="attr: {src: routeImage}">
+                        </td>
+                        <td class="b-order-table__title">
+                            <a href="#" data-bind="click: ClickGoods, text: fullName"></a>
+                        </td>
+                        <td class="b-order-table__title">
+                            <span class="b-price">
+                                <span class="b-price__number" data-bind="text: sellCost"></span>
+                                <span class="b-price__thinsp">&nbsp;</span>
+                                <span class="b-price__rubl">Р</span>
+                            </span>
+                        </td>
+                        <td class="b-order-table__action" data-bind="text: count"></td>
+                        <td class="b-order-table__price">
+                            <span class="b-price">
+                                <span class="b-price__number" data-bind="text: itogSellCost"></span>
+                                <span class="b-price__thinsp">&nbsp;</span>
+                                <span class="b-price__rubl">Р</span>
+                            </span>
+                        </td>
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+            </table>
+            <ul class="b-tech">
+                <!-- ko if: discount -->
+                <li class="b-tech__item">
+                    <div class="b-tech__char">
+                        <span>Скидка: <i><!-- ko text: discount --><!-- /ko --></i></span>
+                    </div>
+                    <div class="b-tech__value">
+                        <span class="b-price">
+                            <span class="b-price__number">-<!-- ko text: discountSum --><!-- /ko --></span>
+                            <span class="b-price__thinsp">&nbsp;</span>
+                            <span class="b-price__rubl">Р</span>
+                        </span>
+                    </div>
+                </li>
+                <!-- /ko -->
+
+                <!-- ko if: realShipping -->
+                <li class="b-tech__item">
+                    <div class="b-tech__char"><span>Доставка: <i><!-- ko text: nameMethodShipping --><!-- /ko --></i></span>
+                    </div>
+                    <div class="b-tech__value">
+                        <span class="b-price">
+                            <span class="b-price__number" data-bind="text: costShipping"></span>
+                            <span class="b-price__thinsp">&nbsp;</span>
+                            <span class="b-price__rubl">Р</span>
+                        </span>
+                    </div>
+                </li>
+                <!-- /ko -->
+
+                <li class="b-tech__item">
+                    <div class="b-tech__char"><span>Способ оплаты: <i><!-- ko text: namePayment --><!-- /ko --></i></span>
+                    </div>
+                    <div class="b-tech__value" data-bind="text: costPayment"></div>
+                </li>
+                <li class="b-tech__item">
+                    <div class="b-tech__char"><span>Всего: </span>
+                    </div>
+                    <div class="b-tech__value">
+                        <span class="b-price b-order__amount">
+                            <span class="b-price__number" data-bind="text: itog()"></span>
+                            <span class="b-price__thinsp">&nbsp;</span>
+                            <span class="b-price__rubl">Р</span>
+                        </span>
+                    </div>
+                </li>
+            </ul>
+            <!-- ko if: realShipping -->
+            <h2 class="b-wizard__step-title">Доставка</h2>
+            <table class="b-order-table b-order-table--header">
+                <thead>
+                    <tr>
+                        <th colspan="2">Компания</th>
+                        <th>Адрес</th>
+                        <th class="b-order-table__price">Получатель</th>
+                        <th class="b-order-table__phone">Телефон</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="b-order-table__item">
+                        <td class="b-order-table__logo">
+                            <img src="" data-bind="attr: {src: logoMethodShipping}">
+                        </td>
+                        <td class="b-order-table__title"><b><!-- ko text: nameMethodShipping --><!-- /ko --></b>
+                        </td>
+                        <td>
+                            <!-- ko text: shippingPostCode --><!-- /ko -->,
+                            <!-- ko text: shippingCountry --><!-- /ko -->,
+                            <!-- ko text: shippingRegion --><!-- /ko -->,<br/>
+                            <!-- ko text: shippingCity --><!-- /ko -->,
+                            <!-- ko text: shippingAddress --><!-- /ko -->,
+                        </td>
+                        <td class="b-order-table__price" data-bind="text: shippingAddressee"></td>
+                        <td class="b-order-table__phone" data-bind="text: shippingContactPhone"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- /ko -->
+            
+            
+            
+            <h2 class="b-wizard__step-title">Оплата</h2>
+            <table class="b-order-table b-order-table--header">
+                <thead>
+                    <tr>
+                        <th colspan="2">Способ оплаты</th>
+                        <th>Описание</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="b-order-table__item">
+                        <td class="b-order-table__logo">
+                            <img src="" data-bind="attr: {src: logoPayment}">
+                        </td>
+                        <td class="b-order-table__title">
+                            <b><!-- ko text: namePayment --><!-- /ko --></b>
+                        </td>
+                        <td data-bind="text: descPayment"></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            
+            
+            
+            <div style="margin-bottom: 60px" class="comment">
+                <textarea name="comment" value="" placeholder="Примечания к заказу" width="100%" rows="2" data-bind="value: commentBuyer"></textarea>
+            </div>
+        </div>
+        <div class="b-wizard__actions">
+            <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: Back">Назад</a>
+            <a href="#" class="b-wizard__action btn-prev-step" data-bind="click: ClickDelete">Отменить заказ</a>
+            <a href="#" class="b-wizard__action btn-next-step" data-bind="click: ClickConfirm">Подтверждаю</a>
+        </div>
+    </div>
+</script>

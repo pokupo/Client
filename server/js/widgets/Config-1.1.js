@@ -1,22 +1,21 @@
 var Config = {
     Base : {
-        hostApi : "http://dev.pokupo.ru", // урл API
-        httpsHostApi : "https://dev.pokupo.ru",
-        catalogPathApi : "/api/catalog/", // префикс API каталога 
-        goodsPathApi : "/api/goods/", // префикс API товаров
-        userPathApi : "/api/user/", // префикс API пользователя
-        cartPathApi : "/api/cart/", // префикс API корзины
-        favPathApi : "/api/fav/", // префикс API избранное
-        geoPathApi : "/api/geo/", // префикс API гео локации
-        shopPathApi : "/api/shop/", // префикс API магазина
-        orderPathApi : "/api/order/", // префикс API заказов
-        paymentPathApi : "/api/payment/", // префикс API оплаты
-        messagePathApi : "/api/message/", // префикс API сообщений
-        pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
-        routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
+         hostApi : "http://api.pokupo.ru", // урл API
+        httpsHostApi : "https://api.pokupo.ru",
+        catalogPathApi : "/catalog/", // префикс API каталога 
+        goodsPathApi : "/goods/", // префикс API товаров
+        userPathApi : "/user/", // префикс API пользователя
+        cartPathApi : "/cart/", // префикс API корзины
+        favPathApi : "/fav/", // префикс API избранное
+        geoPathApi : "/geo/", // префикс API гео локации
+        shopPathApi : "/shop/", // префикс API магазина
+        orderPathApi : "/order/", // префикс API заказов
+        paymentPathApi : "/payment/", // префикс API оплаты
+        messagePathApi : "/message/", // префикс API сообщений
+        pathToImages : "http://seller.pokupo.ru/images", // путь к папке с изображениями
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
         containerIdForTmpl : "container_tmpl", // id контейнера в который будут загружены все шаблоны
-        loading : "/loading50.gif", // иконка загрузщика
+        loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузщика
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
            previously_viewed : 'previously_viewed'  // id просмотренных товаров
@@ -41,7 +40,11 @@ var Config = {
         breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
         content : {
             content : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, 
-            block: {widget: 'block', def: 'default_block', customClass: 'custom_block'}
+            block: {
+                slider: {widget: 'slider_block', def: 'slider_default_block', customClass: 'slider_custom_block'},
+                carousel: {widget: 'carousel_block', def: 'carousel_default_block', customClass: 'carousel_custom_block'},
+                tile: {widget: 'tile_block', def: 'tile_default_block', customClass: 'tile_custom_block'}
+            }
         }, // id контейнера контента
         searchResult : {
             form: {widget: 'advanced_search', def: 'default_advanced_search', customClass: 'custom_block'},
@@ -51,6 +54,7 @@ var Config = {
         userInformation : {widget: 'user_information', def: 'default_user_information', customClass: 'custom_block'}, // id контейнера информации о пользователе
         authentication : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, //id контейнеров авторизации
         registration : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации
+        registrationSeller : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации продавца
         cart : {widget: 'cart_information', def: 'default_cart_information', customClass: 'custom_block'}, // id контейнера корзины
         cartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера реестра товаров корзины
         cabinetCartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'},
@@ -106,7 +110,7 @@ var Config = {
             'background' : '#ddd'
         }
     },
-    BreadCrumbs : {
+    BreadCrumb : {
         tmpl: {
             path : "breadCrumb/breadCrumbTmpl.html", // путь к шаблонам
             id : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию
@@ -222,8 +226,8 @@ var Config = {
                 carousel : "relatedGoodsCarouselTmpl" // id шаблона карусели
             }
         },
-        countGoodsInBlock : 6, // максимальное кол-во товаров в блоке
-        countGoodsTileInStr : 5, // кол-во плиток в строке 
+        count : 6, // максимальное кол-во товаров в блоке
+        countTile : 5, // кол-во плиток в строке 
         orderBy : 'rating', // сортировка
         start : 0, // начальная позиция в запросе
         typeView : 'carousel' // тип отображения по умолчанию
@@ -380,6 +384,67 @@ var Config = {
             'background' : '#ddd'
         }
     },
+    RegistrationSeller : {
+        tmpl : {
+            path : "registrationSeller/registrationSellerTmpl.html", // файл шаблонов
+            id: {
+                step1 : "registrationSellerFromStep1Tmpl", //id шаблона формы регистрации шаг 1
+                step2 : "registrationSellerFromStep2Tmpl", //id шаблона формы регистрации шаг 2
+                step3 : "registrationSellerFromStep3Tmpl"  //id шаблона формы регистрации шаг 3
+            }
+        },
+        regular : { // регулярные выражения полей
+            nameSeller : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
+            email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+            phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            nameSeller : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 4 символа',
+                maxLength : 'Максимум 40 символов',
+                regular : 'Только буквы латинского или русского алфавита',
+                uniq: 'К сожалению это имя уже занято, попробуйте указать другой вариант'
+            },
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                maxLength : 'Максимум 64 символа',
+                regular : 'Строка не является адресом электронной почты',
+                uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            phone : {
+                regular : 'Не верный формат телефона',
+                uniq : 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            isChecked : {
+                empty : 'Вам необходимо прочитать и принять условия соглашения'
+            },
+            emailToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            phoneToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            confirmLater : {
+                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи',
+            },
+            typeSeller : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 5 символов',
+                maxLength : 'Максимум 40 символов',
+            }
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
     MenuPersonalCabinet : {
         tmpl : {
             path : "menuPersonalCabinet/menuPersonalCabinetTmpl.html", // файл шаблонов
@@ -522,7 +587,8 @@ var Config = {
             title : 'never', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
             count : false, // отображать кол-во товара
             baseCost : false, // отображать сумму без скидок
-            finalCost : false // отображать конечную сумму
+            finalCost : false, // отображать конечную сумму
+            fullInfo : false // отображать информацию по товарам
         },
         tmpl : {
             path : "cart/cartTmpl.html", // файл шаблонов

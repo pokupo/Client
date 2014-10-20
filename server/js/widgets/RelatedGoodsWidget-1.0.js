@@ -17,6 +17,7 @@ window.RelatedGoodsWidget = function(){
                 carousel : null
             }
         },
+        animate: null,
         inputParameters : {},
         container : null,
         relatedGoods : {
@@ -30,12 +31,6 @@ window.RelatedGoodsWidget = function(){
         uniq : null
     };
     self.InitWidget = function(){
-        self.settings.tmpl = Config.RelatedGoods.tmpl;
-        self.settings.relatedGoods.count = Config.RelatedGoods.countGoodsInBlock;
-        self.settings.relatedGoods.countTile = Config.RelatedGoods.countGoodsTileInStr;
-        self.settings.relatedGoods.typeView = Config.RelatedGoods.typeView;
-        self.settings.relatedGoods.orderBy = Config.RelatedGoods.orderBy;
-        self.settings.relatedGoods.start = Config.RelatedGoods.start;
         self.Loader();
         self.RegisterEvents();
         self.LoadTmpl();
@@ -44,7 +39,20 @@ window.RelatedGoodsWidget = function(){
         Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
+        self.settings.tmpl = Config.RelatedGoods.tmpl;
+        self.settings.relatedGoods = Config.RelatedGoods;
         self.settings.container = data.element;
+        
+        var input = {};
+        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.relatedGoods) {
+            input = WParameters.relatedGoods;
+        }
+        if (!$.isEmptyObject(input)) {
+            if(input.animate)
+                self.settings.animate = input.animate;
+        }
+        self.settings.inputParameters = input;
+        
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
                 if(data.options.params['tmpl']['path'])
@@ -54,6 +62,8 @@ window.RelatedGoodsWidget = function(){
             }
             else if (key == 'uniq' && data.options.params['uniq'])
                 self.settings.uniq = data.options.params['uniq'];
+            else if (key == 'animate' && data.options.params['animate'])
+                self.settings.animate = data.options.params['animate'];
             else if(key == 'id')
                 self.settings.relatedGoods.id = data.options.params['id'];
             self.settings.relatedGoods[key] = data.options.params[key];
@@ -74,6 +84,9 @@ window.RelatedGoodsWidget = function(){
         
         EventDispatcher.AddEventListener('RelatedGoodsWidget.fill.block_' + self.settings.uniq, function (data){
             self.Render(data);
+        });
+        EventDispatcher.AddEventListener('widget.change.route', function() {
+            self.WidgetLoader(true);
         });
     };
     self.InsertContainer = {
@@ -111,12 +124,11 @@ window.RelatedGoodsWidget = function(){
     };
     self.Render = function(data){
         try{
+            ko.cleanNode($(self.settings.container).children()[0]);
             ko.applyBindings(data, $(self.settings.container).children()[0]);
-
-            if(self.settings.relatedGoods.typeView == 'slider')
-                    new AnimateSlider(data.cssBlockContainer);
-            if(self.settings.relatedGoods.typeView == 'carousel')
-                    new AnimateCarousel(data.cssBlockContainer);
+            if(self.settings.animate)
+                self.settings.animate();
+            self.WidgetLoader(true, self.settings.container);
         }
         catch(e){
             self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');

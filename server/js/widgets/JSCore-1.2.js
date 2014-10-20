@@ -1,46 +1,31 @@
 var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
-
-    host : "dev.pokupo.ru/",
-    pathToJS : "server/js/",
-    pathToTmpl : "server/tmpl/",
-    pathToData : "server/services/DataProxy.php?query=",
-    pathToPostData : "server/services/DataPostProxy.php",
-    pathToCore: "server/index.html",
-    pathToPostCore : 'server/postData.html',
+    
+    host : "server.pokupo.ru/prod/server/",    
+    pathToJS : "js/",
+    pathToTmpl : "tmpl/",
+    pathToData : "prod/server/services/DataProxy.php?query=",
+    pathToPostData : "prod/server/services/DataPostProxy.php",
+    pathToCore: "index.html",
+    pathToPostCore : 'postData.html',
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
         'jquery-ui-1.10.2.custom.min.js',
         'easyXDM.min.js',
         'knockout-2.2.0.js',
-        'jquery.livequery.js',
-        'DD_roundies_0.0.2a-min.js',
-        'select.js',
-        'jquery.jcarousel.min.js',
         'jquery.cookie.js',
-        'jquery.dynatree.min.js',
-        'jquery.maskedinput.min.js',
         'jquery.textchange.min.js',
-        'jquery.hoverIntent.minified.js',
-        'jquery.colorbox-min.js',
         'widgets/Config-1.1.js',
         'widgets/Routing-1.0.js',
         'widgets/Paging-1.0.js',
         'widgets/ContentViewModel-1.0.js',
         'widgets/OrderViewModel-1.0.js',
         'widgets/RegistrationViewModel-1.0.js',
-        'widgets/AuthenticationViewModel-1.0.js',
-        'widgets/Widget-1.1.js',
-        'widgets/AnimateSlider-1.0.js',
-        'widgets/AnimateCarousel-1.0.js',
-        'widgets/AnimateAddToCart-1.0.js',
-        'widgets/AnimateSelectList-1.0.js',
-        'widgets/AnimateBreadCrumb-1.0.js',
-        'widgets/AnimateTab-1.0.js',
-        'widgets/AnimateOrderList-1.0.js',
-        'widgets/AnimateMessage-1.0.js'],
+        'widgets/AuthenticationViewModel-1.1.js',
+        'widgets/Widget-1.1.js'
+    ],
     inputParameters : {}
 }
 
@@ -228,20 +213,11 @@ var XDMTransport = {
             var url = XDMTransport.GetProtocol() +  JSSettings.host +  JSSettings.pathToTmpl + data;
             if(/^(https?|ftp)\:\/\/(www\.)?([a-zA-Z0-9\.\-]+\.[a-z]{2,})(\/.+)$/.test(data))
                 url = data;
-            if(JSSettings.sourceData == 'api'){
-                XDMTransport.Load.FromApi({
-                    type: 'html',
-                    url : url,
-                    callback : callback
-                })
-            }
-            if(JSSettings.sourceData == 'proxy'){
-                XDMTransport.Load.FromProxy({
-                    url : url,
-                    callback : callback,
-                    protocol : null
-                })
-            }
+            XDMTransport.Load.FromProxy({
+                url : url,
+                callback : callback,
+                protocol : null
+            })
         },
         Data: function(data, callback, protocol){
             var hash = EventDispatcher.HashCode(data + callback.toString());

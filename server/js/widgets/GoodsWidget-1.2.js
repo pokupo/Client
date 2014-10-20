@@ -14,6 +14,7 @@ var GoodsWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         showBlocks : null,
         inputParameters : {},
         styleGoods : null,
@@ -57,6 +58,8 @@ var GoodsWidget = function(){
                     }
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -153,6 +156,7 @@ var GoodsWidget = function(){
             try{
                 if($("#" + self.settings.containerId).length > 0){
                     self.InsertContainer.Content();
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     
                     if(self.hasButton){
@@ -182,19 +186,13 @@ var GoodsWidget = function(){
                         });
                     }
 
-                    new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
-
-                    if(data.ShowGallery())
-                        new AnimateCarousel(Config.Goods.galleryId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 self.AddGoodsInCookie(data);
                 delete data;
 
-                self.WidgetLoader(true, self.settings.containerId);
-                if(Ya != undefined){
-                    Config.Goods.share.element = data.blocks.main.cssShareBlock
-                    new Ya.share(Config.Goods.share);
-                }
+                self.WidgetLoader(true, self.settings.containerId); 
             }
             catch(e){
                 self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
@@ -331,7 +329,7 @@ var GoodsMainBlockViewModel = function(data){
         if(d > 0)
             return d + '%';
         else
-            return 'Нет';
+            return '';
     }, this);
     self.routeImages = Parameters.pathToImages + data.route_image;
     self.routeBigImages = Parameters.pathToImages + '/big' + data.route_image

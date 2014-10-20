@@ -1,6 +1,5 @@
 Parameters = {
     pathToImages : null,
-    routIconAuction : null,
     sortingBlockContainer : null,
     loading : null,
     listSort : {
@@ -38,6 +37,11 @@ Parameters = {
             step3 : {},
             step4 : {}
         },
+        regSeller : {
+            step1 : {},
+            step2 : {},
+            step3 : {}
+        },
         order : {
             step1 : {
                 login : {},
@@ -51,17 +55,20 @@ Parameters = {
             step5 : {},
             list : {}
         },
+        orderList : {},
         profile : {
             personal : {},
             delivery : {},
             security : {},
             info : {}
         },
+        profileMenu : null,
         message : {
             topicList : {},
             topicCount : {},
             topicInfo : {},
-            messageInfo : {}
+            messageInfo : {},
+            countNewMessage : ko.observable()
         },
         lastPage : {},
         https : null,
@@ -134,7 +141,7 @@ var Loader = {
             this.HideContent();
             if(!Routing.IsDefault())
                 if($('#loadingContainer').length == 0)
-                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.loading + '"/></div>');
         }
         else{
             this.ShowContent();
@@ -142,7 +149,7 @@ var Loader = {
         }
     },
     InsertContainer : function(container){
-        $(container).append('<div style="width: 100%;text-align: center;padding: 15px 0;"><img src="' + Parameters.pathToImages + Parameters.loading + '"/></div>');
+        $(container).append('<div style="width: 100%;text-align: center;padding: 15px 0;"><img src="' + Parameters.loading + '"/></div>');
     },
     HideContent : function(){
         if(this.action != 'hide'){
@@ -150,7 +157,13 @@ var Loader = {
             for(var key in Config.Containers){
                 if(!Config.Containers[key].widget){
                     for(var i in Config.Containers[key]){
-                        $("#" + Config.Containers[key][i].widget).children().hide();
+                        if(!Config.Containers[key][i].widget){
+                            for(var j in Config.Containers[key][i]){
+                                $("#" + Config.Containers[key][i][j].widget).children().hide();
+                            }
+                        }
+                        else
+                            $("#" + Config.Containers[key][i].widget).children().hide();
                     }
                 }
                 else{
@@ -342,9 +355,11 @@ var Widget = function (){
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = Config.Base.pathToImages;
-            Parameters.routIconAuction = Config.Base.routIconAuction;
             Parameters.sortingBlockContainer = Config.Base.sortingBlockContainer;
+            
             Parameters.loading = Config.Base.loading;
+            if(JSSettings.inputParameters['imgLoader'])
+                Parameters.loading = JSSettings.inputParameters['imgLoader'];
             
             this.RegistrCustomBindings();
             this.UpdateSettings();
@@ -353,37 +368,61 @@ var Widget = function (){
             Parameters.shopId = JSSettings.inputParameters['shopId'];
         }
     };
+    this.CheckNameConfigParameter = function(config, name){
+        try{
+            var parameter = config[name];
+            return parameter;
+        }
+        catch(e){
+            this.Exeption('Error. Non-existent parameter [' + config.toString() + '[' + name + ']]');
+            return false;
+        }
+    };
     this.UpdateSettings = function(){
         if(typeof WParameters !== 'undefined'){
             for(var key in WParameters){
                 if(WParameters[key].hasOwnProperty('tmpl')){
-                    Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl.custom = WParameters[key].tmpl;
+                    var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
+                    if(parameter)
+                        parameter.tmpl.custom = WParameters[key].tmpl;
                 }
                 else{
                     for(var key2 in WParameters[key]){
                         if(WParameters[key][key2].hasOwnProperty('tmpl')){
-                            Config[key.charAt(0).toUpperCase() + key.slice(1)].tmpl[key2].custom = WParameters[key][key2].tmpl;
+                            var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
+                            if(parameter){
+                                var parameter = this.CheckNameConfigParameter(parameter.tmpl, key2);
+                                if(parameter)
+                                    parameter.custom = WParameters[key][key2].tmpl;
+                            }
                         }
                     }
                 }
                 
                 if(WParameters[key].hasOwnProperty('container')){
-                    if(WParameters[key].container.widget)
-                        Config.Containers[key].widget = WParameters[key].container.widget;
-                    if(WParameters[key].container.def)
-                        Config.Containers[key].def = WParameters[key].container.def;
-                    if(WParameters[key].container.customClass)
-                        Config.Containers[key].customClass = WParameters[key].container.customClass;
+                    var parameter = this.CheckNameConfigParameter(Config.Containers, key);
+                    if(parameter){
+                        if(WParameters[key].container.widget)
+                            parameter.widget = WParameters[key].container.widget;
+                        if(WParameters[key].container.def)
+                            parameter.def = WParameters[key].container.def;
+                        if(WParameters[key].container.customClass)
+                            parameter.customClass = WParameters[key].container.customClass;
+                    }
                 }
                 else{
                     for(var key2 in WParameters[key]){
                         if(WParameters[key][key2].hasOwnProperty('container')){
-                            if(WParameters[key][key2].container.widget)
-                                Config.Containers[key][key2].widget = WParameters[key][key2].container.widget;
-                            if(WParameters[key][key2].container.def)
-                                Config.Containers[key][key2].def = WParameters[key][key2].container.def;
-                            if(WParameters[key][key2].container.customClass)
-                                Config.Containers[key][key2].customClass = WParameters[key][key2].container.customClass;
+                            var parameter = this.CheckNameConfigParameter(Config.Containers, key);
+                            if(parameter){
+                                var parameter = this.CheckNameConfigParameter(parameter, key2);
+                                if(WParameters[key][key2].container.widget)
+                                    parameter.widget = WParameters[key][key2].container.widget;
+                                if(WParameters[key][key2].container.def)
+                                    parameter.def = WParameters[key][key2].container.def;
+                                if(WParameters[key][key2].container.customClass)
+                                    parameter.customClass = WParameters[key][key2].container.customClass;
+                            }
                         }
                     }
                 }
@@ -400,10 +439,13 @@ var Widget = function (){
         });
         
         EventDispatcher.AddEventListener('widget.onload.menuPersonalCabinet', function(opt){
-            MenuPersonalCabinetWidget.prototype = new Widget();
-            var menu = new MenuPersonalCabinetWidget();
-            menu.AddMenu(opt);
-            menu.Init(menu);
+            if(!Parameters.cache.profileMenu){
+                MenuPersonalCabinetWidget.prototype = new Widget();
+                Parameters.cache.profileMenu = new MenuPersonalCabinetWidget();
+                Parameters.cache.profileMenu.Init(Parameters.cache.profileMenu);
+            }
+            Parameters.cache.profileMenu.CheckRouteMenuProfile();
+            Parameters.cache.profileMenu.AddMenu(opt);
         });
         
         EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
@@ -412,9 +454,14 @@ var Widget = function (){
                 self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
-                        inputDate.data.IsFavorite(true);
+                        if($.isArray(inputDate.data)){
+                            $.each(inputDate.data, function(i){
+                                inputDate.data[i].IsFavorite(true);
+                            });
+                        }
+                        else
+                            inputDate.data.IsFavorite(true);
                         self.ShowMessage(Config.CartGoods.message.addFavorites, false, false);
-                        inputDate.data.Remove();
                     }
                     else{
                         self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, false);
@@ -442,6 +489,13 @@ var Widget = function (){
                 }
             });
         });
+        
+        EventDispatcher.AddEventListener('widget.change.countMessage', function() {
+            self.BaseLoad.MessageCountUnread(
+                function(data){
+                    Parameters.cache.message.countNewMessage(data.count_unread_topic);
+                });
+        });
     };
     this.CreateContainer = function(){
         if($('#' + self.settings.containerIdForTmpl).length == 0)
@@ -456,6 +510,10 @@ var Widget = function (){
                     EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
                 });
             }
+        };
+        ko.global = {
+            route : Routing.route,
+            pathToImages : Config.Base.pathToImages
         };
     };
     this.WidgetLoader = function(test, container){
@@ -672,7 +730,7 @@ var Widget = function (){
         },
         Section : function(parentId, callback){
             if(!Parameters.cache.childrenCategory[parentId]){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/noblock/active'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/noblock/active/'), function(data){
                     Parameters.cache.childrenCategory[parentId] = data;
                     if(callback)
                         callback({
@@ -691,7 +749,7 @@ var Widget = function (){
         },
         Blocks : function(parentId, callback){
             if(!Parameters.cache.block[parentId]){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/block/active'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/block/active/'), function(data){
                     Parameters.cache.block[parentId] = data;
                     if(callback)
                         callback(data);
@@ -906,7 +964,7 @@ var Widget = function (){
         Path : function(categoryId, callback){
             if(categoryId){
                 if(!Parameters.cache.path[categoryId]){
-                    XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + categoryId + '/path'), function(data){
+                    XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + categoryId + '/path/'), function(data){
                         Parameters.cache.path[categoryId] = data;
                         if(callback)
                             callback(data['path']);
@@ -955,12 +1013,18 @@ var Widget = function (){
                     callback(Parameters.cache.relatedGoods[queryHash]);
             }
         },
-        LoginForProxy : function(){
+        LoginForProxy : function(username, password, remember_me, callback){
             var opt = self.ProtocolPreparation();
+            var str = "";
+            if(username && password)
+                str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
             XDMTransport.Load.FromProxy({
-                url : encodeURIComponent(opt.host + self.settings.userPathApi + 'login/'),
-                protocol : opt.protocol,
-                callback : function(data){}
+                url : encodeURIComponent(opt.host + self.settings.userPathApi + 'login/' + str),
+                protocol :  opt.protocol,
+                callback : function(data){
+                    if(callback)
+                        callback(data);
+                }
             })
         },
         Login : function(username, password, remember_me, callback){
@@ -971,6 +1035,8 @@ var Widget = function (){
                     str = '?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) +'&remember_me=' + remember_me;
                 XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.userPathApi + 'login/' + str), function(data){
                     Parameters.cache.userInformation = data;
+                    if(str)
+                        self.BaseLoad.LoginForProxy(username, password, remember_me, function(request2){});
                     if(callback)
                         callback(data);
                 }, opt.protocol);
@@ -980,8 +1046,20 @@ var Widget = function (){
                     callback(Parameters.cache.userInformation);
             }
         },
+        LogoutForProxy : function(callback){
+            var opt = self.ProtocolPreparation();
+            XDMTransport.Load.FromProxy({
+                url : encodeURIComponent(opt.host + self.settings.userPathApi + 'logout/'),
+                protocol :  opt.protocol,
+                callback : function(data){
+                    if(callback)
+                        callback(data);
+                }
+            })
+        },
         Logout : function(callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.userPathApi + 'logout'), function(data){
+            var opt = self.ProtocolPreparation();
+            XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.userPathApi + 'logout/'), function(data){
                 Parameters.cache.userInformation = null;
                 if(callback)
                     callback(data);
@@ -1008,7 +1086,7 @@ var Widget = function (){
             if(sellerId){
                 str = sellerId + '/';
                 if(count >= 0)
-                    str = str + count;
+                    str = str + count + '/';
             }
             
             XDMTransport.Load.Data(opt.host + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
@@ -1020,8 +1098,8 @@ var Widget = function (){
             var opt = self.ProtocolPreparation();
             var str = '';
             if(comment)
-               str = '/' + encodeURIComponent(comment);
-            str = str + '/?idGoods=' + goodId
+               str = '/' + encodeURIComponent(comment) + '/';
+            str = str + '?idGoods=' + goodId
             XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.favPathApi + 'add/' + Parameters.shopId + str), function(data){
                 if(callback)
                     callback(data);
@@ -1046,10 +1124,11 @@ var Widget = function (){
             var str = '';
             if(sellerId){
                 str = sellerId + '/';
-                if(goodsId){
-                    str = str + '?idGoods=' + goodsId;
-                }
             }
+            if(goodsId){
+                str = str + '?idGoods=' + goodsId;
+            }
+            
             XDMTransport.Load.Data(opt.host + self.settings.cartPathApi + 'clear/' + Parameters.shopId + '/' + str, function(data){
                 if(callback)
                     callback(data);
@@ -1067,8 +1146,20 @@ var Widget = function (){
                     callback(data);
             }, true);
         },
+        RegistrationSeller : function( str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'reg/seller/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
         ActivateUser : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'rega/' + str), function(data){
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        ActivateSeller : function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'rega/seller/' + str), function(data){
                 if(callback)
                     callback(data);
             }, true);
@@ -1110,14 +1201,14 @@ var Widget = function (){
             }, true);
         },
         SendToken : function(type, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'code/' + Parameters.shopId + '/' + type), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'code/' + Parameters.shopId + '/' + type + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         Country : function(shopId, callback){
             if(!Parameters.cache.country){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + shopId  + '/country'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.geoPathApi + shopId  + '/country/'), function(data){
                     Parameters.cache.country = data;
                     if(callback)
                         callback(data);
@@ -1152,7 +1243,7 @@ var Widget = function (){
         },
         DeliveryAddressList : function(callback){
             if(!Parameters.cache.delivery){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info/'), function(data){
                     Parameters.cache.delivery = data;
                     if(callback)
                         callback(data);
@@ -1241,16 +1332,17 @@ var Widget = function (){
                     callback(data);
             }, true);
         },
-        OrderList : function(callback){
-            if(!Parameters.cache.orderList){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId), function(data){
-                    Parameters.cache.orderList = data;
+        OrderList : function(query, callback){
+            var queryHash = EventDispatcher.HashCode(query);
+            if(!Parameters.cache.orderList[queryHash]){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId + query), function(data){
+                    Parameters.cache.orderList[queryHash] = data;
                     if(callback)
                         callback(data);
                 }, true);
             }
             else
-                callback(Parameters.cache.orderList);
+                callback(Parameters.cache.orderList[queryHash]);
         },
         RepeatOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
@@ -1303,7 +1395,7 @@ var Widget = function (){
             }, true);
         },
         TopicCount : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/count' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/count/' + str), function(data){
                 Parameters.cache.message.topicCount = null;
                 if(callback)
                     callback(data);
@@ -1319,44 +1411,47 @@ var Widget = function (){
             }, true);
         },
         TopicRead : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/read/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/read/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         TopicDelete : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/delete/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/delete/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         MessageInfo : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'info/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'info/' + id + '/'), function(data){
                 Parameters.cache.message.messageInfo = null;
                 if(callback)
                     callback(data);
             }, true);
         },
         MessageSetRead : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'read/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'read/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
         MessageSetUnread : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'unread/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'unread/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);
         },
-        MessageAdd : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'add/' + str), function(data){
+        MessageAdd : function(form, callback){
+            if(form.find('#add_message_query').length == 0)
+                form.append('<input type="text" id="add_message_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.messagePathApi + 'add/"/>');
+            EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
                 if(callback)
-                    callback(data);
-            }, true);
+                    callback(data)
+            });
+            XDMTransport.Load.DataPost(form, true);
         },
         MessageDelete : function(id, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'delete/' + id), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'delete/' + id + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);

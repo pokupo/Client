@@ -2,7 +2,7 @@
     <!-- version 1.0 -->
     <div class="homeSlideshow promoBlocks">
         <div class="block_title" data-bind="text: titleBlock"></div>
-        <div id="slideshowBox" data-bind="css: cssBlockContainer">
+        <div id="slideshowBox" class="sliderContainer" data-bind="css: cssBlockContainer">
             <div class="view-slider">
                 <div class="view-content">
                     <!-- ko foreach: contentBlock -->
@@ -25,7 +25,7 @@
             <div class="block_title" data-bind="text: titleBlock"></div>
             <a href="#" class="all_link" data-bind="click: ClickCategory">Все<span>→</span></a>
             <div class="cont">
-                <ul id="jcarousel" data-bind="css: cssBlockContainer">
+                <ul id="jcarousel" class="carouselContainer" data-bind="css: cssBlockContainer">
                     <!-- ko foreach: contentBlock -->
                     <li>
                         <div class="photo">

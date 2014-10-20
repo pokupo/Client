@@ -28,6 +28,10 @@ var SearchResultWidget = function(){
                 id : null
             }
         },
+        animate: {
+            content: null,
+            form: null
+        },
         idAdvancedSearchForm : null,
         idTreeCategoriesForAdvancedSearchForm : 'tree_categories_for_advanced_search',
         inputParameters : {},
@@ -72,6 +76,24 @@ var SearchResultWidget = function(){
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
+                if(input.content.tmpl){
+                    if(input.content.tmpl.path)
+                        self.settings.tmpl.content.path = input.content.tmpl.path;
+                    if(input.content.tmpl.id)
+                        self.settings.tmpl.content.id = input.content.tmpl.id;
+                }
+                if(input.content.animate)
+                    self.settings.animate.content = input.content.animate;
+            }
+            if(input.form){
+                if(input.form.tmpl){
+                    if(input.form.tmpl.path)
+                        self.settings.tmpl.form.path = input.form.tmpl.path;
+                    if(input.form.tmpl.id)
+                        self.settings.tmpl.form.id = input.form.tmpl.id;
+                }
+                if(input.form.animate)
+                    self.settings.animate.form = input.form.animate;
             }
         }
         self.settings.inputParameters = input;
@@ -99,24 +121,21 @@ var SearchResultWidget = function(){
             }
             EventDispatcher.DispatchEvent('widget.change.route')
         }
-        else
+        else{
+            EventDispatcher.DispatchEvent('searchResultWidget.show.form');
             self.WidgetLoader(true);  
+        }
     };
     self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
-            if($("#" + self.settings.containerIdForAdvancedSearch).text() == ""){
-                self.BaseLoad.Roots(function(){
-                    EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
-                })
-            }
-            else{
-                $("#" + self.settings.containerIdForAdvancedSearch).html("");
-            }
+            $("#" + self.settings.containerIdForAdvancedSearch).html("");
+            self.BaseLoad.Roots(function(){
+                EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
+            })
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
             self.BaseLoad.Tmpl(self.settings.tmpl.form, function(){
-                new Dyn();
                 self.InsertContainer.AdvancedSearchForm();
                 if(Routing.route != 'search')
                     Parameters.SetDefaultFilterParameters();
@@ -162,10 +181,8 @@ var SearchResultWidget = function(){
                     EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
                 });
             }
-            else{
-                self.WidgetLoader(true);
-                $("#" + self.settings.containerIdForAdvancedSearch).html("");
-            }
+            else
+                EventDispatcher.DispatchEvent('searchResultWidget.show.form');
         });
     };
     self.InsertContainer = {
@@ -211,22 +228,11 @@ var SearchResultWidget = function(){
         AdvancedSearchForm : function(data){
             if($("#" + self.settings.containerIdForAdvancedSearch).length){
                 try{
+                    ko.global.route = Routing.route;
+                    ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
-
-                    $("#" + self.settings.idTreeCategoriesForAdvancedSearchForm).dynatree({
-                        checkbox: true,
-                        selectMode: 3,
-                        children: data.categories,
-                        onSelect: function(select, node) {
-                            var selKeys = $.map(node.tree.getSelectedNodes(), function(node){
-                                return node.data.key;
-                            });
-
-                            Parameters.filter.idSelectCategories = selKeys;
-                        }
-                    });
-
-                    $("#" + self.settings.containerIdForAdvancedSearch).show();
+                    if(self.settings.animate.form)
+                        self.settings.animate.form();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
@@ -247,13 +253,15 @@ var SearchResultWidget = function(){
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerIdForSearchResult)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
-                    var f = data.filters;
-                    new AnimateSelectList(f.sort.cssSortList);
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
+                    EventDispatcher.DispatchEvent('searchResultWidget.show.form');
+                    if(self.settings.animate.content)
+                        self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
+                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -324,6 +332,7 @@ var AdvancedSearchFormViewModel = function(params){
         }
         
         self.categories = self.AddChildren(data).children;
+        Parameters.cache.categories = self.categories;
         EventDispatcher.DispatchEvent('searchResultWidget.fill.categories', self);
     };
     self.AddChildren = function(data, select){
@@ -370,7 +379,6 @@ var AdvancedSearchFormViewModel = function(params){
         Parameters.filter.exceptWords = self.exceptWords;
         Parameters.filter.typeSeller = self.typeSeller();
         Parameters.filter.page = 1;
-        console.log(self.typeSearch());
         Routing.SetHash('search', 'Расширенный поиск', Parameters.filter);
     };
     self.FilterCategories = function(data){
@@ -454,7 +462,7 @@ var ListSearchResultViewModel = function(settings){
     self.filters = {
         typeView : self.typeView,
         sort : self.GetSort(),
-        filterName : Parameters.filter.filterName,
+        filterName : ko.observable(Parameters.filter.filterName),
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : ko.observableArray(),
         countOptionList : ko.observable(settings.listPerPage.length-1),
@@ -463,6 +471,13 @@ var ListSearchResultViewModel = function(settings){
             Parameters.filter.filterName = $(data.text).val();
 
             Routing.UpdateHash({page : 1, filterName : $(data.text).val()});
+        },
+        ClickFilterNameGoods : function(){
+            Loader.Indicator('SearchResultWidget', false);
+            Parameters.filter.filterName = self.filters.filterName();
+            
+            Routing.UpdateMoreParameters({filterName : self.filters.filterName()});
+            Routing.UpdateHash({page : 1});
         },
         ViewSelectCount : function(){
             self.filters.listPerPage = ko.observableArray();

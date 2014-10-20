@@ -20,8 +20,13 @@ var OrderViewModel = function(){
     
     self.invoicePayment = ko.observable();
     self.dateCreate = ko.observable();
+    
     self.commentBuyer = ko.observable();
+    var user = Parameters.cache.userInformation;
+    self.avatar = Parameters.pathToImages + user.route_icon_user;
+    self.username = user.login;
     self.commentOperator = ko.observable();
+    
     self.realShipping = ko.observable();
     self.statusPay = ko.observable();
     self.statusOrder = ko.observable();
@@ -29,8 +34,8 @@ var OrderViewModel = function(){
     self.nameShop = ko.observable();
     self.nameOwnShop = ko.observable();
     
-    self.costShipping = ko.observable('0 руб.');
-    self.costPayment = ko.observable('0 руб.');
+    self.costShipping = ko.observable('0');
+    self.costPayment = ko.observable('0');
     self.sellCost = ko.observable();
     self.finalCost = ko.observable();
     self.discount = ko.observable();
@@ -105,20 +110,20 @@ var OrderViewModel = function(){
             self.nameOwnShop(order.name_own_shop);
         var itog = 0;
         if (order.hasOwnProperty('cost_shipping')){
-            self.costShipping(order.cost_shipping + ' руб');
+            self.costShipping(order.cost_shipping);
             itog = order.cost_shipping;
         }
         if (order.hasOwnProperty('cost_payment')){
-            self.costPayment(order.cost_payment + ' руб');
+            self.costPayment(order.cost_payment);
             itog = itog + order.cost_payment;
         }
         if (order.hasOwnProperty('sell_cost'))
             self.sellCost(order.sell_cost);
         if (order.hasOwnProperty('final_cost')){
-            self.finalCost(order.final_cost + ' руб');
+            self.finalCost(order.final_cost);
             itog = itog + order.final_cost;
         }
-        self.itog(itog + ' руб')
+        self.itog(itog)
 
         self.goods = ko.observableArray();
 
@@ -131,12 +136,12 @@ var OrderViewModel = function(){
         });
         var diff = sell - end;
         var d = Math.floor(diff * 100 / sell);
-        var discount = '0%';
+        var discount = 0;
         if (d > 0)
             discount = d + '%';
 
         self.discount = ko.observable(discount);
-        self.discountSum = ko.observable(diff + 'руб');
+        self.discountSum = ko.observable(diff);
         
         self.ClickConfirm = function(){
             EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', {comment: self.commentBuyer()});
@@ -152,7 +157,7 @@ var OrderGoodsViewModel = function(data) {
     self.id = data.id;
     self.fullName = data.full_name;
     self.sellCost = data.sell_cost + ' руб';
-    self.itogSellCost = (data.sell_cost * data.count) + ' руб';
+    self.itogSellCost = (data.sell_cost * data.count).toFixed(2) + ' руб';
     self.finalCost = data.final_cost + ' руб';
     self.count = data.count + ' шт';
     self.routeImage = Config.Base.pathToImages + data.route_image;

@@ -1,0 +1,50 @@
+<script type="text/html" id="authenticationFormTmpl">
+    <!-- version 1.0 -->
+    <div class="fade in">
+        <div class="popup signin">
+            <header class="patterned black">
+                <h1 class="with-icon">Войти</h1>
+                <span class="close-popup btn-circle btn-circle--drop btn-circle--white" data-bind="click: CloseForm"></span>
+            </header>
+            <div class="content">
+                <div data-bind="text: error" class="form_error"></div>
+                <form method="post" data-bind="submit: Login">
+                    <div class="input-holder">
+                        <input name="username" type="text" placeholder="Логин" required="required" class="inline-input" data-bind="value: username"/>
+                    </div>
+                    <div class="input-holder">
+                        <input name="password" type="password" placeholder="Пароль" class="inline-input" data-bind="value: password"/>
+                    </div>
+                    <div class="input-holder input-holder--divider">
+                        <input id="remember" name="remember_me" type="checkbox" class="checkbox" data-bind="value: rememberMe"/>
+                        <label for="remember">запомнить меня</label>
+                    </div>
+                    <button type="submit" class="btn btn-lg">Войти</button>
+<!--                    <div class="signin-with">
+                        <label>Войти через</label>
+                        <ul class="social-btns">
+                            <li>
+                                <a href="javascript:void(0);" class="social-btn vk"></a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="social-btn gp"></a>
+                            </li>
+                            <li>
+                                <a href="javascript:void(0);" class="social-btn zp"></a>
+                            </li>
+                        </ul>
+                    </div>-->
+                </form>
+            </div>
+            <footer>
+                <ul>
+                    <li>
+                        <a href="https://seller.pokupo.ru/resetting/request" target="_blank">Восстановление пароля</a>
+                    </li>
+                    <li><a href="#" data-bind="click: ClickRegistration">Регистрация</a>
+                    </li>
+                </ul>
+            </footer>
+        </div>
+    </div>
+</script>

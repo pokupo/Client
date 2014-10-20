@@ -13,6 +13,7 @@ var CartGoodsWidget = function(){
             content : null,
             empty : null,
         },
+        animate: null,
         inputParameters : {},
         style : null,
         containerId : null,
@@ -55,6 +56,8 @@ var CartGoodsWidget = function(){
                     }
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
     };
     self.CheckCartGoodsRoute = function(){
@@ -161,8 +164,11 @@ var CartGoodsWidget = function(){
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
@@ -182,6 +188,8 @@ var CartGoodsWidget = function(){
         },
         EmptyCart : function(){
             self.WidgetLoader(true, self.settings.containerId);
+            if(self.settings.animate)
+                self.settings.animate();
         }
     };
     self.SetPosition = function(){
@@ -235,8 +243,6 @@ var BlockGoodsForSellerViewModel = function(content){
         return (self.totalSum() - self.tatalForPayment()).toFixed(2);
     }, this);
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
-    self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
-    self.isSelectedAll = ko.observable(false);
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
@@ -250,7 +256,7 @@ var BlockGoodsForSellerViewModel = function(content){
         var checkedGoods = [];
         ko.utils.arrayForEach(self.goods(), function(goods) {
             if(goods.isSelected()){
-                checkedGoods.push(goods.id)
+                checkedGoods.push(goods)
             }
         });
         self.AddCommentForm(checkedGoods);
@@ -263,8 +269,12 @@ var BlockGoodsForSellerViewModel = function(content){
             modal: true,
             buttons: {
                 "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:checkedGoods.join(','), comment: self.comment(), data: self});
-                     $( this ).dialog( "close" );
+                    var checked = [];
+                    $.each(checkedGoods, function(i){
+                        checked[i] = checkedGoods[i].id;
+                    });
+                    EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:checked.join(','), comment: self.comment(), data: checkedGoods});
+                    $( this ).dialog( "close" );
                 }
             }
         });
@@ -293,8 +303,8 @@ var BlockGoodsForSellerViewModel = function(content){
         EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
 
         if(self.goods().length == 0)
-            content.content.remove(self);
-        if(content.content().length == 0)
+            content.sellerBlock.remove(self);
+        if(content.sellerBlock().length == 0)
             EventDispatcher.DispatchEvent('CartGoods.empty.cart');
     };
     self.IsFavorite = function(){
@@ -320,16 +330,38 @@ var BlockGoodsForSellerViewModel = function(content){
             for(var i in removedGoods){
                 self.goods.remove(removedGoods[i]);
             }
-            content.content.remove(self);
+            content.sellerBlock.remove(self);
+            
             EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerInfo.seller.id});
-            if(content.content().length == 0)
+            if(content.sellerBlock().length == 0)
                 EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
         });
     };
-    self.ClickSelectAll = function(block){
-        var check = $('#' + self.cssSelectAll).is(':checked');
+    
+    self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
+    self.isSelectedAll = ko.observable(false);
+    self.isSelectedAll.subscribe(function(check) {
         ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods() )[0].checked = check;
             goods.isSelected(check);
+        });
+    });
+    self.ClickSelectAll = function(block){
+        var all = $('#' + self.cssSelectAll);
+        var check = all.is(':checked');
+        var val;
+        if(check){
+            all[0].checked = false;
+            val = false;
+        }
+        else{
+            all[0].checked = true;
+            val = true;
+        }
+        
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods())[0].checked = val;
+            goods.isSelected(val);
         });
     }
     self.isDisabledButton = ko.computed(function(){
@@ -364,6 +396,39 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
     self.isSelected = ko.observable(false);
+    self.isSelected.subscribe(function(check) {
+        var countGoods = block.goods().length;
+        var selectedGoods = [];
+        
+        for(var i = 0; i <= countGoods-1; i++) {
+            if(block.goods()[i].isSelected())
+              selectedGoods.push(block.goods()[i].id);
+        };
+        if(selectedGoods.length < countGoods)
+            $('#' + block.cssSelectAll )[0].checked = false;
+        else
+            $('#' + block.cssSelectAll )[0].checked = true;
+    });
+    self.cssCheckboxGoods = ko.observable('goods_' + self.id);
+    self.ClickOrder = function(order, elem){
+        var $checkBox = $('#' + order.cssCheckboxGoods());
+        var isChecked = $checkBox.is(':checked');
+        if(isChecked == false){
+            $checkBox[0].checked = true;
+            self.isSelected(true);
+        }
+        else{
+            $checkBox[0].checked = false;
+            self.isSelected(false);
+        }
+    }
+    self.discount = ko.computed(function(){
+        var d = 100 -Math.floor(self.sellEndCost()*100/self.sellCost());
+        if(d > 0)
+            return d + '%';
+        else
+            return 0;
+    }, this);
     self.comment = ko.observable();
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
@@ -400,8 +465,9 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
         EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
         block.goods.remove(self);
         if(block.goods().length == 0){
-            content.content.remove(block);
-            if(content.content().length == 0){
+            content.sellerBlock.remove(block);
+            
+            if(content.sellerBlock().length == 0){
                 EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
             }
         }
@@ -415,6 +481,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
             buttons: {
                 "Сохранить": function() {
                      EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment: block.comment(), data : self});
+                     self.IsFavorite(true);
                      $( this ).dialog( "close" );
                 }
             }

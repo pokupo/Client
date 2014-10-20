@@ -12,6 +12,7 @@ var SearchWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         inputParameters : {},
         style : null,
         customContainer: null
@@ -39,6 +40,8 @@ var SearchWidget = function(){
         if(!$.isEmptyObject(input)){
             if (input.tmpl)
                 self.settings.tmplPath = 'search/' + input.tmpl + '.html';
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -115,8 +118,11 @@ var SearchWidget = function(){
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){
             try{
+                ko.cleanNode($("#" + self.settings.containerId)[0]);
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                 self.WidgetLoader(true, self.settings.containerId);
+                if(self.settings.animate)
+                    self.settings.animate();
             }
             catch(e){
                 self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
@@ -158,11 +164,29 @@ var SearchCategoryItem = function(data, level, select){
     }
 }
 
+var SearchCategoryItemForTree = function(data, level, select){
+    var self = this;
+    self.id = data.id;
+    self.title = data.name_category;
+    self.typeCategory = data.type_category;
+    self.children = ko.observableArray();
+    self.isSelected = ko.computed(function(){
+        if(select.selectedCatigoriesId() == self.id)
+            return true;
+        return false;
+    }, this);
+    
+    self.ClickItem = function(){
+        select.selectedCatigoriesId(self.id);
+    }
+}
+
 var SearchViewModel = function(){
     var self = this;
-    self.text = '';
+    self.text = ko.observable();
     self.cssSelectList = 'searchSelectList';
     self.categories =  ko.observableArray();
+    self.categoriesTree =  ko.observableArray();
     self.selectedCatigoriesId = ko.observable();
     self.idCategories = Parameters.filter.idCategories;
     self.typeCategories = [];
@@ -173,21 +197,30 @@ var SearchViewModel = function(){
     };
     self.AddListCategory = function(data, parent){
         self.categories =  ko.observableArray();
+        self.categoriesTree =  ko.observableArray();
         self.typeCategories = [];
 
         self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
         
         self.typeCategories[parent.id] = parent.type_category;
         self.categories.push(new SearchCategoryItem(parent, 0, self));
+        self.categoriesTree.push(new SearchCategoryItemForTree(parent, 0, self));
         
         for(var i = 0; i <= data.length - 1; i++){
             self.categories.push(new SearchCategoryItem(data[i], 1, self))
+            
             self.typeCategories[data[i].id] = data[i].type_category;
+            
             if(data[i].children){
+                var children = ko.observableArray();
                 for(var j = 0; j <= data[i].children.length - 1; j++){
                     self.categories.push(new SearchCategoryItem(data[i].children[j], 2, self));
+                    children.push(new SearchCategoryItemForTree(data[i].children[j], 2, self))
                     self.typeCategories[data[i].id] = data[i].type_category;
                 }
+                var category = new SearchCategoryItemForTree(data[i], 1, self);
+                category.children = children;
+                self.categoriesTree.push(category);
             }
         }
         EventDispatcher.DispatchEvent('searchWidget.fill.listCategory', self);
@@ -213,6 +246,32 @@ var SearchViewModel = function(){
 
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
             $(data.text).val('');
+        }
+        else{
+            self.ShowMessage(Config.Search.message.empty, false, false);
+        }
+    };
+    self.ClickSearchForm = function(){
+        self.idCategories = [];
+        var selected = self.selectedCatigoriesId();
+        var keyWords = self.text();
+        if(keyWords){
+            if(self.typeCategories[selected] != 'category')
+                self.FindSelectedSection(self.cachData, selected);
+            else 
+                self.idCategories.push(selected);
+
+            Parameters.SetDefaultFilterParameters();
+            Parameters.filter.idSelectCategories = [selected];
+            Parameters.filter.keyWords = keyWords;
+            if(self.idCategories.length == 0)
+                self.idCategories = [selected];
+            Parameters.filter.idCategories = self.idCategories;
+
+            Routing.SetHash('search','Расширенный поиск', Parameters.filter);
+
+            EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
+            self.text('');
         }
         else{
             self.ShowMessage(Config.Search.message.empty, false, false);

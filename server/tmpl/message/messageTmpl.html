@@ -7,7 +7,7 @@
                 <div class="horizontalSection noborder messagesTabs">
                     <div class="searchBar">
                         <div class="newMessage">
-                            <a href="#newMessage" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                            <a href="javascript:void(0)" class="goButton">Написать</a>
                         </div>
                         <form class="serch_form" action="">
                             <input class="form_text" name="text" value="" placeholder="Поиск сообщений" type="text" data-bind="value: searchMessage">
@@ -21,7 +21,7 @@
                         <div class="horizontalSection noborder">
                             <div class="itemsListTableRow tableHead messageList">
                                 <div class="col_act">
-                                    <input type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id: cssSelectAll}, checked: isSelectedAll "/>
+                                    <input type="checkbox" data-bind="attr:{id:cssSelectAll}, checked: isSelectedAll "/>
                                 </div>
                                 <div class="col_icon">&nbsp;</div>
                                 <div class="col_1_summary">Пользователь</div>
@@ -38,7 +38,7 @@
                             <div class="itemsListTableRow messageList" data-bind="css : {'new' : IsNew}">
                                 <div class="messageAct">
                                     <div class="col_act">
-                                        <input type="checkbox" data-bind="checked: isSelected, value: id">
+                                        <input type="checkbox" data-bind="attr: {id: cssCheckboxMessage}, checked: isSelected">
                                     </div>
                                     <div class="col_icon">
                                         <!-- ko if: IsNew -->
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div class="newMessage">
-                        <a href="#" class="goButton" data-bind="click: ClickAdd">Написать</a>
+                        <a href="javascript:void(0)" class="goButton">Написать</a>
                     </div>
                 </div>
             </div>
@@ -257,7 +257,7 @@
 <script type="text/html" id="messageModalFormTmpl">
     <!-- version 1.0 -->
     <div style='display:none'>
-        <div data-bind="attr: {id: idForm}"> 
+        <div id="message_modal_form"> 
             <div class="floatFieldsFormSetion messagesTabs">
                 <h1>Новое сообщение</h1>
                 <div class="floatFields1column">
@@ -298,7 +298,7 @@
                         <table align="right">
                             <tr>
                                 <td>
-                                    <button class="subButton cancel" data-bind="click: ClickCancel"><span></span>Отменить</button>
+                                    <button class="subButton cancel" data-bind="click: ClickCancel" id="message_modal_form_cancel"><span></span>Отменить</button>
                                 </td>
                             </tr>
                         </table>

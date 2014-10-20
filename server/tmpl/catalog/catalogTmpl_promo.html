@@ -1,0 +1,35 @@
+<script type="text/html" id="catalogTmpl">
+    <!-- version 1.0 -->
+    <aside class="b-sidebar dropdown">
+        <div data-target="sidebar" class="b-sidebar__dropdown">
+            <!-- ko foreach: tab -->
+            <h1 class="b-sidebar__title" data-bind="text: title, css: tabClass, click: ClickTab"></h1>
+            <!-- /ko -->
+
+            <!-- ko foreach: tab -->
+            <ul class="menu"  data-bind='css: listClass, visible: isActive'>
+                <!-- ko foreach: children -->
+                <li class="menu__item with-submenu" data-bind="css : liClass">
+                    <!-- ko ifnot: hasChildren -->
+                <u><span data-bind="html: titleWithCount, click: ClickItem"></span></u>
+                <!--/ko-->
+                <!-- ko if: hasChildren -->
+                <u><span data-bind="html: titleWithCount"></span></u>
+                <ul class="submenu">
+                    <!-- ko foreach: children -->
+                    <li class="submenu__item">
+                        <a href="#" data-bind="click: ClickItem">
+                            <span data-bind="html: title"></span>
+                            <sup class="num" data-bind="text: countGoods"></sup>
+                        </a>
+                    </li>
+                    <!-- /ko -->
+                </ul>
+                <!-- /ko -->
+                </li>
+                <!-- /ko -->
+            </ul>
+            <!-- /ko -->
+        </div>
+    </div>
+</script>
