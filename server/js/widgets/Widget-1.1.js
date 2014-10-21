@@ -689,7 +689,7 @@ var Widget = function (){
         $('.ui-dialog-titlebar-close').hide();
     };
     this.ErrorVertionTmpl = function(tmpl, hash, temp){
-        var version = /<!-- version ([\d.]*) -->/;
+        var version = /<!--\s*version ([\d.]*)\s*-->/;
         var result = temp.find('script#' + tmpl).html().match(version);
         if(result){
             if(parseFloat(result[1]) >= self.minTmplVersion && parseFloat(result[1]) <= self.maxTmplVersion)
