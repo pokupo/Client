@@ -296,7 +296,7 @@ var MessageWidget = function () {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -343,7 +343,7 @@ var MessageWidget = function () {
                     });
                 }
                 catch (e) {
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('list') + ']');
                     if (self.settings.tmpl.custom) {
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function() {
@@ -368,7 +368,7 @@ var MessageWidget = function () {
                         self.settings.animate();
                 }
                 catch (e) {
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty') + ']');
                     if (self.settings.tmpl.custom) {
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function () {

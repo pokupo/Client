@@ -197,7 +197,7 @@ window.ButtonPaymentWidget = function () {
                     self.settings.animate();
             }
             catch (e) {
-                self.Exeption('Ошибка шаблона [' + self.GetTmplName('skin') + ']');
+                self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']');
                 if (self.settings.tmpl.custom) {
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function () {
@@ -227,7 +227,7 @@ window.ButtonPaymentWidget = function () {
                         self.settings.animate();
                 }
                 catch (e) {
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('skin') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']');
                     if (self.settings.tmpl.custom) {
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function () {

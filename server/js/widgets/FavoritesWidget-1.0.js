@@ -209,7 +209,7 @@ var FavoritesWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

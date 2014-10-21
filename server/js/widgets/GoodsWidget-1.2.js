@@ -18,7 +18,8 @@ var GoodsWidget = function(){
         showBlocks : null,
         inputParameters : {},
         styleGoods : null,
-        customContainer: null
+        customContainer: null,
+        infoBlock: 1111111
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.goods.widget;
@@ -58,6 +59,8 @@ var GoodsWidget = function(){
                     }
                 }
             }
+            if(input.infoBlock)
+                self.settings.infoBlock = input.infoBlock;
             if(input.animate)
                 self.settings.animate = input.animate;
         }
@@ -84,7 +87,7 @@ var GoodsWidget = function(){
     self.Update = function(){
         self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
-            self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
+            self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.infoBlock, function(data){
                 EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)
             })
         });
@@ -195,7 +198,7 @@ var GoodsWidget = function(){
                 self.WidgetLoader(true, self.settings.containerId); 
             }
             catch(e){
-                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
                 if(self.settings.tmpl.custom){
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){

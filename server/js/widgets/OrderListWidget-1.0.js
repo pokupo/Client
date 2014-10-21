@@ -250,7 +250,7 @@ var OrderListWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('list') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -281,7 +281,7 @@ var OrderListWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

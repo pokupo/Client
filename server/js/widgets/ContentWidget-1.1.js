@@ -306,7 +306,7 @@ var ContentWidget = function(){
                         self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -338,7 +338,7 @@ var ContentWidget = function(){
                     }
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -364,7 +364,7 @@ var ContentWidget = function(){
                         self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

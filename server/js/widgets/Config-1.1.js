@@ -1,21 +1,8 @@
 var Config = {
     Base : {
-         hostApi : "http://api.pokupo.ru", // урл API
-        httpsHostApi : "https://api.pokupo.ru",
-        catalogPathApi : "/catalog/", // префикс API каталога 
-        goodsPathApi : "/goods/", // префикс API товаров
-        userPathApi : "/user/", // префикс API пользователя
-        cartPathApi : "/cart/", // префикс API корзины
-        favPathApi : "/fav/", // префикс API избранное
-        geoPathApi : "/geo/", // префикс API гео локации
-        shopPathApi : "/shop/", // префикс API магазина
-        orderPathApi : "/order/", // префикс API заказов
-        paymentPathApi : "/payment/", // префикс API оплаты
-        messagePathApi : "/message/", // префикс API сообщений
-        pathToImages : "http://seller.pokupo.ru/images", // путь к папке с изображениями
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
         containerIdForTmpl : "container_tmpl", // id контейнера в который будут загружены все шаблоны
-        loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузщика
+        loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузчика
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
            previously_viewed : 'previously_viewed'  // id просмотренных товаров
@@ -68,7 +55,7 @@ var Config = {
     },
     Goods : {
         tmpl: {
-            path : "goods/goodsTmpl.html", // файл шаблона
+            path : "goodsTmpl.html", // файл шаблона
             id : "goodsTmpl" // id шаблона виджета карточки товара по умолчанию
         },
         showBlocks : ['main', 'description'], // блоки отображаемые по умолчанию
@@ -98,7 +85,7 @@ var Config = {
     },
     Catalog : {
         tmpl : {
-            path : "catalog/catalogTmpl.html", // путь к шаблонам
+            path : "catalogTmpl.html", // путь к шаблонам
             id : "catalogTmpl" // id шаблона виджета каталога по умолчанию
         },
         style : { // стиль блока
@@ -112,7 +99,7 @@ var Config = {
     },
     BreadCrumb : {
         tmpl: {
-            path : "breadCrumb/breadCrumbTmpl.html", // путь к шаблонам
+            path : "breadCrumbTmpl.html", // путь к шаблонам
             id : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию
         },
         style : { // стиль блока
@@ -163,7 +150,7 @@ var Config = {
     },
     Search : {
         tmpl : {
-            path : "search/searchTmpl.html", // путь к шаблонам
+            path : "searchTmpl.html", // путь к шаблонам
             id : "searchTmpl" // id шаблона формы поиска по умолчанию
         },
         message : {
@@ -181,7 +168,7 @@ var Config = {
     SearchResult : {
         tmpl: {
             content : {
-                path : "searchResult/searchResultTmpl.html", // результатов поиска
+                path : "searchResultTmpl.html", // результатов поиска
                 id : {
                     table : "searchResultTableTmpl", // id шаблона таблицы
                     list : "searchResultListTmpl", // id шаблона списка
@@ -217,7 +204,7 @@ var Config = {
     },
     RelatedGoods : {
         tmpl:{
-            path : "relatedGoods/relatedGoodsTmpl.html", // файл шаблонов связанных товаров
+            path : "relatedGoodsTmpl.html", // файл шаблонов связанных товаров
             id : {
                 table : "relatedGoodsTableTmpl", // id шаблона таблицы
                 list : "relatedGoodsListTmpl", // id шаблона списка
@@ -235,12 +222,12 @@ var Config = {
     InfoSeller : {
         tmpl: {
             id : "infoSellerTmpl", // id шаблона информации о продавце
-            path : "infoSeller/infoSellerTmpl.html" // файл шаблона информации о продавце
+            path : "infoSellerTmpl.html" // файл шаблона информации о продавце
         }
     },
     UserInformation : {
         tmpl : {
-            path : "userInformation/userInformationTmpl.html", // файл шаблонов
+            path : "userInformationTmpl.html", // файл шаблонов
             id : {
                 info : "userInformationTmpl", //id шаблона вывода информации о пользователе
                 auth : "authorizationLinkTmpl" //id шаблона с сылками войти/регистрация
@@ -257,9 +244,9 @@ var Config = {
         }
     },
     Authentication : {
-        https : "always", // always, never, login
+        https : "login", // always, never, login
         tmpl : {
-            path : "authentication/authenticationTmpl.html", // файл шаблонов
+            path : "authenticationTmpl.html", // файл шаблонов
             id : "authenticationFormTmpl" //id шаблона формы авторизации
         },
         message : {
@@ -277,7 +264,7 @@ var Config = {
     },
     Registration : {
         tmpl : {
-            path : "registration/registrationTmpl.html", // файл шаблонов
+            path : "registrationTmpl.html", // файл шаблонов
             id: {
                 step1 : "registrationFromStep1Tmpl", //id шаблона формы регистрации шаг 1
                 step2 : "registrationFromStep2Tmpl", //id шаблона формы регистрации шаг 2
@@ -386,7 +373,7 @@ var Config = {
     },
     RegistrationSeller : {
         tmpl : {
-            path : "registrationSeller/registrationSellerTmpl.html", // файл шаблонов
+            path : "registrationSellerTmpl.html", // файл шаблонов
             id: {
                 step1 : "registrationSellerFromStep1Tmpl", //id шаблона формы регистрации шаг 1
                 step2 : "registrationSellerFromStep2Tmpl", //id шаблона формы регистрации шаг 2
@@ -447,7 +434,7 @@ var Config = {
     },
     MenuPersonalCabinet : {
         tmpl : {
-            path : "menuPersonalCabinet/menuPersonalCabinetTmpl.html", // файл шаблонов
+            path : "menuPersonalCabinetTmpl.html", // файл шаблонов
             id : 'menuPersonalCabinetTmpl', // id шаблона меню личного кабинета
         },
         style : {// стиль блока
@@ -461,7 +448,7 @@ var Config = {
     },
     Profile : {
         tmpl : {
-            path : "profile/profileTmpl.html", // файл шаблонов
+            path : "profileTmpl.html", // файл шаблонов
             id: {
                 personal : "personalInformationTmpl", //id шаблона формы персоональных данных
                 delivery : "deliveryAddressTmpl", //id шаблона списка адресов доставки
@@ -584,14 +571,14 @@ var Config = {
         cartId : 'cart', // id корзины товара
         title : 'Корзина', // заголовок блока
         showBlocks : {
-            title : 'never', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
-            count : false, // отображать кол-во товара
-            baseCost : false, // отображать сумму без скидок
-            finalCost : false, // отображать конечную сумму
-            fullInfo : false // отображать информацию по товарам
+            title : 'always', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
+            count : true, // отображать кол-во товара
+            baseCost : true, // отображать сумму без скидок
+            finalCost : true, // отображать конечную сумму
+            fullInfo : true // отображать информацию по товарам
         },
         tmpl : {
-            path : "cart/cartTmpl.html", // файл шаблонов
+            path : "cartTmpl.html", // файл шаблонов
             id : "cartTmpl", //id шаблона формы авторизации
         },
         style : {// стиль блока
@@ -606,7 +593,7 @@ var Config = {
     CartGoods : {
         title : 'Моя корзина',
         tmpl : {
-            path : "cartGoods/cartGoodsTmpl.html", // файл шаблонов
+            path : "cartGoodsTmpl.html", // файл шаблонов
             id : {
                 content : "cartGoodsTmpl", //id шаблона формы авторизации
                 empty : "emptyCartGoodsTmpl"
@@ -631,7 +618,7 @@ var Config = {
     CabinetCartGoods : {
         title : 'Моя корзина',
         tmpl : {
-            path : "cabinetCartGoods/cabinetCartGoodsTmpl.html", // файл шаблонов
+            path : "cabinetCartGoodsTmpl.html", // файл шаблонов
             id : {
                 content : "cabinetCartGoodsTmpl", //id шаблона формы авторизации
                 empty : "emptyCabinetCartGoodsTmpl"
@@ -656,7 +643,7 @@ var Config = {
     Favorites : {
         title : 'Избранное',
         tmpl : {
-            path : "favorites/favoritesTmpl.html", // файл шаблонов
+            path : "favoritesTmpl.html", // файл шаблонов
             id: {
                 content: "favoritesTmpl",//id шаблона формы авторизации
                 empty : "emptyFavoritesTmpl"
@@ -681,7 +668,7 @@ var Config = {
     },
     Order : {
         tmpl : {
-            path : "order/orderTmpl.html", // файл шаблонов
+            path : "orderTmpl.html", // файл шаблонов
             id : {
                 step1 : "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
                 step1Confirm : "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
@@ -781,7 +768,7 @@ var Config = {
     },
     OrderList : {
         tmpl : {
-            path : "orderList/orderListTmpl.html", // файл шаблонов
+            path : "orderListTmpl.html", // файл шаблонов
             id : {
                 list : "orderListTmpl", //id шаблона списка заказов
                 empty : 'orderEmptyListTmpl', //id шаблона пустого списка
@@ -809,7 +796,7 @@ var Config = {
     Message : {
         timer : 10,
         tmpl : {
-            path : "message/messageTmpl.html", // файл шаблонов
+            path : "messageTmpl.html", // файл шаблонов
             id : {
                 topic : "messageTopicTmpl", //id шаблона списка тем
                 list : "messageListTmpl", //id шаблона списка сообщений
@@ -850,7 +837,7 @@ var Config = {
     ButtonPayment : {
         title : "Оплатить", // заголовок кнопки
         tmpl : {
-            path : 'buttonPayment/buttonPaymentTmpl.html', // файл шаблонов
+            path : 'buttonPaymentTmpl.html', // файл шаблонов
             id : {
                 content : 'paymentPageTmpl', //id шаблона страницы оплаты
                 skin : 'buttonPaymentImpl' //id шаблона кнопки

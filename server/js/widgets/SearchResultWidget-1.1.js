@@ -235,7 +235,7 @@ var SearchResultWidget = function(){
                         self.settings.animate.form();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -261,7 +261,7 @@ var SearchResultWidget = function(){
                         self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(false, 'content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

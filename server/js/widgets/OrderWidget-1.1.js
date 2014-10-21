@@ -886,7 +886,7 @@ var OrderWidget = function() {
                 self.WidgetLoader(true, self.settings.containerFormId);
             }
             catch(e){
-                self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+                self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
                 if(self.settings.tmpl.custom){
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -910,7 +910,7 @@ var OrderWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Confirm') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1Confirm') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -935,7 +935,7 @@ var OrderWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1Profile') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1Profile') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -961,7 +961,7 @@ var OrderWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1104,7 +1104,7 @@ var OrderWidget = function() {
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1131,7 +1131,7 @@ var OrderWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1156,7 +1156,7 @@ var OrderWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1181,7 +1181,7 @@ var OrderWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step5') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step5') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

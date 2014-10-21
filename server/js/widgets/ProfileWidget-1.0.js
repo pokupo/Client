@@ -631,7 +631,7 @@
                     }
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -656,7 +656,7 @@
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -798,7 +798,7 @@
                     });
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -823,7 +823,7 @@
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('security') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('security') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

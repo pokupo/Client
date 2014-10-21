@@ -305,8 +305,8 @@ var XDMTransport = {
 
 var Logger = {
     Console : {
-        Exeption : function(widget, text){
-            console && console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
+        Exception : function(widget, text){
+            console && console.log('Exception : ' + new Date() + ' : ' + widget + ' : ' + text);
         },
         Info : function(widget, text){
             console && console.log('Info : ' + new Date() + ' : ' + widget + ' : ' + text);

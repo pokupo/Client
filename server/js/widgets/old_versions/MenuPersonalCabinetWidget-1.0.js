@@ -77,7 +77,7 @@ var MenuPersonalCabinetWidget = function(){
                 self.WidgetLoader(true, self.settings.containerMenuId);
             }
             catch(e){
-                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
                 if(self.settings.tmpl.custom){
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){

@@ -427,7 +427,7 @@ var RegistrationWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -452,7 +452,7 @@ var RegistrationWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -477,7 +477,7 @@ var RegistrationWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -615,7 +615,7 @@ var RegistrationWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

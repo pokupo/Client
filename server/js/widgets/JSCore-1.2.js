@@ -9,6 +9,18 @@ var JSSettings = {
     pathToPostData : "prod/server/services/DataPostProxy.php",
     pathToCore: "index.html",
     pathToPostCore : 'postData.html',
+    hostApi : "api.pokupo.ru/", // урл API
+    catalogPathApi : "catalog/", // префикс API каталога 
+    goodsPathApi : "goods/", // префикс API товаров
+    userPathApi : "user/", // префикс API пользователя
+    cartPathApi : "cart/", // префикс API корзины
+    favPathApi : "fav/", // префикс API избранное
+    geoPathApi : "geo/", // префикс API гео локации
+    shopPathApi : "shop/", // префикс API магазина
+    orderPathApi : "order/", // префикс API заказов
+    paymentPathApi : "payment/", // префикс API оплаты
+    messagePathApi : "message/", // префикс API сообщений
+    pathToImages : "http://seller.pokupo.ru/images", // путь к папке с изображениями
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
@@ -118,8 +130,8 @@ var JSCore = {
     Init : function(){
         if(document.location.protocol == 'https:')
             JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
-        JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.SetInputParameters();
+        JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.shopId = JSSettings.inputParameters['shopId'];
         if(JSSettings.inputParameters['dev'])
             JSCore.dev = true;
@@ -158,6 +170,12 @@ var JSCore = {
         }
         if(typeof WParameters !== 'undefined' && WParameters.core){
             input = WParameters.core;
+            
+            for(var key in input){
+                if(JSSettings.hasOwnProperty(key)){
+                    JSSettings[key] = input[key];
+                }
+            }
         }
 
         JSSettings.inputParameters = input;
@@ -272,8 +290,8 @@ var XDMTransport = {
 
 var Logger = {
     Console : {
-        Exeption : function(widget, text){
-            console && console.log('Exeption : ' + new Date() + ' : ' + widget + ' : ' + text);
+        Exception : function(widget, text){
+            console && console.log('Exception : ' + new Date() + ' : ' + widget + ' : ' + text);
         },
         Info : function(widget, text){
             console && console.log('Info : ' + new Date() + ' : ' + widget + ' : ' + text);

@@ -131,7 +131,7 @@ window.RelatedGoodsWidget = function(){
             self.WidgetLoader(true, self.settings.container);
         }
         catch(e){
-            self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
+            self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
             if(self.settings.tmpl.custom){
                 delete self.settings.tmpl.custom;
                 self.BaseLoad.Tmpl(self.settings.tmpl, function(){
