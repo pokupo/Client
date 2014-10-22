@@ -390,7 +390,13 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
+        if(Parameters.cache.userInformation.err){
+            Parameters.cache.history.push('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
+            Routing.SetHash('login', 'Авторизация пользователя', {});
+        }
+        else{           
+            Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
+        }
     };
     self.ReportAvailability = function(){
 

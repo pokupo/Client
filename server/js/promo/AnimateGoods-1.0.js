@@ -55,5 +55,10 @@ var AnimateGoods = function () {
                         }
                 );
     });
+    if(Ya != undefined){
+        new Ya.share({
+            element: 'ya_share',
+        });
+    }
 }
 

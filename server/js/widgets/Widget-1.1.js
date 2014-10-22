@@ -353,7 +353,7 @@ var Widget = function (){
                 orderPathApi : JSSettings.orderPathApi,
                 paymentPathApi : JSSettings.paymentPathApi,
                 messagePathApi : JSSettings.messagePathApi,
-                containerIdForTmpl : JSSettings.containerIdForTmpl
+                containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.pathToImages = JSSettings.pathToImages;
             Parameters.sortingBlockContainer = Config.Base.sortingBlockContainer;

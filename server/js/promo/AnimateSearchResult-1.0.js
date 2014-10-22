@@ -1,4 +1,5 @@
 var AnimateSearchResult = function () {
+    $('#advansed_search_form_slidedown').unbind('click');
     $('#advansed_search_form_slidedown').click(function (e) {
         e.preventDefault();
         var $this = $(this);
@@ -11,6 +12,7 @@ var AnimateSearchResult = function () {
                 });
     });
 
+    $('#advansed_search_form__category_dropdown__trigger').unbind('click');
     $('#advansed_search_form__category_dropdown__trigger').click(function (e) {
         e.preventDefault();
         var $this = $(this);
@@ -31,6 +33,7 @@ var AnimateSearchResult = function () {
                 .find('.dropdown__content')
                 .toggleClass('hidden');
     });
+    $('#advansed_search_form__category_dropdown__content a').unbind('click');
     $('#advansed_search_form__category_dropdown__content a').click(function () {
         $(this).closest('#advansed_search_form__category_dropdown__content').toggleClass('hidden').
                 siblings('#advansed_search_form__category_dropdown__trigger').toggleClass('active');
@@ -93,6 +96,7 @@ var AnimateSearchResult = function () {
 
 
     /* «Выпадайка» */
+    $('.content_filter_sort_dropdown__trigger').unbind('click');
     $('.content_filter_sort_dropdown__trigger').click(function (e) {
         e.preventDefault();
         var $this = $(this);
@@ -133,6 +137,7 @@ var AnimateSearchResult = function () {
     });
 
     /* По клику на внутреннюю ссылку «выпадайка» закрывается */
+    $('.content_filter_sort_dropdown__content a').unbind('click');
     $('.content_filter_sort_dropdown__content a').click(function () {
         $(this).closest('.content_filter_sort_dropdown__content')
                 .toggleClass('hidden').
