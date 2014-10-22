@@ -107,7 +107,7 @@ var RegistrationWidget = function() {
                     if (step1.phone())
                         params.push('phone=' + step1.phone().replace(/\s/g, ''));
                     if (step1.email())
-                        params.push('email=' + step1.email());
+                        params.push('email=' + $.trim(step1.email()));
                     if (step1.firstPassword())
                         params.push('password=' + encodeURIComponent(step1.firstPassword()));
                     if (params.length > 0)

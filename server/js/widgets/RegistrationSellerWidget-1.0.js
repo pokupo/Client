@@ -80,7 +80,7 @@ var RegistrationSellerWidget = function () {
             if (step1.phone())
                 params.push('phone_seller=' + step1.phone().replace(/\s/g, ''));
             if (step1.email())
-                params.push('email_seller=' + step1.email());
+                params.push('email_seller=' + $.trim(step1.email()));
             if (params.length > 0)
                 var str = '?' + params.join('&');
             self.BaseLoad.RegistrationSeller(str, function (data) {
