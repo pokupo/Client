@@ -68,7 +68,7 @@ Parameters = {
             topicCount : {},
             topicInfo : {},
             messageInfo : {},
-            countNewMessage : ko.observable()
+            countNewMessage : null
         },
         lastPage : {},
         https : null,
@@ -355,6 +355,7 @@ var Widget = function (){
                 messagePathApi : JSSettings.messagePathApi,
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
+            Parameters.cache.message.countNewMessage = ko.observable();
             Parameters.pathToImages = JSSettings.pathToImages;
             Parameters.sortingBlockContainer = Config.Base.sortingBlockContainer;
             

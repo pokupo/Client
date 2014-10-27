@@ -13,40 +13,150 @@ and open the template in the editor.
 
         <link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/css/jquery-ui-1.10.2.custom.css" type="text/css" media="screen" />
         <link rel="stylesheet" href="http://dev.pokupo.ru/new/styles/main.css" type="text/css" media="screen" />
-
+        
+        <script src='http://server.pokupo.ru/prod/server/js/promo/widgets.animate.min.js' type="text/javascript"></script>
         <script type="text/javascript">
-            var pkpWHost = 'http://pokupo-server.asmsoft.ru';
+            var pkpWHostTmpl = 'http://promo.pokupo.ru/themes/default/tmpl';
             var WParameters = {
-                authentication: {https: 'login', container: {widget: 'authentication_block'}, tmpl: {path: pkpWHost + '/tmpl/authentication/authenticationTmpl_promo.html'}},
-                registration: {geoShop: 0, tmpl: {path: pkpWHost + '/tmpl/registration/registrationTmpl_promo.html'}},
-                core: {shopId: 1},
-                catalog: {tmpl: {path: pkpWHost + '/tmpl/catalog/catalogTmpl_promo.html'}},
-                breadCrumb: {tmpl: {path: pkpWHost + '/tmpl/breadCrumb/breadCrumbTmpl_promo.html'}},
+                core: {
+                    shopId: 1
+                },
+                authentication: {
+                    container: {widget: 'authentication_block'},
+                    tmpl: {path: pkpWHostTmpl + '/authenticationTmpl.html'}
+                },
+                breadCrumb: {
+                    tmpl: {path: pkpWHostTmpl + '/breadCrumbTmpl.html'}
+                },
+                buttonPayment: {
+                    title: "Оплатить"
+                },
+                catalog: {
+                    tmpl: {path: pkpWHostTmpl + '/catalogTmpl.html'},
+                    animate: function () {
+                        new AnimateCatalog();
+                    }
+                },
                 content: {
-                    block: {count: 6, tmpl: {path: pkpWHost + '/tmpl/content/blockTmpl_promo.html'}},
-                    content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: pkpWHost + '/tmpl/content/contentTmpl_promo.html'}}
+                    block: {
+                        tmpl: {path: pkpWHostTmpl + '/blockTmpl.html'},
+                        animate: function () {
+                            new AnimateContent();
+                        }
+                    },
+                    content: {
+                        tmpl: {path: pkpWHostTmpl + '/contentTmpl.html'},
+                        animate: function () {
+                            new AnimateContent();
+                        }
+                    }
                 },
-                search: {tmpl: {path: pkpWHost + '/tmpl/search/searchTmpl_promo.html'}},
+                cart: {
+                    tmpl: {path: pkpWHostTmpl + '/cartTmpl.html'},
+                    animate: function(){
+                        new AnimateCart();
+                    }
+                },
+                cartGoods: {
+                    tmpl: {path: pkpWHostTmpl + '/cartGoodsTmpl.html'}
+                },
+                cabinetCartGoods: {
+                    tmpl: {path: pkpWHostTmpl + '/cabinetCartGoodsTmpl.html'}
+                },
+                favorites: {
+                    show: ["infoShop", "addToCart", "buy"],
+                    tmpl: {path: pkpWHostTmpl + '/favoritesTmpl.html'}
+                },
+                goods: {
+                    show: ["selectionCount", "addToCart", "buy", "gallery", "shipping", "opinion"],
+                    tmpl: {path: pkpWHostTmpl + '/goodsTmpl.html'},
+                    animate: function(){
+                        new AnimateGoods();
+                    }
+                },
+                infoSeller : {
+                    animate: function(){
+                        new AnimateInfoSeller();
+                    }
+                },
+                menuPersonalCabinet: {
+                    tmpl: {path: pkpWHostTmpl + '/menuPersonalCabinetTmpl.html'}
+                },
+                message: {
+                    tmpl: {path: pkpWHostTmpl + '/messageTmpl.html'},
+                    animate: function(){
+                        new AnimateMessage();
+                    }
+                },
+                order: {
+                    tmpl: {path: pkpWHostTmpl + '/orderTmpl.html'},
+                    animate: function(){
+                        new AnimateOrder();
+                    }
+                },
+                orderList: {
+                    tmpl: {path: pkpWHostTmpl + '/orderListTmpl.html'},
+                    animate: function(){
+                        new AnimateOrderList();
+                    }
+                },
+                profile: {
+                    tmpl: {path: pkpWHostTmpl + '/profileTmpl.html'},
+                    animate: function(){
+                        new AnimateProfile();
+                    }
+                },
+                registration: {
+                    tmpl: {path: pkpWHostTmpl + '/registrationTmpl.html'},
+                    animate: function () {
+                        new AnimateRegistration();
+                    }
+                },
+                registrationSeller: {
+                    tmpl: {path: pkpWHostTmpl + '/registrationSellerTmpl.html'},
+                    animate: function () {
+                        new AnimateRegistrationSeller();
+                    }
+                },
+                relatedGoods: {
+                    animate: function () {
+                        new AnimateRelatedGoods();
+                    }
+                },
+                search: {
+                    tmpl: {path: pkpWHostTmpl + '/searchTmpl.html'},
+                    animate: function () {
+                        new AnimateSearch();
+                    }
+                },
                 searchResult: {
-                    form: {tmpl: {path: pkpWHost + '/tmpl/searchResult/advancedSearchFormTmpl_promo.html'}},
-                    content: {list: [10, 20, 50], defaultCount: 20, tmpl: {path: pkpWHost + '/tmpl/searchResult/searchResultTmpl_promo.html'}}
+                    form: {
+                        tmpl: {path: pkpWHostTmpl + '/advancedSearchFormTmpl.html'},
+                        animate: function () {
+                            new AnimateSearchResult();
+                        }
+                    },
+                    content: {
+                        tmpl: {path:  pkpWHostTmpl + '/searchResultTmpl.html'},
+                        animate: function () {
+                            new AnimateSearchResult();
+                        }
+                    }
                 },
-                goods: {infoBlock: 1111111, show: ["selectionCount", "addToCart", "buy", "gallery", "shipping", "opinion"], tmpl: {path: pkpWHost + '/tmpl/goods/goodsTmpl_promo.html'}},
-                userInformation: {show: ["icon", "raiting"], tmpl: {path: pkpWHost + '/tmpl/userInformation/userInformationTmpl_promo.html'}},
-                cart: {show: {title: "always", count: true, baseCost: true, finalCost: true, fullInfo: true}, tmpl: {path: pkpWHost + '/tmpl/cart/cartTmpl_promo.html'}},
-                cartGoods: {tmpl: {path: pkpWHost + '/tmpl/cartGoods/cartGoodsTmpl_promo.html'}},
-                profile: {tmpl: {path: pkpWHost + '/tmpl/profile/profileTmpl_promo.html'}},
-                favorites: {show: ["infoShop", "addToCart", "buy"]},
-                cabinetCartGoods: {},
-                menuPersonalCabinet: {tmpl: {path: pkpWHost + '/tmpl/menuPersonalCabinet/menuPersonalCabinetTmpl_promo.html'}},
-                order: {tmpl: {path: pkpWHost + '/tmpl/order/orderTmpl_promo.html'}},
-                orderList: {tmpl: {path: pkpWHost + '/tmpl/orderList/orderListTmpl_promo.html'}},
-                buttonPayment: {title: "Оплатить"},
-                message: {defaultCount: 10, tmpl: {path: pkpWHost + '/tmpl/message/messageTmpl_promo.html'}}
-            }
+                userInformation: {
+                    show: ["icon", "raiting"],
+                    tmpl: {path: pkpWHostTmpl + '/userInformationTmpl.html'},
+                    animate: function(){
+                        new AnimateUserInformation();
+                    }
+                }
+            };
         </script>
+        <script src='http://server.pokupo.ru/prod/server/js/widgets/widgets.min.js' type="text/javascript"></script>
+        
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+        <script src="http://yandex.st/share/share.js"></script>
         <script src="http://vjs.zencdn.net/4.7/video.js"></script>
         <script src="https://dadata.ru/static/js/jquery.suggestions-4.6.min.js"></script>
 
@@ -59,31 +169,8 @@ and open the template in the editor.
         <script src="http://pokupo-server.asmsoft.ru/js/promo/tooltip.js"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/promo/jquery.password.js"></script>
         <script src="http://pokupo-server.asmsoft.ru/js/promo/main.js"></script>
-
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/JSCore-1.2.js' type="text/javascript"></script>
-
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/AuthenticationWidget-1.1.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/RegistrationWidget-1.0.js' type="text/javascript"></script>
-        <script src="http://pokupo-server.asmsoft.ru/js/widgets/CatalogWidget-1.0.js" type="text/javascript"></script>
-        <script src="http://pokupo-server.asmsoft.ru/js/widgets/BreadCrumbWidget-1.0.js" type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/ContentWidget-1.1.js' type="text/javascript"></script>
-        <script src="http://pokupo-server.asmsoft.ru/js/widgets/SearchWidget-1.0.js" type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/SearchResultWidget-1.1.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/GoodsWidget-1.2.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/UserInformationWidget-1.1.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/CartWidget-1.0.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/CartGoodsWidget-1.0.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/ProfileWidget-1.0.js' type="text/javascript"></script>
-        <!--<script src='http://pokupo-server.asmsoft.ru/js/widgets/FavoritesWidget-1.0.js' type="text/javascript"></script>-->
-        <!--<script src='http://pokupo-server.asmsoft.ru/js/widgets/CabinetCartGoodsWidget-1.0.js' type="text/javascript"></script>-->
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/OrderWidget-1.1.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/OrderListWidget-1.0.js' type="text/javascript"></script>
-        <script src='http://pokupo-server.asmsoft.ru/js/widgets/MessageWidget-1.0.js' type="text/javascript"></script>
-
-        <script src="http://yandex.st/share/share.js" charset="utf-8" type="text/javascript"></script>
-
-        <script src="http://pokupo-server.asmsoft.ru/js/promo/progress-circle.js" charset="utf-8" type="text/javascript"></script>
-        <script src="http://pokupo-server.asmsoft.ru/js/promo/jquery.wizard.js" charset="utf-8" type="text/javascript"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/progress-circle.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/jquery.wizard.js"></script>
 
     </head>
     <body>
