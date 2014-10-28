@@ -45,10 +45,6 @@ var AnimateProfile = function () {
     });
     $('.masked-phone').mask("?9 999 999 99 99 99", {placeholder: "_"})
 
-    $('select').chosen({
-        disable_search_threshold: 6,
-        width: '100%'
-    });
     $('input[type="password"]').hidePassword(true);
     $("#fullname").suggestions({
         serviceUrl: "https://dadata.ru/api/v2",
@@ -79,6 +75,15 @@ var AnimateProfile = function () {
         var $this = $(this);
         $this.closest('tr').addClass('active').siblings().removeClass('active');
     });
+    
+    $('.country_list_profile').chosen({
+        disable_search_threshold: 6,
+        width: '100%'
+    });
+    setTimeout(function(){
+        $('.country_list_profile').trigger('chosen:updated');
+    }, 1000)
+    
 }
 
 

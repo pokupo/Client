@@ -503,8 +503,6 @@
                 try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    if(self.settings.animate)
-                        self.settings.animate();
                     
                     $('#' + form.postalAddress.cssCountryList).change(function() {
                         var v =  $('#' + form.postalAddress.cssCountryList + " option:selected").val();
@@ -626,6 +624,9 @@
 
                     self.WidgetLoader(true, self.settings.containerFormId);
 
+                    if(self.settings.animate)
+                        self.settings.animate();
+                    
                     if(Routing.params.edit == 'postal_address'){
                         self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
                     }
@@ -677,8 +678,6 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
-                    if(self.settings.animate)
-                        self.settings.animate();
             
                     $('#' + delivery.cssRegionList).autocomplete({
                         source: function(request, response) {
@@ -796,6 +795,9 @@
                         delivery.address(null);
                         delivery.postIndex(null);
                     });
+                    
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
