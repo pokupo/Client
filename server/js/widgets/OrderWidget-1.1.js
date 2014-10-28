@@ -1572,7 +1572,7 @@ var OrderItemFormStep3ViewModel = function(parent) {
         if (data.hasOwnProperty('site_shipping_company'))
             self.siteShippingCompany(data.site_shipping_company);
         if (data.hasOwnProperty('logo_shipping_company'))
-            self.logoShippingCompany(Config.Base.pathToImages + data.logo_shipping_company);
+            self.logoShippingCompany(JSSettings.pathToImages + data.logo_shipping_company);
         if (data.hasOwnProperty('id'))
             self.id(data.id);
         if (data.hasOwnProperty('name_method_shipping'))
@@ -1676,7 +1676,7 @@ var OrderItemFormStep4ViewModel = function(parent) {
     self.AddContent = function(data, parent) {
         self.id(data.id);
         if (data.hasOwnProperty('logo_payment'))
-            self.logoPayment(Config.Base.pathToImages + data.logo_payment);
+            self.logoPayment(JSSettings.pathToImages + data.logo_payment);
         if (data.hasOwnProperty('desc_payment'))
             self.descPayment(data.desc_payment);
         if (data.hasOwnProperty('instr_payment'))

@@ -135,7 +135,7 @@ var MenuPersonalCabinetViewModel = function (menu) {
     var self = this;
     self.subMenu = ko.observableArray();
     var user = Parameters.cache.userInformation;
-    self.avatar = Parameters.pathToImages + user.route_icon_user;
+    self.avatar = JSSettings.pathToImages + user.route_icon_user;
     self.username = user.login;
     self.countNewMessage = ko.computed(function () {
         return Parameters.cache.message.countNewMessage();

@@ -356,7 +356,7 @@ var Widget = function (){
                 containerIdForTmpl : Config.Base.containerIdForTmpl
             };
             Parameters.cache.message.countNewMessage = ko.observable();
-            Parameters.pathToImages = JSSettings.pathToImages;
+            JSSettings.pathToImages = JSSettings.pathToImages;
             Parameters.sortingBlockContainer = Config.Base.sortingBlockContainer;
             
             Parameters.loading = Config.Base.loading;
@@ -515,7 +515,7 @@ var Widget = function (){
         };
         ko.global = {
             route : Routing.route,
-            pathToImages : Config.Base.pathToImages
+            pathToImages : JSSettings.pathToImages
         };
     };
     this.WidgetLoader = function(test, container){

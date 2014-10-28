@@ -334,8 +334,8 @@ var GoodsMainBlockViewModel = function(data){
         else
             return '';
     }, this);
-    self.routeImages = Parameters.pathToImages + data.route_image;
-    self.routeBigImages = Parameters.pathToImages + '/big' + data.route_image
+    self.routeImages = JSSettings.pathToImages + data.route_image;
+    self.routeBigImages = JSSettings.pathToImages + '/big' + data.route_image
     self.idAuction = data.id_auction;
     self.auctionPrice = data.last_cost;
     self.nameGroupUser = ko.computed(function(){
@@ -451,8 +451,8 @@ var GalleryBlockViewModel = function(data){
     var self = this;
     self.id = data.id;
     self.title = data.name_photo;
-    self.thumb = Parameters.pathToImages + data.route_photo;
-    self.image = Parameters.pathToImages + '/big' + data.route_photo
+    self.thumb = JSSettings.pathToImages + data.route_photo;
+    self.image = JSSettings.pathToImages + '/big' + data.route_photo
 }
 
 var ShippingBlockViewModel = function(data){

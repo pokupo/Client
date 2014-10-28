@@ -224,7 +224,7 @@ var UserInformationBlockViewModel = function(data){
             return false;
         return true;
     };
-    self.iconUser = Parameters.pathToImages + data.route_icon_user;
+    self.iconUser = JSSettings.pathToImages + data.route_icon_user;
     self.background = "background: url('" + self.iconUser + "')";
     
     self.showRaiting = function(){

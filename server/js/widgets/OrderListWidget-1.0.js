@@ -358,15 +358,15 @@ var OrderListDetailViewModel = function(data) {
     self.finalCost = data.final_cost + ' руб.';
     self.GetIconPay = function(status) {
         if (status == 'wait_check')
-            return Config.Base.pathToImages + '/_check.png';
+            return JSSettings.pathToImages + '/_check.png';
         if (status == 'wait_pay')
-            return Config.Base.pathToImages + '/_receipt_invoice.png';
+            return JSSettings.pathToImages + '/_receipt_invoice.png';
         if (status == 'paid')
-            return Config.Base.pathToImages + '/_coins.png';
+            return JSSettings.pathToImages + '/_coins.png';
         if (status == 'cancel')
-            return Config.Base.pathToImages + '/_cancel_icon.png';
+            return JSSettings.pathToImages + '/_cancel_icon.png';
         if (status == 'back')
-            return Config.Base.pathToImages + '/_arrow_return.png';
+            return JSSettings.pathToImages + '/_arrow_return.png';
         return false;
     };
     self.GetNamePay = function(status) {
@@ -384,17 +384,17 @@ var OrderListDetailViewModel = function(data) {
     };
     self.GetIconOrder = function(status) {
         if (status == 'init')
-            return Config.Base.pathToImages + '/_bricks.png';
+            return JSSettings.pathToImages + '/_bricks.png';
         if (status == 'new')
-            return Config.Base.pathToImages + '/_check.png';
+            return JSSettings.pathToImages + '/_check.png';
         if (status == 'process')
-            return Config.Base.pathToImages + '/_hourglass.png';
+            return JSSettings.pathToImages + '/_hourglass.png';
         if (status == 'send')
-            return Config.Base.pathToImages + '/_delivery.png';
+            return JSSettings.pathToImages + '/_delivery.png';
         if (status == 'delivered')
-            return Config.Base.pathToImages + '/_box_receive.png';
+            return JSSettings.pathToImages + '/_box_receive.png';
         if (status == 'cancel')
-            return Config.Base.pathToImages + '/_cancel_icon.png';
+            return JSSettings.pathToImages + '/_cancel_icon.png';
         return false;
     };
     self.GetNameOrder = function(status) {

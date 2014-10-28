@@ -20,7 +20,7 @@ var JSSettings = {
     orderPathApi : "order/", // префикс API заказов
     paymentPathApi : "payment/", // префикс API оплаты
     messagePathApi : "message/", // префикс API сообщений
-    pathToImages : "http://seller.pokupo.ru/images", // путь к папке с изображениями
+    pathToImages : "seller.pokupo.ru/images", // путь к папке с изображениями
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
@@ -130,6 +130,7 @@ var JSCore = {
     Init : function(){
         if(document.location.protocol == 'https:')
             JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
+        JSSettings.pathToImages = JSSettings.protocolHTTP + JSSettings.pathToImages;
         JSCore.SetInputParameters();
         JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.shopId = JSSettings.inputParameters['shopId'];

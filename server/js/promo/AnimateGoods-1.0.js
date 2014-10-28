@@ -24,7 +24,6 @@ var AnimateGoods = function () {
                 .addClass('selected');
     });
     
-    $('#btn_to_cart').unbind('click');
     $('#btn_to_cart').click(function () {
         var item = $('.fotorama__stage__shaft .fotorama__active');
 
