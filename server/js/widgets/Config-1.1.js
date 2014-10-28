@@ -1,21 +1,8 @@
 var Config = {
     Base : {
-        hostApi : "http://dev.pokupo.ru", // урл API
-        httpsHostApi : "https://dev.pokupo.ru",
-        catalogPathApi : "/api/catalog/", // префикс API каталога 
-        goodsPathApi : "/api/goods/", // префикс API товаров
-        userPathApi : "/api/user/", // префикс API пользователя
-        cartPathApi : "/api/cart/", // префикс API корзины
-        favPathApi : "/api/fav/", // префикс API избранное
-        geoPathApi : "/api/geo/", // префикс API гео локации
-        shopPathApi : "/api/shop/", // префикс API магазина
-        orderPathApi : "/api/order/", // префикс API заказов
-        paymentPathApi : "/api/payment/", // префикс API оплаты
-        pathToImages : "http://dev.pokupo.ru/images", // путь к папке с изображениями
-        routIconAuction : "http://dev.pokupo.ru/images/ico_30.png", // иконка аукциона
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
         containerIdForTmpl : "container_tmpl", // id контейнера в который будут загружены все шаблоны
-        loading : "/loading50.gif", // иконка загрузщика
+        loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузчика
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
            previously_viewed : 'previously_viewed'  // id просмотренных товаров
@@ -31,7 +18,8 @@ var Config = {
         conteinerIdTextConfirmWindow: 'containerConfirm', // id контейнера для текста с предупреждением
         containerConfirm : '<div id="dialogConfirm" title="Подтвердите действие" style="display:none"><p id="containerConfirm"></p></div>', // темплейт модального окна с сообщением
         sourceParameters : 'object', // источник параметров (строка подключения скрипта 'string' или обьект 'object')
-        showCustomBlockOnDefault : false
+        showCustomBlockOnDefault : false,
+        toStringMonth : ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Декабря']
     },
     Containers : {  
         catalog : {widget: 'catalog', def: 'default_catalog', customClass: 'custom_block'}, // id контейнера каталога 
@@ -39,7 +27,11 @@ var Config = {
         breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
         content : {
             content : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, 
-            block: {widget: 'block', def: 'default_block', customClass: 'custom_block'}
+            block: {
+                slider: {widget: 'slider_block', def: 'slider_default_block', customClass: 'slider_custom_block'},
+                carousel: {widget: 'carousel_block', def: 'carousel_default_block', customClass: 'carousel_custom_block'},
+                tile: {widget: 'tile_block', def: 'tile_default_block', customClass: 'tile_custom_block'}
+            }
         }, // id контейнера контента
         searchResult : {
             form: {widget: 'advanced_search', def: 'default_advanced_search', customClass: 'custom_block'},
@@ -49,6 +41,7 @@ var Config = {
         userInformation : {widget: 'user_information', def: 'default_user_information', customClass: 'custom_block'}, // id контейнера информации о пользователе
         authentication : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, //id контейнеров авторизации
         registration : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации
+        registrationSeller : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации продавца
         cart : {widget: 'cart_information', def: 'default_cart_information', customClass: 'custom_block'}, // id контейнера корзины
         cartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера реестра товаров корзины
         cabinetCartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'},
@@ -57,11 +50,12 @@ var Config = {
         favorites : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера избранного
         order : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера оформления заказа
         orderList : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера списка заказов
-        buttonPayment : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера страницы оплаты
+        buttonPayment : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера страницы оплаты
+        message : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера списка сообщений
     },
     Goods : {
         tmpl: {
-            path : "goods/goodsTmpl.html", // файл шаблона
+            path : "goodsTmpl.html", // файл шаблона
             id : "goodsTmpl" // id шаблона виджета карточки товара по умолчанию
         },
         showBlocks : ['main', 'description'], // блоки отображаемые по умолчанию
@@ -91,7 +85,7 @@ var Config = {
     },
     Catalog : {
         tmpl : {
-            path : "catalog/catalogTmpl.html", // путь к шаблонам
+            path : "catalogTmpl.html", // путь к шаблонам
             id : "catalogTmpl" // id шаблона виджета каталога по умолчанию
         },
         style : { // стиль блока
@@ -103,9 +97,9 @@ var Config = {
             'background' : '#ddd'
         }
     },
-    BreadCrumbs : {
+    BreadCrumb : {
         tmpl: {
-            path : "breadCrumb/breadCrumbTmpl.html", // путь к шаблонам
+            path : "breadCrumbTmpl.html", // путь к шаблонам
             id : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию
         },
         style : { // стиль блока
@@ -156,7 +150,7 @@ var Config = {
     },
     Search : {
         tmpl : {
-            path : "search/searchTmpl.html", // путь к шаблонам
+            path : "searchTmpl.html", // путь к шаблонам
             id : "searchTmpl" // id шаблона формы поиска по умолчанию
         },
         message : {
@@ -174,7 +168,7 @@ var Config = {
     SearchResult : {
         tmpl: {
             content : {
-                path : "searchResult/searchResultTmpl.html", // результатов поиска
+                path : "searchResultTmpl.html", // результатов поиска
                 id : {
                     table : "searchResultTableTmpl", // id шаблона таблицы
                     list : "searchResultListTmpl", // id шаблона списка
@@ -210,7 +204,7 @@ var Config = {
     },
     RelatedGoods : {
         tmpl:{
-            path : "relatedGoods/relatedGoodsTmpl.html", // файл шаблонов связанных товаров
+            path : "relatedGoodsTmpl.html", // файл шаблонов связанных товаров
             id : {
                 table : "relatedGoodsTableTmpl", // id шаблона таблицы
                 list : "relatedGoodsListTmpl", // id шаблона списка
@@ -219,8 +213,8 @@ var Config = {
                 carousel : "relatedGoodsCarouselTmpl" // id шаблона карусели
             }
         },
-        countGoodsInBlock : 6, // максимальное кол-во товаров в блоке
-        countGoodsTileInStr : 5, // кол-во плиток в строке 
+        count : 6, // максимальное кол-во товаров в блоке
+        countTile : 5, // кол-во плиток в строке 
         orderBy : 'rating', // сортировка
         start : 0, // начальная позиция в запросе
         typeView : 'carousel' // тип отображения по умолчанию
@@ -228,12 +222,12 @@ var Config = {
     InfoSeller : {
         tmpl: {
             id : "infoSellerTmpl", // id шаблона информации о продавце
-            path : "infoSeller/infoSellerTmpl.html" // файл шаблона информации о продавце
+            path : "infoSellerTmpl.html" // файл шаблона информации о продавце
         }
     },
     UserInformation : {
         tmpl : {
-            path : "userInformation/userInformationTmpl.html", // файл шаблонов
+            path : "userInformationTmpl.html", // файл шаблонов
             id : {
                 info : "userInformationTmpl", //id шаблона вывода информации о пользователе
                 auth : "authorizationLinkTmpl" //id шаблона с сылками войти/регистрация
@@ -250,9 +244,9 @@ var Config = {
         }
     },
     Authentication : {
-        https : "always", // always, never, login
+        https : "login", // always, never, login
         tmpl : {
-            path : "authentication/authenticationTmpl.html", // файл шаблонов
+            path : "authenticationTmpl.html", // файл шаблонов
             id : "authenticationFormTmpl" //id шаблона формы авторизации
         },
         message : {
@@ -270,7 +264,7 @@ var Config = {
     },
     Registration : {
         tmpl : {
-            path : "registration/registrationTmpl.html", // файл шаблонов
+            path : "registrationTmpl.html", // файл шаблонов
             id: {
                 step1 : "registrationFromStep1Tmpl", //id шаблона формы регистрации шаг 1
                 step2 : "registrationFromStep2Tmpl", //id шаблона формы регистрации шаг 2
@@ -377,9 +371,70 @@ var Config = {
             'background' : '#ddd'
         }
     },
+    RegistrationSeller : {
+        tmpl : {
+            path : "registrationSellerTmpl.html", // файл шаблонов
+            id: {
+                step1 : "registrationSellerFromStep1Tmpl", //id шаблона формы регистрации шаг 1
+                step2 : "registrationSellerFromStep2Tmpl", //id шаблона формы регистрации шаг 2
+                step3 : "registrationSellerFromStep3Tmpl"  //id шаблона формы регистрации шаг 3
+            }
+        },
+        regular : { // регулярные выражения полей
+            nameSeller : /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
+            email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+            phone : /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            nameSeller : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 4 символа',
+                maxLength : 'Максимум 40 символов',
+                regular : 'Только буквы латинского или русского алфавита',
+                uniq: 'К сожалению это имя уже занято, попробуйте указать другой вариант'
+            },
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                maxLength : 'Максимум 64 символа',
+                regular : 'Строка не является адресом электронной почты',
+                uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            phone : {
+                regular : 'Не верный формат телефона',
+                uniq : 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            isChecked : {
+                empty : 'Вам необходимо прочитать и принять условия соглашения'
+            },
+            emailToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            phoneToken : {
+                empty : 'Поле обязательно для заполнения',
+                confirm : 'Указанный код не принят системой'
+            },
+            confirmLater : {
+                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи',
+            },
+            typeSeller : {
+                empty : 'Поле обязательно для заполнения',
+                minLength : 'Минимум 5 символов',
+                maxLength : 'Максимум 40 символов',
+            }
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
     MenuPersonalCabinet : {
         tmpl : {
-            path : "menuPersonalCabinet/menuPersonalCabinetTmpl.html", // файл шаблонов
+            path : "menuPersonalCabinetTmpl.html", // файл шаблонов
             id : 'menuPersonalCabinetTmpl', // id шаблона меню личного кабинета
         },
         style : {// стиль блока
@@ -393,7 +448,7 @@ var Config = {
     },
     Profile : {
         tmpl : {
-            path : "profile/profileTmpl.html", // файл шаблонов
+            path : "profileTmpl.html", // файл шаблонов
             id: {
                 personal : "personalInformationTmpl", //id шаблона формы персоональных данных
                 delivery : "deliveryAddressTmpl", //id шаблона списка адресов доставки
@@ -516,13 +571,14 @@ var Config = {
         cartId : 'cart', // id корзины товара
         title : 'Корзина', // заголовок блока
         showBlocks : {
-            title : 'never', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
-            count : false, // отображать кол-во товара
-            baseCost : false, // отображать сумму без скидок
-            finalCost : false // отображать конечную сумму
+            title : 'always', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
+            count : true, // отображать кол-во товара
+            baseCost : true, // отображать сумму без скидок
+            finalCost : true, // отображать конечную сумму
+            fullInfo : true // отображать информацию по товарам
         },
         tmpl : {
-            path : "cart/cartTmpl.html", // файл шаблонов
+            path : "cartTmpl.html", // файл шаблонов
             id : "cartTmpl", //id шаблона формы авторизации
         },
         style : {// стиль блока
@@ -537,7 +593,7 @@ var Config = {
     CartGoods : {
         title : 'Моя корзина',
         tmpl : {
-            path : "cartGoods/cartGoodsTmpl.html", // файл шаблонов
+            path : "cartGoodsTmpl.html", // файл шаблонов
             id : {
                 content : "cartGoodsTmpl", //id шаблона формы авторизации
                 empty : "emptyCartGoodsTmpl"
@@ -562,7 +618,7 @@ var Config = {
     CabinetCartGoods : {
         title : 'Моя корзина',
         tmpl : {
-            path : "cabinetCartGoods/cabinetCartGoodsTmpl.html", // файл шаблонов
+            path : "cabinetCartGoodsTmpl.html", // файл шаблонов
             id : {
                 content : "cabinetCartGoodsTmpl", //id шаблона формы авторизации
                 empty : "emptyCabinetCartGoodsTmpl"
@@ -587,7 +643,7 @@ var Config = {
     Favorites : {
         title : 'Избранное',
         tmpl : {
-            path : "favorites/favoritesTmpl.html", // файл шаблонов
+            path : "favoritesTmpl.html", // файл шаблонов
             id: {
                 content: "favoritesTmpl",//id шаблона формы авторизации
                 empty : "emptyFavoritesTmpl"
@@ -612,7 +668,7 @@ var Config = {
     },
     Order : {
         tmpl : {
-            path : "order/orderTmpl.html", // файл шаблонов
+            path : "orderTmpl.html", // файл шаблонов
             id : {
                 step1 : "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
                 step1Confirm : "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
@@ -712,7 +768,7 @@ var Config = {
     },
     OrderList : {
         tmpl : {
-            path : "orderList/orderListTmpl.html", // файл шаблонов
+            path : "orderListTmpl.html", // файл шаблонов
             id : {
                 list : "orderListTmpl", //id шаблона списка заказов
                 empty : 'orderEmptyListTmpl', //id шаблона пустого списка
@@ -737,10 +793,51 @@ var Config = {
             'background' : '#ddd'
         }
     },
+    Message : {
+        timer : 10,
+        tmpl : {
+            path : "messageTmpl.html", // файл шаблонов
+            id : {
+                topic : "messageTopicTmpl", //id шаблона списка тем
+                list : "messageListTmpl", //id шаблона списка сообщений
+                empty : 'messageEmptyListTmpl' //id шаблона пустого списка
+            }
+        },
+        error : { // сообщения об ошибках при валидации формы регистрации
+            username : {
+                empty : 'Поле обязательно для заполнения',
+                notFound : 'Получатель не найден.'
+            },
+            topic: {
+                empty : 'Поле обязательно для заполнения'
+            },
+            text: {
+                empty : 'Поле обязательно для заполнения'
+            }
+        },
+        message : {
+            noResult: "Писем нет :(",
+            messageDelete : "Сообщение удалено.",
+            topicDelete : "Тема Удалена.",
+            severalTopicDelete : "Выбранные темы успешно удалены.",
+            confirmDeleteMessage : 'Вы уверены, что хотите удалить сообщение?',
+            confirmDeleteTopic : 'Вы уверены, что хотите удалить тему?',
+            confirmDeleteSeveralTopic : 'Вы уверены, что хотите удалить выбранные темы?',
+            error: 'Ошибка выполнения.'
+        },
+        style : {// стиль блока
+            'position' : 'absolute', 
+            'top' : '0px', 
+            'left' : '5%', 
+            'width' : '100%', 
+            'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
     ButtonPayment : {
         title : "Оплатить", // заголовок кнопки
         tmpl : {
-            path : 'buttonPayment/buttonPaymentTmpl.html', // файл шаблонов
+            path : 'buttonPaymentTmpl.html', // файл шаблонов
             id : {
                 content : 'paymentPageTmpl', //id шаблона страницы оплаты
                 skin : 'buttonPaymentImpl' //id шаблона кнопки

@@ -1,0 +1,19 @@
+<script type="text/html" id="breadCrumbTmpl">
+    <!-- version 1.0 -->
+    <div>
+        <p>
+            <!-- ko if: showReturn -->
+            <a href="#" data-bind="click: Return">Назад</a><span class="divider">/ </span>
+            <a href="#" data-bind="click: ToHomepage">Главная </a><span class="divider">/ </span>
+            <!-- /ko -->
+            <!-- ko ifnot: showReturn -->
+            <a href="#" data-bind="click: ToHomepage">Главная </a><span class="divider">/ </span>
+            <!-- /ko -->
+
+            <!-- ko foreach: crumbs -->
+            <a href="#" data-bind="text: title, click: ClickItem"></a><span class="divider">/ </span>
+            <!-- /ko -->
+            <span class="current" data-bind="text: lastItem">Кеды</span>
+        </p>
+    </div>
+</script>

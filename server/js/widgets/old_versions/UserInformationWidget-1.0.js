@@ -131,7 +131,7 @@ var UserInformationWidget = function(){
                     self.WidgetLoader(true, self.settings.containerId);
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('auth') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('auth') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -153,7 +153,7 @@ var UserInformationWidget = function(){
                     self.WidgetLoader(true, self.settings.containerId);
                 }
                 catch(e){
-                    self.Exeption('Error of the template [' + self.GetTmplName('info') + ']');
+                    self.Exception('Error of the template [' + self.GetTmplName('info') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -208,7 +208,7 @@ var UserInformationBlockViewModel = function(data){
             return false;
         return true;
     };
-    self.iconUser = Parameters.pathToImages + data.route_icon_user;
+    self.iconUser = JSSettings.pathToImages + data.route_icon_user;
     
     self.showRaiting = function(){
         if($.inArray('raiting', Config.UserInformation.showBlocks) < 0)

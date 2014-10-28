@@ -36,7 +36,7 @@
                 <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td class="itemsListTableCell col_1">
-                            <input class="form_submit_all" type="checkbox" data-bind="event: { change: ClickSelectAll }, attr:{id:cssSelectAll}, checked: isChecked "/>
+                            <input class="form_submit_all" type="checkbox" data-bind="attr:{id:cssSelectAll}, checked: isSelectedAll "/>
                         </td>
                         <td class="itemsListTableCell col_2">Товар:</td>
                         <td class="itemsListTableCell col_3"></td>
@@ -55,7 +55,9 @@
              <div class="itemsListTableRow cartList">
                  <table cellpadding="0" cellspacing="0" width="100%" class="textInfoBlock">
                     <tr>
-                        <td class="itemsListTableCell col_1"><input type="checkbox" name="" value="" data-bind="checked: isSelected, value: id"/></td>
+                        <td class="itemsListTableCell col_1">
+                            <input type="checkbox" name="" value="" data-bind="attr: {id: cssCheckboxGoods}, checked: isSelected"/>
+                        </td>
                         <td class="itemsListTableCell col_2">
                             <div class="photo">
                                 <a href="#" data-bind="click: ClickGoods">

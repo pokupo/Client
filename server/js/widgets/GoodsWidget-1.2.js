@@ -14,10 +14,12 @@ var GoodsWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         showBlocks : null,
         inputParameters : {},
         styleGoods : null,
-        customContainer: null
+        customContainer: null,
+        infoBlock: 1111111
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.goods.widget;
@@ -57,6 +59,10 @@ var GoodsWidget = function(){
                     }
                 }
             }
+            if(input.infoBlock)
+                self.settings.infoBlock = input.infoBlock;
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -81,7 +87,7 @@ var GoodsWidget = function(){
     self.Update = function(){
         self.BaseLoad.InfoFavorite('no', function(data){
             Parameters.cache.favorite = data;
-            self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.inputParameters['infoBlock'], function(data){
+            self.BaseLoad.GoodsInfo(Routing.params.id, self.settings.infoBlock, function(data){
                 EventDispatcher.DispatchEvent('GoodsWidget.onload.info', data)
             })
         });
@@ -105,7 +111,8 @@ var GoodsWidget = function(){
                 else
                     self.Fill.Block(key, data[key]);
             }
-            self.goods.blocks.main.sellerId = data.seller.id
+            self.goods.blocks.main.sellerId = data.seller.id;
+            self.goods.blocks.main.shopId = data.shop.id;
             self.goods.SetListMoreBlock(); 
             self.Render.Goods(self.goods);
         },
@@ -152,6 +159,7 @@ var GoodsWidget = function(){
             try{
                 if($("#" + self.settings.containerId).length > 0){
                     self.InsertContainer.Content();
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     
                     if(self.hasButton){
@@ -181,22 +189,16 @@ var GoodsWidget = function(){
                         });
                     }
 
-                    new AnimateMoreBlockTabs(data.moreBlock[0].idBlock);
-
-                    if(data.ShowGallery())
-                        new AnimateCarousel(Config.Goods.galleryId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 self.AddGoodsInCookie(data);
                 delete data;
 
-                self.WidgetLoader(true, self.settings.containerId);
-                if(Ya != undefined){
-                    Config.Goods.share.element = data.blocks.main.cssShareBlock
-                    new Ya.share(Config.Goods.share);
-                }
+                self.WidgetLoader(true, self.settings.containerId); 
             }
             catch(e){
-                self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
                 if(self.settings.tmpl.custom){
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -293,6 +295,7 @@ var GoodsMainBlockViewModel = function(data){
     var self = this;
     self.id = data.id;
     self.sellerId = 0;
+    self.shopId = 0;
     self.chortName =  data.chort_name;
     self.fullName = data.full_name;
     self.description = data.description;
@@ -329,10 +332,10 @@ var GoodsMainBlockViewModel = function(data){
         if(d > 0)
             return d + '%';
         else
-            return 'Нет';
+            return '';
     }, this);
-    self.routeImages = Parameters.pathToImages + data.route_image;
-    self.routeBigImages = Parameters.pathToImages + '/big' + data.route_image
+    self.routeImages = JSSettings.pathToImages + data.route_image;
+    self.routeBigImages = JSSettings.pathToImages + '/big' + data.route_image
     self.idAuction = data.id_auction;
     self.auctionPrice = data.last_cost;
     self.nameGroupUser = ko.computed(function(){
@@ -387,7 +390,13 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.sellerId, goodsId: self.id, count: self.ordered()});
+        if(Parameters.cache.userInformation.err){
+            Parameters.cache.history.push('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
+            Routing.SetHash('login', 'Авторизация пользователя', {});
+        }
+        else{           
+            Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
+        }
     };
     self.ReportAvailability = function(){
 
@@ -442,8 +451,8 @@ var GalleryBlockViewModel = function(data){
     var self = this;
     self.id = data.id;
     self.title = data.name_photo;
-    self.thumb = Parameters.pathToImages + data.route_photo;
-    self.image = Parameters.pathToImages + '/big' + data.route_photo
+    self.thumb = JSSettings.pathToImages + data.route_photo;
+    self.image = JSSettings.pathToImages + '/big' + data.route_photo
 }
 
 var ShippingBlockViewModel = function(data){
@@ -477,7 +486,7 @@ var BuyButtonViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: data.sellerId, goodsId: data.id, count: data.ordered()});
+         Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: data.shopId, goodsId: data.id, count: data.ordered()});
     };
 };
 

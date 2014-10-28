@@ -34,6 +34,10 @@ var ContentWidget = function(){
                 }
             }
         },
+        animate: {
+            content: null,
+            block: null
+        },
         inputParameters : {},
         styleCatalog : {},
         countGoodsInBlock : null,
@@ -67,13 +71,18 @@ var ContentWidget = function(){
         
         if(!$.isEmptyObject(input)){
             if(input.block){
-                self.settings.countGoodsInBlock = input.block.count;
+                if(input.block.count)
+                    self.settings.countGoodsInBlock = input.block.count;
+                if(input.block.animate)
+                    self.settings.animate.block = input.block.animate;
             }
             if(input.content){
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
+                if(input.content.animate)
+                    self.settings.animate.content = input.content.animate;
             }
         }
         self.settings.inputParameters = input;
@@ -81,7 +90,7 @@ var ContentWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content.content.widget;
         self.settings.customContainer = Config.Containers.content.content.customClass;
-        self.settings.blockContainerId = Config.Containers.content.block.widget;
+        self.settings.blockContainerId = Config.Containers.content.block;
         self.settings.customBlock = Config.Containers.content.block.customClass;
         self.settings.tmpl = Config.Content.tmpl;
         self.settings.countGoodsInBlock = Config.Content.countGoodsInBlock;
@@ -133,6 +142,7 @@ var ContentWidget = function(){
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
             self.BaseLoad.Info(Routing.GetActiveCategory(), function(data){
+                self.InsertContainer.EmptyBlockWidget();
                 EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
             })
         });
@@ -199,20 +209,26 @@ var ContentWidget = function(){
     };
     self.InsertContainer = {
         EmptyBlockWidget : function(){
-            var temp = $("#" + self.settings.blockContainerId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.blockContainerId).empty().html(temp);
+            var temp = $("#" + self.settings.blockContainerId.slider.widget).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.blockContainerId.slider.widget).empty().html(temp);
+            var temp = $("#" + self.settings.blockContainerId.carousel.widget).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.blockContainerId.carousel.widget).empty().html(temp);
+            var temp = $("#" + self.settings.blockContainerId.tile.widget).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.blockContainerId.tile.widget).empty().html(temp);
         },
         Block : function(sort, type){
             if(type == 'slider'){ 
-                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('slider', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.slider.widget).append($('script#' + self.GetTmplName('slider', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.slider.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
             }
             if(type == 'carousel'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('carusel', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.carousel.widget).append($('script#' + self.GetTmplName('carusel', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.carousel.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
             }
             if(type == 'tile'){
-                $("#" + self.settings.blockContainerId).append($('script#' + self.GetTmplName('tile', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.tile.widget).append($('script#' + self.GetTmplName('tile', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.tile.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
             }
-            $("#" + self.settings.blockContainerId + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
         },
         EmptyWidget : function(){
             var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
@@ -250,9 +266,9 @@ var ContentWidget = function(){
             else{
                 var content = new ListContentViewModel(self.settings);
                 content.AddCategoryInfo(data.categoryId);
-                if(content.filters.filterName != ''){
+                if(content.filters.filterName() != ''){
                     content.SetType('no_results');
-                    content.SetMessage(Config.Content.message.filter.replace(/%%filterName%%/g, content.filters.filterName));
+                    content.SetMessage(Config.Content.message.filter.replace(/%%filterName%%/g, content.filters.filterName()));
                 }
                 else{
                     content.SetType('no_results');
@@ -270,12 +286,8 @@ var ContentWidget = function(){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
                         $('#' + b[i].data.cssBlock).show();
-                        if(b[i].type == 'slider'){
-                            new AnimateSlider(b[i].data.cssBlockContainer);
-                        }
-                        if(b[i].type == 'carousel'){
-                            new AnimateCarousel(b[i].data.cssBlockContainer);
-                        }                        
+                        if(self.settings.animate.block)
+                            self.settings.animate.block();                     
                     })
                 }
                 else{
@@ -286,14 +298,15 @@ var ContentWidget = function(){
         List : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    var f = data.filters;
-                    new AnimateSelectList(f.sort.cssSortList);
                     $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate.content)
+                        self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -312,17 +325,20 @@ var ContentWidget = function(){
         Block : function(data){
             if($('#' + data.cssBlock).length > 0){
                 try{
+                    ko.cleanNode($('#' + data.cssBlock)[0]);
                     ko.applyBindings(data, $('#' + data.cssBlock)[0]);
                     self.Render.Animate.block.push({type: data.typeView, data : data})
                     self.testBlock.ready = self.testBlock.ready + 1;
 
                     if(self.testBlock.IsReady()){
-                        self.WidgetLoader(true, self.settings.blockContainerId);
+                        $.each(self.settings.blockContainerId, function(i){
+                            self.WidgetLoader(true, self.settings.blockContainerId[i].widget);
+                        });
                         self.Render.Animate.Do();
                     }
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -341,11 +357,14 @@ var ContentWidget = function(){
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate.content)
+                        self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -450,17 +469,25 @@ var ListContentViewModel = function(settings){
     };
     self.filters = {
         typeView : self.typeView,
-        filterName : Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName,
+        filterName :ko.observable(Routing.GetMoreParameter('filterName') ? Routing.GetMoreParameter('filterName') : settings.filterName),
         itemsPerPage : settings.paging.itemsPerPage,
         listPerPage : ko.observableArray(),
         countOptionList : ko.observable(settings.listPerPage.length-1),
         sort : self.GetSort(),
         FilterNameGoods : function(data){
-            self.filters.filterName = settings.filterName = $(data.text).val();
+            settings.filterName = self.filters.filterName($(data.text).val());
 
             Loader.Indicator('ContentWidget', false);
             
-            Routing.UpdateMoreParameters({filterName : self.filters.filterName});
+            Routing.UpdateMoreParameters({filterName : self.filters.filterName()});
+            Routing.UpdateHash({page : 1});
+        },
+        ClickFilterNameGoods : function(){
+            settings.filterName = self.filters.filterName();
+
+            Loader.Indicator('ContentWidget', false);
+            
+            Routing.UpdateMoreParameters({filterName : self.filters.filterName()});
             Routing.UpdateHash({page : 1});
         },
         ViewSelectCount : function(){

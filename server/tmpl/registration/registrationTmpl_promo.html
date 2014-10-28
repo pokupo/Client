@@ -1,0 +1,459 @@
+<script type="text/html" id="registrationFromStep1Tmpl">
+    <!-- version 1.0 -->
+    <div class="h1-with-progress-bar">
+        <canvas id="progressCircle" width="160" height="160">
+            <p>Ваш браузер не поддерживает технологию canvas</p>
+        </canvas>
+        <h1>Регистрация нового аккаунта</h1>
+    </div>
+    <form action="#">
+        <div id="registerWizard" class="b-wizard">
+            <ul class="b-wizard__steps anchor">
+                <li>
+                    <a href="#step-1" class="selected" isdone="1" rel="1">
+                        <label class="b-wizard__step-num">1</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-2" class="disabled" isdone="0" rel="2">
+                        <label class="b-wizard__step-num">2</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-3" class="disabled" isdone="0" rel="3">
+                        <label class="b-wizard__step-num">3</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-4" class="disabled" isdone="0" rel="4">
+                        <label class="b-wizard__step-num">4</label>
+                    </a>
+                </li>
+            </ul>
+            <div class="b-wizard__holder">
+    
+                <div id="step-1" class="content">
+                    <h2 class="b-wizard__step-title">Данные аккаунта</h2>
+                    <p>Укажите свой уникальный псевдоним, почту и телефон</p>
+                    <div class="input-holder tooltip">
+                        <div class="tooltip__trigger">?
+                            <div class="tooltip__content">
+                                <p>Введите ваше имя на сайте.</p>
+                                <div class="tooltip__before"></div>
+                                <div class="tooltip__after"></div>
+                            </div>
+                        </div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="nickname" value="" placeholder="Псевдоним" class="block-input" id="i-77" data-bind="value: username"/>
+                            <label for="77" class="label-floatlabel" style="display: none">Псевдоним</label>
+                        </div>
+                        <!-- ko if: errorUsername-->
+                            <div class="form_error" data-bind="text: errorUsername"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="input-holder tooltip">
+                        <div class="tooltip__trigger">?
+                            <div class="tooltip__content">
+                                <p>Введите ваш адрес электронной почты. Он будет логином для входа в личный кабинет.</p>
+                                <p>На этот адрес будут приходить уведомления о статусе вашего заказа.</p>
+                                <div class="tooltip__before"></div>
+                                <div class="tooltip__after"></div>
+                            </div>
+                        </div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="email" name="email" value="" placeholder="Ваш e-mail" class="block-input" id="i-93" data-bind="value: email"/>
+                            <label for="93" class="label-floatlabel  " style="display: none; ">Ваш e-mail</label>
+                        </div>
+                        <!-- ko if: errorEmail-->
+                        <div class="form_error" data-bind="html: errorEmail"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="input-holder tooltip">
+                        <div class="tooltip__trigger">?
+                            <div class="tooltip__content">
+                                <p>Укажите номер вашего телефона.</p>
+                                <div class="tooltip__before"></div>
+                                <div class="tooltip__after"></div>
+                            </div>
+                        </div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="tel" name="phone" value="" placeholder="Номер телефона" class="block-input" id="i-5" data-bind="value: phone, attr: {id : cssPhone}"/>
+                            <label for="5" class="label-floatlabel" style="display: none;">Номер телефона</label>
+                        </div>
+                        <!-- ko if: errorPhone-->
+                        <div class="form_error" data-bind="html: errorPhone"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="input-holder tooltip">
+                        <div class="tooltip__trigger">?
+                            <div class="tooltip__content">
+                                <p>Ваш пароль должен содержать минимум одну цифру, заглавную букву, спецсимвол, иероглиф, коловрат, число зверя и кровь девственницы.</p>
+                                <div class="tooltip__before"></div>
+                                <div class="tooltip__after"></div>
+                            </div>
+                        </div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="password" name="password" value="" placeholder="Пароль" class="block-input" id="i-48"  data-bind="value: firstPassword, attr : {id: cssFirstPassword}"/>
+                            <label for="48" class="label-floatlabel  " style="display: none;">Пароль</label>
+                        </div>
+                        <!-- ko if: errorFirstPassword-->
+                        <div class="form_error" data-bind="text: errorFirstPassword"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="password" name="password-double" value="" placeholder="Повторить пароль" class="block-input" id="i-73" data-bind="value: secondPassword, attr : {id: cssSecondPassword}">
+                            <label for="73" class="label-floatlabel  " style="display: none;">Повторить пароль</label>
+                        </div>
+                        <!-- ko if: errorSecondPassword-->
+                        <div class="form_error" data-bind="text: errorSecondPassword"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div style="padding-top:13px" class="input-holder">
+                        <input id="iagree" name="iagree" type="checkbox" class="checkbox" data-bind="checked: isChecked">
+                        <label for="iagree" class="block-label b-small-text">Я принимаю условия 
+                            <a href="#" target="_blank" data-bind="attr:{href: agreement}">пользовательского соглашения</a>,
+                            <br><a href="#" target="_blank" data-bind="attr:{href: police}">правил конфиденциальности</a> и <a href="#" target="_blank" data-bind="attr:{href: refund}">политики возврата платежей</a>
+                        </label>
+                        <!-- ko if: errorIsChecked-->
+                            <div class="form_error" data-bind="text: errorIsChecked"></div>
+                        <!-- /ko -->
+                    </div>
+                </div>
+    
+            </div>
+            <div class="b-wizard__actions">
+                <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="registrationFromStep2Tmpl">
+    <!-- version 1.0 -->
+    <div class="h1-with-progress-bar">
+        <canvas id="progressCircle" width="160" height="160">
+            <p>Ваш браузер не поддерживает технологию canvas</p>
+        </canvas>
+        <h1>Регистрация нового аккаунта</h1>
+    </div>
+    <form action="#">
+        <div id="registerWizard" class="b-wizard">
+            <ul class="b-wizard__steps anchor">
+                <li>
+                    <a href="#step-1" class="selected" isdone="1" rel="1">
+                        <label class="b-wizard__step-num">1</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-2" class="selected" isdone="0" rel="2">
+                        <label class="b-wizard__step-num">2</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-3" class="disabled" isdone="0" rel="3">
+                        <label class="b-wizard__step-num">3</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-4" class="disabled" isdone="0" rel="4">
+                        <label class="b-wizard__step-num">4</label>
+                    </a>
+                </li>
+            </ul>
+            <div class="b-wizard__holder">
+    
+                <div id="step-2" class="content">
+                    <h2 class="b-wizard__step-title">Активация аккаунта</h2>
+                    <p>Укажите код, высланный на почтовый адрес или телефон</p>
+                    
+                    <!-- ko if: errorConfirmLater -->
+                    <div class="error_form" data-bind="text: errorConfirmLater"></div>
+                    <!-- /ko -->
+                    
+                    <!-- ko ifnot: mailConfirmLater -->
+                    <div class="input-holder tooltip">
+                        <div class="tooltip__trigger">?
+                            <div class="tooltip__content">
+                                <p>Код, высланный на почтовый адрес или телефон</p>
+                                <div class="tooltip__before"></div>
+                                <div class="tooltip__after"></div>
+                            </div>
+                        </div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="code" value="" placeholder="Ваш e-mail код" class="block-input" id="i-37" data-bind="value: mailToken">
+                            <label for="37" class="label-floatlabel  " style="display: none;">Ваш e-mail код</label>
+                        </div>
+                        
+                        <!-- ko if: mailIsConfirm -->
+                        <div class="b-status b-status--done">E-mail подтверждён</div>
+                        <!-- /ko -->
+                        
+                        <!-- ko if: errorEmailConfirm-->
+                        <div class="form_error" data-bind="text: errorEmailConfirm"></div>
+                        <!-- /ko -->
+                    </div>
+                    <!-- /ko -->
+                    
+                    <!-- ko ifnot: isEmptyPhone -->
+                    <div style="padding-top:13px" class="input-holder">
+                        <input id="skip-email" name="skip-email" type="checkbox" checked="" class="checkbox"  data-bind="checked: mailConfirmLater">
+                        <label for="skip-email" class="block-label b-small-text">Подтвердить почтовый ящик позднее</label>
+                    </div>
+                    <!-- /ko -->
+                    
+                    
+                    <!-- ko ifnot: isEmptyPhone -->
+                        <!-- ko ifnot: phoneConfirmLater -->
+                        <div class="input-holder tooltip">
+                            <div class="tooltip__trigger">?
+                                <div class="tooltip__content">
+                                    <p>Код, высланный в SMS</p>
+                                    <div class="tooltip__before"></div>
+                                    <div class="tooltip__after"></div>
+                                </div>
+                            </div>
+                            <div class="floatlabel-wrapper" style="position:relative">
+                                <input type="text" name="code" value="" placeholder="Ваш SMS код" class="block-input" id="i-37" data-bind="value: phoneToken">
+                                <label for="37" class="label-floatlabel  " style="display: none;">Ваш SMS код</label>
+                            </div>
+
+                            <!-- ko if: phoneIsConfirm -->
+                            <div class="b-status b-status--done">Телефон подтверждён</div>
+                            <!-- /ko -->
+
+                            <!-- ko if: errorPhoneConfirm-->
+                            <div class="form_error" data-bind="text: errorPhoneConfirm"></div>
+                            <!-- /ko -->
+                        </div>
+                        <!-- /ko -->
+                    
+                        <div style="padding-top:13px" class="input-holder">
+                            <input id="skip-phone" name="skip-email" type="checkbox" checked="" class="checkbox"  data-bind="checked: phoneConfirmLater">
+                            <label for="skip-phone" class="block-label b-small-text">Подтвердить телефон позднее</label>
+                        </div>
+                    <!-- /ko -->
+                </div>
+    
+            </div>
+            <div class="b-wizard__actions">
+                <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="registrationFromStep3Tmpl">
+    <!-- version 1.0 -->
+    <div class="h1-with-progress-bar">
+        <canvas id="progressCircle" width="160" height="160">
+            <p>Ваш браузер не поддерживает технологию canvas</p>
+        </canvas>
+        <h1>Регистрация нового аккаунта</h1>
+    </div>
+    <form action="#">
+        <div id="registerWizard" class="b-wizard">
+            <ul class="b-wizard__steps anchor">
+                <li>
+                    <a href="#step-1" class="selected" isdone="1" rel="1">
+                        <label class="b-wizard__step-num">1</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-2" class="selected" isdone="0" rel="2">
+                        <label class="b-wizard__step-num">2</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-3" class="selected" isdone="0" rel="3">
+                        <label class="b-wizard__step-num">3</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-4" class="disabled" isdone="0" rel="4">
+                        <label class="b-wizard__step-num">4</label>
+                    </a>
+                </li>
+            </ul>
+            <div class="b-wizard__holder">
+    
+                <div id="step-3" class="content">
+                    <h2 class="b-wizard__step-title">Персональные данные</h2>
+                    <p>Укажите свои персональные данные</p>
+                    <div class="input-holder tooltip">
+                        <div class="tooltip__trigger">?
+                            <div class="tooltip__content">
+                                <p>Введите ваше имя на сайте.</p>
+                                <div class="tooltip__before"></div>
+                                <div class="tooltip__after"></div>
+                            </div>
+                        </div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="family" value="" placeholder="Фамилия" class="block-input" id="i-41" data-bind="value: lastName"/>
+                            <label for="41" class="label-floatlabel" style="display: none;">Фамилия</label>
+                            <!-- ko if: errorLastName-->
+                                <div class="form_error" data-bind="text: errorLastName"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="name" value="" placeholder="Имя" class="block-input" id="i-24" data-bind="value: firstName"/>
+                            <label for="24" class="label-floatlabel  " style="display: none;">Имя</label>
+                            <!-- ko if: errorFirstName-->
+                                <div class="form_error" data-bind="text: errorFirstName"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="patronymic" value="" placeholder="Отчество" class="block-input" id="i-85" data-bind="value: middleName" />
+                            <label for="85" class="label-floatlabel" style="display: none;">Отчество</label>
+                            <!-- ko if: errorMiddleName-->
+                                <div class="form_error" data-bind="text: errorMiddleName"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="birthDay" value="" placeholder="Дата рождения" class="block-input" id="birthDay"  data-bind="value: birthDay, attr: {id: cssBirthDay}"/>
+                            <input name="bdate" id="bdate" type="hidden" data-bind="value: birthDayHiddenField" />
+                            <label for="birthDay" class="label-floatlabel" style="display: none;">Дата рождения</label>
+                            <!-- ko if: errorBirthDay-->
+                                <div class="form_error" data-bind="text: errorBirthDay"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <label for="85" class="block-label b-small-text">Ваш пол</label>
+                            <input name="gender" type="radio" value="m" class="radio" data-bind="checked: gender"/>
+                            <label for="gender" class="block-label b-small-text">Мужчина</label>
+                            <input name="gender" type="radio" value="ц" class="radio" data-bind="checked: gender"/>
+                            <label for="gender" class="block-label b-small-text">Женщина</label>
+                            <!-- ko if: errorGender-->
+                                <div class="form_error" data-bind="text: errorGender"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div style="padding-top:13px" class="input-holder">
+                        <input id="skip_personal" name="skip_personal" type="checkbox" class="checkbox" data-bind="click: SpecifyLater">
+                        <label for="skip_personal" class="block-label b-small-text">Указать позже</label>
+                    </div>
+                </div>
+    
+            </div>
+            <div class="b-wizard__actions">
+                <div class="b-wizard__loader">Loading</div>
+                <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
+            </div>
+        </div>
+    </form>
+</script>
+
+<script type="text/html" id="registrationFromStep4Tmpl">
+    <!-- version 1.0 -->
+    <div class="h1-with-progress-bar">
+        <canvas id="progressCircle" width="160" height="160">
+            <p>Ваш браузер не поддерживает технологию canvas</p>
+        </canvas>
+        <h1>Регистрация нового аккаунта</h1>
+    </div>
+    <form action="#">
+        <div id="registerWizard" class="b-wizard">
+            <ul class="b-wizard__steps anchor">
+                <li>
+                    <a href="#step-1" class="selected" isdone="1" rel="1">
+                        <label class="b-wizard__step-num">1</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-2" class="selected" isdone="0" rel="2">
+                        <label class="b-wizard__step-num">2</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-3" class="selected" isdone="0" rel="3">
+                        <label class="b-wizard__step-num">3</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-4" class="selected" isdone="0" rel="4">
+                        <label class="b-wizard__step-num">4</label>
+                    </a>
+                </li>
+            </ul>
+            <div class="b-wizard__holder">
+    
+                <div id="step-4" class="content">
+                    <h2 class="b-wizard__step-title">Адрес доставки</h2>
+                    <p>Для доставки покупок требуется указать почтовый адрес</p>
+                    <div class="input-holder">
+                        <select name="country" placeholder="Страна"  data-bind="value: country, attr:{id: cssCountryList}">
+                            <option value=""></option>
+                            <!-- ko foreach: countryList -->
+                            <option data-bind="text: name, value: id"></option>
+                            <!-- /ko -->
+                        </select>
+                        <!-- ko if: errorCountry-->
+                            <div class="form_error" data-bind="text: errorCountry"></div>
+                        <!-- /ko -->
+                    </div>
+                    <div class="input-holder tooltip">
+                        <div class="tooltip__trigger">?
+                            <div class="tooltip__content">
+                                <p>Введите ваш регион.</p>
+                                <div class="tooltip__before"></div>
+                                <div class="tooltip__after"></div>
+                            </div>
+                        </div>
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="family" value="" placeholder="Регион" class="block-input" id="i-27" data-bind="value: customRegion, attr: {id: cssRegionList}, enable: country">
+                            <label for="27" class="label-floatlabel" style="display: none;">Регион</label>
+                            <!-- ko if: errorRegion-->
+                                <div class="form_error" data-bind="text: errorRegion"></div>"
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="name" value="" placeholder="Город" class="block-input" id="i-4"  data-bind="value: customCity, attr: {id: cssCityList}, enable: customRegion">
+                            <label for="4" class="label-floatlabel  " style="display: none;">Город</label>
+                            <!-- ko if: errorCity-->
+                                <div class="form_error" data-bind="text: errorCity"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="patronymic" value="" placeholder="Улица, дом, квартира" class="block-input" id="i-40"  data-bind="value: customAddress, attr: {id: cssAddress}, enable: customCity">
+                            <label for="40" class="label-floatlabel" style="display: none;">Улица, дом, квартира</label>
+                            <!-- ko if: errorAddress-->
+                                <div class="form_error" data-bind="text: errorAddress"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div class="input-holder">
+                        <div class="floatlabel-wrapper" style="position:relative">
+                            <input type="text" name="date" value="" placeholder="Почтовый индекс" class="block-input" id="i-3" data-bind="value: postIndex, attr: {id: cssPostIndex}">
+                            <label for="3" class="label-floatlabel" style="display: none;">Почтовый индекс</label>
+                            <!-- ko if: errorPostIndex-->
+                                <div class="form_error" data-bind="text: errorPostIndex"></div>
+                            <!-- /ko -->
+                        </div>
+                    </div>
+                    <div style="padding-top:13px" class="input-holder">
+                        <input id="skip_address" name="skip_address" type="checkbox" class="checkbox" data-bind="click: SpecifyLater">
+                        <label for="skip_address" class="block-label b-small-text">Указать позже</label>
+                    </div>
+                </div>
+    
+            </div>
+            <div class="b-wizard__actions">
+                <div class="b-wizard__loader">Loading</div>
+                <a href="#" class="b-wizard__action btn-prev-step btn-disabled" data-bind="click: Back">Назад</a>
+                <a href="#" class="b-wizard__action btn-next-step" data-bind="click: SubmitForm">Продолжить</a>
+            </div>
+        </div>
+    </form>
+</script>

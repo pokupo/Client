@@ -17,6 +17,7 @@ var OrderListWidget = function() {
                 detail : null
             }
         },
+        animate: null,
         inputParameters: {},
         style: null,
         customContainer: null
@@ -41,6 +42,10 @@ var OrderListWidget = function() {
         }
         if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.order) {
             input = WParameters.order;
+        }
+        if(!$.isEmptyObject(input)){
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -74,7 +79,7 @@ var OrderListWidget = function() {
             self.BaseLoad.RepeatOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.repeat', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderRepeat, function() {
-                        Parameters.cache.orderList = null;
+                        Parameters.cache.orderList = {};
                         console.log(data);
                         EventDispatcher.DispatchEvent('OrderList.order.edit', {id: data.id});
                     }, false);
@@ -86,7 +91,7 @@ var OrderListWidget = function() {
             self.BaseLoad.ReturnOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.return', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderReturn, function() {
-                        Parameters.cache.orderList = null;
+                        Parameters.cache.orderList = {};
                         Routing.SetHash('cart', 'Моя корзина')
                     }, false);
                 }
@@ -98,7 +103,7 @@ var OrderListWidget = function() {
                 self.BaseLoad.CancelOrder(opt.id, function(data) {
                     if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.cancel', opt)})){
                         self.ShowMessage(Config.OrderList.message.orderCancel, function() {
-                            Parameters.cache.orderList = null;
+                            Parameters.cache.orderList = {};
                             opt.fn()
                         }, false);
                     }
@@ -110,7 +115,7 @@ var OrderListWidget = function() {
             self.BaseLoad.ConfirmOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderCheck, function() {
-                        Parameters.cache.orderList = null;
+                        Parameters.cache.orderList = {};
                         opt.fn()
                     }, false);
                 }
@@ -122,7 +127,7 @@ var OrderListWidget = function() {
                 self.BaseLoad.DeleteOrder(opt.id, function(data) {
                     if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
                         self.ShowMessage(Config.OrderList.message.orderDelete, function() {
-                            Parameters.cache.orderList = null;
+                            Parameters.cache.orderList = {};
                             opt.fn()
                         }, false);
                     }
@@ -142,16 +147,15 @@ var OrderListWidget = function() {
         Content: function() {
             self.WidgetLoader(false);
             if (Routing.params.block == 'list') {
-                self.Fill.List();
                 self.currentPage = Routing.GetCurrentPage();
+                self.Fill.List();
             }
             else if (Routing.params.block == 'detail' && Routing.params.id)
                 self.Fill.Detail(Routing.params.id);
         },
         Menu: function() {
-            Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function() {
-                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function() {
+                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : {}, active : ''});
             });
         }
     };
@@ -175,14 +179,12 @@ var OrderListWidget = function() {
     };
     self.Fill = {
         List: function() {
-            self.BaseLoad.OrderList(function(data) {
+            var start = Routing.GetCurrentPage() * Config.Paging.itemsPerPage - Config.Paging.itemsPerPage;
+            var query = '/' + start + '/' + Config.Paging.itemsPerPage; 
+            self.BaseLoad.OrderList(query, function(data) {
                 if (!data.err) {
                     self.InsertContainer.List();
-                    var list = Parameters.cache.order.list;
-                    if ($.isEmptyObject(list)) {
-                        list = new OrderListViewModel();
-                        Parameters.cache.order.list = list;
-                    }
+                    var list = new OrderListViewModel();
                     list.AddContent(data);
                     self.Render.List(list);
                 }
@@ -241,12 +243,14 @@ var OrderListWidget = function() {
         List: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
-                    new AnimateOrderList();
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('list') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('list') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -264,15 +268,20 @@ var OrderListWidget = function() {
         },
         EmptyList: function() {
             self.WidgetLoader(true, self.settings.containerFormId);
+            if(self.settings.animate)
+                self.settings.animate();
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -312,16 +321,12 @@ var OrderListViewModel = function() {
 
     self.AddContent = function(data) {
         self.list = ko.observableArray();
-        var start = Routing.GetCurrentPage() * Config.Paging.itemsPerPage - Config.Paging.itemsPerPage;
-        var end = Routing.GetCurrentPage() * Config.Paging.itemsPerPage - 1;
-        self.count = data.count_order;
-        if (end > self.count - 1)
-            end = self.count - 1;
-        if (start <= self.count - 1) {
-            for (var i = start; i <= end; i++) {
+        $.each(data, function(i){
+            if(i == 'count_order')
+                self.count = data[i];
+            else
                 self.list.push(new OrderListDetailViewModel(data[i]));
-            }
-        }
+        });
         self.AddPages();
     };
     self.AddPages = function() {
@@ -334,7 +339,7 @@ var OrderListViewModel = function() {
         self.paging = Paging.GetPaging(self.count, {paging: Config.Paging}, ClickLinkPage);
     }
     self.ClickRefresh = function(){
-        Parameters.cache.orderList = null;
+        Parameters.cache.orderList = {};
         Routing.SetHash('purchases', 'Мои покупки', {block:'list'})
     };
 };
@@ -353,15 +358,15 @@ var OrderListDetailViewModel = function(data) {
     self.finalCost = data.final_cost + ' руб.';
     self.GetIconPay = function(status) {
         if (status == 'wait_check')
-            return Config.Base.pathToImages + '/_check.png';
+            return JSSettings.pathToImages + '/_check.png';
         if (status == 'wait_pay')
-            return Config.Base.pathToImages + '/_receipt_invoice.png';
+            return JSSettings.pathToImages + '/_receipt_invoice.png';
         if (status == 'paid')
-            return Config.Base.pathToImages + '/_coins.png';
+            return JSSettings.pathToImages + '/_coins.png';
         if (status == 'cancel')
-            return Config.Base.pathToImages + '/_cancel_icon.png';
+            return JSSettings.pathToImages + '/_cancel_icon.png';
         if (status == 'back')
-            return Config.Base.pathToImages + '/_arrow_return.png';
+            return JSSettings.pathToImages + '/_arrow_return.png';
         return false;
     };
     self.GetNamePay = function(status) {
@@ -379,17 +384,17 @@ var OrderListDetailViewModel = function(data) {
     };
     self.GetIconOrder = function(status) {
         if (status == 'init')
-            return Config.Base.pathToImages + '/_bricks.png';
+            return JSSettings.pathToImages + '/_bricks.png';
         if (status == 'new')
-            return Config.Base.pathToImages + '/_check.png';
+            return JSSettings.pathToImages + '/_check.png';
         if (status == 'process')
-            return Config.Base.pathToImages + '/_hourglass.png';
+            return JSSettings.pathToImages + '/_hourglass.png';
         if (status == 'send')
-            return Config.Base.pathToImages + '/_delivery.png';
+            return JSSettings.pathToImages + '/_delivery.png';
         if (status == 'delivered')
-            return Config.Base.pathToImages + '/_box_receive.png';
+            return JSSettings.pathToImages + '/_box_receive.png';
         if (status == 'cancel')
-            return Config.Base.pathToImages + '/_cancel_icon.png';
+            return JSSettings.pathToImages + '/_cancel_icon.png';
         return false;
     };
     self.GetNameOrder = function(status) {
@@ -407,8 +412,10 @@ var OrderListDetailViewModel = function(data) {
             return 'Отменен';
         return false;
     };
+    self.statusPay = data.status_pay;
     self.statusPayName = self.GetNamePay(data.status_pay);
     self.statusPayIcon = self.GetIconPay(data.status_pay);
+    self.statusOrder = data.status_order;
     self.statusOrderName = self.GetNameOrder(data.status_order);
     self.statusOrderIcon = self.GetIconOrder(data.status_order);
 

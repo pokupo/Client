@@ -15,6 +15,7 @@ var FavoritesWidget = function() {
                 empty : null
             }
         },
+        animate: null,
         showBlocks : null,
         inputParameters: {},
         style: null,
@@ -51,6 +52,8 @@ var FavoritesWidget = function() {
                        self.settings.showBlocks.splice(self.settings.showBlocks.indexOf(self.settings.showBlocks[i]), 1);
                 }
             }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -101,7 +104,7 @@ var FavoritesWidget = function() {
                 else{
                     if(!data.err)
                         data.err = Config.Favorites.message.failClearGoods;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear', opt)})
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear.one', opt)})
                 }
             })
         });
@@ -125,7 +128,7 @@ var FavoritesWidget = function() {
                 else{
                     if(!data.err)
                         data.err = Config.Favorites.message.failClearGoods;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear', opt)})
+                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear.all', opt)})
                 }
             })
         });
@@ -145,9 +148,8 @@ var FavoritesWidget = function() {
             });
         },
         Menu : function(){
-            Loader.Indicator('MenuPersonalCabinetWidget', false);
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
-                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet');
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
+                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : {}, active : ''});
             });
         },
     };
@@ -200,11 +202,14 @@ var FavoritesWidget = function() {
         Content : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
+                    ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -221,6 +226,8 @@ var FavoritesWidget = function() {
         },
         EmptyFaforites : function(){
             self.WidgetLoader(true, self.settings.containerId);
+            if(self.settings.animate)
+                self.settings.animate();
         }
     };
     self.SetPosition = function() {
@@ -257,8 +264,32 @@ var BlockFavoritesForSellerViewModel = function(content){
     self.goods = ko.observableArray();
 
     self.uniq = EventDispatcher.GetUUID();
-    self.cssSelectAll = "favoritesSelectAll_" + self.uniq;
-    self.isChecked = ko.observable(false);
+    self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
+    self.isSelectedAll = ko.observable(false);
+    self.isSelectedAll.subscribe(function(check) {
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods )[0].checked = check;
+            goods.isSelected(check);
+        });
+    });
+    self.ClickSelectAll = function(){
+        var all = $('#' + self.cssSelectAll);
+        var check = all.is(':checked');
+        var val;
+        if(check){
+            all[0].checked = false;
+            val = false;
+        }
+        else{
+            all[0].checked = true;
+            val = true;
+        }
+        
+        ko.utils.arrayForEach(self.goods(), function(goods) {
+            $('#' + goods.cssCheckboxGoods )[0].checked = val;
+            goods.isSelected(val);
+        });
+    }
     
     self.AddContent = function(data){
         for(var i = 0; i <= data.length-1; i++){
@@ -297,12 +328,6 @@ var BlockFavoritesForSellerViewModel = function(content){
             EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:ids, goods:removedGoods, content:content, block:self});
         });
     };
-    self.ClickSelectAll = function(block){
-        var check = $('#' + self.cssSelectAll).is(':checked');
-        ko.utils.arrayForEach(self.goods(), function(goods) {
-            goods.isSelected(check);
-        });
-    }
     self.DisabledButton = ko.computed(function(){
         var countGoods = self.goods().length;
         var selectedGoods = [];
@@ -327,8 +352,34 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
     self.fullName = data.full_name;
     self.sellCost = ko.observable(data.sell_cost);
     self.sellEndCost = ko.observable(data.sell_end_cost);
-    self.routeImages = Parameters.pathToImages + data.route_image;
+    self.routeImages = JSSettings.pathToImages + data.route_image;
     self.isSelected = ko.observable(false);
+    self.isSelected.subscribe(function(check) {
+        var countGoods = block.goods().length;
+        var selectedGoods = [];
+        
+        for(var i = 0; i <= countGoods-1; i++) {
+            if(block.goods()[i].isSelected())
+              selectedGoods.push(block.goods()[i].id);
+        };
+        if(selectedGoods.length < countGoods)
+            $('#' + block.cssSelectAll )[0].checked = false;
+        else
+            $('#' + block.cssSelectAll )[0].checked = true;
+    });
+    self.cssCheckboxGoods = 'goods_' + self.id;
+    self.ClickOrder = function(){
+        var checkBox = $('#' + self.cssCheckboxGoods);
+        var isChecked = checkBox.is(':checked');
+        if(isChecked == false){
+            checkBox[0].checked = true;
+            self.isSelected(true);
+        }
+        else{
+            checkBox[0].checked = false;
+            self.isSelected(false);
+        }
+    }
     self.showAddToCart = ko.computed(function(){
         if($.inArray('addToCart', Config.Favorites.showBlocks) >= 0)
             return true;

@@ -304,12 +304,12 @@ var Widget = function (){
                 else{
                     Loader.Indicator(widget.widgetName, true);
                     delete Loader.widgets[widget.widgetName];
-                    Logger.Console.Exeption(widget.widgetName, 'Widget version = [' + self.version + ']. For correct work of the widget required version: min - [' + widget.minWidgetVersion + '] max - [' + widget.maxWidgetVersion + ']');
+                    Logger.Console.Exception(widget.widgetName, 'Widget version = [' + self.version + ']. For correct work of the widget required version: min - [' + widget.minWidgetVersion + '] max - [' + widget.maxWidgetVersion + ']');
                 }
             }
             else{
                 Loader.Indicator(widget.widgetName, true);
-                Logger.Console.Exeption('Widget', 'JSCore version = [' + JSCore.version + ']. For correct work of the widgets required version: min - [' + self.minCoreVersion + '] max - [' + self.maxCoreVersion + ']');
+                Logger.Console.Exception('Widget', 'JSCore version = [' + JSCore.version + ']. For correct work of the widgets required version: min - [' + self.minCoreVersion + '] max - [' + self.maxCoreVersion + ']');
             }
         }else{
             setTimeout(function(){self.Init(widget, noindicate)}, 100);
@@ -534,8 +534,8 @@ var Widget = function (){
         }
         return tmplName;
     };
-    this.Exeption = function(text){
-        Logger.Console.Exeption(this.widgetName, text);
+    this.Exception = function(text){
+        Logger.Console.Exception(this.widgetName, text);
     };
     this.QueryError = function(data, callback, callbackPost){
         if (data.err) {
@@ -741,7 +741,7 @@ var Widget = function (){
                             if($.type(tmpl.id) == 'object'){
                                 for(var key in tmpl.id){
                                     if(self.ErrorVertionTmpl(tmpl.id[key], hash, temp)){
-                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        Logger.Console.Exception(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                         temp.remove();
                                         return false;
                                         break;
@@ -750,7 +750,7 @@ var Widget = function (){
                             }
                             else{
                                if(self.ErrorVertionTmpl(tmpl.id, hash, temp)){
-                                    Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                    Logger.Console.Exception(self.widgetName, 'Error of the template - [' + tmpl.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                     temp.remove();
                                     return false;
                                 }
@@ -785,7 +785,7 @@ var Widget = function (){
                                                 tmpl.custom.id[key] = tmpl.id[key];
                                             }
                                             if((tmpl.custom.id[key] && temp.find('script#' + tmpl.custom.id[key]).length != 1)){
-                                                Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for [' + key + '] - [' + tmpl.custom.id[key] + ']');
+                                                Logger.Console.Exception(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template for [' + key + '] - [' + tmpl.custom.id[key] + ']');
                                                 temp.remove();
                                                 delete tmpl.custom;
                                                 Default ();
@@ -793,14 +793,14 @@ var Widget = function (){
                                                 break;
                                             }
                                             if(self.ErrorVertionTmpl(tmpl.custom.id[key], hash, temp)){
-                                                Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.custom.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                                Logger.Console.Exception(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.custom.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                                 return false;
                                                 break;
                                             }
                                         }
                                     }
                                     else{
-                                        Logger.Console.Exeption(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']');
+                                        Logger.Console.Exception(self.widgetName, 'Settings id for tmpl - [' + tmpl.custom.path + ']');
                                         temp.remove();
                                         delete tmpl.custom;
                                         Default ();
@@ -809,14 +809,14 @@ var Widget = function (){
                                 }   
                                 else{
                                     if($(data).find('script#' + tmpl.custom.id).length != 1){
-                                        Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id + ']');
+                                        Logger.Console.Exception(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id + ']');
                                         temp.remove();
                                         delete tmpl.custom;
                                         Default ();
                                         return false;
                                     }
                                     if(self.ErrorVertionTmpl(tmpl.custom.id, hash, temp)){
-                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.custom.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        Logger.Console.Exception(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.custom.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                         temp.remove();
                                         delete tmpl.custom;
                                         Default ();
@@ -828,7 +828,7 @@ var Widget = function (){
                                 if($.type(tmpl.id) == 'object'){
                                     for(var key in tmpl.id){
                                         if(temp.find('script#' + tmpl.id[key]).length != 1){
-                                            Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.id[key] + ']');
+                                            Logger.Console.Exception(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.id[key] + ']');
                                             temp.remove();
                                             delete tmpl.custom;
                                             Default ();
@@ -836,7 +836,7 @@ var Widget = function (){
                                             break;
                                         }
                                         if(self.ErrorVertionTmpl(tmpl.id[key], hash, temp)){
-                                            Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                            Logger.Console.Exception(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version for [' + key + '] - [' + tmpl.id[key] + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                             temp.remove();
                                             delete tmpl.custom;
                                             Default ();
@@ -847,13 +847,13 @@ var Widget = function (){
                                 }   
                                 else{
                                     if(temp.find('script#' + tmpl.id).length != 1){
-                                        Logger.Console.Exeption(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
+                                        Logger.Console.Exception(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
                                         temp.remove();
                                         Default ();
                                         return false;
                                     }
                                     if(self.ErrorVertionTmpl(tmpl.id, hash, temp)){
-                                        Logger.Console.Exeption(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
+                                        Logger.Console.Exception(self.widgetName, 'Error of the template - [' + tmpl.custom.path + ']. No valid version - [' + tmpl.id + ']. Required min [' + self.minTmplVersion + '] max [' + self.maxTmplVersion+ ']');
                                         temp.remove();
                                         delete tmpl.custom;
                                         Default ();
@@ -867,7 +867,7 @@ var Widget = function (){
                             if(callback)callback();
                         }
                         else{
-                            Logger.Console.Exeption(self.widgetName,'Error load file template - ' + tmpl.custom.path);
+                            Logger.Console.Exception(self.widgetName,'Error load file template - ' + tmpl.custom.path);
                             delete tmpl.custom;
                             Default ();
                         }

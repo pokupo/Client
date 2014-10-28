@@ -17,6 +17,7 @@
                 security : null
             }
         },
+        animate: null,
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -47,6 +48,17 @@
         if(!$.isEmptyObject(input)){
             if (input.geoShop)
                 self.settings.geoShop = input.geoShop;
+            if(input.tmpl){
+                if(input.tmpl.path)
+                    self.settings.tmpl.path = input.tmpl.path;
+                if(input.tmpl.id){
+                    for(var key in input.tmpl.id){
+                        self.settings.tmpl.id[key] = input.tmpl.id[key];
+                    }
+                }
+            }
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -297,7 +309,7 @@
                 if(data.result == 'ok'){
                     self.ShowMessage(Config.Profile.message.deleteAddressDelivery,function(){
                         Parameters.cache.delivery = null;
-                        delivery.list.remove(delivery.address);
+                        delivery.list.addressList.remove(delivery.address);
                     }, false);
                 }
                 else{
@@ -401,7 +413,7 @@
     }
     self.Info = {
         Menu : function(){
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.0.js', function(){
+            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
                 if (!Routing.params.info)
                      Routing.params.info = Config.Profile.menu.personalInformation.prefix;
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : Config.Profile.menu, active : Routing.params.info});
@@ -489,21 +501,10 @@
         Personal : function(form){ 
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    $("#" + form.registrationData.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                        changeMonth: true,
-                        changeYear: true,
-                        dateFormat: 'dd.mm.yy',
-                        defaultDate: '-24Y',
-                        yearRange: "c-77:c+6",
-                        minDate : '-101Y',
-                        maxDate : '-18Y',
-                        onClose: function(dateText, inst) {
-                            form.registrationData.birthDayField(dateText);
-                        }
-                    });
-
-                    $('input#' + form.contacts.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+                    if(self.settings.animate)
+                        self.settings.animate();
                     
                     $('#' + form.postalAddress.cssCountryList).change(function() {
                         var v =  $('#' + form.postalAddress.cssCountryList + " option:selected").val();
@@ -630,7 +631,7 @@
                     }
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -648,11 +649,14 @@
         DeliveryList : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -670,9 +674,11 @@
         DeliveryForm : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-                    
-                    $('input#' + delivery.cssContactPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
             
                     $('#' + delivery.cssRegionList).autocomplete({
                         source: function(request, response) {
@@ -790,11 +796,9 @@
                         delivery.address(null);
                         delivery.postIndex(null);
                     });
-
-                    self.WidgetLoader(true, self.settings.containerFormId);
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -812,11 +816,14 @@
         Security : function(sequrity){
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('security') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('security') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -839,9 +846,8 @@
                     self.settings.style[key] = self.settings.inputParameters[key];
             }
             $().ready(function() {
-                for (var i = 0; i <= Config.Containers.authentication.length - 1; i++) {
-                    $("#" + Config.Containers.authentication[i]).css(self.settings.style);
-                }
+                if ($('#' + self.settings.containerFormId).length > 0)
+                    $('#' + self.settings.containerFormId).css(self.settings.style);
             });
         }
     };
@@ -912,6 +918,7 @@ var ProfileDataRegistrationViewModel = function(){
     self.errorBirthDay = ko.observable(null);
     
     self.isEditBlock = ko.observable(0);
+    self.iconUser = ko.observable();
     
     self.cssRegistrationDataForm = 'profile_registration_data_form';
     
@@ -1019,6 +1026,7 @@ var ProfileDataRegistrationViewModel = function(){
     self.AddContent = function(data){
         self.data = data
         var user = Parameters.cache.userInformation;
+        self.iconUser(JSSettings.pathToImages + user.route_icon_user);
         self.username(user.login);
         self.gender(data.gender);
         self.lastName(data.f_name);

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+        <link rel="stylesheet" href="http://pokupo-server.asmsoft.ru/css/jquery-ui-1.10.2.custom.css" type="text/css" media="screen" />
+        <link rel="stylesheet" href="http://dev.pokupo.ru/new/styles/main.css" type="text/css" media="screen" />
+        
+        <script src='http://server.pokupo.ru/prod/server/js/promo/widgets.animate.min.js' type="text/javascript"></script>
+        <script type="text/javascript">
+            var pkpWHostTmpl = 'http://promo.pokupo.ru/themes/default/tmpl';
+            var WParameters = {
+                core: {
+                    shopId: 1
+                },
+                authentication: {
+                    container: {widget: 'authentication_block'},
+                    tmpl: {path: pkpWHostTmpl + '/authenticationTmpl.html'}
+                },
+                breadCrumb: {
+                    tmpl: {path: pkpWHostTmpl + '/breadCrumbTmpl.html'}
+                },
+                buttonPayment: {
+                    title: "Оплатить"
+                },
+                catalog: {
+                    tmpl: {path: pkpWHostTmpl + '/catalogTmpl.html'},
+                    animate: function () {
+                        new AnimateCatalog();
+                    }
+                },
+                content: {
+                    block: {
+                        tmpl: {path: pkpWHostTmpl + '/blockTmpl.html'},
+                        animate: function () {
+                            new AnimateContent();
+                        }
+                    },
+                    content: {
+                        tmpl: {path: pkpWHostTmpl + '/contentTmpl.html'},
+                        animate: function () {
+                            new AnimateContent();
+                        }
+                    }
+                },
+                cart: {
+                    tmpl: {path: pkpWHostTmpl + '/cartTmpl.html'},
+                    animate: function(){
+                        new AnimateCart();
+                    }
+                },
+                cartGoods: {
+                    tmpl: {path: pkpWHostTmpl + '/cartGoodsTmpl.html'}
+                },
+                cabinetCartGoods: {
+                    tmpl: {path: pkpWHostTmpl + '/cabinetCartGoodsTmpl.html'}
+                },
+                favorites: {
+                    show: ["infoShop", "addToCart", "buy"],
+                    tmpl: {path: pkpWHostTmpl + '/favoritesTmpl.html'}
+                },
+                goods: {
+                    show: ["selectionCount", "addToCart", "buy", "gallery", "shipping", "opinion"],
+                    tmpl: {path: pkpWHostTmpl + '/goodsTmpl.html'},
+                    animate: function(){
+                        new AnimateGoods();
+                    }
+                },
+                infoSeller : {
+                    animate: function(){
+                        new AnimateInfoSeller();
+                    }
+                },
+                menuPersonalCabinet: {
+                    tmpl: {path: pkpWHostTmpl + '/menuPersonalCabinetTmpl.html'}
+                },
+                message: {
+                    tmpl: {path: pkpWHostTmpl + '/messageTmpl.html'},
+                    animate: function(){
+                        new AnimateMessage();
+                    }
+                },
+                order: {
+                    tmpl: {path: pkpWHostTmpl + '/orderTmpl.html'},
+                    animate: function(){
+                        new AnimateOrder();
+                    }
+                },
+                orderList: {
+                    tmpl: {path: pkpWHostTmpl + '/orderListTmpl.html'},
+                    animate: function(){
+                        new AnimateOrderList();
+                    }
+                },
+                profile: {
+                    tmpl: {path: pkpWHostTmpl + '/profileTmpl.html'},
+                    animate: function(){
+                        new AnimateProfile();
+                    }
+                },
+                registration: {
+                    tmpl: {path: pkpWHostTmpl + '/registrationTmpl.html'},
+                    animate: function () {
+                        new AnimateRegistration();
+                    }
+                },
+                registrationSeller: {
+                    tmpl: {path: pkpWHostTmpl + '/registrationSellerTmpl.html'},
+                    animate: function () {
+                        new AnimateRegistrationSeller();
+                    }
+                },
+                relatedGoods: {
+                    animate: function () {
+                        new AnimateRelatedGoods();
+                    }
+                },
+                search: {
+                    tmpl: {path: pkpWHostTmpl + '/searchTmpl.html'},
+                    animate: function () {
+                        new AnimateSearch();
+                    }
+                },
+                searchResult: {
+                    form: {
+                        tmpl: {path: pkpWHostTmpl + '/advancedSearchFormTmpl.html'},
+                        animate: function () {
+                            new AnimateSearchResult();
+                        }
+                    },
+                    content: {
+                        tmpl: {path:  pkpWHostTmpl + '/searchResultTmpl.html'},
+                        animate: function () {
+                            new AnimateSearchResult();
+                        }
+                    }
+                },
+                userInformation: {
+                    show: ["icon", "raiting"],
+                    tmpl: {path: pkpWHostTmpl + '/userInformationTmpl.html'},
+                    animate: function(){
+                        new AnimateUserInformation();
+                    }
+                }
+            };
+        </script>
+        <script src='http://server.pokupo.ru/prod/server/js/widgets/widgets.min.js' type="text/javascript"></script>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+        <script src="http://yandex.st/share/share.js"></script>
+        <script src="http://vjs.zencdn.net/4.7/video.js"></script>
+        <script src="https://dadata.ru/static/js/jquery.suggestions-4.6.min.js"></script>
+
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/fotorama.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/carousel.min.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/chosen.jquery.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/jquery.fancytree-all.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/floatlabels.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/masked-input.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/tooltip.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/jquery.password.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/main.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/progress-circle.js"></script>
+        <script src="http://pokupo-server.asmsoft.ru/js/promo/jquery.wizard.js"></script>
+
+    </head>
+    <body>
+        <div class="main">
+            <!-- header -->
+            <section class="header">
+                <div class="container">
+                    <a href="index.html" title="Pokupo.ru" class="logo"></a>
+                    <div class="menu-login">
+                        <div id="user_information" style="float: left"></div>
+                        <div id="cart_information" style="float: left"></div>
+                    </div>
+
+                    <ul class="menu b-navigation">
+                        <li class="menu__item with-submenu"><a href="frontpage.html" target=""><span>Платформа</span></a>
+                            <ul class="submenu">
+                                <li class="submenu__item"><a href="about.html" target=""><span>О проекте</span></a>
+                                </li>
+                                <li class="submenu__item"><a href="http://shop.pokupo.ru/" target="_blank"><span>Торговый портал</span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="menu__item"><a href="rates.html" target=""><span>Тарифы</span></a>
+                        </li>
+                        <li class="menu__item with-submenu"><a href="#" target="" class=""><span>Компания</span></a>
+                            <ul class="submenu">
+                                <li class="submenu__item"><a href="events.html" target=""><span>События</span></a>
+                                </li>
+                                <li class="submenu__item"><a href="aboutus.html" target=""><span>О нас</span></a>
+                                </li>
+                                <li class="submenu__item"><a href="community.html" target=""><span>Сообщество</span></a>
+                                </li>
+                                <li class="submenu__item"><a href="http://pokupo.livejournal.com/" target="_blank"><span>Блог</span></a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="menu__item"><a href="partners.html" target=""><span>Партнёры</span></a>
+                        </li>
+                        <li class="menu__item with-submenu"><a href="javascript:void(0);" target=""><span>Помощь</span></a>
+                            <ul class="submenu">
+                                <li class="submenu__item"><a href="faq.html" target=""><span>Вопросы и ответы</span></a>
+                                </li>
+                                <li class="submenu__item"><a href="https://help.pokupo.ru" target="_blank"><span>Техническая поддержка</span></a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <div class="submenu-bg"></div>
+                </div>
+            </section>
+            <!-- /header -->
+            <div id="authentication_block">
+
+            </div>
+            <!-- search -->
+            <div id="search_block"></div>
+
+            <div id="advanced_search"></div>
+            <!-- /search -->
+
+            <!-- slider -->
+            <div id="slider_block"></div>
+            <!-- /slider -->
+
+            <!-- content -->
+            <section class="store">
+                <div class="container">
+                    <div id="catalog"></div>
+                    <div class="b-thermometer" id="breadCrumb_1"></div>
+                    <div id="tile_block"></div>
+                    <div id="carousel_block"></div>
+                </div>
+                <div id="profile_menu"></div>
+                <div class="container">
+                    <div id="content"></div>
+                </div>
+
+            </section>
+            <!-- /content -->
+
+
+
+            <div class="footer-overlay"></div>
+        </div>
+        <!-- footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="columns">
+                    <div class="first column">
+                        <div class="content">
+                            <ul>
+                                <li><span class="contact"><i class="contact-icon copyright"></i>Pokupo.ru&nbsp;2014</span>
+                                </li>
+                                <li><a href="javascript:void(0);" title="E-Mail" class="contact"><i class="contact-icon email"></i>support@pokupo.ru</a>
+                                </li>
+                                <li><a href="javascript:void(0);" title="Skype" class="contact"><i class="contact-icon skype"></i>pokupo.ru</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="second column">
+                        <div class="content">
+                            <ul>
+                                <li><a href="javascript:void(0);" title="База знаний">База знаний</a>
+                                </li>
+                                <li><a href="javascript:void(0);" title="Техническая поддержка">Техническая поддержка</a>
+                                </li>
+                                <li><a href="javascript:void(0);" title="Форум">Форум</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="third column">
+                        <div class="content">
+                            <ul>
+                                <li><a href="javascript:void(0);" title="Пользовательское соглашение">Пользовательское соглашение</a>
+                                </li>
+                                <li><a href="javascript:void(0);" title="Правила конфиденциальности"> Правила конфиденциальности</a>
+                                </li>
+                                <li><a href="javascript:void(0);" title="Политика возврата платежей"> Политика возврата платежей</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="fourth column">
+                        <div class="content">
+                            <ul class="social">
+                                <li>
+                                    <a href="javascript:void(0);" class="social__icon vk"></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="social__icon fb"></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="social__icon tw"></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="social__icon lj"></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="social__icon ok"></a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="social__icon gp"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- /footer -->
+    </body>
+</html>

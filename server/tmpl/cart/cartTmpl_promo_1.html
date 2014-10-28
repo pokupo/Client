@@ -1,0 +1,66 @@
+<script type="text/html" id="cartTmpl">
+    <!-- version 1.0 -->
+
+    <div class="circles-menu">
+        <!-- ko if: isAuthorized -->
+        <div class="circles-menu__item dropdown">
+            <a href="#" data-target="cart" class="with-icon dropdown__trigger icon__cart" id="cart_dropdown__trigger">
+                <!-- ko if: ShowCount() -->
+                <!-- ko if: count() > 0 -->
+                <sup class="circles-menu__num" data-bind="text: count"></sup>
+                <!-- /ko -->
+                <!-- /ko -->
+            </a>
+            
+            <div data-target="cart" class="b-cart-menu dropdown__content hidden" id="cart_dropdown__content">
+                <!-- ko if: ShowTitle() -->
+                <p data-bind="text: title"></p>
+                <!-- /ko -->
+                <!-- ko if: goods().length > 0 -->
+                <div class="b-cart-menu__body">
+                    <i class="b-cart-menu__patch"></i>
+                    <ol class="b-cart-menu__goods">
+                        <!-- ko foreach: goods -->
+                        <li class="b-cart-menu__goods-item b-order-item">
+                            <div class="b-order-item__name">
+                                <span  data-bind="text: fullName"></span>
+                            </div>
+                            <div class="b-order-item__qty">
+                                <span class="b-increment-group">
+                                    <span class="b-increment-group__darr" data-bind="click: ClickMinus"></span>
+                                    <span class="b-increment-group__qty" data-bind="text: ordered"></span>
+                                    <span class="b-increment-group__uarr" data-bind="click: ClickPlus"></span>
+                                </span>
+                            </div>
+                            <div class="b-order-item__cost b-price">
+                                <span class="b-price__number" data-bind="text: endSum"></span>
+                                <span class="b-price__thinsp">&nbsp;</span>
+                                <span class="b-price__rubl">Р</span>
+                            </div>
+                            <div class="b-order-item__drop btn-circle btn-circle--drop" data-bind="click: ClickRemove"></div>
+                        </li>
+                        <!-- /ko -->
+                    </ol>
+                    <a href="/shop/#/cart/" class="btn btn-md b-cart-menu__order-button">Оформить</a>
+                    <p class="b-cart-menu__results">
+                        Итог:
+                        <span class="b-cart-menu__amount b-price">
+                            <!-- ko if: ShowFinalCost() -->
+                            <!-- ko if: ShowBaseCost() -->
+                            <span class="b-price__number" data-bind="text: finalCost"></span>
+                            <!-- /ko -->
+                            <!-- ko ifnot: ShowBaseCost() -->
+                            <span class="b-price__number" data-bind="text: finalCost"></span>
+                            <!-- /ko -->
+                            <span class="b-price__thinsp">&nbsp;</span>
+                            <span class="b-price__rubl">Р</span>
+                            <!-- /ko -->
+                        </span>
+                    </p>
+                </div>
+                <!-- /ko -->
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+</script>

@@ -17,6 +17,7 @@ var RegistrationWidget = function() {
                 step4: null
             }
         },
+        animate: null,
         inputParameters: {},
         geoShop: 0,
         style: null,
@@ -47,6 +48,8 @@ var RegistrationWidget = function() {
         if(!$.isEmptyObject(input)){
             if(input.geoShop)
                 self.settings.geoShop = input.geoShop;
+            if(input.animate)
+                self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
     };
@@ -104,7 +107,7 @@ var RegistrationWidget = function() {
                     if (step1.phone())
                         params.push('phone=' + step1.phone().replace(/\s/g, ''));
                     if (step1.email())
-                        params.push('email=' + step1.email());
+                        params.push('email=' + $.trim(step1.email()));
                     if (step1.firstPassword())
                         params.push('password=' + encodeURIComponent(step1.firstPassword()));
                     if (params.length > 0)
@@ -417,12 +420,14 @@ var RegistrationWidget = function() {
         Step1: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    $('input#' + form.cssPhone).mask("?9 999 999 99 99 99", {placeholder: "_"});
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -440,11 +445,14 @@ var RegistrationWidget = function() {
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -462,23 +470,14 @@ var RegistrationWidget = function() {
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    $("#" + form.cssBirthDay).mask("99.99.9999", {placeholder: "_"}).datepicker({
-                        changeMonth: true,
-                        changeYear: true,
-                        dateFormat: 'dd.mm.yy',
-                        defaultDate: '-24Y',
-                        yearRange: "c-77:c+6",
-                        minDate : '-101Y',
-                        maxDate : '-18Y',
-                        onClose: function(dateText, inst) {
-                            form.birthDay(dateText);
-                        }
-                    });
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -496,6 +495,7 @@ var RegistrationWidget = function() {
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
                 try{
+                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
 
                     $('#' + form.cssCountryList).change(function() {
@@ -611,9 +611,11 @@ var RegistrationWidget = function() {
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(self.settings.animate)
+                        self.settings.animate();
                 }
                 catch(e){
-                    self.Exeption('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

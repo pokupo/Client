@@ -1,0 +1,47 @@
+<script type="text/html" id="userInformationTmpl">
+    <!-- version 1.0 -->
+    <div class="logged-in">
+        <div class="circles-menu">
+            <div class="circles-menu__item dropdown">
+                <a href="#" data-target="profile" class="with-icon icon__profile dropdown__trigger user_information_dropdown__trigger" data-bind="attr: {style: background}">
+                    <!-- ko if: countNewMessage() > 0 -->
+                    <sup class="circles-menu__num" data-bind="text: countNewMessage"></sup>
+                    <!-- /ko -->
+                </a>click:
+                <div data-target="profile" class="b-profile-menu dropdown__content hidden user_information_dropdown__content">
+                    <p class="b-profile-menu__name" data-bind="text: login"></p>
+                    <ul class="menu">
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickPrivateOffice">Профиль</a>
+                        </li>
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickFavorites">Избранное</a>
+                        </li>
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickPurchases">Заказы</a>
+                        </li>
+                        <li class="menu__item">
+                            <a href="#" data-bind="click: ClickMessages">
+                                Сообщения
+                                <!-- ko if: countNewMessage() > 0 -->
+                                <sup class="menu__item__num" data-bind="text: countNewMessage"></sup>
+                                <!-- /ko -->
+                            </a>
+                        </li>
+                        <li class="menu__item">
+                            <a id="js-logout" href="#" class="b-profile-menu__logout" data-bind="click: ClickLogout">Выйти</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="authorizationLinkTmpl">
+    <!-- version 1.0 -->
+    <div class="not-logged-in">
+        <a id="js-login" href="#" title="Войти" class="menu-login__login" data-bind="click: ClickLogin">Вход</a>
+        <a href="" title="Зарегистрироваться" class="menu-login__register" data-bind="click: ClickRegistration">Регистрация</a>
+    </div>
+</script>

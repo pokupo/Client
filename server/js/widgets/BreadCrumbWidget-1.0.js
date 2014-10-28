@@ -12,6 +12,7 @@ var BreadCrumbWidget = function(){
             path : null,
             id : null
         },
+        animate: null,
         inputParameters : {},
         styleBreadCrumb : null,
         customContainer : null
@@ -19,8 +20,8 @@ var BreadCrumbWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.breadCrumb.widget;
         self.settings.customContainer = Config.Containers.breadCrumb.customClass;
-        self.settings.tmpl = Config.BreadCrumbs.tmpl;
-        self.settings.styleBreadCrumb = Config.BreadCrumbs.style;
+        self.settings.tmpl = Config.BreadCrumb.tmpl;
+        self.settings.styleBreadCrumb = Config.BreadCrumb.style;
         self.RegisterEvents();
         self.SetInputParameters();
         self.CheckRouteBreadCrumb();
@@ -36,6 +37,9 @@ var BreadCrumbWidget = function(){
         }
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.breadCrumb){
             input = WParameters.breadCrumb;
+        }
+        if(input.animate){
+            self.settings.animate = input.animate;
         }
 
         self.settings.inputParameters = input;
@@ -114,13 +118,15 @@ var BreadCrumbWidget = function(){
             for(var i=0; i<=self.settings.containerId.length-1; i++){
                 if($("#" + self.settings.containerId[i]).length > 0){
                     try{
+                        ko.cleanNode($('#' + self.settings.containerId[i])[0]);
                         ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
                         self.ShowContainer(self.settings.containerId[i]);
-                        new AnimateBreadCrumb();
                         self.WidgetLoader(true );
+                        if(self.settings.animate)
+                            self.settings.animate();
                     }
                     catch(e){
-                        self.Exeption('Ошибка шаблона [' + self.GetTmplName() + ']');
+                        self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
                         if(self.settings.tmpl.custom){
                             delete self.settings.tmpl.custom;
                             self.BaseLoad.Tmpl(self.settings.tmpl, function(){

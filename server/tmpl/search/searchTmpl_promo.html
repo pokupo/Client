@@ -1,0 +1,42 @@
+<script type="text/html" id="searchTmpl">
+    <!-- version 1.0 -->
+    <section class="orange search">
+        <div class="container">
+            <div class="b-search">
+                <form action="" data-bind="submit: SubmitSearchForm">
+                    <div class="b-search-holder">
+                        <input type="search" placeholder="Поиск по каталогу..." class="b-search__input" data-bind="value: text">
+                    </div>
+                    <div class="b-location dropdown selector">
+                        <a href="#" data-target="location" class="b-location__current dropdown__trigger selector__current search_dropdown__trigger">Все категории</a>
+                        <div data-target="location" class="dropdown__content hidden search_dropdown__content">
+                            <div class="b-location__catalog selector__options">
+                                <ul class="menu" data-bind="css: cssSelectList, value: selectedCatigoriesId">
+                                    <!-- ko foreach: categoriesTree --> 
+                                    <li class="menu__item" data-bind="css: {'active': isSelected}">
+                                        <a href="#" data-bind="click: ClickItem">
+                                            <span data-bind="text: title"></span>
+                                        </a>
+                                        <!-- ko if: children.length > 0 -->
+                                        <ul class="submenu">
+                                            <!-- ko foreach: children --> 
+                                            <li class="submenu__item"  data-bind="css: {'active': isSelected}">
+                                                <a href="#" data-bind="click: ClickItem">
+                                                    <span data-bind="text: title"></span>
+                                                </a>
+                                            </li>
+                                            <!-- /ko -->
+                                        </ul>
+                                        <!-- /ko -->
+                                    </li>
+                                    <!-- /ko -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="b-search__button" data-bind="click: ClickSearchForm">Найти</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</script>
