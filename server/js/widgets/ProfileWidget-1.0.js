@@ -863,13 +863,15 @@ var ProfilePersonalInformationViewModel = function(){
     
     self.AddContent = function(data, reg, c){
         var registrationData = new ProfileDataRegistrationViewModel();
-        registrationData.AddContent(data);
+        if(!data.err)
+            registrationData.AddContent(data);
         registrationData.dateRegistration(reg.date_reg);
         self.registrationData = registrationData;
         
         var postalAddress = new ProfilePostalAddressViewModel();
         postalAddress.AddCountryList(c);
-        postalAddress.AddContent(data);
+        if(!data.err)
+            postalAddress.AddContent(data);
         self.postalAddress = postalAddress;
         
         self.contacts = new ProfileContactsViewModel();
