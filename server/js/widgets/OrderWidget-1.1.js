@@ -887,6 +887,7 @@ var OrderWidget = function() {
             }
             catch(e){
                 self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+                console.log(e);
                 if(self.settings.tmpl.custom){
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -911,6 +912,7 @@ var OrderWidget = function() {
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step1Confirm') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -936,6 +938,7 @@ var OrderWidget = function() {
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step1Profile') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -962,6 +965,7 @@ var OrderWidget = function() {
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1105,6 +1109,7 @@ var OrderWidget = function() {
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1132,6 +1137,7 @@ var OrderWidget = function() {
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1157,6 +1163,7 @@ var OrderWidget = function() {
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1182,6 +1189,7 @@ var OrderWidget = function() {
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step5') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

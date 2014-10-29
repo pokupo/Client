@@ -43,7 +43,7 @@ var AnimateProfile = function () {
         $('#button_avatar_file span').text('Загрузить аватар');
         $("#avatar_file").val(null);
     });
-    $('.masked-phone').mask("?9 999 999 99 99 99", {placeholder: "_"})
+    $('.masked-phone').mask("?9 999 999 99 99", {placeholder: "_"})
 
     $('input[type="password"]').hidePassword(true);
     $("#fullname").suggestions({
