@@ -61,6 +61,8 @@ var RegistrationSellerWidget = function () {
                     self.Step.Step2();
                 if (Routing.params.step == 3)
                     self.Step.Step3();
+                if (Routing.params.step == 4)
+                    self.Step.Step4();
             });
         }
         else
@@ -86,19 +88,20 @@ var RegistrationSellerWidget = function () {
             self.BaseLoad.RegistrationSeller(str, function (data) {
                 if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step1.register', step1)})) {
                     Parameters.cache.regSeller.step1 = step1;
-                    Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 2});
+                    Routing.SetHash('registration_seller', 'Регистрация продавца', {step: 2});
                 }
                 else
-                    Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 1});
+                    self.WidgetLoader(true, self.settings.containerFormId);
             });
         });
         
         EventDispatcher.AddEventListener('RegistrationSellerWidget.step2.checking', function(step2){
             Parameters.cache.regSeller.step2 = step2;
-            Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 3});
+            Routing.SetHash('registration_seller', 'Регистрация продавца', {step: 3});
         });
         
         EventDispatcher.AddEventListener('RegistrationSellerWidget.step3.checking', function(step3){
+            self.WidgetLoader(false);
             var step1 = Parameters.cache.regSeller.step1;
             var step2 = Parameters.cache.regSeller.step2;
             Parameters.cache.regSeller.step3 = step3;
@@ -117,20 +120,10 @@ var RegistrationSellerWidget = function () {
             var str = '?' + params.join('&');
             
             self.BaseLoad.ActivateSeller(str, function(data){
-                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', step3)})) {
-                    Parameters.cache.regSeller = {
-                        step1: {},
-                        step2: {},
-                        step3: {}
-                    }
-                    var link = Parameters.cache.lastPage;
-                    if (!$.isEmptyObject(link))
-                        Routing.SetHash(link.route, link.title, link.data, true);
-                    else
-                        Routing.SetHash('default', 'Домашняя', {});
-                }
+                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', step3)}))
+                    Routing.SetHash('registration_seller', 'Регистрация продавца', {step: 4});
                 else
-                    Routing.SetHash('registration_seller', 'Регистрация нового аккаунта', {step: 3});
+                    self.WidgetLoader(true, self.settings.containerFormId);
             })
         });
     };
@@ -146,6 +139,11 @@ var RegistrationSellerWidget = function () {
         Step3: function () {
             self.InsertContainer.Step3();
             self.Fill.Step3();
+        },
+        Step4: function(){
+            console.log('1');
+            self.InsertContainer.Step4();
+            self.Fill.Step4();
         }
     };
     self.InsertContainer = {
@@ -164,6 +162,11 @@ var RegistrationSellerWidget = function () {
         Step3: function () {
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
+        },
+        Step4: function () {
+            console.log('2');
+            self.InsertContainer.EmptyWidget();
+            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html()).children().hide();
         }
     };
     self.Fill = {
@@ -183,7 +186,7 @@ var RegistrationSellerWidget = function () {
             self.Render.Step1(form);
         },
         Step2: function () {
-            if (Routing.params.name_seller && Routing.params.mail_token) {
+            if (Routing.params.username && Routing.params.mail_token) {
                 RegistrationSellerFormViewModel.prototype.Back = function () {
                     Parameters.cache.history.pop();
                     var link = Parameters.cache.history.pop();
@@ -193,15 +196,22 @@ var RegistrationSellerWidget = function () {
                         Routing.SetHash('default', 'Домашняя', {});
                 };
                 var step1 = new RegistrationSellerFormViewModel();
-                step1.nameSeller(Routing.params.name_seller);
+                step1.nameSeller(Routing.params.username);
                 Parameters.cache.regSeller.step1 = step1;
             }
+            
+            if(!Parameters.cache.regSeller.step1.nameSeller){
+                Routing.SetHash('registration_seller', 'Регистрация продавца', {});
+                return true;
+            }
+            
 
             var form = new RegistrationSellerConfirmFormViewModel(Parameters.cache.regSeller.step1);
 
-            if (Routing.params.name_seller && Routing.params.mail_token) {
+            if (Routing.params.username && Routing.params.mail_token) {
                 form.mailToken(Routing.params.mail_token);
                 EventDispatcher.DispatchEvent('RegistrationSellerWidget.step2.checking', form);
+                return true;
             }
 
             self.Render.Step2(form);
@@ -211,7 +221,26 @@ var RegistrationSellerWidget = function () {
             if ($.isEmptyObject(form)){
                 form = new RegistrationSellerFinishFormViewModel();
             }
+            if(!Parameters.cache.regSeller.step1.nameSeller){
+                Routing.SetHash('registration_seller', 'Регистрация продавца', {});
+                return true;
+            }
+            
             self.Render.Step3(form);
+        },
+        Step4: function(){ 
+            console.log('3');
+            if(!Parameters.cache.regSeller.step1.nameSeller){
+                Routing.SetHash('registration_seller', 'Регистрация продавца', {});
+                return true;
+            }
+            Parameters.cache.regSeller = {
+                step1: {},
+                step2: {},
+                step3: {}
+            }
+            console.log('4');
+            self.Render.Step4();
         }
     };
     self.Render = {
@@ -292,6 +321,12 @@ var RegistrationSellerWidget = function () {
                     }
                 }
             }
+        },
+        Step4: function(){
+            console.log('5');
+            self.WidgetLoader(true, self.settings.containerFormId);
+            if(self.settings.animate)
+                self.settings.animate();
         }
     };
     self.SetPosition = function () {
@@ -495,7 +530,7 @@ var RegistrationSellerFinishFormViewModel = function(){
     self.invite = ko.observable();
     self.errorInvite = ko.observable();
     
-    self.site = ko.observable();
+    self.site = ko.observable('http://');
     self.errorSite = ko.observable();
     
     self.confirmLater = ko.observable(false);
@@ -548,6 +583,10 @@ var RegistrationSellerFinishFormViewModel = function(){
         return true;
     };
     self.SiteValidation = function(){
+        if(self.site()){
+            if(self.site() == 'http://')
+                self.site('');
+        }
         self.errorSite(null);
         return true;
     };
