@@ -106,6 +106,7 @@ var MenuPersonalCabinetWidget = function () {
             }
             catch (e) {
                 self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
+                console.log(e);
                 if (self.settings.tmpl.custom) {
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function () {

@@ -633,6 +633,7 @@
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -658,6 +659,7 @@
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -801,6 +803,7 @@
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -826,6 +829,7 @@
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('security') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -1044,6 +1048,11 @@ var ProfileDataRegistrationViewModel = function(){
         self.birthDayField(self.data.birth_day);
         self.checkInfo(data.check_info);
     };
+    self.isNew = function(){
+        if(data)
+            return false
+        return true;
+    }
     self.Edit = function(){
         self.isEditBlock(1);
     };
@@ -1059,6 +1068,9 @@ var ProfileDataRegistrationViewModel = function(){
             EventDispatcher.DispatchEvent('ProfileWidget.personal.checking', self);
         }
     };
+    self.ClickItem = function(val, data){
+        self.gender(val);
+    }
 };
 
 var ProfilePostalAddressViewModel = function(){
