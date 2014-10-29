@@ -120,14 +120,8 @@ var RegistrationSellerWidget = function () {
             var str = '?' + params.join('&');
             
             self.BaseLoad.ActivateSeller(str, function(data){
-                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', step3)})) {
-                    Parameters.cache.regSeller = {
-                        step1: {},
-                        step2: {},
-                        step3: {}
-                    }
+                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationSellerWidget.step3.checking', step3)}))
                     Routing.SetHash('registration_seller', 'Регистрация продавца', {step: 4});
-                }
                 else
                     self.WidgetLoader(true, self.settings.containerFormId);
             })
@@ -147,6 +141,7 @@ var RegistrationSellerWidget = function () {
             self.Fill.Step3();
         },
         Step4: function(){
+            console.log('1');
             self.InsertContainer.Step4();
             self.Fill.Step4();
         }
@@ -169,6 +164,7 @@ var RegistrationSellerWidget = function () {
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
         },
         Step4: function () {
+            console.log('2');
             self.InsertContainer.EmptyWidget();
             $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html()).children().hide();
         }
@@ -232,12 +228,18 @@ var RegistrationSellerWidget = function () {
             
             self.Render.Step3(form);
         },
-        Step4: function(){
+        Step4: function(){ 
+            console.log('3');
             if(!Parameters.cache.regSeller.step1.nameSeller){
                 Routing.SetHash('registration_seller', 'Регистрация продавца', {});
                 return true;
             }
-            
+            Parameters.cache.regSeller = {
+                step1: {},
+                step2: {},
+                step3: {}
+            }
+            console.log('4');
             self.Render.Step4();
         }
     };
@@ -321,6 +323,7 @@ var RegistrationSellerWidget = function () {
             }
         },
         Step4: function(){
+            console.log('5');
             self.WidgetLoader(true, self.settings.containerFormId);
             if(self.settings.animate)
                 self.settings.animate();
@@ -580,6 +583,10 @@ var RegistrationSellerFinishFormViewModel = function(){
         return true;
     };
     self.SiteValidation = function(){
+        if(self.site()){
+            if(self.site() == 'http://')
+                self.site('');
+        }
         self.errorSite(null);
         return true;
     };
