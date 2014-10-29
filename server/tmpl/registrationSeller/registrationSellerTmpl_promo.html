@@ -240,3 +240,43 @@
         </div>
     </form>
 </script>
+
+<script type="text/html" id="registrationSellerFromStep4Tmpl">
+    <!-- version 1.0 -->
+    <div class="h1-with-progress-bar">
+        <canvas id="progressCircle" width="160" height="160">
+            <p>Ваш браузер не поддерживает технологию canvas</p>
+        </canvas>
+        <h1>Регистрация нового аккаунта</h1>
+    </div>
+    <form action="#">
+        <div id="registerShopWizard" class="b-wizard">
+            <ul class="b-wizard__steps">
+                <li>
+                    <a href="#step-1" class="selected">
+                        <label class="b-wizard__step-num">1</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-2" class="selected">
+                        <label class="b-wizard__step-num">2</label>
+                    </a>
+                </li>
+                <li>
+                    <a href="#step-3" class="selected">
+                        <label class="b-wizard__step-num">3</label>
+                    </a>
+                </li>
+            </ul>
+            <div id="step-3">
+                <h2 class="b-wizard__step-title">Завершение регистрации</h2>
+                <div class="b-wizard__step-content">
+                <p>Вы успешно зарегистрировались в качестве продавца, на вашу почту высланы пароли доступа, для управления своим магазином зайдите в личный кабинет</p>
+                </div>
+            </div>
+            <div class="b-wizard__actions">
+                <a href="https://seller.pokupo.ru/login" class="b-wizard__action btn-next-step">Настроить магазин</a>
+            </div>
+        </div>
+    </form>
+</script>
