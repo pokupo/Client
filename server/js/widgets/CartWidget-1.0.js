@@ -85,18 +85,12 @@ var CartWidget = function(){
     };
     self.LoadTmpl = function(){
         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('CartWidget.onload.tmpl')
-        });
-    };
-    self.RegisterEvents = function(){ 
-        EventDispatcher.AddEventListener('CartWidget.onload.tmpl', function (){
             self.CheckRoute();
         });
-        
+    };
+    self.RegisterEvents = function(){       
         EventDispatcher.AddEventListener('widget.authentication.ok', function(){
-            self.BaseLoad.CartInfo('', function(data){
-                EventDispatcher.DispatchEvent('CartWidget.onload.info', data);
-            });
+            self.LoadTmpl();
         });
         
         EventDispatcher.AddEventListener('widget.change.route', function (data){
@@ -108,9 +102,7 @@ var CartWidget = function(){
         });
         EventDispatcher.AddEventListener('widgets.cart.clear', function(data){
             var goodsId = data.goodsId ? data.goodsId : false;
-            self.BaseLoad.ClearCart(data.sellerId, goodsId, function(data){
-                 //EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
-            });
+            self.BaseLoad.ClearCart(data.sellerId, goodsId, function(data){});
         });
     };
     self.Fill = function(data){
@@ -128,6 +120,7 @@ var CartWidget = function(){
         }
         catch(e){
             self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
+            console.log(e);
             if(self.settings.tmpl.custom){
                 delete self.settings.tmpl.custom;
                 self.BaseLoad.Tmpl(self.settings.tmpl, function(){

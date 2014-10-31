@@ -192,6 +192,7 @@ var CabinetCartGoodsWidget = function(){
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']');
+                    console.log(e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -355,7 +356,13 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
         Routing.SetHash('default', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
-         Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
+        if(Parameters.cache.userInformation.err){
+            Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'fromCart', sellerId: self.sellerInfo.seller.id}};
+            Routing.SetHash('login', 'Авторизация пользователя', {});
+        }
+        else{           
+            Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
+        };
     };
     self.ClickClearCurt = function(){
         self.Confirm(Config.CabinetCartGoods.message.confirmClearCart, function(){

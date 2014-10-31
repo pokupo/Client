@@ -12,10 +12,6 @@ var AuthenticationViewModel = function(){
         self.rememberMe = $(data.remember_me).is(':checked') ? 'on' : 'off';
         EventDispatcher.DispatchEvent(self.subminEvent(), self);
     };
-    self.ClickRegistration = function(){
-        Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
-        Routing.SetHash('registration', 'Регистрация пользователя', {step:1});
-    };
     self.ClickZPayment = function(){
         
     };

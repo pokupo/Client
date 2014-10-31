@@ -282,6 +282,9 @@ var Config = {
             birthDay : /^[\d]{2}.[\d]{2}.[\d]{4}$/,
             gender : /^[mw]$/
         },
+        message : {
+            registrationSuccessful : "Вы успешно зарегистрировались в магазине"
+        },
         error : { // сообщения об ошибках при валидации формы регистрации
             username : {
                 empty : 'Поле обязательно для заполнения',
@@ -377,7 +380,8 @@ var Config = {
             id: {
                 step1 : "registrationSellerFromStep1Tmpl", //id шаблона формы регистрации шаг 1
                 step2 : "registrationSellerFromStep2Tmpl", //id шаблона формы регистрации шаг 2
-                step3 : "registrationSellerFromStep3Tmpl"  //id шаблона формы регистрации шаг 3
+                step3 : "registrationSellerFromStep3Tmpl",  //id шаблона формы регистрации шаг 3
+                step4 : "registrationSellerFromStep4Tmpl"  //id шаблона формы регистрации шаг 4
             }
         },
         regular : { // регулярные выражения полей

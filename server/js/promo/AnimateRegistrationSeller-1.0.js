@@ -1,8 +1,8 @@
 var AnimateRegistrationSeller = function(){
-    $('#phone').mask("?9 999 999 99 99 99");
+    $('#phone').mask("?9 999 999 99 99");
     $(":input:not(:checkbox):not(:button):not([type=hidden]):not([type=search]):not(.no-label)").floatlabel();
     
-    var step = Routing.params.step;
+    var step = Routing.params.step - 1;
         var progress = 0;
         var current = step / 3;
 
@@ -16,7 +16,7 @@ var AnimateRegistrationSeller = function(){
             progressListener: function () {
                 return progress;
             }
-        }).start(30);
+        }).start(0);
 
         var intervalId;
         if (progress < current) {

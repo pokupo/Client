@@ -1,6 +1,6 @@
 var AnimateRegistration = function () {
     if (Routing.route == 'registration') {
-        $('#phone').mask("?9 999 999 99 99 99");
+        $('#phone').mask("?9 999 999 99 99");
         $(":input:not(:checkbox):not(:button):not([type=hidden]):not([type=search]):not(.no-label)").floatlabel();
     
         var step = Routing.params.step;
@@ -73,5 +73,12 @@ var AnimateRegistration = function () {
             $("#bdate").val(dateText);
         }
     });
+    $('.country_list_profile').chosen({
+        disable_search_threshold: 6,
+        width: '100%'
+    });
+    setTimeout(function(){
+        $('.country_list_profile').trigger('chosen:updated');
+    }, 1000)
 };
 

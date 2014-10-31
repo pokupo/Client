@@ -24,7 +24,7 @@ var BreadCrumbWidget = function(){
         self.settings.styleBreadCrumb = Config.BreadCrumb.style;
         self.RegisterEvents();
         self.SetInputParameters();
-        self.CheckRouteBreadCrumb();
+        self.CheckRouteBreadCrumb(Routing.GetActiveCategory());
         self.SetPosition();
     };
     self.SetInputParameters = function(){
@@ -64,30 +64,14 @@ var BreadCrumbWidget = function(){
         }
         else{
             self.WidgetLoader(false);
-            self.BaseLoad.Path(id, function(data){
-                self.Fill.BreadCrumb(data);
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.BaseLoad.Path(id, function(data){
+                    self.Fill.BreadCrumb(data);
+                });
             });
         }
-    };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('onload.breadCrumb.tmpl')
-        });
     };
     self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
-            });
-        }
-        
-        EventDispatcher.AddEventListener('onload.breadCrumb.tmpl', function (data){
-            self.CheckRouteBreadCrumb(Routing.GetActiveCategory());
-        });
-        
         EventDispatcher.AddEventListener('widget.change.route', function (data){
             self.CheckRouteBreadCrumb(Routing.GetActiveCategory()); 
         });
@@ -127,6 +111,7 @@ var BreadCrumbWidget = function(){
                     }
                     catch(e){
                         self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
+                        console.log(e);
                         if(self.settings.tmpl.custom){
                             delete self.settings.tmpl.custom;
                             self.BaseLoad.Tmpl(self.settings.tmpl, function(){

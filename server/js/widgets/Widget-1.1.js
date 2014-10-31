@@ -141,11 +141,12 @@ var Loader = {
             this.HideContent();
             if(!Routing.IsDefault())
                 if($('#loadingContainer').length == 0)
-                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.loading + '"/></div>');
+                    $("body").addClass('loading').append('<div id="loadingContainer"></div>');
         }
         else{
             this.ShowContent();
             $('#loadingContainer').remove();
+            $("body").removeClass('loading');
         }
     },
     InsertContainer : function(container){
@@ -306,8 +307,7 @@ var Widget = function (){
         containerIdForTmpl : null
     };
     this.Init = function(widget, noindicate){
-        if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
-            
+        if ( typeof JSCore == 'object' && JSCore.isReady && typeof Loader == 'object' && typeof Config == 'object' && typeof Routing == 'object' && typeof ko == 'object'){
             if(JSCore.version >= self.minCoreVersion && JSCore.version <= self.maxCoreVersion){
                 if(self.version >= widget.minWidgetVersion && self.version <= widget.maxWidgetVersion){
                     this.SelfInit();

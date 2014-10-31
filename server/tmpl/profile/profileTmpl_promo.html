@@ -110,16 +110,19 @@
                             <div class="form_error" data-bind="text: errorFirstName"></div>
                             <!-- /ko -->
                         </div>
-                        <!-- ko ifnot: gender() -->
-                        <div id="fullname__gender" class="input-holder">
-                            <input id="fullname__gender-male" type="radio" name="gender" value="m" class="inline" data-bind="checked: gender"/>
-                            <label for="gender">Мужской</label>
-                            <input id="fullname__gender-female" type="radio" name="gender" value="w" class="inline" data-bind="checked: gender"/> 
-                            <label for="gender">Женский</label>
-                            <!-- ko if: errorGender-->
-                            <div class="form_error" data-bind="text: errorGender"></div>
-                            <!-- /ko -->
-                        </div>
+                        <!-- ko ifnot: gender() && !isNew -->
+                            <div id="fullname__gender" class="input-holder">
+                                <input id="fullname__gender-male" type="radio" name="gender" value="m" data-bind="checked: gender" class="inline"/>
+                                <label for="gender" data-bind="click: ClickItem.bind($data, 'm')">Мужской</label>
+                                <input id="fullname__gender-female" type="radio" name="gender" value="w" data-bind="checked: gender" class="inline"/>
+                                <label for="gender" data-bind="click: ClickItem.bind($data, 'w')">Женский</label>
+
+                                <!-- ko if: errorGender -->
+                                <div class="error__message">
+                                    <p data-bind="text: errorGender"></p>
+                                </div>
+                                <!-- /ko -->
+                            </div>
                         <!-- /ko -->
                     </div>
                 </div>
@@ -171,11 +174,16 @@
                             <select  name="address__country" data-bind="value: idCountry, attr: {id: cssCountryList}" data-placeholder="Страна" class="suggestion-input block-input country_list_profile">
                                 <option value=""></option>
                                 <!-- ko foreach: countryList  -->
-                                    <!-- ko if: $parent.country().id  == id -->
-                                    <option data-bind="text: name, value: id" selected></option>
+                                    <!-- ko if: $parent.country() -->
+                                        <!-- ko if: $parent.country().id  == id -->
+                                        <option data-bind="text: name, value: id" selected></option>
+                                        <!-- /ko -->
+                                        <!-- ko ifnot: $parent.country().id  == id -->
+                                        <option data-bind="text: name, value: id"></option>
+                                        <!-- /ko -->
                                     <!-- /ko -->
-                                    <!-- ko ifnot: $parent.country().id  == id -->
-                                    <option data-bind="text: name, value: id"></option>
+                                    <!-- ko ifnot: $parent.country() -->
+                                        <option data-bind="text: name, value: id"></option>
                                     <!-- /ko -->
                                 <!-- /ko -->
                             </select>
@@ -385,11 +393,16 @@
                                         <select  name="address__country" data-bind="value: idCountry, attr: {id: cssCountryList}" class="suggestion-input block-input country_list_profile">
                                             <option value=""></option>
                                             <!-- ko foreach: countryList  -->
-                                                <!-- ko if: $parent.country().id  == id -->
-                                                <option data-bind="text: name, value: id" selected></option>
+                                                <!-- ko if: $parent.country() -->
+                                                    <!-- ko if: $parent.country().id  == id -->
+                                                    <option data-bind="text: name, value: id" selected></option>
+                                                    <!-- /ko -->
+                                                    <!-- ko ifnot: $parent.country().id  == id -->
+                                                    <option data-bind="text: name, value: id"></option>
+                                                    <!-- /ko -->
                                                 <!-- /ko -->
-                                                <!-- ko ifnot: $parent.country().id  == id -->
-                                                <option data-bind="text: name, value: id"></option>
+                                                <!-- ko ifnot: $parent.country() -->
+                                                    <option data-bind="text: name, value: id"></option>
                                                 <!-- /ko -->
                                             <!-- /ko -->
                                         </select>
