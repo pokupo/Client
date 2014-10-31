@@ -307,8 +307,7 @@ var Widget = function (){
         containerIdForTmpl : null
     };
     this.Init = function(widget, noindicate){
-        if ( typeof JSCore !== 'undefined' && JSCore.isReady && typeof Loader !== 'undefined' && typeof Config !== 'undefined' && typeof Routing !== 'undefined' && typeof ko !== 'undefined'){
-            
+        if ( typeof JSCore == 'object' && JSCore.isReady && typeof Loader == 'object' && typeof Config == 'object' && typeof Routing == 'object' && typeof ko == 'object'){
             if(JSCore.version >= self.minCoreVersion && JSCore.version <= self.maxCoreVersion){
                 if(self.version >= widget.minWidgetVersion && self.version <= widget.maxWidgetVersion){
                     this.SelfInit();

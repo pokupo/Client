@@ -109,8 +109,13 @@ var JSLoader = {
         }
     },
     OnReady : function(){
-        JSLoader.loaded = true;
-        EventDispatcher.DispatchEvent('onload.scripts');
+        if(typeof ko == 'object'){
+            JSLoader.loaded = true;
+            EventDispatcher.DispatchEvent('onload.scripts');
+        }
+        else{
+            setTimeout(function(){JSLoader.OnReady()}, 100);
+        }
     },
     Load : function(scripts, callback){
         for(var i in scripts){
