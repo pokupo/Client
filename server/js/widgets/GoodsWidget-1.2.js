@@ -392,7 +392,7 @@ var GoodsMainBlockViewModel = function(data){
     }, this);
     self.Buy = function(){
         if(Parameters.cache.userInformation.err){
-            Parameters.cache.history.push('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
+            Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()}};
             Routing.SetHash('login', 'Авторизация пользователя', {});
         }
         else{           

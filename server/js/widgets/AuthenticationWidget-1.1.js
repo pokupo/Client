@@ -54,6 +54,7 @@ var AuthenticationWidget = function(){
     };
     self.CheckAuthenticationRoute = function(){
         if(Routing.route == 'login'){
+            console.log(Parameters.cache.lastPage);
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
                 self.SelectTypeContent();
             });
@@ -113,6 +114,10 @@ var AuthenticationWidget = function(){
     };
     self.Fill = {
         Authentication : function(){
+            AuthenticationViewModel.prototype.ClickRegistration = function(){
+                Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-2];
+                Routing.SetHash('registration', 'Регистрация пользователя', {step:1});
+            };
             var form = new AuthenticationViewModel();
             form.subminEvent('AuthenticationWidget.authentication.submit');
             self.Render.Authentication(form);
