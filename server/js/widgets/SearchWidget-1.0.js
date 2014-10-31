@@ -23,6 +23,7 @@ var SearchWidget = function(){
         self.settings.tmpl = Config.Search.tmpl;
         self.settings.style = Config.Search.style;
         self.RegisterEvents();
+        self.CheckRoute();
         self.SetInputParameters();
         self.SetPosition();
     };
@@ -61,26 +62,14 @@ var SearchWidget = function(){
             self.WidgetLoader(true);
         }
         else{
-            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
+                    EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+                });
             });
         }
-    };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('searchWidget.onload.tmpl')
-        });
     };
     self.RegisterEvents = function(){
-        if(JSLoader.loaded){
-            self.LoadTmpl();
-        }
-        else{
-            EventDispatcher.AddEventListener('onload.scripts', function (data){ 
-                self.LoadTmpl();
-            });
-        }
-        
         EventDispatcher.AddEventListener('searchWidget.onload.tmpl', function (data){
             self.CheckRoute();
         });
