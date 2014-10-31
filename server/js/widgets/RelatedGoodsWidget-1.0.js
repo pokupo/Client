@@ -128,7 +128,7 @@ window.RelatedGoodsWidget = function(){
             ko.applyBindings(data, $(self.settings.container).children()[0]);
             if(self.settings.animate)
                 self.settings.animate();
-            self.WidgetLoader(true, self.settings.container);
+            self.WidgetLoader(true);
         }
         catch(e){
             self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
@@ -142,7 +142,7 @@ window.RelatedGoodsWidget = function(){
             }
             else{
                 self.InsertContainer.EmptyWidget();
-                self.WidgetLoader(true, self.settings.container);
+                self.WidgetLoader(true);
             }
         }
     };

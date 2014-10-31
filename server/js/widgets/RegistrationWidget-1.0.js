@@ -192,17 +192,19 @@ var RegistrationWidget = function() {
         });
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.later', function(data) {
-            Parameters.cache.reg = {
-                step1: {},
-                step2: {},
-                step3: {},
-                step4: {}
-            }
-            var link = Parameters.cache.lastPage;
-            if (!$.isEmptyObject(link))
-                Routing.SetHash(link.route, link.title, link.data, true);
-            else
-                Routing.SetHash('default', 'Домашняя', {});
+            self.ShowMessage(Config.Registration.message.registrationSuccessful, function(){
+                Parameters.cache.reg = {
+                    step1: {},
+                    step2: {},
+                    step3: {},
+                    step4: {}
+                }
+                var link = Parameters.cache.lastPage;
+                if (!$.isEmptyObject(link))
+                    Routing.SetHash(link.route, link.title, link.data, true);
+                else
+                    Routing.SetHash('default', 'Домашняя', {});
+            })
         });
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {

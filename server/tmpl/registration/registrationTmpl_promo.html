@@ -389,10 +389,20 @@
                     <h2 class="b-wizard__step-title">Адрес доставки</h2>
                     <p>Для доставки покупок требуется указать почтовый адрес</p>
                     <div class="input-holder">
-                        <select name="country" placeholder="Страна"  data-bind="value: country, attr:{id: cssCountryList}">
+                        <select  name="address__country" data-bind="value: idCountry, attr: {id: cssCountryList}" data-placeholder="Страна" class="suggestion-input block-input country_list_profile">
                             <option value=""></option>
-                            <!-- ko foreach: countryList -->
-                            <option data-bind="text: name, value: id"></option>
+                            <!-- ko foreach: countryList  -->
+                                <!-- ko if: $parent.country() -->
+                                    <!-- ko if: $parent.country().id  == id -->
+                                    <option data-bind="text: name, value: id" selected></option>
+                                    <!-- /ko -->
+                                    <!-- ko ifnot: $parent.country().id  == id -->
+                                    <option data-bind="text: name, value: id"></option>
+                                    <!-- /ko -->
+                                <!-- /ko -->
+                                <!-- ko ifnot: $parent.country() -->
+                                    <option data-bind="text: name, value: id"></option>
+                                <!-- /ko -->
                             <!-- /ko -->
                         </select>
                         <!-- ko if: errorCountry-->

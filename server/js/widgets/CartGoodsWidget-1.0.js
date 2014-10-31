@@ -319,7 +319,13 @@ var BlockGoodsForSellerViewModel = function(content){
             Routing.SetHash('default', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
-        Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
+        if(Parameters.cache.userInformation.err){
+            Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'fromCart', sellerId: self.sellerInfo.seller.id}};
+            Routing.SetHash('login', 'Авторизация пользователя', {});
+        }
+        else{           
+            Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
+        }
     };
     self.ClickClearCurt = function(){
         self.Confirm(Config.CartGoods.message.confirmClearCart, function(){
