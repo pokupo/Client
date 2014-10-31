@@ -141,11 +141,12 @@ var Loader = {
             this.HideContent();
             if(!Routing.IsDefault())
                 if($('#loadingContainer').length == 0)
-                    $("body").append('<div id="loadingContainer"><img src="' + Parameters.loading + '"/></div>');
+                    $("body").addClass('loading').append('<div id="loadingContainer"></div>');
         }
         else{
             this.ShowContent();
             $('#loadingContainer').remove();
+            $("body").removeClass('loading');
         }
     },
     InsertContainer : function(container){
