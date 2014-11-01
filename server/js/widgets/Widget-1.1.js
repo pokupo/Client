@@ -1295,14 +1295,14 @@ var Widget = function (){
         },
         NewOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'add/' + Parameters.shopId + '/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         EditOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'edit/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
@@ -1322,14 +1322,14 @@ var Widget = function (){
         },
         ConfirmOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         DeleteOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
@@ -1348,42 +1348,42 @@ var Widget = function (){
         },
         RepeatOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         ReturnOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         CancelOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         InvoicesOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'order/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         InvoicesGoods : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'goods/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         InvoicesAmount : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'amount/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
