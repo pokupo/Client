@@ -1287,7 +1287,7 @@ var Widget = function (){
             }, true);
         },
         Shipping : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + Parameters.shopId + '/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + str), function(data){
                 Parameters.cache.shipping = data;
                 if(callback)
                     callback(data);
@@ -1308,7 +1308,7 @@ var Widget = function (){
             }, true);
         },
         Payment : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + str), function(data){
                 Parameters.cache.payment = data;
                 if(callback)
                     callback(data);

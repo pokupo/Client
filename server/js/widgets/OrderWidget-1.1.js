@@ -367,7 +367,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_method_shipping=' + data.id, function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '/?id_method_shipping=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)})){
                     self.order.shipping = data.selected;
                     data.fn();
@@ -414,7 +414,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step2.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_shipping_address=' + data.id, function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '/?id_shipping_address=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)})) {
                     Parameters.cache.delivery = null;
                     self.order.delivery = data.selected;
@@ -448,7 +448,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step4.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_method_payment=' + data.id, function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '/?id_method_payment=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)})){
                     self.order.payment = data.selected;
                     data.fn();
@@ -700,7 +700,7 @@ var OrderWidget = function() {
         },
         Step3: function() {
             if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.Shipping(self.order.id, function(data) {
+                self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function(data) {
                     self.InsertContainer.Step3();
                     self.Fill.Step3(data);
                 });
@@ -708,7 +708,7 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step4: function() {
-            self.BaseLoad.Payment(self.order.id, function(data) {
+            self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function(data) {
                 self.InsertContainer.Step4();
                 self.Fill.Step4(data);
             });
