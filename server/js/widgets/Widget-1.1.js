@@ -1336,7 +1336,7 @@ var Widget = function (){
         },
         OrderList : function(query, callback){
             var queryHash = EventDispatcher.HashCode(query);
-            if(!queryHash in Parameters.cache.orderList){
+            if(!(queryHash in Parameters.cache.orderList)){
                 XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId + query), function(data){
                     Parameters.cache.orderList[queryHash] = data;
                     if(callback)
