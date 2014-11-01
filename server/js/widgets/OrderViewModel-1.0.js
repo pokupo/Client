@@ -184,7 +184,7 @@ var OrderGoodsViewModel = function(data) {
 
 var OrderEGoodsViewModel = function(data) {
     var self = this;
-    self.uploadFile = 'https://' + window.location.hostname + data.upload_file;
+    self.uploadFile = data.upload_file;
     self.sizeFile = data.size_file;
     self.countUpload = data.count_upload;
     self.expiration = null;
