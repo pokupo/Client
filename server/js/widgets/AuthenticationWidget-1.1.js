@@ -54,7 +54,6 @@ var AuthenticationWidget = function(){
     };
     self.CheckAuthenticationRoute = function(){
         if(Routing.route == 'login'){
-            console.log(Parameters.cache.lastPage);
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
                 self.SelectTypeContent();
             });

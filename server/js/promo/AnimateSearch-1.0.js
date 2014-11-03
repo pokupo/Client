@@ -37,4 +37,5 @@ var AnimateSearch = function () {
             }
         }
     });
+    $('[rel=tooltip]').tooltip();
 }

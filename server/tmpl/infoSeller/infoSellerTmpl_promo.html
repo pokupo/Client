@@ -11,10 +11,10 @@
                     <p>
                         <!-- ko if: siteSupportShop() -->
                         <span class="label">Посетить сайт</span>
-                        <a href="#" target="_blank" class="action" data-bind="text: siteSupportShop, attr: {href : siteSupportShop}"></a>
+                        <a href="#" target="_blank" class="action" data-bind="text: siteLinkTitle, attr: {href : siteSupportShop}"></a>
                         <!-- /ko -->
                         <span class="label">Написать</span>
-                        <a href="" class="action" data-bind="attr: {href: mailtoShop}, text: mailtoShop"></a>
+                        <a href="" class="action" data-bind="attr: {href: mailtoShop}, text: emailLinkTitle"></a>
                         <!-- ko if: skypeSupportShop() -->
                         <span class="label">Skype консультанта</span>
                         <a href="skype:pokupo?chat" onclick="return skypeCheck()" class="action" data-bind="text: skypeSupportShop"></a>

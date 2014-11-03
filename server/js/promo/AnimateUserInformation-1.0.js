@@ -37,6 +37,7 @@ var AnimateUserInformation = function(){
             }
         }
     });
+    $('[rel=tooltip]').tooltip();
 }
 
 

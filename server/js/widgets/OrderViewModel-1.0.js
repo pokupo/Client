@@ -156,11 +156,14 @@ var OrderGoodsViewModel = function(data) {
     var self = this;
     self.id = data.id;
     self.fullName = data.full_name;
-    self.sellCost = data.sell_cost + ' руб';
-    self.itogSellCost = (data.sell_cost * data.count).toFixed(2) + ' руб';
-    self.finalCost = data.final_cost + ' руб';
-    self.count = data.count + ' шт';
-    self.routeImage = Config.Base.pathToImages + data.route_image;
+    self.sellCost = data.sell_cost;
+    self.itogSellCost = (data.sell_cost * data.count).toFixed(2);
+    self.finalCost = data.final_cost;
+    self.count = data.count;
+    self.routeImage = ko.computed(function(){
+        if(data.route_image)
+            return JSSettings.pathToImages + data.route_image;
+    }, this);
     if (data.is_egoods == 'yes')
         self.isEgoods = true;
     else
