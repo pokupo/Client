@@ -65,9 +65,12 @@ var BreadCrumbWidget = function(){
         else{
             self.WidgetLoader(false);
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                self.BaseLoad.Path(id, function(data){
-                    self.Fill.BreadCrumb(data);
-                });
+                if(id)
+                    self.BaseLoad.Path(id, function(data){
+                        self.Fill.BreadCrumb(data);
+                    });
+                else
+                    self.WidgetLoader(true);
             });
         }
     };

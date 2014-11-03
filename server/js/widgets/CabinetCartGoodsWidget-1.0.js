@@ -357,11 +357,11 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
     };
     self.ClickIssueOrder = function(){
         if(Parameters.cache.userInformation.err){
-            Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'fromCart', sellerId: self.sellerInfo.seller.id}};
+            Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'fromCart', sellerId: self.sellerInfo.shop.id}};
             Routing.SetHash('login', 'Авторизация пользователя', {});
         }
         else{           
-            Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
+            Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.shop.id});
         };
     };
     self.ClickClearCurt = function(){

@@ -692,10 +692,17 @@ var Widget = function (){
     };
     this.ErrorVertionTmpl = function(tmpl, hash, temp){
         var version = /<!--\s*version ([\d.]*)\s*-->/;
-        var result = temp.find('script#' + tmpl).html().match(version);
+        var result = temp.find('script#' + tmpl).html();
         if(result){
-            if(parseFloat(result[1]) >= self.minTmplVersion && parseFloat(result[1]) <= self.maxTmplVersion)
-                return false;
+            result = result.match(version);
+            if(result){
+                if(parseFloat(result[1]) >= self.minTmplVersion && parseFloat(result[1]) <= self.maxTmplVersion)
+                    return false;
+            }
+        }
+        else{
+            self.Exception('Шаблон [' + tmpl + '] не найден!');
+            return false;
         }
         Parameters.cache.tmpl[hash] = 'error';
        
@@ -1287,7 +1294,7 @@ var Widget = function (){
             }, true);
         },
         Shipping : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + Parameters.shopId + '/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + str), function(data){
                 Parameters.cache.shipping = data;
                 if(callback)
                     callback(data);
@@ -1295,20 +1302,20 @@ var Widget = function (){
         },
         NewOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'add/' + Parameters.shopId + '/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         EditOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'edit/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         Payment : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + Parameters.shopId + '/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + str), function(data){
                 Parameters.cache.payment = data;
                 if(callback)
                     callback(data);
@@ -1322,21 +1329,21 @@ var Widget = function (){
         },
         ConfirmOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         DeleteOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         OrderList : function(query, callback){
             var queryHash = EventDispatcher.HashCode(query);
-            if(!Parameters.cache.orderList[queryHash]){
+            if(!(queryHash in Parameters.cache.orderList)){
                 XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId + query), function(data){
                     Parameters.cache.orderList[queryHash] = data;
                     if(callback)
@@ -1348,42 +1355,42 @@ var Widget = function (){
         },
         RepeatOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         ReturnOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         CancelOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         InvoicesOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'order/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         InvoicesGoods : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'goods/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         InvoicesAmount : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'amount/' + str), function(data){
-                Parameters.cache.orderList = null;
+                Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);

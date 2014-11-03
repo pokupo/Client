@@ -122,8 +122,8 @@ var InfoSellerViewModel = function (data) {
     self.websiteSeller = data.seller.website;
     self.shopId = data.shop.id;
     self.nameShop = data.shop.name_shop;
-    self.emailSupportShop = data.shop.email_support;
-    self.mailtoShop = 'mailto:' + self.emailSupportShop;
+    self.emailLinkTitle = data.shop.email_support;
+    self.mailtoShop = 'mailto:' + self.emailLinkTitle;
 
     self.phonesSupportShop = ko.observable();
     if (data.shop.phones_support)
@@ -132,6 +132,14 @@ var InfoSellerViewModel = function (data) {
     self.siteSupportShop = ko.observable();
     if (data.shop.site_support)
         self.siteSupportShop(data.shop.site_support);
+    self.siteLinkTitle = ko.computed(function(){
+        var site = '';
+        if(self.siteSupportShop()){
+            site = self.siteSupportShop().replace('http://', '');
+            site = site.replace('https://', '');
+        }
+        return site;
+    }, this)
 
     self.skypeSupportShop = ko.observable();
     if (data.shop.skype_support)

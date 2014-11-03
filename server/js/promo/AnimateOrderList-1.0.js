@@ -15,6 +15,7 @@ var AnimateOrderList = function(id) {
             left: e.pageX - w / 2
         });
     });
+    $('[rel=tooltip]').tooltip();
 };
 
 

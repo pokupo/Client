@@ -105,6 +105,7 @@ var AnimateContent = function () {
                         }
                 );
     });
+    $('[rel=tooltip]').tooltip();
 };
 
 

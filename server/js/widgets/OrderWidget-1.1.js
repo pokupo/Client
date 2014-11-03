@@ -367,7 +367,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_method_shipping=' + data.id, function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '/?id_method_shipping=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)})){
                     self.order.shipping = data.selected;
                     data.fn();
@@ -414,7 +414,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step2.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_shipping_address=' + data.id, function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '/?id_shipping_address=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)})) {
                     Parameters.cache.delivery = null;
                     self.order.delivery = data.selected;
@@ -448,7 +448,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step4.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '?id_method_payment=' + data.id, function(result) {
+            self.BaseLoad.EditOrder(self.order.id + '/?id_method_payment=' + data.id, function(result) {
                 if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)})){
                     self.order.payment = data.selected;
                     data.fn();
@@ -700,7 +700,7 @@ var OrderWidget = function() {
         },
         Step3: function() {
             if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.Shipping(self.order.id, function(data) {
+                self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function(data) {
                     self.InsertContainer.Step3();
                     self.Fill.Step3(data);
                 });
@@ -708,7 +708,7 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step4: function() {
-            self.BaseLoad.Payment(self.order.id, function(data) {
+            self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function(data) {
                 self.InsertContainer.Step4();
                 self.Fill.Step4(data);
             });
@@ -1248,6 +1248,8 @@ var OrderFormStep2ViewModel = function() {
                 if (data[key].is_default == 'yes'){
                     order.delivery = address;
                 }
+                if(data.length == 1)
+                    address.ClickItem();
             }
     };
     self.HasAddress = function() {
@@ -1523,7 +1525,9 @@ var OrderFormStep3ViewModel = function() {
             var item = new OrderItemFormStep3ViewModel(self);
             item.AddContent(data[i]);
             self.shipping.push(item);
-        }
+            if(data.length == 1)
+                item.ClickItem();
+        }   
     };
     self.HasShipping = function() {
         var test = false;
@@ -1588,7 +1592,7 @@ var OrderItemFormStep3ViewModel = function(parent) {
         if (data.hasOwnProperty('desc_method_shipping'))
             self.descMethodShipping(data.desc_method_shipping);
         if (data.hasOwnProperty('cost_shipping'))
-            self.costShipping(data.cost_shipping + ' руб.');
+            self.costShipping(data.cost_shipping);
     };
     self.ClickItem = function() {
         $.each(parent.shipping(), function(i) {
@@ -1615,6 +1619,8 @@ var OrderFormStep4ViewModel = function() {
             var item = new OrderItemFormStep4ViewModel(self);
             item.AddContent(data[i]);
             self.payment.push(item);
+            if(data.length == 1)
+                item.ClickItem();
         }
     };
     self.HasPayment = function() {
@@ -1692,7 +1698,7 @@ var OrderItemFormStep4ViewModel = function(parent) {
         if (data.hasOwnProperty('name_payment'))
             self.namePayment(data.name_payment);
         if (data.hasOwnProperty('cost_payment'))
-            self.costPayment(data.cost_payment + ' руб.');
+            self.costPayment(data.cost_payment);
     };
     self.ClickItem = function() {
         $.each(parent.payment(), function(i) {

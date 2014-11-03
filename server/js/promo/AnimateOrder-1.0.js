@@ -35,6 +35,14 @@ var AnimateOrder = function(){
             $("#birthDay").val(dateText);
         }
     });
+    $('.country_list_profile').chosen({
+        disable_search_threshold: 6,
+        width: '100%'
+    });
+    setTimeout(function(){
+        $('.country_list_profile').trigger('chosen:updated');
+    }, 1000)
+    $('[rel=tooltip]').tooltip();
 }
 
 
