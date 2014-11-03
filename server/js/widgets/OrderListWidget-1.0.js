@@ -357,7 +357,7 @@ var OrderListDetailViewModel = function(data) {
     self.costShipping = data.cost_shipping;
     self.costPayment = data.cost_payment;
     self.sellCost = data.sell_cost;
-    self.finalCost = data.final_cost + ' руб.';
+    self.finalCost = data.final_cost;
     self.GetIconPay = function(status) {
         if (status == 'wait_check')
             return JSSettings.pathToImages + '/_check.png';

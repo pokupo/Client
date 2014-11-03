@@ -8,4 +8,5 @@ var AnimateCatalog = function () {
                     .children('.submenu').toggleClass('active');
         }
     });
+    $('[rel=tooltip]').tooltip();
 }

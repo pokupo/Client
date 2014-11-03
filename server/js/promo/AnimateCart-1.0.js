@@ -37,6 +37,8 @@ var AnimateCart = function () {
             }
         }
     });
+    
+    $('[rel=tooltip]').tooltip();
 };
 
 

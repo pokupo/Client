@@ -1,6 +1,6 @@
 var AnimateRelatedGoods = function(){
-    $('#related_goods_carousel').owlCarousel({
-        items: 6,
+    $('.chain-slider').owlCarousel({
+        items: 3,
         slideSpeed: 700,
         rewindSpeed: 700,
         navigation: true,
@@ -24,5 +24,6 @@ var AnimateRelatedGoods = function(){
         transition: 'crossfade',
         fit: 'cover'
     });
+    $('[rel=tooltip]').tooltip();
 }
 

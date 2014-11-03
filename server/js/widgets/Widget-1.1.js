@@ -692,10 +692,17 @@ var Widget = function (){
     };
     this.ErrorVertionTmpl = function(tmpl, hash, temp){
         var version = /<!--\s*version ([\d.]*)\s*-->/;
-        var result = temp.find('script#' + tmpl).html().match(version);
+        var result = temp.find('script#' + tmpl).html();
         if(result){
-            if(parseFloat(result[1]) >= self.minTmplVersion && parseFloat(result[1]) <= self.maxTmplVersion)
-                return false;
+            result = result.match(version);
+            if(result){
+                if(parseFloat(result[1]) >= self.minTmplVersion && parseFloat(result[1]) <= self.maxTmplVersion)
+                    return false;
+            }
+        }
+        else{
+            self.Exception('Шаблон [' + tmpl + '] не найден!');
+            return false;
         }
         Parameters.cache.tmpl[hash] = 'error';
        

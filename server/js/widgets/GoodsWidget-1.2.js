@@ -383,7 +383,7 @@ var GoodsMainBlockViewModel = function(data){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered()); 
  
-        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered(), hash : self.uniq})
+        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.shopId, count: self.ordered(), hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) >= 0 && self.count != 0)

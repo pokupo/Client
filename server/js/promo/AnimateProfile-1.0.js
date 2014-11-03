@@ -83,7 +83,7 @@ var AnimateProfile = function () {
     setTimeout(function(){
         $('.country_list_profile').trigger('chosen:updated');
     }, 1000)
-    
+    $('[rel=tooltip]').tooltip();
 }
 
 

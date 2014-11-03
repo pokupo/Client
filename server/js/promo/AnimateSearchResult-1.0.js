@@ -177,5 +177,6 @@ var AnimateSearchResult = function () {
                         }
                 );
     });
+    $('[rel=tooltip]').tooltip();
 }
 

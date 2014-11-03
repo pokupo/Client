@@ -43,6 +43,7 @@ var AnimateMessage = function () {
         $(this).hide();
         $('#js-toggleChat-collapse').show();
     })
+    $('[rel=tooltip]').tooltip();
 };
 
 

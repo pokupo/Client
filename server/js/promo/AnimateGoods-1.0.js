@@ -59,5 +59,6 @@ var AnimateGoods = function () {
             element: 'ya_share',
         });
     }
+    $('[rel=tooltip]').tooltip();
 }
 

@@ -1,4 +1,5 @@
 var AnimateRegistrationSeller = function(){
+    $('[rel=tooltip]').tooltip();
     $('#phone').mask("?9 999 999 99 99");
     $(":input:not(:checkbox):not(:button):not([type=hidden]):not([type=search]):not(.no-label)").floatlabel();
     
