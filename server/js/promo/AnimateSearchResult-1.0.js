@@ -7,10 +7,20 @@ var AnimateSearchResult = function () {
                 .closest('.slidedown')
                 .toggleClass('active')
                 .find('.slidedown__content[data-target="' + $this.data('target') + '"]')
-                .slideToggle(500, function(){
+                .slideToggle(500, function () {
                     $(this).css('overflow', 'inherit');
                 });
     });
+    if (Routing.route == 'search') {
+        var sl = $('#advansed_search_form_slidedown').closest('.slidedown');
+        if(!sl.hasClass('active')){
+            sl.toggleClass('active')
+                .find('.slidedown__content[data-target="' + $('#advansed_search_form_slidedown').data('target') + '"]')
+                .slideToggle(500, function () {
+                    $(this).css('overflow', 'inherit');
+                });
+        }
+    }
 
     $('#advansed_search_form__category_dropdown__trigger').unbind('click');
     $('#advansed_search_form__category_dropdown__trigger').click(function (e) {
@@ -77,7 +87,7 @@ var AnimateSearchResult = function () {
         select: function (event, data) {
             // Get a list of all selected nodes, and convert to a key array:
             var selKeys = $.map(data.tree.getSelectedNodes(), function (node) {
-                return parseInt(node.key.substring(1), 10);
+                return parseInt(node.key, 10);
             });
             Parameters.filter.idSelectCategories = selKeys;
 
@@ -144,7 +154,7 @@ var AnimateSearchResult = function () {
                 siblings('.content_filter_sort_dropdown__trigger')
                 .toggleClass('active');
     });
-    
+
     $('.b-item__order-button .btn').unbind('click');
     $('.b-item__order-button .btn').click(function () {
         var $this = $(this);
