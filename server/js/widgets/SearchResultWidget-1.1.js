@@ -342,6 +342,7 @@ var AdvancedSearchFormViewModel = function(params){
         var active = false;
         for(var j = 0; j <= data.length-1; j++){
             var node = {};
+            node.select = false;
             if($.inArray(data[j].id, Parameters.filter.idSelectCategories) >=0 || select == true){
                 node.select = true;
                 active = true;

@@ -94,12 +94,8 @@ var SearchWidget = function(){
         });
     };
     self.Fill = function(data){
-        var search = Parameters.cache.searchWidget;
-        if ($.isEmptyObject(search)) {
-            SearchViewModel.prototype = new Widget();
-            search = new SearchViewModel();
-            Parameters.cache.searchWidget = search;
-        }
+        SearchViewModel.prototype = new Widget();
+        var search = new SearchViewModel();
 
         if(Parameters.cache.childrenCategory[data.id])
             search.AddListCategory(Parameters.cache.childrenCategory[data.id], data);
@@ -148,9 +144,15 @@ var SearchCategoryItem = function(data, level, select){
     self.id = data.id;
     self.title = Array(level).join(" - ") + data.name_category;
     self.typeCategory = data.type_category;
+    self.isSelected = ko.computed(function(){
+        if(select.selectedCatigoriesId() == self.id)
+            return true;
+        return false;
+    }, this);
     
     self.ClickItem = function(){
         select.selectedCatigoriesId(self.id);
+        select.selectedCatigory(self.title);
     }
 }
 
@@ -161,23 +163,31 @@ var SearchCategoryItemForTree = function(data, level, select){
     self.typeCategory = data.type_category;
     self.children = ko.observableArray();
     self.isSelected = ko.computed(function(){
-        if(select.selectedCatigoriesId() == self.id)
+        if(select.selectedCatigoriesId() == self.id){
+            select.selectedCatigory(self.title);
             return true;
+        }
         return false;
     }, this);
     
     self.ClickItem = function(){
         select.selectedCatigoriesId(self.id);
+        select.selectedCatigory(self.title);
     }
 }
 
 var SearchViewModel = function(){
     var self = this;
     self.text = ko.observable();
+    if(Routing.route == 'search')
+        self.text(Parameters.filter.keyWords);
     self.cssSelectList = 'searchSelectList';
     self.categories =  ko.observableArray();
     self.categoriesTree =  ko.observableArray();
     self.selectedCatigoriesId = ko.observable();
+    if(Routing.route == 'search' && Parameters.filter.idSelectCategories.length == 1)
+        self.selectedCatigoriesId(Parameters.filter.idSelectCategories[0])
+    self.selectedCatigory = ko.observable();
     self.idCategories = Parameters.filter.idCategories;
     self.typeCategories = [];
     self.cachData = {};
@@ -188,31 +198,38 @@ var SearchViewModel = function(){
     self.AddListCategory = function(data, parent){
         self.categories =  ko.observableArray();
         self.categoriesTree =  ko.observableArray();
+        self.childrenCategories = ko.observableArray();
         self.typeCategories = [];
 
         self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
         
         self.typeCategories[parent.id] = parent.type_category;
         self.categories.push(new SearchCategoryItem(parent, 0, self));
-        self.categoriesTree.push(new SearchCategoryItemForTree(parent, 0, self));
         
         for(var i = 0; i <= data.length - 1; i++){
             self.categories.push(new SearchCategoryItem(data[i], 1, self))
             
             self.typeCategories[data[i].id] = data[i].type_category;
+            var category = new SearchCategoryItemForTree(data[i], i+1, self);
+            var children = ko.observableArray();
             
             if(data[i].children){
-                var children = ko.observableArray();
                 for(var j = 0; j <= data[i].children.length - 1; j++){
                     self.categories.push(new SearchCategoryItem(data[i].children[j], 2, self));
-                    children.push(new SearchCategoryItemForTree(data[i].children[j], 2, self))
                     self.typeCategories[data[i].id] = data[i].type_category;
+                    
+                    children.push(new SearchCategoryItemForTree(data[i].children[j], 2, self))
                 }
-                var category = new SearchCategoryItemForTree(data[i], 1, self);
+                
                 category.children = children;
-                self.categoriesTree.push(category);
             }
+            self.childrenCategories.push(category);
         }
+        
+        var parent = new SearchCategoryItemForTree(parent, 0, self);
+        parent.children = self.childrenCategories;
+        self.categoriesTree.push(parent);
+        
         EventDispatcher.DispatchEvent('searchWidget.fill.listCategory', self);
     };
     self.SubmitSearchForm = function(data){
@@ -235,7 +252,6 @@ var SearchViewModel = function(){
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
 
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
-            $(data.text).val('');
         }
         else{
             self.ShowMessage(Config.Search.message.empty, false, false);
@@ -261,7 +277,6 @@ var SearchViewModel = function(){
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
 
             EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
-            self.text('');
         }
         else{
             self.ShowMessage(Config.Search.message.empty, false, false);
