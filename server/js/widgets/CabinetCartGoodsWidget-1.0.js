@@ -404,7 +404,8 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
     self.count = data.count;
     self.sellCost = ko.observable(data.sell_cost);
     self.sellEndCost = ko.observable(data.sell_end_cost);
-    self.routeImages = JSSettings.pathToImages + data.route_image;
+    self.routeImages = data.route_image;
+    self.routeBigImages = data.route_big_image;
     self.ordered = ko.observable(self.count);
     self.sum = ko.computed(function(){
         return (self.ordered() * self.sellCost()).toFixed(2);

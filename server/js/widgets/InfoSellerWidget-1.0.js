@@ -153,7 +153,7 @@ var InfoSellerViewModel = function (data) {
     self.positiveOpinion = data.shop.positive_opinion;
     self.negativeOpinion = data.shop.negative_opinion;
     self.useCart = data.shop.use_cart;
-    self.routeLogoShop = JSSettings.pathToImages + data.shop.route_logo_shop;
+    self.routeLogoShop = data.shop.route_logo_shop;
     self.allGoods = data.shop.all_goods;
     self.operators = data.operator;
 

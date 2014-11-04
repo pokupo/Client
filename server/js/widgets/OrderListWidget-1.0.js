@@ -358,19 +358,6 @@ var OrderListDetailViewModel = function(data) {
     self.costPayment = data.cost_payment;
     self.sellCost = data.sell_cost;
     self.finalCost = data.final_cost;
-    self.GetIconPay = function(status) {
-        if (status == 'wait_check')
-            return JSSettings.pathToImages + '/_check.png';
-        if (status == 'wait_pay')
-            return JSSettings.pathToImages + '/_receipt_invoice.png';
-        if (status == 'paid')
-            return JSSettings.pathToImages + '/_coins.png';
-        if (status == 'cancel')
-            return JSSettings.pathToImages + '/_cancel_icon.png';
-        if (status == 'back')
-            return JSSettings.pathToImages + '/_arrow_return.png';
-        return false;
-    };
     self.GetNamePay = function(status) {
         if (status == 'wait_check')
             return 'На проверке';
@@ -382,21 +369,6 @@ var OrderListDetailViewModel = function(data) {
             return 'Отменена';
         if (status == 'back')
             return 'Возвращена';
-        return false;
-    };
-    self.GetIconOrder = function(status) {
-        if (status == 'init')
-            return JSSettings.pathToImages + '/_bricks.png';
-        if (status == 'new')
-            return JSSettings.pathToImages + '/_check.png';
-        if (status == 'process')
-            return JSSettings.pathToImages + '/_hourglass.png';
-        if (status == 'send')
-            return JSSettings.pathToImages + '/_delivery.png';
-        if (status == 'delivered')
-            return JSSettings.pathToImages + '/_box_receive.png';
-        if (status == 'cancel')
-            return JSSettings.pathToImages + '/_cancel_icon.png';
         return false;
     };
     self.GetNameOrder = function(status) {

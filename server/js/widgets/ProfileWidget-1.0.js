@@ -1034,7 +1034,7 @@ var ProfileDataRegistrationViewModel = function(){
     self.AddContent = function(data){
         self.data = data
         var user = Parameters.cache.userInformation;
-        self.iconUser(JSSettings.pathToImages + user.route_icon_user);
+        self.iconUser(user.route_icon_user);
         self.username(user.login);
         self.gender(data.gender);
         self.lastName(data.f_name);
