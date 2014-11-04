@@ -20,24 +20,24 @@
                                             <div id="multilocation" style="text-align:left">
                                                 <ul>
                                                     <!-- ko foreach: categories -->
-                                                    <li> 
-                                                        <!-- ko text: title --><!--/ko-->
+                                                    <li data-bind="css: {'selected' : select}, attr: {id: key}">
+                                                        <!-- ko text: title --><!-- /ko-->
                                                         <!-- ko if: children -->
                                                         <ul>
                                                             <!-- ko foreach: { data: children, as: 'children1' } -->
-                                                            <li>
+                                                            <li data-bind="css: {'selected' : children1.select}, attr: {id: key}">
                                                                 <!-- ko text: children1.title --><!-- /ko -->
                                                                 <!-- ko if: children1.children -->
                                                                 <ul>
-                                                                    <!-- ko foreach: { data: children1.children, as: 'children2' } --> 
-                                                                    <li>
+                                                                    <!-- ko foreach: { data: children1.children, as: 'children2' } -->
+                                                                    <li data-bind="css: {'selected' : children2.select}, attr: {id: key}">
                                                                         <!-- ko text: children2.title --><!-- /ko -->
                                                                     </li>
                                                                     <!-- /ko -->
                                                                 </ul>
                                                                 <!-- /ko -->
                                                             </li>
-                                                            <!-- /ko-->
+                                                            <!-- /ko -->
                                                         </ul>
                                                         <!-- /ko -->
                                                     </li>
