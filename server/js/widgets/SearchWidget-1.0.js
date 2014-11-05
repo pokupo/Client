@@ -185,7 +185,7 @@ var SearchViewModel = function(){
     self.categories =  ko.observableArray();
     self.categoriesTree =  ko.observableArray();
     self.selectedCatigoriesId = ko.observable();
-    if(Routing.route == 'search' && Parameters.filter.idSelectCategories.length == 1)
+    if(Routing.route == 'search' && Parameters.filter.idSelectCategories && Parameters.filter.idSelectCategories.length == 1)
         self.selectedCatigoriesId(Parameters.filter.idSelectCategories[0])
     self.selectedCatigory = ko.observable();
     self.idCategories = Parameters.filter.idCategories;
