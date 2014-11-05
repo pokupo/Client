@@ -160,8 +160,8 @@ var OrderGoodsViewModel = function(data) {
     self.itogSellCost = (data.sell_cost * data.count).toFixed(2);
     self.finalCost = data.final_cost;
     self.count = data.count;
-    self.routeImages = data.route_image;
-    self.routeBigImages = data.route_big_image;
+    self.routeImage = data.route_image;
+    self.routeBigImage = data.route_big_image;
     if (data.is_egoods == 'yes')
         self.isEgoods = true;
     else
