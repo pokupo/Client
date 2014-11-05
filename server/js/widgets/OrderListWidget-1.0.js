@@ -388,10 +388,8 @@ var OrderListDetailViewModel = function(data) {
     };
     self.statusPay = data.status_pay;
     self.statusPayName = self.GetNamePay(data.status_pay);
-    self.statusPayIcon = self.GetIconPay(data.status_pay);
     self.statusOrder = data.status_order;
     self.statusOrderName = self.GetNameOrder(data.status_order);
-    self.statusOrderIcon = self.GetIconOrder(data.status_order);
 
     self.viewShow = ko.computed(function() {
         return true;
