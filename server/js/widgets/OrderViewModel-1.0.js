@@ -23,7 +23,7 @@ var OrderViewModel = function(){
     
     self.commentBuyer = ko.observable();
     var user = Parameters.cache.userInformation;
-    self.avatar = JSSettings.pathToImages + user.route_icon_user;
+    self.avatar = user.route_icon_user;
     self.username = user.login;
     self.commentOperator = ko.observable();
     
@@ -51,7 +51,7 @@ var OrderViewModel = function(){
             if(order.method_shipping.hasOwnProperty('name_method_shipping'))
                 self.nameMethodShipping(order.method_shipping.name_method_shipping);
             if(order.method_shipping.hasOwnProperty('logo_shipping_company'))
-                self.logoMethodShipping(JSSettings.pathToImages + order.method_shipping.logo_shipping_company);
+                self.logoMethodShipping(order.method_shipping.logo_shipping_company);
         }
         if (order.hasOwnProperty('shipping')) {
             if (order.shipping == 'yes')
@@ -83,7 +83,7 @@ var OrderViewModel = function(){
             if (order.method_payment.hasOwnProperty('name_payment'))
                 self.namePayment(order.method_payment.name_payment);
             if (order.method_payment.hasOwnProperty('logo_payment'))
-                self.logoPayment(JSSettings.pathToImages + order.method_payment.logo_payment);
+                self.logoPayment(order.method_payment.logo_payment);
             if (order.method_payment.hasOwnProperty('time_payment'))
                 self.timePayment(order.method_payment.time_payment);
             if (order.method_payment.hasOwnProperty('desc_payment'))
@@ -160,10 +160,8 @@ var OrderGoodsViewModel = function(data) {
     self.itogSellCost = (data.sell_cost * data.count).toFixed(2);
     self.finalCost = data.final_cost;
     self.count = data.count;
-    self.routeImage = ko.computed(function(){
-        if(data.route_image)
-            return JSSettings.pathToImages + data.route_image;
-    }, this);
+    self.routeImage = data.route_image;
+    self.routeBigImage = data.route_big_image;
     if (data.is_egoods == 'yes')
         self.isEgoods = true;
     else

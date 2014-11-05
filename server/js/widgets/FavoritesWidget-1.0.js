@@ -353,7 +353,8 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
     self.fullName = data.full_name;
     self.sellCost = ko.observable(data.sell_cost);
     self.sellEndCost = ko.observable(data.sell_end_cost);
-    self.routeImages = JSSettings.pathToImages + data.route_image;
+    self.routeImages = data.route_image;
+    self.routeBigImages = data.route_big_image;
     self.isSelected = ko.observable(false);
     self.isSelected.subscribe(function(check) {
         var countGoods = block.goods().length;

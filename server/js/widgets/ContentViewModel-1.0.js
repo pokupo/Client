@@ -6,12 +6,22 @@ var ContentViewModel = function(data, i){
     self.fullName = data.full_name;
     self.routeImage = ko.computed(function(){
         if(data.route_image)
-            return JSSettings.pathToImages + data.route_image
+            return data.route_image
         return null;
     }, this);
     self.backgroundImage = ko.computed(function(){
         if(data.route_image)
-            return "background: url('" + JSSettings.pathToImages + data.route_image + "')";
+            return "background: url('" + data.route_image + "')";
+        return null;
+    }, this);
+    self.routeBigImage = ko.computed(function(){
+        if(data.route_image)
+            return data.route_big_image
+        return null;
+    }, this);
+    self.backgroundBigImage = ko.computed(function(){
+        if(data.route_image)
+            return "background: url('" + data.route_big_image + "')";
         return null;
     }, this);
     self.countTovars = data.count;
@@ -34,7 +44,7 @@ var ContentViewModel = function(data, i){
     self.shopId = data.id_shop;
     self.shopName = data.name_shop;
     self.ratingShop = data.rating_shop;
-    self.routeLogoShop = JSSettings.pathToImages + data.route_logo_shop;
+    self.routeLogoShop = data.route_logo_shop;
     self.positiveOpinion = '+' + data.positive_opinion;
     self.negativeOpinion = '-' + data.negative_opinion;
     self.keyWords = data.key_words;
