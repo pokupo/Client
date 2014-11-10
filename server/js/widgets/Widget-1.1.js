@@ -1173,7 +1173,7 @@ var Widget = function (){
         },
         EditProfile : function(form, callback){
             if(form.find('#registration_data_query').length == 0)
-                form.append('<input type="text" id="registration_data_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.userPathApi + 'edit/profile/"/>');
+                form.append('<input type="text" id="registration_data_query" style="display: none" name="query" value="' + self.settings.httpsHostApi + self.settings.userPathApi + 'edit/profile/"/>');
             EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
                 callback(data)
             });
