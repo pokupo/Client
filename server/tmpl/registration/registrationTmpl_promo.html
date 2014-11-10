@@ -251,7 +251,7 @@
         </canvas>
         <h1>Регистрация нового аккаунта</h1>
     </div>
-    <form action="#">
+    <form  data-bind="attr: {id: cssRegistrationDataForm}" enctype="multipart/form-data" target="upload_target" method="POST">
         <div id="registerWizard" class="b-wizard">
             <ul class="b-wizard__steps anchor">
                 <li>
@@ -289,7 +289,7 @@
                             </div>
                         </div>
                         <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="family" value="" placeholder="Фамилия" class="block-input" id="i-41" data-bind="value: lastName"/>
+                        <input name="sname" type="text" name="family" value="" placeholder="Фамилия" data-bind="value: lastName" class="block-input"/><!-- ko if: errorLastName -->
                             <label for="41" class="label-floatlabel" style="display: none;">Фамилия</label>
                             <!-- ko if: errorLastName-->
                                 <div class="form_error" data-bind="text: errorLastName"></div>
@@ -298,7 +298,7 @@
                     </div>
                     <div class="input-holder">
                         <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="name" value="" placeholder="Имя" class="block-input" id="i-24" data-bind="value: firstName"/>
+                        <input type="text" name="fname" value="" placeholder="Имя" data-bind="value: firstName" class="block-input"/><!-- ko if: errorFirstName -->
                             <label for="24" class="label-floatlabel  " style="display: none;">Имя</label>
                             <!-- ko if: errorFirstName-->
                                 <div class="form_error" data-bind="text: errorFirstName"></div>
@@ -307,7 +307,7 @@
                     </div>
                     <div class="input-holder">
                         <div class="floatlabel-wrapper" style="position:relative">
-                            <input type="text" name="patronymic" value="" placeholder="Отчество" class="block-input" id="i-85" data-bind="value: middleName" />
+                            <input type="text" name="mname" value="" placeholder="Отчество" data-bind="value: middleName" class="block-input"/><!-- ko if: errorMiddleName -->
                             <label for="85" class="label-floatlabel" style="display: none;">Отчество</label>
                             <!-- ko if: errorMiddleName-->
                                 <div class="form_error" data-bind="text: errorMiddleName"></div>
@@ -337,7 +337,7 @@
                         </div>
                     </div>
                     <div style="padding-top:13px" class="input-holder">
-                        <input id="skip_personal" name="skip_personal" type="checkbox" class="checkbox" data-bind="click: SpecifyLater">
+                        <input id="skip_personal" type="checkbox" class="checkbox" data-bind="click: SpecifyLater">
                         <label for="skip_personal" class="block-label b-small-text">Указать позже</label>
                     </div>
                 </div>
