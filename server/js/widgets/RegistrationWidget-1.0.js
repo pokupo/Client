@@ -210,11 +210,11 @@ var RegistrationWidget = function() {
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
             self.WidgetLoader(false);
             var str = '?id_country=' + encodeURIComponent($.trim(step4.country()));
-            if (step4.region())
+            if (step4.region() && step4.region().regioncode)
                 str = str + '&code_region=' + encodeURIComponent($.trim(step4.region().regioncode));
             else
                 str = str + '&name_region=' + encodeURIComponent($.trim(step4.customRegion()));
-            if (step4.city())
+            if (step4.city() && step4.city().aoguid)
                 str = str + '&code_city=' + encodeURIComponent($.trim(step4.city().aoguid));
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(step4.customCity()));

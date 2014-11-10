@@ -250,7 +250,7 @@ var ShortBlockCartGoodsSellersViewModel = function(data, cart){
         }
     };
     self.ClickMinus = function(){
-        if(self.ordered() > 0){
+        if(self.ordered() > 1){
             self.ordered(self.ordered() - 1);
             self.CartItog();
             cart.count(cart.count()- 1);
