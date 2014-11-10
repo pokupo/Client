@@ -22,13 +22,13 @@ var AnimateInfoSeller = function () {
         if (0 < $('.info_seller_dropdown__trigger.active').length) {
             $('.info_seller_dropdown__trigger.active')
                     .not(this).removeClass('active')
-                    .closest('.dropdown')
-                    .find('.dropdown__content').addClass('hidden');
+                    .closest('.info_seller_dropdown')
+                    .find('.info_seller_dropdown__content').addClass('hidden');
         }
 
         $this.toggleClass('active')
-                .closest('.dropdown')
-                .find('.dropdown__content[data-target="' + $this.data('target') + '"]')
+                .closest('.info_seller_dropdown')
+                .find('.info_seller_dropdown__content[data-target="' + $this.data('target') + '"]')
                 .toggleClass('hidden');
     })
     $('.info_seller_dropdown__content a').unbind('click');
