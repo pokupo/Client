@@ -121,11 +121,11 @@
         
         EventDispatcher.AddEventListener('ProfileWidget.postalAddress.checking', function(data){
             var str = '?id_country=' + encodeURIComponent($.trim(data.country().id));
-            if (data.region())
+            if (data.region() && data.region().regioncode)
                 str = str + '&code_region=' + encodeURIComponent($.trim(data.region().regioncode));
             else
                 str = str + '&name_region=' + encodeURIComponent($.trim(data.customRegion()));
-            if (data.city())
+            if (data.city() && data.city().aoguid)
                 str = str + '&code_city=' + encodeURIComponent($.trim(data.city().aoguid));
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
@@ -242,11 +242,11 @@
         EventDispatcher.AddEventListener('ProfileWidget.delivery.add', function(data){
             
             var str = '?id_country=' + encodeURIComponent($.trim(data.country().id));
-            if (data.region())
+            if (data.region() && data.region().regioncode)
                 str = str + '&code_region=' + encodeURIComponent($.trim(data.region().regioncode));
             else
                 str = str + '&name_region=' + encodeURIComponent($.trim(data.customRegion()));
-            if (data.city())
+            if (data.city() && data.city().aoguid)
                 str = str + '&code_city=' + encodeURIComponent($.trim(data.city().aoguid));
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
@@ -275,11 +275,11 @@
             
             var str = '?id_address=' + data.id() +
             '&id_country=' + encodeURIComponent($.trim(data.country().id));
-            if (data.region())
+            if (data.region() && data.region().regioncode)
                 str = str + '&code_region=' + encodeURIComponent($.trim(data.region().regioncode));
             else
                 str = str + '&name_region=' + encodeURIComponent($.trim(data.customRegion()));
-            if (data.city())
+            if (data.city() && data.city().aoguid)
                 str = str + '&code_city=' + encodeURIComponent($.trim(data.city().aoguid));
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
@@ -1227,6 +1227,14 @@ var ProfilePostalAddressViewModel = function(){
     self.PostIndexValidation = function() {
         if (!self.postIndex()) {
             self.errorPostIndex(Config.Profile.error.postIndex.empty);
+            return false;
+        }
+        if (self.postIndex().length != 6) {
+            self.errorPostIndex(Config.Profile.error.postIndex.length);
+            return false;
+        }
+        if (!Config.Profile.regular.postIndex.test(self.postIndex())) {
+            self.errorPostIndex(Config.Profile.error.postIndex.regular);
             return false;
         }
         self.errorPostIndex(null);
