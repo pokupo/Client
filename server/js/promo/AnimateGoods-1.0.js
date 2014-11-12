@@ -25,7 +25,7 @@ var AnimateGoods = function () {
     });
     
     $('#btn_to_cart').click(function () {
-        var item = $('.fotorama__stage__shaft .fotorama__active');
+        var item = $('.b-catalog-item .fotorama__stage__shaft .fotorama__active');
 
         var x = item.offset().left,
                 y = item.offset().top,

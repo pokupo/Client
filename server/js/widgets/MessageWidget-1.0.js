@@ -121,9 +121,7 @@ var MessageWidget = function () {
                     form.dstUserError('');
                     self.BaseLoad.MessageAdd($('form#'+ form.cssFormMessage), function (data) {
                         if(!data.err){
-                            data.count_message = 1;
-                            topic.AddNewInContent(data);
-                            form.ClearForm();
+                            self.Fill.Topic()
                         }
                         else {
                             self.QueryError(data, function () {
@@ -223,6 +221,10 @@ var MessageWidget = function () {
                 }
             });
         });
+        
+        EventDispatcher.AddEventListener('MessageWidget.empty.topic', function () {
+            self.Fill.Topic();
+        })
     };
     self.InsertContainer = {
         EmptyWidget: function () {
@@ -458,6 +460,8 @@ var TopicMessageViewModel = function (widget) {
                 self.messages.remove(selected[i]);
             });
             EventDispatcher.DispatchEvent('MessageWidget.delete.topic', selected);
+            if(self.messages().length == 0)
+                EventDispatcher.DispatchEvent('MessageWidget.empty.topic');
         });
     };
     self.AddContent = function (data) {
@@ -569,6 +573,8 @@ var TopicViewModel = function (data, list) {
         self.Confirm(Config.Message.message.confirmDeleteSeveralTopic, function () {
             EventDispatcher.DispatchEvent('MessageWidget.delete.topic', [self]);
             list.messages.remove(self);
+            if(list.messages().length == 0)
+                EventDispatcher.DispatchEvent('MessageWidget.empty.topic');
         });
     };
     self.FormatDateMessage = function () {
