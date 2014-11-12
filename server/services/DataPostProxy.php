@@ -13,7 +13,8 @@ class DataPostProxy implements IProxy {
     private function ParseRequestParams($post, $file){
         $this->query = $post['query'];
         foreach($file as $i => $one){
-            $post[$i] = $one['tmp_name'];
+            $post[$i] = '@' . $one['tmp_name']
+                    . ';filename=' . $one['name'];
         }
         unset($post['query']);
         $this->params = $post;
