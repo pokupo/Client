@@ -113,8 +113,10 @@ var RegistrationWidget = function() {
                     if (params.length > 0)
                         var str = '?' + params.join('&');
                     self.BaseLoad.Registration(str, function(data) {
-                        Parameters.cache.reg.step1 = step1;
-                        Routing.SetHash('registration', 'Регистрация пользователя', {step: 2});
+                        self.BaseLoad.LoginForProxy(step1.username(), step1.firstPassword(), 'no', function(request2){
+                            Parameters.cache.reg.step1 = step1;
+                            Routing.SetHash('registration', 'Регистрация пользователя', {step: 2});
+                        })
                     });
                 }
                 else
@@ -209,7 +211,7 @@ var RegistrationWidget = function() {
 
         EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
             self.WidgetLoader(false);
-            var str = '?id_country=' + encodeURIComponent($.trim(step4.country()));
+            var str = '?id_country=' + encodeURIComponent($.trim(step4.idCountry()));
             if (step4.region() && step4.region().regioncode)
                 str = str + '&code_region=' + encodeURIComponent($.trim(step4.region().regioncode));
             else
@@ -515,7 +517,7 @@ var RegistrationWidget = function() {
                     
                     $('#' + form.cssRegionList).autocomplete({
                         source: function(request, response) {
-                            self.BaseLoad.Region(form.country() + '/' + encodeURIComponent(request.term), function(data) {
+                            self.BaseLoad.Region(form.idCountry() + '/' + encodeURIComponent(request.term), function(data) {
                                 if (!data.err) {
                                     response($.map(data, function(item) {
                                         return {
@@ -544,7 +546,7 @@ var RegistrationWidget = function() {
                     $('#' + form.cssCityList).autocomplete({
                         source: function(request, response) {
                             if (form.region()) {
-                                self.BaseLoad.City(form.country() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
+                                self.BaseLoad.City(form.idCountry() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
                                     if (!data.err) {
                                         response($.map(data, function(item) {
                                             return {
@@ -573,7 +575,7 @@ var RegistrationWidget = function() {
                     $('#' + form.cssAddress).autocomplete({
                         source: function(request, response) {
                             if (form.region()) {
-                                self.BaseLoad.Street(form.country() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
+                                self.BaseLoad.Street(form.idCountry() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
                                     if (!data.err) {
                                         response($.map(data, function(item) {
                                             return {
@@ -654,7 +656,7 @@ var RegistrationWidget = function() {
 
 var RegistrationFormStep4ViewModel = function() {
     var self = this;
-    self.country = ko.observable();
+    self.idCountry = ko.observable();
     self.cssCountryList = 'country_list';
     self.errorCountry = ko.observable(null);
 
@@ -713,7 +715,7 @@ var RegistrationFormStep4ViewModel = function() {
         return test;
     };
     self.CountryValidation = function() {
-        if (!self.country()) {
+        if (!self.idCountry()) {
             self.errorCountry(Config.Registration.error.country.empty);
             return false;
         }

@@ -1450,7 +1450,7 @@ var Widget = function (){
         },
         MessageAdd : function(form, callback){
             if(form.find('#add_message_query').length == 0)
-                form.append('<input type="text" id="add_message_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.messagePathApi + 'add/"/>');
+                form.append('<input type="text" id="add_message_query" style="display: none" name="query" value="' + self.settings.httpsHostApi + self.settings.messagePathApi + 'add/"/>');
             EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
                 if(callback)
                     callback(data)
