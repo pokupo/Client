@@ -44,6 +44,8 @@ var AnimateProfile = function () {
         $("#avatar_file").val(null);
     });
     $('.masked-phone').mask("?9 999 999 99 99", {placeholder: "_"})
+    $('#phone_profile').focus();
+    $('body').focus();
 
     $('input[type="password"]').hidePassword(true);
     $("#fullname").suggestions({
