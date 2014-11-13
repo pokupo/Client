@@ -102,13 +102,12 @@
 
             self.BaseLoad.EditProfile($('form#' + personal.cssRegistrationDataForm), function(data) {
                 if(data.result == 'ok'){
-                    Parameters.cache.profile.personal = {};
-                    personal.lastName(personal.lastNameField());
-                    personal.firstName(personal.firstNameField());
-                    personal.middleName(personal.middleNameField());
-                    personal.birthDay(personal.birthDayField());
                     self.ShowMessage(Config.Profile.message.editProfile,function(){
-                        personal.isEditBlock(0);
+                        Parameters.cache.profile.personal = {};
+                        Parameters.cache.userInformation = null;
+                        Parameters.cache.profile.info = {};
+                        
+                        Routing.SetHash('profile', 'Личный кабинет', {});
                     }, false);
                 }
                 else{
@@ -1033,7 +1032,7 @@ var ProfileDataRegistrationViewModel = function(){
     
     self.AddContent = function(data){
         self.data = data
-        var user = Parameters.cache.userInformation;
+        var user = Parameters.cache.profile.info;
         self.iconUser(user.route_icon_user);
         self.username(user.login);
         self.gender(data.gender);
