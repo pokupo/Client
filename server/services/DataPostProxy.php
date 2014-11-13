@@ -42,13 +42,19 @@ class DataPostProxy implements IProxy {
     }
 
     private function GetData($url) {
+        $cookie = array();
+        foreach($_COOKIE as $i => $one){
+            $cookie[] = $i . '=' . $one;
+        }
+        
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/4.0 (compatible;)");
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $this->params); 
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_COOKIE, "PHPSESSID=".$_COOKIE['PHPSESSID']);
+        if($cookie)
+            curl_setopt($ch, CURLOPT_COOKIE, implode('; ', $cookie));
         curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
 	$this->responseData = curl_exec ($ch);
         if($this->responseData === false)
