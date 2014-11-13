@@ -27,11 +27,16 @@ class DataProxy implements IProxy {
     }
 
     private function GetData($url) {
-        if (isset($_COOKIE['PHPSESSID'])) {
+        $cookie = array();
+        foreach($_COOKIE as $i => $one){
+            $cookie[] = $i . '=' . $one;
+        }
+        
+        if ($cookie) {
             $opts = array(
                 'http' => array(
                     'method' => "GET",
-                    'header' => "Cookie: PHPSESSID=" . $_COOKIE['PHPSESSID'] . "\r\n"
+                    'header' => "Cookie: " . implode('; ', $cookie) . "\r\n"
                 )
             );
         } else {

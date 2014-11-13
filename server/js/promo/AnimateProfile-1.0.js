@@ -43,7 +43,18 @@ var AnimateProfile = function () {
         $('#button_avatar_file span').text('Загрузить аватар');
         $("#avatar_file").val(null);
     });
-    $('.masked-phone').mask("?9 999 999 99 99", {placeholder: "_"})
+    $('.masked-phone').mask("?9 999 999 99 99", {placeholder: "_"});
+    var phone = $('#phone_profile').val();
+    var str = '';
+    var empty = [1,4,7,9];
+    for(var i = 0; i <= phone.length-1; i++){
+        if($.inArray(i, empty) >= 0)
+           str = str + ' '; 
+        str = str + phone[i];
+    }
+    $('#phone_profile').val(str).change();
+    
+    
 
     $('input[type="password"]').hidePassword(true);
     $("#fullname").suggestions({
