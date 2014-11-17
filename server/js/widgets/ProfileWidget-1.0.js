@@ -107,7 +107,7 @@
                         Parameters.cache.userInformation = null;
                         Parameters.cache.profile.info = {};
                         
-                        Routing.SetHash('profile', 'Личный кабинет', {});
+                        window.location.reload(true);
                     }, false);
                 }
                 else{
