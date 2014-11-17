@@ -45,15 +45,16 @@ var AnimateProfile = function () {
     });
     $('.masked-phone').mask("?9 999 999 99 99", {placeholder: "_"});
     var phone = $('#phone_profile').val();
-    var str = '';
-    var empty = [1,4,7,9];
-    for(var i = 0; i <= phone.length-1; i++){
-        if($.inArray(i, empty) >= 0)
-           str = str + ' '; 
-        str = str + phone[i];
+    if(phone){
+        var str = '';
+        var empty = [1,4,7,9];
+        for(var i = 0; i <= phone.length-1; i++){
+            if($.inArray(i, empty) >= 0)
+               str = str + ' '; 
+            str = str + phone[i];
+        }
+        $('#phone_profile').val(str).change();
     }
-    $('#phone_profile').val(str).change();
-    
     
 
     $('input[type="password"]').hidePassword(true);

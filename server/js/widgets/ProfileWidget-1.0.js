@@ -1041,8 +1041,8 @@ var ProfileDataRegistrationViewModel = function(){
         self.middleName(data.m_name);
         self.birthDay(data.birth_day); 
         self.rating(user.rating_user);
-        self.lastNameField(self.data.f_name);
-        self.firstNameField(self.data.s_name);
+        self.lastNameField(self.data.s_name);
+        self.firstNameField(self.data.f_name);
         self.middleNameField(self.data.m_name);
         self.birthDayField(self.data.birth_day);
         self.checkInfo(data.check_info);
