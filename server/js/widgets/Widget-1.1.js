@@ -1024,7 +1024,7 @@ var Widget = function (){
             var opt = self.ProtocolPreparation();
             var str = "";
             if(username && password)
-                str = '?username=' + username + '&password=' + password +'&remember_me=' + remember_me;
+                str = '?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) +'&remember_me=' + remember_me;
             XDMTransport.Load.FromProxy({
                 url : encodeURIComponent(opt.host + self.settings.userPathApi + 'login/' + str),
                 protocol :  opt.protocol,
