@@ -23,7 +23,6 @@ var JSSettings = {
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
-        'jquery-ui-1.10.2.custom.min.js',
         'easyXDM.min.js',
         'knockout-2.2.0.js',
         'jquery.cookie.js',
