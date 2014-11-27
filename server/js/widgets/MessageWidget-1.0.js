@@ -504,7 +504,7 @@ var TopicMessageViewModel = function (widget) {
 
         ko.utils.arrayForEach(self.messages(), function (message) {
             $('#' + message.cssCheckboxMessage())[0].checked = val;
-            message.isSelected(check);
+            message.isSelected(val);
         });
     };
 };
