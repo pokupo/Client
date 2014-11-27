@@ -228,7 +228,8 @@ var SearchResultWidget = function(){
         AdvancedSearchForm : function(data){
             if($("#" + self.settings.containerIdForAdvancedSearch).length){
                 try{
-                    ko.global.route = Routing.route;
+                    if(ko.global)
+                        ko.global.route = Routing.route;
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
