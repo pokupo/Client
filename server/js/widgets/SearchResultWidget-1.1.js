@@ -230,6 +230,10 @@ var SearchResultWidget = function(){
                 try{
                     if(ko.global)
                         ko.global.route = Routing.route;
+                    else
+                        ko.global = {
+                            route : Routing.route
+                        };
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
