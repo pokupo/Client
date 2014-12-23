@@ -30,7 +30,8 @@ var ContentWidget = function(){
                 id: {
                     slider : null,
                     carusel : null,
-                    tile : null
+                    tile : null,
+                    empty : null
                 }
             }
         },
@@ -181,8 +182,11 @@ var ContentWidget = function(){
     };
     self.CheckData = function(data){
         self.InsertContainer.EmptyBlockWidget();
-        if(data.err)
-            self.WidgetLoader(true);
+        if(data.err){
+            var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'no_results'});
+            self.InsertContainer.Block(0, block.typeView);
+            self.Render.NoResultsBlock(block);
+        }
         else{
             self.testBlock.count = data.length;
             self.testBlock.ready = 0;
@@ -228,6 +232,9 @@ var ContentWidget = function(){
             if(type == 'tile'){
                 $("#" + self.settings.blockContainerId.tile.widget).append($('script#' + self.GetTmplName('tile', 'block')).html()).children().hide();
                 $("#" + self.settings.blockContainerId.tile.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
+            }
+            if(type == 'no_results'){
+                $("#" + self.settings.blockContainerId.empty.widget).append($('script#' + self.GetTmplName('empty', 'block')).html()).children().hide();
             }
         },
         EmptyWidget : function(){
@@ -356,6 +363,33 @@ var ContentWidget = function(){
             }
             delete data;
         },
+        NoResultsBlock : function(data){
+            if($("#" + self.settings.co).length > 0){
+                try{
+                    ko.cleanNode($("#" + self.settings.blockContainerId.empty.widget)[0]);
+                    ko.applyBindings(data, $("#" + self.settings.blockContainerId.empty.widget)[0]);
+                    $("#" + self.settings.blockContainerId.empty.widget).children().show();
+                    self.WidgetLoader(true, self.settings.blockContainerId.empty.widget);
+                    if(self.settings.animate.block)
+                        self.settings.animate.block();
+                }
+                catch(e){
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'block') + ']');
+                    console.log(e);
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Block(data.typeView);
+                            self.Render.Block(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.blockContainerId);
+                    }
+                }
+            }
+        },
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
@@ -394,6 +428,12 @@ var ContentWidget = function(){
             });
         }
     }
+}
+
+var EmptyViewBlock = function(data){
+    var self = this;
+    self.titleBlock    = data.titleBlock;
+    self.typeView      = data.typeView;
 }
 
 /* Block */
