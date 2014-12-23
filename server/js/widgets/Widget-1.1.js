@@ -23,6 +23,7 @@ Parameters = {
         roots: [],
         infoCategory : {},
         infoSeller : {},
+        infoShop: {},
         goodsInfo : {},
         relatedGoods : {},
         cart : 0,
@@ -1291,9 +1292,27 @@ var Widget = function (){
                     callback(data);
             }, true);
         },
+        ShopInfo : function(callback){
+            if($.isEmptyObject(Parameters.cache.infoShop)){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'info/' + Parameters.shopId + '/0100000/'), function(data){
+                    Parameters.cache.infoShop = data;
+                    if(callback)
+                        callback(data);
+                }, true);
+            }
+            else
+                callback(Parameters.cache.infoShop);
+        },
         Shipping : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'shipping/' + str), function(data){
                 Parameters.cache.shipping = data;
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        Payment : function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + str), function(data){
+                Parameters.cache.payment = data;
                 if(callback)
                     callback(data);
             }, true);
@@ -1308,13 +1327,6 @@ var Widget = function (){
         EditOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'edit/' + str), function(data){
                 Parameters.cache.orderList = {};
-                if(callback)
-                    callback(data);
-            }, true);
-        },
-        Payment : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'payment/' + str), function(data){
-                Parameters.cache.payment = data;
                 if(callback)
                     callback(data);
             }, true);

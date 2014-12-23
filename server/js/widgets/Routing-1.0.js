@@ -32,7 +32,12 @@ var Routing = {
         document.title = this.GetTitle();
         
         this.ParserHash();
-        ko.global.route = this.route;
+        if(ko.global)
+            ko.global.route = this.route;
+        else
+            ko.global = {
+                route : this.route
+            };
         
         Loader.SetNotReady();
         EventDispatcher.DispatchEvent('widget.change.route');
