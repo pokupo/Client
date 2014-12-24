@@ -30,7 +30,8 @@ var ContentWidget = function(){
                 id: {
                     slider : null,
                     carusel : null,
-                    tile : null
+                    tile : null,
+                    empty : null
                 }
             }
         },
@@ -69,12 +70,29 @@ var ContentWidget = function(){
             input = WParameters.content;
         }
         
+        if(JSCore.dev)
+            Logger.Console.VarDump(self.widgetName, "Input parameters", input);
+        
         if(!$.isEmptyObject(input)){
             if(input.block){
                 if(input.block.count)
                     self.settings.countGoodsInBlock = input.block.count;
                 if(input.block.animate)
                     self.settings.animate.block = input.block.animate;
+                if(input.block.tmpl){
+                    if(input.block.tmpl.path)
+                        self.settings.tmpl.block.path = input.block.tmpl.path;
+                    if(input.block.tmpl.id){
+                        for(var key in input.block.tmpl.id){
+                            self.settings.tmpl.block.id[key] = input.block.tmpl.id[key];
+                        }
+                    }
+                }
+                if(input.block.container){
+                    for(var key in input.block.container){
+                        self.settings.blockContainerId[key] = input.block.container[key];
+                    }
+                }
             }
             if(input.content){
                 if(input.content.defaultCount)
@@ -86,6 +104,8 @@ var ContentWidget = function(){
             }
         }
         self.settings.inputParameters = input;
+        if(JSCore.dev)
+            Logger.Console.VarDump(self.widgetName, "Result settings", self.settings);
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content.content.widget;
@@ -181,8 +201,11 @@ var ContentWidget = function(){
     };
     self.CheckData = function(data){
         self.InsertContainer.EmptyBlockWidget();
-        if(data.err)
-            self.WidgetLoader(true);
+        if(data.err){
+            var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'no_results'});
+            self.InsertContainer.Block(0, block.typeView);
+            self.Render.NoResultsBlock(block);
+        }
         else{
             self.testBlock.count = data.length;
             self.testBlock.ready = 0;
@@ -228,6 +251,9 @@ var ContentWidget = function(){
             if(type == 'tile'){
                 $("#" + self.settings.blockContainerId.tile.widget).append($('script#' + self.GetTmplName('tile', 'block')).html()).children().hide();
                 $("#" + self.settings.blockContainerId.tile.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
+            }
+            if(type == 'no_results'){
+                $("#" + self.settings.blockContainerId.empty.widget).html($('script#' + self.GetTmplName('empty', 'block')).html()).children().hide();
             }
         },
         EmptyWidget : function(){
@@ -356,6 +382,33 @@ var ContentWidget = function(){
             }
             delete data;
         },
+        NoResultsBlock : function(data){
+            if($("#" + self.settings.blockContainerId.empty.widget).length > 0){
+                try{
+                    ko.cleanNode($("#" + self.settings.blockContainerId.empty.widget)[0]);
+                    ko.applyBindings(data, $("#" + self.settings.blockContainerId.empty.widget)[0]);
+                    $("#" + self.settings.blockContainerId.empty.widget).children().show();
+                    self.WidgetLoader(true, self.settings.blockContainerId.empty.widget);
+                    if(self.settings.animate.block)
+                        self.settings.animate.block();
+                }
+                catch(e){
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'block') + ']');
+                    console.log(e);
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Block(data.typeView);
+                            self.Render.Block(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.blockContainerId);
+                    }
+                }
+            }
+        },
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
                 try{
@@ -395,6 +448,12 @@ var ContentWidget = function(){
         }
     }
 }
+
+var EmptyViewBlock = function(data){
+    var self = this;
+    self.titleBlock    = data.titleBlock;
+    self.typeView      = data.typeView;
+};
 
 /* Block */
 var BlockViewModel = function(data, countGoodsInContent){
