@@ -70,12 +70,29 @@ var ContentWidget = function(){
             input = WParameters.content;
         }
         
+        if(JSCore.dev)
+            Logger.Console.VarDump(self.widgetName, "Input parameters", input);
+        
         if(!$.isEmptyObject(input)){
             if(input.block){
                 if(input.block.count)
                     self.settings.countGoodsInBlock = input.block.count;
                 if(input.block.animate)
                     self.settings.animate.block = input.block.animate;
+                if(input.block.tmpl){
+                    if(input.block.tmpl.path)
+                        self.settings.tmpl.block.path = input.block.tmpl.path;
+                    if(input.block.tmpl.id){
+                        for(var key in input.block.tmpl.id){
+                            self.settings.tmpl.block.id[key] = input.block.tmpl.id[key];
+                        }
+                    }
+                }
+                if(input.block.container){
+                    for(var key in input.block.container){
+                        self.settings.blockContainerId[key] = input.block.container[key];
+                    }
+                }
             }
             if(input.content){
                 if(input.content.defaultCount)
@@ -87,6 +104,8 @@ var ContentWidget = function(){
             }
         }
         self.settings.inputParameters = input;
+        if(JSCore.dev)
+            Logger.Console.VarDump(self.widgetName, "Result settings", self.settings);
     };
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.content.content.widget;
@@ -234,7 +253,7 @@ var ContentWidget = function(){
                 $("#" + self.settings.blockContainerId.tile.widget + ' .promoBlocks:last').attr('id', 'block_sort_' + sort);
             }
             if(type == 'no_results'){
-                $("#" + self.settings.blockContainerId.empty.widget).append($('script#' + self.GetTmplName('empty', 'block')).html()).children().hide();
+                $("#" + self.settings.blockContainerId.empty.widget).html($('script#' + self.GetTmplName('empty', 'block')).html()).children().hide();
             }
         },
         EmptyWidget : function(){
@@ -364,7 +383,7 @@ var ContentWidget = function(){
             delete data;
         },
         NoResultsBlock : function(data){
-            if($("#" + self.settings.co).length > 0){
+            if($("#" + self.settings.blockContainerId.empty.widget).length > 0){
                 try{
                     ko.cleanNode($("#" + self.settings.blockContainerId.empty.widget)[0]);
                     ko.applyBindings(data, $("#" + self.settings.blockContainerId.empty.widget)[0]);
@@ -434,7 +453,7 @@ var EmptyViewBlock = function(data){
     var self = this;
     self.titleBlock    = data.titleBlock;
     self.typeView      = data.typeView;
-}
+};
 
 /* Block */
 var BlockViewModel = function(data, countGoodsInContent){
