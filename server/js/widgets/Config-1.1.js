@@ -30,7 +30,8 @@ var Config = {
             block: {
                 slider: {widget: 'slider_block', def: 'slider_default_block', customClass: 'slider_custom_block'},
                 carousel: {widget: 'carousel_block', def: 'carousel_default_block', customClass: 'carousel_custom_block'},
-                tile: {widget: 'tile_block', def: 'tile_default_block', customClass: 'tile_custom_block'}
+                tile: {widget: 'tile_block', def: 'tile_default_block', customClass: 'tile_custom_block'},
+                empty: {widget: 'content', def: 'default_content', customClass: 'custom_block'}
             }
         }, // id контейнера контента
         searchResult : {
@@ -131,7 +132,8 @@ var Config = {
                 id: {
                     slider : "blockSliderTmpl", // id шаблона слайдера (промо)
                     carusel : "blockCaruselTmpl", // id шаблона карусели (промо)
-                    tile : "blockTileTmpl" // id шаблона плитки (промо)
+                    tile : "blockTileTmpl", // id шаблона плитки (промо)
+                    empty : "blockNoResultsTmpl" // id шаблона товаров не найдено
                 }
             }
         },
