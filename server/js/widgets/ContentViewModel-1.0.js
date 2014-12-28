@@ -20,7 +20,7 @@ var ContentViewModel = function(data, i){
         return null;
     }, this);
     self.backgroundBigImage = ko.computed(function(){
-        if(data.route_image)
+        if(data.route_big_image)
             return "background: url('" + data.route_big_image + "')";
         return null;
     }, this);
