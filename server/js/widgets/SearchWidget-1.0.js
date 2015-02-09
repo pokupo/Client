@@ -97,8 +97,7 @@ var SearchWidget = function(){
         SearchViewModel.prototype = new Widget();
         var search = new SearchViewModel();
 
-        if(Parameters.cache.childrenCategory[data.id])
-            search.AddListCategory(Parameters.cache.childrenCategory[data.id], data);
+        search.AddListCategory(data);
     };
     self.Render = function(data){
         if($("#" + self.settings.containerId).length > 0){
@@ -195,40 +194,43 @@ var SearchViewModel = function(){
     self.ClickAdvancedSearch = function(){
         EventDispatcher.DispatchEvent('searchResultWidget.show.form');
     };
-    self.AddListCategory = function(data, parent){
-        self.categories =  ko.observableArray();
-        self.categoriesTree =  ko.observableArray();
-        self.childrenCategories = ko.observableArray();
-        self.typeCategories = [];
+    self.AddListCategory = function(parent){
+        if(Parameters.cache.childrenCategory[parent.id]){
+            var data = Parameters.cache.childrenCategory[parent.id];
+            self.categories =  ko.observableArray();
+            self.categoriesTree =  ko.observableArray();
+            self.childrenCategories = ko.observableArray();
+            self.typeCategories = [];
 
-        self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
-        
-        self.typeCategories[parent.id] = parent.type_category;
-        self.categories.push(new SearchCategoryItem(parent, 0, self));
-        
-        for(var i = 0; i <= data.length - 1; i++){
-            self.categories.push(new SearchCategoryItem(data[i], 1, self))
-            
-            self.typeCategories[data[i].id] = data[i].type_category;
-            var category = new SearchCategoryItemForTree(data[i], i+1, self);
-            var children = ko.observableArray();
-            
-            if(data[i].children){
-                for(var j = 0; j <= data[i].children.length - 1; j++){
-                    self.categories.push(new SearchCategoryItem(data[i].children[j], 2, self));
-                    self.typeCategories[data[i].id] = data[i].type_category;
-                    
-                    children.push(new SearchCategoryItemForTree(data[i].children[j], 2, self))
+            self.cachData = [{id : parent.id, type_category : parent.type_category, children : data}];
+
+            self.typeCategories[parent.id] = parent.type_category;
+            self.categories.push(new SearchCategoryItem(parent, 0, self));
+
+            for(var i = 0; i <= data.length - 1; i++){
+                self.categories.push(new SearchCategoryItem(data[i], 1, self))
+
+                self.typeCategories[data[i].id] = data[i].type_category;
+                var category = new SearchCategoryItemForTree(data[i], i+1, self);
+                var children = ko.observableArray();
+
+                if(data[i].children){
+                    for(var j = 0; j <= data[i].children.length - 1; j++){
+                        self.categories.push(new SearchCategoryItem(data[i].children[j], 2, self));
+                        self.typeCategories[data[i].id] = data[i].type_category;
+
+                        children.push(new SearchCategoryItemForTree(data[i].children[j], 2, self))
+                    }
+
+                    category.children = children;
                 }
-                
-                category.children = children;
+                self.childrenCategories.push(category);
             }
-            self.childrenCategories.push(category);
+
+            var parent = new SearchCategoryItemForTree(parent, 0, self);
+            parent.children = self.childrenCategories;
+            self.categoriesTree.push(parent);
         }
-        
-        var parent = new SearchCategoryItemForTree(parent, 0, self);
-        parent.children = self.childrenCategories;
-        self.categoriesTree.push(parent);
         
         EventDispatcher.DispatchEvent('searchWidget.fill.listCategory', self);
     };

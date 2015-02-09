@@ -738,35 +738,51 @@ var Widget = function (){
             }
         },
         Section : function(parentId, callback){
-            if(!Parameters.cache.childrenCategory[parentId]){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/noblock/active/'), function(data){
-                    Parameters.cache.childrenCategory[parentId] = data;
+            if(parentId){
+                if(!Parameters.cache.childrenCategory[parentId]){
+                    XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/noblock/active/'), function(data){
+                        Parameters.cache.childrenCategory[parentId] = data;
+                        if(callback)
+                            callback({
+                                'data' : data, 
+                                'parentId' : parentId
+                            });
+                    });
+                }
+                else{
                     if(callback)
                         callback({
-                            'data' : data, 
+                            'data' : Parameters.cache.childrenCategory[parentId], 
                             'parentId' : parentId
                         });
-                });
+                }
             }
             else{
                 if(callback)
                     callback({
-                        'data' : Parameters.cache.childrenCategory[parentId], 
-                        'parentId' : parentId
+                        err : 'categoriesNotCreated'
                     });
             }
         },
         Blocks : function(parentId, callback){
-            if(!Parameters.cache.block[parentId]){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/block/active/'), function(data){
-                    Parameters.cache.block[parentId] = data;
+            if(parentId){
+                if(!Parameters.cache.block[parentId]){
+                    XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + parentId + '/children/block/active/'), function(data){
+                        Parameters.cache.block[parentId] = data;
+                        if(callback)
+                            callback(data);
+                    });
+                }
+                else{
                     if(callback)
-                        callback(data);
-                });
+                        callback(Parameters.cache.block[parentId]);
+                }
             }
             else{
                 if(callback)
-                    callback(Parameters.cache.block[parentId]);
+                    callback({
+                        err : 'categoriesNotCreated'
+                    });
             }
         },
         Content : function(categoryId, query, callback){
@@ -798,16 +814,22 @@ var Widget = function (){
             }
         },
         Info : function(id, callback){
-            if(!Parameters.cache.infoCategory[id]){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + id + '/info/'), function(data){
-                    Parameters.cache.infoCategory[id] = data;
+            if(id){
+                if(!Parameters.cache.infoCategory[id]){
+                    XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + id + '/info/'), function(data){
+                        Parameters.cache.infoCategory[id] = data;
+                        if(callback)
+                            callback(data);
+                    });
+                }
+                else{
                     if(callback)
-                        callback(data);
-                });
+                        callback(Parameters.cache.infoCategory[id]);
+                }
             }
             else{
                 if(callback)
-                    callback(Parameters.cache.infoCategory[id]);
+                    callback({});
             }
         },
         Tmpl : function(tmpl, callback){
