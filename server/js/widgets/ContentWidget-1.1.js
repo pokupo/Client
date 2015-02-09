@@ -202,9 +202,16 @@ var ContentWidget = function(){
     self.CheckData = function(data){
         self.InsertContainer.EmptyBlockWidget();
         if(data.err){
-            var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'no_results'});
-            self.InsertContainer.Block(0, block.typeView);
-            self.Render.NoResultsBlock(block);
+            if(data.err == 'categoriesNotCreated'){
+                var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'categoriesNotCreated'});
+                self.InsertContainer.Block(0, block.typeView);
+                self.Render.NoResultsBlock(block);
+            }
+            else{
+                var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'no_results'});
+                self.InsertContainer.Block(0, block.typeView);
+                self.Render.NoResultsBlock(block);
+            }
         }
         else{
             self.testBlock.count = data.length;
@@ -254,6 +261,9 @@ var ContentWidget = function(){
             }
             if(type == 'no_results'){
                 $("#" + self.settings.blockContainerId.empty.widget).html($('script#' + self.GetTmplName('empty', 'block')).html()).children().hide();
+            }
+            if(type == 'categoriesNotCreated'){
+                $("#" + self.settings.blockContainerId.empty.widget).html('<p>' + Config.Content.message.categoriesNotCreated + '</p>').children().hide();
             }
         },
         EmptyWidget : function(){
