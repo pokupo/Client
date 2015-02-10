@@ -263,7 +263,7 @@ var ContentWidget = function(){
                 $("#" + self.settings.blockContainerId.empty.widget).html($('script#' + self.GetTmplName('empty', 'block')).html()).children().hide();
             }
             if(type == 'categoriesNotCreated'){
-                $("#" + self.settings.blockContainerId.empty.widget).html('<p>' + Config.Content.message.categoriesNotCreated + '</p>').children().hide();
+                $("#" + self.settings.blockContainerId.empty.widget).html('<p style="margin-top: 40px">' + Config.Content.message.categoriesNotCreated + '</p>').children().hide();
             }
         },
         EmptyWidget : function(){
