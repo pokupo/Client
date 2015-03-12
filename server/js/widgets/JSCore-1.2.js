@@ -4,7 +4,8 @@ var JSSettings = {
     
     host : "server.pokupo.ru/prod/server/",    
     pathToJS : "js/",
-    pathToTmpl : "tmpl/",
+    pathToTmpl : "pokupo.ru/themes/",
+    theme: 'default',
     pathToData : "prod/server/services/DataProxy.php?query=",
     pathToPostData : "prod/server/services/DataPostProxy.php",
     pathToCore: "index.html",
@@ -231,7 +232,7 @@ var XDMTransport = {
             })
         },
         Tmpl : function(data, callback){
-            var url = XDMTransport.GetProtocol() +  JSSettings.host +  JSSettings.pathToTmpl + data;
+            var url = XDMTransport.GetProtocol() + JSSettings.pathToTmpl + JSSettings.theme + '/tmpl/' + data;
             if(/^(https?|ftp)\:\/\/(www\.)?([a-zA-Z0-9\.\-]+\.[a-z]{2,})(\/.+)$/.test(data))
                 url = data;
             XDMTransport.Load.FromProxy({
