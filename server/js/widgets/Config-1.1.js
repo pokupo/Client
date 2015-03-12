@@ -22,37 +22,37 @@ var Config = {
         toStringMonth : ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Декабря']
     },
     Containers : {  
-        catalog : {widget: 'catalog', def: 'default_catalog', customClass: 'custom_block'}, // id контейнера каталога 
-        search  : {widget: 'search_block', def: 'default_search_block', customClass: 'custom_block'}, // id контейнера формы поиска 
-        breadCrumb : {widget: ['breadCrumb_1','breadCrumb_2'], def: ['default_breadCrumb_1','default_breadCrumb_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
+        catalog : {widget: 'catalogWidgetId', def: 'defaultCatalogWidgetId', customClass: 'custom_block'}, // id контейнера каталога
+        search  : {widget: 'searchWidgetId', def: 'defaultSearchWidgetId', customClass: 'custom_block'}, // id контейнера формы поиска
+        breadCrumb : {widget: ['breadCrumbsWidgetId_1','breadCrumbsWidgetId_2'], def: ['defaultBreadCrumbsWidgetId_1','defaultBreadCrumbsWidgetId_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
         content : {
-            content : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, 
+            content : {widget: 'contentWidgetId', def: 'defaultContentWidgetId', customClass: 'custom_block'},
             block: {
-                slider: {widget: 'slider_block', def: 'slider_default_block', customClass: 'slider_custom_block'},
-                carousel: {widget: 'carousel_block', def: 'carousel_default_block', customClass: 'carousel_custom_block'},
-                tile: {widget: 'tile_block', def: 'tile_default_block', customClass: 'tile_custom_block'},
-                empty: {widget: 'content', def: 'default_content', customClass: 'custom_block'}
+                slider: {widget: 'sliderBlockId', def: 'defaultSliderBlockId', customClass: 'slider_custom_block'},
+                carousel: {widget: 'carouselBlockId', def: 'defaultSliderBlockId', customClass: 'carousel_custom_block'},
+                tile: {widget: 'tileBlockId', def: 'defaultTileBlockId', customClass: 'tile_custom_block'},
+                empty: {widget: 'emptyBlockId', def: 'defaultEmptyBlockId', customClass: 'custom_block'}
             }
         }, // id контейнера контента
         searchResult : {
-            form: {widget: 'advanced_search', def: 'default_advanced_search', customClass: 'custom_block'},
-            content:{widget: 'content', def: 'default_content', customClass: 'custom_block'}
+            form: {widget: 'advancedSearchFormWidgetId', def: 'defaultAdvancedSearchFormWidgetId', customClass: 'custom_block'},
+            content:{widget: 'advancedSearchResultWidgetId', def: 'defaultAdvancedSearchResultWidgetId', customClass: 'custom_block'}
         }, // id контейнеров расширенной формы и результатов поиска
-        goods : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера информации о товаре
-        userInformation : {widget: 'user_information', def: 'default_user_information', customClass: 'custom_block'}, // id контейнера информации о пользователе
-        authentication : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, //id контейнеров авторизации
-        registration : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации
-        registrationSeller : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера регистрации продавца
-        cart : {widget: 'cart_information', def: 'default_cart_information', customClass: 'custom_block'}, // id контейнера корзины
-        cartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера реестра товаров корзины
-        cabinetCartGoods : {widget: 'content', def: 'default_content', customClass: 'custom_block'},
-        profile : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера меню профиля и содержимого
-        menuPersonalCabinet : {widget: 'profile_menu', def: 'default_profile_menu', customClass: 'custom_block'},
-        favorites : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера избранного
-        order : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера оформления заказа
-        orderList : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id конетейнера списка заказов
-        buttonPayment : {widget: 'content', def: 'default_content', customClass: 'custom_block'}, // id контейнера страницы оплаты
-        message : {widget: 'content', def: 'default_content', customClass: 'custom_block'} // id контейнера списка сообщений
+        goods : {widget: 'goodsWidgetId', def: 'defaultGoodsWidgetId', customClass: 'custom_block'}, // id контейнера информации о товаре
+        userInformation : {widget: 'userInformationWidgetId', def: 'defaultUserInformationWidgetId', customClass: 'custom_block'}, // id контейнера информации о пользователе
+        authentication : {widget: 'authenticationWidgetId', def: 'defaultAuthenticationWidgetId', customClass: 'custom_block'}, //id контейнеров авторизации
+        registration : {widget: 'registrationWidgetId', def: 'defaultRegistrationWidgetId', customClass: 'custom_block'}, // id контейнера регистрации
+        registrationSeller : {widget: 'registrationSellerWidgetId', def: 'defaultRegistrationSellerWidgetId', customClass: 'custom_block'}, // id контейнера регистрации продавца
+        cart : {widget: 'cartInfoWidgetId', def: 'defaultCartInfoWidgetId', customClass: 'custom_block'}, // id контейнера корзины
+        cartGoods : {widget: 'cartGoodsWidgetId', def: 'defaultCartGoodsWidgetId', customClass: 'custom_block'}, // id контейнера реестра товаров корзины
+        cabinetCartGoods : {widget: 'cartGoodsCabinetWidgetId', def: 'defaultCartGoodsCabinetWidgetId', customClass: 'custom_block'},
+        profile : {widget: 'profileWidgetId', def: 'defaultProfileWidgetId', customClass: 'custom_block'}, // id контейнера меню профиля и содержимого
+        menuPersonalCabinet : {widget: 'menuPersonalCabinetWidgetId', def: 'defaultMenuPersonalCabinetWidgetId', customClass: 'custom_block'},
+        favorites : {widget: 'favoritesWidgetId', def: 'defaultFavoritesWidgetId', customClass: 'custom_block'}, // id контейнера избранного
+        order : {widget: 'orderWidgetId', def: 'defaultOrderWidgetId', customClass: 'custom_block'}, // id конетейнера оформления заказа
+        orderList : {widget: 'orderListWidgetId', def: 'defaultOrderListWidgetId', customClass: 'custom_block'}, // id конетейнера списка заказов
+        buttonPayment : {widget: 'paymentWidgetId', def: 'defaultPaymentWidgetId', customClass: 'custom_block'}, // id контейнера страницы оплаты
+        message : {widget: 'messageWidgetId', def: 'defaultMessageWidgetId', customClass: 'custom_block'} // id контейнера списка сообщений
     },
     Goods : {
         tmpl: {
@@ -120,7 +120,7 @@ var Config = {
         },
         tmpl: {
             content: {
-                path : "content/contentTmpl.html", // файл шаблона реестра товаров 
+                path : "contentTmpl.html", // файл шаблона реестра товаров
                 id: {
                     table : "contentTableTmpl", // id шаблона таблицы
                     list : "contentListTmpl", // id шаблона списка
@@ -129,7 +129,7 @@ var Config = {
                 }
             },
             block : {
-                path : "content/blockTmpl.html", // файл шаблона промо блоков 
+                path : "blockTmpl.html", // файл шаблона промо блоков
                 id: {
                     slider : "blockSliderTmpl", // id шаблона слайдера (промо)
                     carusel : "blockCaruselTmpl", // id шаблона карусели (промо)
@@ -180,7 +180,7 @@ var Config = {
                 }
             },
             form : {
-                path : "searchResult/advancedSearchFormTmpl.html", // файл шаблонов расширенной формы
+                path : "advancedSearchFormTmpl.html", // файл шаблонов расширенной формы
                 id : "advancedSearchFormTmpl", // id шаблона расширенной формы
             }
         },

@@ -156,6 +156,10 @@ var UserInformationWidget = function(){
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         },
         InfoBlock : function(data){
             if($("#" + self.settings.containerId).length > 0){
@@ -182,7 +186,10 @@ var UserInformationWidget = function(){
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         }
     }
     self.SetPosition = function(){

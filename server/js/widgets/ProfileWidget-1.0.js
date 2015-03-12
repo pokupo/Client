@@ -646,6 +646,10 @@
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         DeliveryList : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -671,6 +675,10 @@
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         },
         DeliveryForm : function(delivery){
@@ -816,6 +824,10 @@
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Security : function(sequrity){
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -841,6 +853,10 @@
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         }
     };

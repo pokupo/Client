@@ -357,6 +357,10 @@ var ContentWidget = function(){
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
             delete data;
         },
         Block : function(data){
@@ -390,6 +394,12 @@ var ContentWidget = function(){
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + data.cssBlock + ']');
+                $.each(self.settings.blockContainerId, function(i){
+                    self.WidgetLoader(true, self.settings.blockContainerId[i].widget);
+                });
+            }
             delete data;
         },
         NoResultsBlock : function(data){
@@ -418,6 +428,10 @@ var ContentWidget = function(){
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.blockContainerId.empty.widget + ']');
+                self.WidgetLoader(true, self.settings.blockContainerId);
+            }
         },
         NoResults : function(data){
             if($("#" + self.settings.containerId).length > 0){
@@ -443,6 +457,10 @@ var ContentWidget = function(){
                         self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
             }
         }
     };

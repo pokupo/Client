@@ -265,7 +265,10 @@ var OrderListWidget = function() {
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         EmptyList: function() {
             self.WidgetLoader(true, self.settings.containerFormId);
@@ -297,7 +300,10 @@ var OrderListWidget = function() {
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         }
     };
     self.SetPosition = function() {

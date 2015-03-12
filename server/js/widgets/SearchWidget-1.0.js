@@ -124,6 +124,10 @@ var SearchWidget = function(){
                 }
             }
         }
+        else{
+            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+            self.WidgetLoader(true, self.settings.containerId);
+        }
     };
     self.SetPosition = function(){
         if(self.settings.inputParameters.position == 'absolute'){

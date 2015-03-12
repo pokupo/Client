@@ -224,6 +224,10 @@ var FavoritesWidget = function() {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         },
         EmptyFaforites : function(){
             self.WidgetLoader(true, self.settings.containerId);

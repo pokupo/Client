@@ -1,10 +1,12 @@
 var JSSettings = {
+    shopId: 0,
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
-    
-    host : "server.pokupo.ru/prod/server/",    
+
+    host : "server.pokupo.ru/prod/server/",
     pathToJS : "js/",
-    pathToTmpl : "tmpl/",
+    pathToTmpl : "pokupo.ru/themes/",
+    theme: 'default',
     pathToData : "prod/server/services/DataProxy.php?query=",
     pathToPostData : "prod/server/services/DataPostProxy.php",
     pathToCore: "index.html",
@@ -20,6 +22,7 @@ var JSSettings = {
     orderPathApi : "order/", // префикс API заказов
     paymentPathApi : "payment/", // префикс API оплаты
     messagePathApi : "message/", // префикс API сообщений
+    dev: false,
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
@@ -135,8 +138,8 @@ var JSCore = {
             JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
         JSCore.SetInputParameters();
         JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
-        JSCore.shopId = JSSettings.inputParameters['shopId'];
-        if(JSSettings.inputParameters['dev'])
+        JSCore.shopId = JSSettings.shopId;
+        if(JSSettings.dev)
             JSCore.dev = true;
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
@@ -166,22 +169,22 @@ var JSCore = {
         return null;
     },
     SetInputParameters : function(){
-        var input = {};
-        var temp = JSCore.ParserInputParameters(/JSCore/);
-        if(temp && temp.core){
-            input = JSON.parse(temp.core);
-        }
-        if(typeof WParameters !== 'undefined' && WParameters.core){
-            input = WParameters.core;
-            
+        var input = JSCore.ParserInputParameters(/JSCore/);
+        if(input){
             for(var key in input){
                 if(JSSettings.hasOwnProperty(key)){
                     JSSettings[key] = input[key];
                 }
             }
         }
-
-        JSSettings.inputParameters = input;
+        if(typeof WParameters !== 'undefined' && WParameters.core){
+            for(var key in WParameters.core){
+                if(JSSettings.hasOwnProperty(key)){
+                    JSSettings[key] = WParameters.core[key];
+                }
+            }
+        }
+        JSSettings.inputParameters['shopId'] = JSSettings.shopId;
     }
 };
 
@@ -231,7 +234,7 @@ var XDMTransport = {
             })
         },
         Tmpl : function(data, callback){
-            var url = XDMTransport.GetProtocol() +  JSSettings.host +  JSSettings.pathToTmpl + data;
+            var url = XDMTransport.GetProtocol() + JSSettings.pathToTmpl + JSSettings.theme + '/tmpl/' + data;
             if(/^(https?|ftp)\:\/\/(www\.)?([a-zA-Z0-9\.\-]+\.[a-z]{2,})(\/.+)$/.test(data))
                 url = data;
             XDMTransport.Load.FromProxy({

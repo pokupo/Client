@@ -140,7 +140,10 @@ var CatalogWidget = function(){
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.catalogContainerId + ']');
+                self.WidgetLoader(true, self.settings.catalogContainerId);
+            }
         }
     }
     self.SetPosition = function(){

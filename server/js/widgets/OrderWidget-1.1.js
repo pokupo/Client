@@ -874,31 +874,34 @@ var OrderWidget = function() {
     };
     self.Render = {
         Step1: function(form) {
-            try{
-                if ($("#" + self.settings.containerFormId).length > 0) {
+            if ($("#" + self.settings.containerFormId).length > 0) {
+                try {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    if(self.settings.animate)
+                    if (self.settings.animate)
                         self.settings.animate();
-                }
-
-                delete form;
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-            catch(e){
-                self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
-                console.log(e);
-                if(self.settings.tmpl.custom){
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        self.InsertContainer.Step1();
-                        self.Render.Step1(form);
-                    });
-                }
-                else{
-                    self.InsertContainer.EmptyWidget();
+                    delete form;
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
+                    console.log(e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Step1();
+                            self.Render.Step1(form);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         },
         Step1Confirm: function(form) {
@@ -926,6 +929,10 @@ var OrderWidget = function() {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step1Profile: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -952,7 +959,10 @@ var OrderWidget = function() {
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -978,6 +988,10 @@ var OrderWidget = function() {
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         },
         Step2Form: function(delivery) {
@@ -1123,7 +1137,10 @@ var OrderWidget = function() {
                     }
                 }
             }
-
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
             
         },
         Step3: function(form) {
@@ -1151,6 +1168,10 @@ var OrderWidget = function() {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step4: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -1177,6 +1198,10 @@ var OrderWidget = function() {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step5: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -1202,6 +1227,10 @@ var OrderWidget = function() {
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         }
     };

@@ -269,6 +269,10 @@ var RegistrationSellerWidget = function () {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step2: function (form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -295,6 +299,10 @@ var RegistrationSellerWidget = function () {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step3: function (form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -320,6 +328,10 @@ var RegistrationSellerWidget = function () {
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         },
         Step4: function(){

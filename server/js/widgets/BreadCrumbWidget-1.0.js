@@ -128,6 +128,10 @@ var BreadCrumbWidget = function(){
                         }
                     }
                 }
+                else{
+                    self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId[i] + ']');
+                    self.WidgetLoader(true);
+                }
                 delete data;
             }
         }

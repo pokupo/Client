@@ -120,6 +120,10 @@ var MenuPersonalCabinetWidget = function () {
                 }
             }
         }
+        else{
+            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerMenuId + ']');
+            self.WidgetLoader(true, self.settings.containerMenuId);
+        }
     };
     self.SetPosition = function () {
         if (self.settings.style.position == 'absolute') {

@@ -206,6 +206,10 @@ var CabinetCartGoodsWidget = function(){
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         },
         EmptyCart : function(){
             self.WidgetLoader(true, self.settings.containerId);

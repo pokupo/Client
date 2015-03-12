@@ -148,7 +148,10 @@ var AuthenticationWidget = function(){
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         }
     };
     self.SetPosition = function(){

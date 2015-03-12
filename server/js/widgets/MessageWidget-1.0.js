@@ -313,6 +313,10 @@ var MessageWidget = function () {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         },
         List: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
@@ -360,6 +364,10 @@ var MessageWidget = function () {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         },
         EmptyList: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
@@ -384,6 +392,10 @@ var MessageWidget = function () {
                         self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
             }
         },
         EmptyWidget: function () {

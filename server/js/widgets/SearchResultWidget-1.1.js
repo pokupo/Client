@@ -256,6 +256,10 @@ var SearchResultWidget = function(){
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerIdForAdvancedSearch + ']');
+                self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+            }
         },
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
@@ -281,6 +285,10 @@ var SearchResultWidget = function(){
                         self.WidgetLoader(true, self.settings.containerIdForSearchResult);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerIdForSearchResult + ']');
+                self.WidgetLoader(true, self.settings.containerIdForSearchResult);
             }
         }
     };
