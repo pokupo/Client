@@ -167,6 +167,8 @@ var CartGoodsWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateCartGoods == 'function')
+                        new AnimateCartGoods();
                     if(self.settings.animate)
                         self.settings.animate();
                 }

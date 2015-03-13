@@ -95,6 +95,8 @@ window.InfoSellerWidget = function () {
         try {
             ko.cleanNode($(self.settings.container).children()[0]);
             ko.applyBindings(data, $(self.settings.container).children()[0]);
+            if(typeof AnimateInfoSeller == 'function')
+                new AnimateInfoSeller();
             if(self.settings.animate)
                 self.settings.animate();
         }

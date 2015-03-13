@@ -109,6 +109,8 @@ var BreadCrumbWidget = function(){
                         ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
                         self.ShowContainer(self.settings.containerId[i]);
                         self.WidgetLoader(true );
+                        if(typeof AnimateBreadCrumb == 'function')
+                            new AnimateBreadCrumb();
                         if(self.settings.animate)
                             self.settings.animate();
                     }

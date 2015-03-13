@@ -246,6 +246,8 @@ var OrderListWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrderList == 'function')
+                        new AnimateOrderList();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
