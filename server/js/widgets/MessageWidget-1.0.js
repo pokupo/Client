@@ -294,6 +294,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateMessage == 'function')
+                        new AnimateMessage();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -324,6 +326,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateMessage == 'function')
+                        new AnimateMessage();
                     if(self.settings.animate)
                         self.settings.animate();
 
@@ -375,6 +379,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateMessage == 'function')
+                        new AnimateMessage();
                     if(self.settings.animate)
                         self.settings.animate();
                 }

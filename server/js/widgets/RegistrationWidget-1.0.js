@@ -427,6 +427,8 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -457,6 +459,8 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -487,6 +491,8 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -630,6 +636,8 @@ var RegistrationWidget = function() {
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }

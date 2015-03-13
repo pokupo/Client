@@ -878,6 +878,8 @@ var OrderWidget = function() {
                 try {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if (self.settings.animate)
                         self.settings.animate();
                     delete form;
@@ -910,6 +912,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true,  self.settings.containerFormId);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -940,6 +944,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -970,6 +976,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -999,6 +1007,8 @@ var OrderWidget = function() {
                     try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if(self.settings.animate)
                         self.settings.animate();
 
@@ -1149,6 +1159,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -1179,6 +1191,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -1209,6 +1223,8 @@ var OrderWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrder == 'function')
+                        new AnimateOrder();
                     if(self.settings.animate)
                         self.settings.animate();
                 }

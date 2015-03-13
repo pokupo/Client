@@ -189,6 +189,8 @@ var GoodsWidget = function(){
                         });
                     }
 
+                    if(typeof AnimateGoods == 'function')
+                        new AnimateGoods();
                     if (self.settings.animate)
                         self.settings.animate();
 

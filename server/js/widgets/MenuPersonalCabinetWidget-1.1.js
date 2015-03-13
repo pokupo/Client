@@ -101,6 +101,8 @@ var MenuPersonalCabinetWidget = function () {
                 self.WidgetLoader(true, self.settings.containerMenuId);
                 ko.cleanNode($("#" + self.settings.containerMenuId)[0]);
                 ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
+                if(typeof AnimateMenuPersonalCabinet == 'function')
+                    new AnimateMenuPersonalCabinet();
                 if(self.settings.animate)
                     self.settings.animate();
             }

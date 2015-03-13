@@ -205,6 +205,8 @@ var FavoritesWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateFavorite == 'function')
+                        new AnimateFavorite();
                     if(self.settings.animate)
                         self.settings.animate();
                 }

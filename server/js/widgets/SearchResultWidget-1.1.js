@@ -237,6 +237,8 @@ var SearchResultWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+                    if(typeof AnimateSearchResult == 'function')
+                        new AnimateSearchResult();
                     if(self.settings.animate.form)
                         self.settings.animate.form();
                 }
@@ -268,6 +270,8 @@ var SearchResultWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
                     EventDispatcher.DispatchEvent('searchResultWidget.show.form');
+                    if(typeof AnimateSearchResult == 'function')
+                        new AnimateSearchResult();
                     if(self.settings.animate.content)
                         self.settings.animate.content();
                 }

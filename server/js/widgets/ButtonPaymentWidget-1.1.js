@@ -193,6 +193,8 @@ window.ButtonPaymentWidget = function () {
             try {
                 ko.cleanNode($(self.settings.containerButton).children()[0]);
                 ko.applyBindings(data, $(self.settings.containerButton).children()[0]);
+                if(typeof AnimateButtonPayment == 'function')
+                    new AnimateButtonPayment();
                 if(self.settings.animate)
                     self.settings.animate();
             }
@@ -224,6 +226,8 @@ window.ButtonPaymentWidget = function () {
                     });
                     $("#" + self.settings.containerId).show();
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateButtonPayment == 'function')
+                        new AnimateButtonPayment();
                     if(self.settings.animate)
                         self.settings.animate();
                 }

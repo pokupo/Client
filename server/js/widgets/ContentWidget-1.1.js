@@ -322,6 +322,8 @@ var ContentWidget = function(){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
                         $('#' + b[i].data.cssBlock).show();
+                        if(typeof AnimateContent == 'function')
+                            new AnimateContent();
                         if(self.settings.animate.block)
                             self.settings.animate.block();                     
                     })
@@ -338,6 +340,8 @@ var ContentWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateContent == 'function')
+                        new AnimateContent();
                     if(self.settings.animate.content)
                         self.settings.animate.content();
                 }
@@ -409,6 +413,8 @@ var ContentWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.blockContainerId.empty.widget)[0]);
                     $("#" + self.settings.blockContainerId.empty.widget).children().show();
                     self.WidgetLoader(true, self.settings.blockContainerId.empty.widget);
+                    if(typeof AnimateContent == 'function')
+                        new AnimateContent();
                     if(self.settings.animate.block)
                         self.settings.animate.block();
                 }

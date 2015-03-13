@@ -121,6 +121,8 @@ var CatalogWidget = function(){
                     ko.cleanNode($('#' + self.settings.catalogContainerId )[0]);
                     ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
                     self.WidgetLoader(true, self.settings.catalogContainerId );
+                    if(typeof AnimateCatalog== 'function')
+                        new AnimateCatalog();
                     if(self.settings.animate)
                         self.settings.animate();
                 }

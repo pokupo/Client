@@ -623,6 +623,8 @@
 
                     self.WidgetLoader(true, self.settings.containerFormId);
 
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                     
@@ -657,6 +659,8 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -804,7 +808,9 @@
                         delivery.address(null);
                         delivery.postIndex(null);
                     });
-                    
+
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -835,6 +841,8 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
