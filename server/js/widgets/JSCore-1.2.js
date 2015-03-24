@@ -296,8 +296,18 @@ var XDMTransport = {
 
 var Logger = {
     Console : {
-        Exception : function(widget, text){
+        Exception : function(widget, text, e){
             console && console.log('Exception : ' + new Date() + ' : ' + widget + ' : ' + text);
+            if(e) {
+                var exmsg = "";
+                if (e.message) {
+                    exmsg += e.message;
+                }
+                if (e.stack) {
+                    exmsg += ' | stack: ' + e.stack;
+                }
+                console && console.log(exmsg);
+            }
         },
         Info : function(widget, text){
             console && console.log('Info : ' + new Date() + ' : ' + widget + ' : ' + text);

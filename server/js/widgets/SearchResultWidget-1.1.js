@@ -243,8 +243,7 @@ var SearchResultWidget = function(){
                         self.settings.animate.form();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

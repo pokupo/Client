@@ -346,8 +346,7 @@ var ContentWidget = function(){
                         self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'content') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -383,8 +382,7 @@ var ContentWidget = function(){
                     }
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView, 'block') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -394,7 +392,9 @@ var ContentWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.blockContainerId);
+                        $.each(self.settings.blockContainerId, function(i){
+                            self.WidgetLoader(true, self.settings.blockContainerId[i].widget);
+                        });
                     }
                 }
             }
@@ -412,15 +412,16 @@ var ContentWidget = function(){
                     ko.cleanNode($("#" + self.settings.blockContainerId.empty.widget)[0]);
                     ko.applyBindings(data, $("#" + self.settings.blockContainerId.empty.widget)[0]);
                     $("#" + self.settings.blockContainerId.empty.widget).children().show();
-                    self.WidgetLoader(true, self.settings.blockContainerId.empty.widget);
+                    $.each(self.settings.blockContainerId, function(i){
+                        self.WidgetLoader(true, self.settings.blockContainerId[i].widget);
+                    });
                     if(typeof AnimateContent == 'function')
                         new AnimateContent();
                     if(self.settings.animate.block)
                         self.settings.animate.block();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'block') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'block') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -430,13 +431,17 @@ var ContentWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.blockContainerId);
+                        $.each(self.settings.blockContainerId, function(i){
+                            self.WidgetLoader(true, self.settings.blockContainerId[i].widget);
+                        });
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.blockContainerId.empty.widget + ']');
-                self.WidgetLoader(true, self.settings.blockContainerId);
+                $.each(self.settings.blockContainerId, function(i){
+                    self.WidgetLoader(true, self.settings.blockContainerId[i].widget);
+                });
             }
         },
         NoResults : function(data){
@@ -445,12 +450,13 @@ var ContentWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateContent == 'function')
+                        new AnimateContent();
                     if(self.settings.animate.content)
                         self.settings.animate.content();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('empty', 'content') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){

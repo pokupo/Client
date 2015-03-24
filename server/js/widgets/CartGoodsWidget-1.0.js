@@ -166,15 +166,14 @@ var CartGoodsWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true, self.settings.containerId);
+                    self.WidgetLoader(true);
                     if(typeof AnimateCartGoods == 'function')
                         new AnimateCartGoods();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -184,17 +183,17 @@ var CartGoodsWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
+                        self.WidgetLoader(true);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true, self.settings.containerId);
+                self.WidgetLoader(true);
             }
         },
         EmptyCart : function(){
-            self.WidgetLoader(true, self.settings.containerId);
+            self.WidgetLoader(true);
             if(self.settings.animate)
                 self.settings.animate();
         }
