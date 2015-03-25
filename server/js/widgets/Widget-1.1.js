@@ -116,7 +116,7 @@ var Loader = {
             }
             if(container)
                 this.containers.push({container: container, widgetName: widget});
-            if(JSCore.dev)
+            if(JSSettings.dev)
                 Logger.Console.VarDump('Loader', 'widgets', this.widgets);
             this.ShowLoading();
         }
@@ -1417,6 +1417,20 @@ var Widget = function (){
         },
         InvoicesGoods : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'goods/' + str), function(data){
+                Parameters.cache.orderList = {};
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        InvoicesPartnerGoods: function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'goods_partner/' + str), function(data){
+                Parameters.cache.orderList = {};
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        InvoicesService: function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'service/' + str), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);

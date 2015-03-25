@@ -64,6 +64,11 @@ var Routing = {
                 this.params[parameter[0]] = parameter[1];
             }
         }
+
+        if(this.params.hasOwnProperty('dev')) {
+            JSSettings.dev = this.params.dev;
+        }
+
         if(init){
             if(!this.defaultTitle )
                 this.defaultTitle = this.GetDefaultTitle()
