@@ -1,0 +1,72 @@
+<script type="text/html" id="standalonePaymentButtonImpl">
+    <!-- version 1.0 -->
+    <button class="goButton pay" data-bind="click: ClickPay">
+        <span></span>
+        <!-- ko text: title --><!-- /ko -->
+    </button>
+</script>
+
+<script type="text/html" id="standalonePaymentListTmpl">
+    <!-- version 1.0 -->
+
+    <div class="pkp-wrapper">
+        <div id="pkp-container">
+            <h3 class="pkp-title pkp-title_big">Оплата заказа № 1298</h3>
+            <span class="pkp-span">Сумма счета</span>
+            <strong class="pkp-strong">1200 руб</strong>
+            <span class="pkp-span">Основание платежа</span>
+            <strong class="pkp-strong">Оплата «Курса для молодой мамы»</strong>
+
+            <form class="pkp-form j-pkp-payment" action="#">
+                <label class="pkp-form__label">
+                    <span class="pkp-span pkp-span_required">Ваш e-mail</span>
+                    <span class="pkp-error-msg">Обязательное поле</span>
+                    <input class="pkp-input j-pkp-req-input" type="text">
+                </label>
+
+                <h3 class="pkp-title">Выберете удобный способ оплаты</h3>
+
+                <div class="pkp-payment-method pkp-clearfix" >
+                    <!-- ko foreach: payments -->
+                        <!--  ko template: { name: 'standalonePaymentMethodTmpl' } --><!-- /ko -->
+                    <!-- /ko -->
+                </div>
+            </form>
+            <div class="pkp-footer">
+                <span class="pkp-span">Работает на основе торговой платформой <a href="#">Pokupo.ru</a></span>
+            </div>
+
+        </div>
+    </div>
+</script>
+
+
+<script type="text/html" id="standalonePaymentMethodTmpl">
+    <div class="pkp-payment-method__item">
+        <div class="pkp-tooltip-payment-method">
+            <div class="pkp-tooltip">
+                <span class="pkp-tooltip__trigger">?</span>
+
+                <div class="pkp-tooltip__content pkp-tooltip__content_left">
+                    <h6 class="pkp-tooltip__title" data-bind="text: namePayment"></h6>
+                    <span data-bind="html: instrPayment"></span>
+                    <p data-bind="html: descPayment"></p>
+                </div>
+            </div>
+        </div>
+        <div class="pkp-payment-method__content">
+            <div class="pkp-payment-method__image">
+                <img src="" alt="" data-bind="attr: {src: logoPayment}">
+            </div>
+            <div class="pkp-payment-method__info">
+                <span class="pkp-span">Скорость: <strong><!-- ko text: timePayment --><!-- /ko --></strong></span>
+                <span class="pkp-span">Комиссия: <strong><!-- ko text: costPayment --><!-- /ko --> руб.</strong></span>
+            </div>
+            <button class="pkp-payment-method__pay j-pkp-pay">Оплатить 1215.00 Р</button>
+        </div>
+    </div>
+</script>
+
+<script type="text/html" id="standalonePaymentPageTmpl">
+    <!-- version 1.0 -->
+</script>
