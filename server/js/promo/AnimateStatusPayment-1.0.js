@@ -1,6 +1,4 @@
 var AnimateStatusPayment = function(){
-    $('html').addClass('pkp_html');
-    $('body').addClass('pkp_body');
     /*инициализация селекта по загрузке*/
     $(window).on('load', function () {
         $('.j-template').each(function () {

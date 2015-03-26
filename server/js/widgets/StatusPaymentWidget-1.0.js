@@ -170,7 +170,11 @@ var StatusPaymentViewModel = function(data){
     if(self.status == 'back')
         self.isBack(true);
 
-    self.outData = ko.observableArray(data.out_data);
+    self.outData = ko.observableArray();
+    $.each(data.out_data, function(i){
+        self.outData.push(new StatusPaymentParametersViewModel(data.out_data[i]));
+    });
+
     self.egoods = [];
     if(data.egoods){
         self.egoods = data.egoods;
@@ -187,6 +191,14 @@ var StatusPaymentViewModel = function(data){
         self.Print(self.cssOrder);
     };
 
+}
+
+var StatusPaymentParametersViewModel = function(data){
+    var self = this;
+    console.log(data);
+    self.label = ko.observable(data.label);
+    self.value = ko.observable(data.value);
+    self.help = ko.observable(data.help);
 }
 
 var TestStatusPayment = {

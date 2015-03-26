@@ -175,6 +175,11 @@ var StandalonePaymentWidget = function () {
             }
         });
 
+        EventDispatcher.AddEventListener('StandalonePaymentWidget.back', function(){
+            self.settings.idMethodPayment = null;
+            self.CheckRouteStandalonePayment()
+        });
+
         EventDispatcher.AddEventListener('widget.change.route', function () {
             self.CheckRouteStandalonePayment();
         });
@@ -627,11 +632,7 @@ var StandalonePaymentViewModel = function () {
         self.Print(self.cssInvoice);
     };
     self.Back = function () {
-        var last = Parameters.cache.lastPage;
-        if (last.route == 'payment' || !last.route)
-            Routing.SetHash('default', 'Домашняя', {});
-        else
-            Routing.SetHash(last.route, last.title, last.data);
+        EventDispatcher.DispatchEvent('StandalonePaymentWidget.back');
     };
     self.ClickPay = function () {
         $('#' + self.payForm.cssPayForm).submit();
@@ -680,8 +681,17 @@ var StandalonePaymentViewModel = function () {
             if (data.pay_form.hasOwnProperty('new_window') && data.pay_form.new_window == 'yes') {
                 self.payForm.target('_blank');
             }
+
             $.each(data.pay_form.hidden_field, function (i) {
-                self.payForm.field.push(data.pay_form.hidden_field[i]);
+                var field = {
+                    name: '',
+                    value: ''
+                };
+                if(data.pay_form.hidden_field[i].name)
+                    field.name = data.pay_form.hidden_field[i].name;
+                if(data.pay_form.hidden_field[i].value)
+                    field.value = data.pay_form.hidden_field[i].value;
+                self.payForm.field.push(field);
             });
         }
         self.isInData(false);

@@ -218,7 +218,7 @@
                         <!-- ko with: payForm -->
                         <form action="" method="" data-bind="attr: {method: method, action: action, target: target, id: cssPayForm}">
                             <!-- ko foreach: field -->
-                            <input type="hidden" name="" value="" data-bind="attr: {name: name}, value: value"/>
+                            <input type="hidden" name=""  data-bind="value: value, attr: {name: name}"/>
                             <!-- /ko -->
                         </form>
                         <!-- /ko -->
@@ -238,22 +238,22 @@
 <script type="text/html" id="standalonePaymentSelectFieldTmpl">
     <select name="" data-bind="attr: { name: name(), placeholder: label()}">
         <!-- ko foreach: listSelect() -->
-        <!-- ko if: value == $parent.value() -->
+        <!-- ko if: value() == $parent.value() -->
         <option value="" data-bind="value: value, text: label" selected="selected"></option>
         <!-- /ko -->
-        <!-- ko ifnot: value == $parent.value() -->
-        <option value="" data-bind="value: value, text: label"></option>
+        <!-- ko ifnot: value() == $parent.value() -->
+        <option value="" data-bind="value: value(), text: label"></option>
         <!-- /ko -->
         <!-- /ko -->
     </select>
 </script>
 
 <script type="text/html" id="standalonePaymentTextFieldTmpl">
-    <input class="pkp-input pkp-receipt-form__input" type="text" value="" data-bind="value: value, attr: {type: typeField(), name: name(), id: cssField(), placeholder: label()}"/>
+    <input class="pkp-input pkp-receipt-form__input" type="text" value="" data-bind="value: value(), attr: {type: typeField(), name: name(), id: cssField(), placeholder: label()}"/>
 </script>
 
 <script type="text/html" id="standalonePaymentTextareaFieldTmpl">
-    <textarea  name="" data-bind="attr: {name: name()}, text: value, placeholder: label()"></textarea>
+    <textarea  name="" data-bind="attr: {name: name()}, text: value(), placeholder: label()"></textarea>
 </script>
 
 <script type="text/html" id="standalonePaymentCheckboxFieldTmpl">
@@ -261,10 +261,10 @@
         <!-- ko foreach: listSelect -->
             <label class="pkp-label-checkbox">
                 <!-- ko if: value == $parent.value() -->
-                    <input class='pkp-input-checkbox' type="checkbox" checked="checked" name="" value="" data-bind="value: value, attr: { name: $parent.name()}"/>
+                    <input class='pkp-input-checkbox' type="checkbox" checked="checked" name="" value="" data-bind="value: value(), attr: { name: $parent.name()}"/>
                 <!-- /ko -->
                 <!-- ko ifnot: value == $parent.value() -->
-                    <input class='pkp-input-checkbox' type="checkbox" name="" value="" data-bind="value: value, attr: { name: $parent.name()}"/>
+                    <input class='pkp-input-checkbox' type="checkbox" name="" value="" data-bind="value: value(), attr: { name: $parent.name()}"/>
                 <!-- /ko -->
                 <span class='block-label b-small-text' for="" data-bind="text: $parent.label(), attr: { 'for': $parent.name()}"></span>
             </label>
