@@ -74,6 +74,16 @@ var StatusPaymentWidget = function () {
     };
     self.CheckRoute = function(){
         if(Routing.route == 'payment'){
+            var orderId = $.cookie(Config.Base.cookie.orderId);
+            if(orderId){
+                var paymentType = Routing.params.name;
+            var str = paymentType + '/?' + orderId
+                self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                    self.BaseLoad.StatusPayment(str, function (data) {
+                        self.Fill(data);
+                    })
+                });
+            }
 
         }
     };
@@ -83,7 +93,8 @@ var StatusPaymentWidget = function () {
         });
     };
     self.Fill = function(data){
-        var info = new StatusPaymentViewModel();
+        var info = new StatusPaymentViewModel(data);
+        self.InsertContainer.Content();
         self.Render(info);
     };
     self.Render = function(data){
@@ -91,7 +102,7 @@ var StatusPaymentWidget = function () {
             try{
                 ko.cleanNode($('#' + self.settings.containerId)[0]);
                 ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
                 if(typeof AnimateStatusPayment == 'function')
                     new AnimateStatusPayment();
                 if (self.settings.animate)
@@ -102,7 +113,7 @@ var StatusPaymentWidget = function () {
                 if (self.settings.tmpl.custom) {
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                        self.InsertContainer.Main();
+                        self.InsertContainer.Content();
                         self.Render(data);
                     });
                 }
@@ -132,7 +143,46 @@ var StatusPaymentWidget = function () {
     };
 }
 
-var StatusPaymentViewModel = function(){
+var StatusPaymentViewModel = function(data){
+    var self = this;
+
+    self.orderId = data.id_order;
+    self.instruction = data.instruction;
+    self.cssOrder = 'order_print_block';
+    self.status = data.status;
+
+    self.isPaid = ko.observable(false);
+    if(self.status == 'paid')
+        self.isPaid(true);
+
+    self.isWait = ko.observable(false);
+    if(self.status == 'wait_pay')
+        self.isWait(true);
+
+    self.isCancel = ko.observable(false);
+    if(self.status == 'cancel')
+        self.isCancel(true);
+
+    self.isBack = ko.observable(false);
+    if(self.status == 'back')
+        self.isBack(true);
+
+    self.outData = ko.observableArray(data.out_data);
+    self.egoods = [];
+    if(data.egoods){
+        self.egoods = data.egoods;
+    }
+
+
+    self.Print = function (id) {
+        var w = window.open();
+        w.document.write($('#' + id).html());
+        w.print();
+        w.close();
+    };
+    self.ClickPrintOrder = function () {
+        self.Print(self.cssOrder);
+    };
 
 }
 

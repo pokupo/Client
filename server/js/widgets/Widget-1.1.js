@@ -118,7 +118,10 @@ var Loader = {
                 this.containers.push({container: container, widgetName: widget});
             if(JSSettings.dev)
                 Logger.Console.VarDump('Loader', 'widgets', this.widgets);
+
             this.ShowLoading();
+
+            console.log(this.widgets);
         }
     },
     RegisterReady : function(key){
@@ -176,6 +179,7 @@ var Loader = {
     },
     ShowContent : function(){
         $.each(this.containers, function(i){
+            console.log(Loader.containers[i].container);
             var children =  $('#' + Loader.containers[i].container).children();
             if(children)
                 children.show();
@@ -1403,6 +1407,13 @@ var Widget = function (){
         },
         CancelOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
+                Parameters.cache.orderList = {};
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        StatusPayment: function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'status/' + str), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);

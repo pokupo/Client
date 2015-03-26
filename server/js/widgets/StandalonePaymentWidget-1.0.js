@@ -311,6 +311,15 @@ var StandalonePaymentWidget = function () {
         },
         Content: function (data) {
             var content = new StandalonePaymentViewModel();
+
+            var str = [];
+            var fields = data.pay_form.hidden_field;
+            $.each(fields, function(i){
+                str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
+            });
+            if(str)
+                $.cookie(Config.Base.cookie.orderId, str.join('&'));
+;
             content.paymentInfo = self.settings.paymentInfo;
             content.AddContent(data);
             self.Render.Content(content);
