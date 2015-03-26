@@ -111,7 +111,6 @@ var CartWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){
-        console.log(data);
         if ($('#' + self.settings.containerId).length > 0) {
             try{
                 ko.cleanNode($('#' + self.settings.containerId)[0]);

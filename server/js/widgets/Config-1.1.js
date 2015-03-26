@@ -5,7 +5,8 @@ var Config = {
         loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузчика
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
-           previously_viewed : 'previously_viewed'  // id просмотренных товаров
+            previously_viewed : 'previously_viewed',  // id просмотренных товаров
+            userEmail: 'user_email'
         },
         containerIdErrorWindow : 'dialogErrorMessage', // id модального окна с ошибкой
         conteinerIdTextErrorWindow: 'containerError', // id контейнера для текста ошибки
@@ -55,8 +56,8 @@ var Config = {
         standalonePayment: {
             content: { widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId', customClass: 'custom_block'},
             button: { widget: 'standalonePaymentButtonWidgetId', def: 'defaultStandalonePaymentButtonWidgetId', customClass: 'custom_block'}
-        },
-     // id контейнера страницы оплаты
+        }, // id контейнера страницы оплаты
+        statusPayment: { widget: 'statusPaymentWidgetId', def: 'defaultStatusPaymentWidgetId', customClass: 'custom_block'},
         message : {widget: 'messageWidgetId', def: 'defaultMessageWidgetId', customClass: 'custom_block'} // id контейнера списка сообщений
     },
     Goods : {
@@ -887,10 +888,20 @@ var Config = {
             count: {
                 empty: 'Поле обязательно для заполнения',
                 count: "Введите количество товара"
+            },
+            coast: {
+                empty: 'Поле обязательно для заполнения',
+                count: "Введите стоимость услуги"
             }
         },
         regular : { // регулярные выражения полей
             email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/
+        }
+    },
+    StatusPayment : {
+        tmpl : {
+            path : 'statusPaymentTmpl.html', // файл шаблонов
+            id : 'statusPaymentPageTmpl' //id шаблона страницы статуса оплаты
         }
     },
     Paging : {
