@@ -73,18 +73,21 @@ var StatusPaymentWidget = function () {
         }
     };
     self.CheckRoute = function(){
-        if(Routing.route == 'payment'){
+        if(Routing.route == 'status_payment'){
             var orderId = $.cookie(Config.Base.cookie.orderId);
             if(orderId){
                 var paymentType = Routing.params.name;
-            var str = paymentType + '/?' + orderId
+                var str = paymentType + '/?' + orderId
                 self.BaseLoad.Tmpl(self.settings.tmpl, function () {
                     self.BaseLoad.StatusPayment(str, function (data) {
                         self.Fill(data);
                     })
                 });
             }
-
+            else{
+                self.WidgetLoader(true, self.settings.containerId);
+                alert('Нет параметров инициализации!');
+            }
         }
     };
     self.RegisterEvents = function(){
@@ -119,13 +122,13 @@ var StatusPaymentWidget = function () {
                 }
                 else {
                     self.InsertContainer.EmptyWidget();
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerId);
                 }
             }
         }
         else {
             self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){

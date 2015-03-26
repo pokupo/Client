@@ -118,10 +118,7 @@ var Loader = {
                 this.containers.push({container: container, widgetName: widget});
             if(JSSettings.dev)
                 Logger.Console.VarDump('Loader', 'widgets', this.widgets);
-
             this.ShowLoading();
-
-            console.log(this.widgets);
         }
     },
     RegisterReady : function(key){
