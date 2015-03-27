@@ -166,7 +166,7 @@ var CartGoodsWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerId);
                     if(typeof AnimateCartGoods == 'function')
                         new AnimateCartGoods();
                     if(self.settings.animate)
@@ -183,13 +183,13 @@ var CartGoodsWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
             }
         },
         EmptyCart : function(){
