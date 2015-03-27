@@ -623,6 +623,8 @@
 
                     self.WidgetLoader(true, self.settings.containerFormId);
 
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                     
@@ -631,8 +633,7 @@
                     }
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('personal') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('personal') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -646,6 +647,10 @@
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         DeliveryList : function(delivery){
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -653,12 +658,13 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('delivery') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('delivery') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -671,6 +677,10 @@
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         },
         DeliveryForm : function(delivery){
@@ -796,13 +806,14 @@
                         delivery.address(null);
                         delivery.postIndex(null);
                     });
-                    
+
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -816,6 +827,10 @@
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Security : function(sequrity){
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -823,12 +838,13 @@
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(sequrity, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateProfile == 'function')
+                        new AnimateProfile();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('security') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('security') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -841,6 +857,10 @@
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         }
     };

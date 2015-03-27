@@ -42,7 +42,7 @@ var CartWidget = function(){
         if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.cart){
             input = WParameters.cart;
         }
-        
+
         if(!$.isEmptyObject(input)){
             if(input.show){
                 for(var key in input.show){
@@ -88,15 +88,15 @@ var CartWidget = function(){
             self.CheckRoute();
         });
     };
-    self.RegisterEvents = function(){       
+    self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('widget.authentication.ok', function(){
             self.LoadTmpl();
         });
-        
+
         EventDispatcher.AddEventListener('widget.change.route', function (data){
             self.LoadTmpl();
         });
-        
+
         EventDispatcher.AddEventListener('widgets.cart.infoUpdate', function(data){
              self.LoadTmpl();
         });
@@ -110,28 +110,36 @@ var CartWidget = function(){
         info.AddContent(data);
         self.Render(info);
     };
-    self.Render = function(data){ 
-        try{
-            ko.cleanNode($('#' + self.settings.containerId)[0]);
-            ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
-            self.WidgetLoader(true, self.settings.containerId);
-            if(self.settings.animate)
-                self.settings.animate();
+    self.Render = function(data){
+        console.log(data);
+        if ($('#' + self.settings.containerId).length > 0) {
+            try{
+                ko.cleanNode($('#' + self.settings.containerId)[0]);
+                ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
+                self.WidgetLoader(true);
+                if(typeof AnimateCart == 'function')
+                    new AnimateCart();
+                if (self.settings.animate)
+                    self.settings.animate();
+            }
+            catch (e) {
+                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
+                if (self.settings.tmpl.custom) {
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                        self.InsertContainer.Main();
+                        self.Render(data);
+                    });
+                }
+                else {
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true);
+                }
+            }
         }
-        catch(e){
-            self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
-            console.log(e);
-            if(self.settings.tmpl.custom){
-                delete self.settings.tmpl.custom;
-                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                    self.InsertContainer.Main();
-                    self.Render(data);
-                });
-            }
-            else{
-                self.InsertContainer.EmptyWidget();
-                self.WidgetLoader(true, self.settings.containerId);
-            }
+        else {
+            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+            self.WidgetLoader(true);
         }
     };
     self.SetPosition = function(){
@@ -187,7 +195,7 @@ var CartViewModel = function(){
             return true;
         return false;
     },this);
-    
+
     self.AddContent = function(data){
         var info = data.info;
         var goods = data.goods;
@@ -237,7 +245,7 @@ var ShortBlockCartGoodsSellersViewModel = function(data, cart){
     self.CartItog = ko.computed(function(){
         var itog = 0;
         $.each(cart.goods(), function(i){
-            itog = itog + parseInt(cart.goods()[i].endSum(), 10); 
+            itog = itog + parseInt(cart.goods()[i].endSum(), 10);
         });
         cart.finalCost(itog);
         return itog;

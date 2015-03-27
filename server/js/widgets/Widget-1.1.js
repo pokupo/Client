@@ -107,7 +107,6 @@ var Loader = {
     action : null,
     Indicator : function(widget, isReady, container){
         if(widget){
-            
             this.widgets[widget] = isReady;
             this.countAll = 0;
             this.readyCount = 0;
@@ -177,7 +176,9 @@ var Loader = {
     },
     ShowContent : function(){
         $.each(this.containers, function(i){
-            $('#' + Loader.containers[i].container).children().not(Loader.SelectCustomContent().join(', ')).show();
+            var children =  $('#' + Loader.containers[i].container).children();
+            if(children)
+                children.show();
             Loader.ShowCustomContent(Loader.containers[i]);
         });
         this.containers = [];
@@ -601,8 +602,8 @@ var Widget = function (){
         }
         return tmplName;
     };
-    this.Exception = function(text){
-        Logger.Console.Exception(this.widgetName, text);
+    this.Exception = function(text, exeption){
+        Logger.Console.Exception(this.widgetName, text, exeption);
     };
     this.QueryError = function(data, callback, callbackPost){
         if (data.err) {

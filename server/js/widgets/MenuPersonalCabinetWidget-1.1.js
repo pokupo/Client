@@ -101,12 +101,13 @@ var MenuPersonalCabinetWidget = function () {
                 self.WidgetLoader(true, self.settings.containerMenuId);
                 ko.cleanNode($("#" + self.settings.containerMenuId)[0]);
                 ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
+                if(typeof AnimateMenuPersonalCabinet == 'function')
+                    new AnimateMenuPersonalCabinet();
                 if(self.settings.animate)
                     self.settings.animate();
             }
             catch (e) {
-                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
-                console.log(e);
+                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
                 if (self.settings.tmpl.custom) {
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function () {
@@ -119,6 +120,10 @@ var MenuPersonalCabinetWidget = function () {
                     self.WidgetLoader(true, self.settings.containerMenuId);
                 }
             }
+        }
+        else{
+            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerMenuId + ']');
+            self.WidgetLoader(true, self.settings.containerMenuId);
         }
     };
     self.SetPosition = function () {

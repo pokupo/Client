@@ -156,28 +156,28 @@ var GoodsWidget = function(){
     };
     self.Render = {
         Goods: function(data){
-            try{
-                if($("#" + self.settings.containerId).length > 0){
+            if($("#" + self.settings.containerId).length > 0) {
+                try {
                     self.InsertContainer.Content();
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    
-                    if(self.hasButton){
-                        $.each(data.moreBlock, function(i){
-                            if(data.moreBlock[i].key == self.hasButton){
+
+                    if (self.hasButton) {
+                        $.each(data.moreBlock, function (i) {
+                            if (data.moreBlock[i].key == self.hasButton) {
                                 var button = $('#' + data.moreBlock[i].idBlock + ' [data-bind^=click]');
-                                $.each(button, function(i){
-                                    if(data.blocks.main.showAddToCart()){
-                                        if($(button[i]).attr('data-bind').match(/AddToCart/)){
+                                $.each(button, function (i) {
+                                    if (data.blocks.main.showAddToCart()) {
+                                        if ($(button[i]).attr('data-bind').match(/AddToCart/)) {
                                             var addToCart = new AddToCartButtonViewModel(data.blocks.main);
                                             ko.applyBindings(addToCart, button[i]);
                                         }
                                     }
                                     else
                                         $(button[i]).hide();
-                                    
-                                    if(data.blocks.main.showBuy()){
-                                        if($(button[i]).attr('data-bind').match(/Buy/)){
+
+                                    if (data.blocks.main.showBuy()) {
+                                        if ($(button[i]).attr('data-bind').match(/Buy/)) {
                                             var buy = new BuyButtonViewModel(data.blocks.main);
                                             ko.applyBindings(buy, button[i]);
                                         }
@@ -189,28 +189,34 @@ var GoodsWidget = function(){
                         });
                     }
 
-                    if(self.settings.animate)
+                    if(typeof AnimateGoods == 'function')
+                        new AnimateGoods();
+                    if (self.settings.animate)
                         self.settings.animate();
-                }
-                self.AddGoodsInCookie(data);
-                delete data;
 
-                self.WidgetLoader(true, self.settings.containerId); 
-            }
-            catch(e){
-                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
-                console.log(e);
-                if(self.settings.tmpl.custom){
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        self.InsertContainer.Content();
-                        self.Render.Goods(data);
-                    });
-                }
-                else{
-                    self.InsertContainer.EmptyWidget();
+                    self.AddGoodsInCookie(data);
+                    delete data;
+
                     self.WidgetLoader(true, self.settings.containerId);
                 }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Content();
+                            self.Render.Goods(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
             }
         }
     };

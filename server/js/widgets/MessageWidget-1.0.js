@@ -294,12 +294,13 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateMessage == 'function')
+                        new AnimateMessage();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('topic') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('topic') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -313,6 +314,10 @@ var MessageWidget = function () {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         },
         List: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
@@ -320,6 +325,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateMessage == 'function')
+                        new AnimateMessage();
                     if(self.settings.animate)
                         self.settings.animate();
 
@@ -360,6 +367,10 @@ var MessageWidget = function () {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
+            }
         },
         EmptyList: function (data) {
             if ($("#" + self.settings.containerId).length > 0) {
@@ -367,6 +378,8 @@ var MessageWidget = function () {
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
                     self.WidgetLoader(true, self.settings.containerId);
+                    if(typeof AnimateMessage == 'function')
+                        new AnimateMessage();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
@@ -384,6 +397,10 @@ var MessageWidget = function () {
                         self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true, self.settings.containerId);
             }
         },
         EmptyWidget: function () {

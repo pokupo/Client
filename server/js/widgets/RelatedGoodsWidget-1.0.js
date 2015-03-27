@@ -126,13 +126,14 @@ window.RelatedGoodsWidget = function(){
         try{
             ko.cleanNode($(self.settings.container).children()[0]);
             ko.applyBindings(data, $(self.settings.container).children()[0]);
+            if(typeof AnimateRelatedGoods == 'function')
+                new AnimateRelatedGoods();
             if(self.settings.animate)
                 self.settings.animate();
             self.WidgetLoader(true);
         }
         catch(e){
-            self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']');
-            console.log(e);
+            self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']', e);
             if(self.settings.tmpl.custom){
                 delete self.settings.tmpl.custom;
                 self.BaseLoad.Tmpl(self.settings.tmpl, function(){

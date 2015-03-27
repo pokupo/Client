@@ -104,13 +104,14 @@ var SearchWidget = function(){
             try{
                 ko.cleanNode($("#" + self.settings.containerId)[0]);
                 ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                self.WidgetLoader(true, self.settings.containerId);
+                self.WidgetLoader(true);
+                if(typeof AnimateSearch == 'function')
+                    new AnimateSearch();
                 if(self.settings.animate)
                     self.settings.animate();
             }
             catch(e){
-                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
-                console.log(e);
+                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
                 if(self.settings.tmpl.custom){
                     delete self.settings.tmpl.custom;
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -120,9 +121,13 @@ var SearchWidget = function(){
                 }
                 else{
                     self.InsertContainer.EmptyWidget();
-                    self.WidgetLoader(true, self.settings.containerId);
+                    self.WidgetLoader(true);
                 }
             }
+        }
+        else{
+            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+            self.WidgetLoader(true);
         }
     };
     self.SetPosition = function(){

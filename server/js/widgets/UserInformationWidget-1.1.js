@@ -136,13 +136,14 @@ var UserInformationWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true, self.settings.containerId);
+                    self.WidgetLoader(true);
+                    if(typeof AnimateUserInformation == 'function')
+                        new AnimateUserInformation();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('auth') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('auth') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -152,9 +153,13 @@ var UserInformationWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
+                        self.WidgetLoader(true);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true);
             }
         },
         InfoBlock : function(data){
@@ -162,13 +167,14 @@ var UserInformationWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true, self.settings.containerId);
+                    self.WidgetLoader(true);
+                    if(typeof AnimateUserInformation == 'function')
+                        new AnimateUserInformation();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Error of the template [' + self.GetTmplName('info') + ']');
-                    console.log(e);
+                    self.Exception('Error of the template [' + self.GetTmplName('info') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -178,11 +184,14 @@ var UserInformationWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
+                        self.WidgetLoader(true);
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true);
+            }
         }
     }
     self.SetPosition = function(){

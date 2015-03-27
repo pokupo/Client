@@ -128,13 +128,14 @@ var AuthenticationWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true);
+                    if(typeof AnimateAuthentication == 'function')
+                        new AnimateAuthentication();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -144,11 +145,14 @@ var AuthenticationWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
+                        self.WidgetLoader(true);
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
+                self.WidgetLoader(true);
+            }
         }
     };
     self.SetPosition = function(){

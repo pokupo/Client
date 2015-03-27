@@ -391,8 +391,10 @@
                 
                 <!-- ko if: statusOrder() == "new" -->
                     <!-- ko ifnot: statusPay() == "paid" -->
-                        <div style="display: inline;" data-bind="embedWidget :{ widget : 'ButtonPaymentWidget-1.1', params : { title: 'Оплатить заказ', orderId: id(),tmpl : {path: 'buttonPayment/buttonPaymentTmpl_promo.html'}}}"></div>
-                        <div rel="tooltip" title="Отменить" class="b-order-item__edit btn-circle btn-circle--cancel" data-bind="click: ClickCancel"></div>
+						<!-- ko ifnot: statusPay() == "wait_check" -->
+							<div style="display: inline;" data-bind="embedWidget :{ widget : 'ButtonPaymentWidget-1.1', params : { title: 'Оплатить заказ', orderId: id(),tmpl : {path: 'buttonPayment/buttonPaymentTmpl_promo.html'}}}"></div>
+                        <!-- /ko -->
+						<div rel="tooltip" title="Отменить" class="b-order-item__edit btn-circle btn-circle--cancel" data-bind="click: ClickCancel"></div>
                         <div style="padding: 9px 0 0 13px;top: -10px;" rel="tooltip" title="Обновить" class="b-order-item__edit btn-circle" data-bind="click: ClickRefresh"><i class="icon icon-reload"></i></div>
                     <!-- /ko -->
                 <!-- /ko -->

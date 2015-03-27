@@ -427,12 +427,13 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -446,6 +447,10 @@ var RegistrationWidget = function() {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step2: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -453,12 +458,13 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -472,6 +478,10 @@ var RegistrationWidget = function() {
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         Step3: function(form) {
             if ($("#" + self.settings.containerFormId).length > 0) {
@@ -479,12 +489,13 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -497,6 +508,10 @@ var RegistrationWidget = function() {
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         },
         Step4: function(form) {
@@ -618,12 +633,13 @@ var RegistrationWidget = function() {
                     });
 
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -636,6 +652,10 @@ var RegistrationWidget = function() {
                         self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         }
     };

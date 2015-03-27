@@ -237,12 +237,13 @@ var SearchResultWidget = function(){
                     ko.cleanNode($("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerIdForAdvancedSearch)[0]);
                     self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+                    if(typeof AnimateSearchResult == 'function')
+                        new AnimateSearchResult();
                     if(self.settings.animate.form)
                         self.settings.animate.form();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName(false, 'form') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -256,6 +257,10 @@ var SearchResultWidget = function(){
                     }
                 }
             }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerIdForAdvancedSearch + ']');
+                self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
+            }
         },
         SearchResult : function(data){
             if($("#" + self.settings.containerIdForSearchResult).length > 0){
@@ -264,6 +269,8 @@ var SearchResultWidget = function(){
                     ko.applyBindings(data, $("#" + self.settings.containerIdForSearchResult)[0]);
                     self.WidgetLoader(true, self.settings.containerIdForSearchResult);
                     EventDispatcher.DispatchEvent('searchResultWidget.show.form');
+                    if(typeof AnimateSearchResult == 'function')
+                        new AnimateSearchResult();
                     if(self.settings.animate.content)
                         self.settings.animate.content();
                 }
@@ -281,6 +288,10 @@ var SearchResultWidget = function(){
                         self.WidgetLoader(true, self.settings.containerIdForSearchResult);
                     }
                 }
+            }
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerIdForSearchResult + ']');
+                self.WidgetLoader(true, self.settings.containerIdForSearchResult);
             }
         }
     };

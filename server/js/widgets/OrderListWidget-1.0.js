@@ -246,12 +246,13 @@ var OrderListWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrderList == 'function')
+                        new AnimateOrderList();
                     if(self.settings.animate)
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('list') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('list') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -265,7 +266,10 @@ var OrderListWidget = function() {
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         },
         EmptyList: function() {
             self.WidgetLoader(true, self.settings.containerFormId);
@@ -282,8 +286,7 @@ var OrderListWidget = function() {
                         self.settings.animate();
                 }
                 catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']');
-                    console.log(e);
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']', e);
                     if(self.settings.tmpl.custom){
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -297,7 +300,10 @@ var OrderListWidget = function() {
                     }
                 }
             }
-            
+            else{
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
+                self.WidgetLoader(true, self.settings.containerFormId);
+            }
         }
     };
     self.SetPosition = function() {

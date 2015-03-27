@@ -95,12 +95,13 @@ window.InfoSellerWidget = function () {
         try {
             ko.cleanNode($(self.settings.container).children()[0]);
             ko.applyBindings(data, $(self.settings.container).children()[0]);
+            if(typeof AnimateInfoSeller == 'function')
+                new AnimateInfoSeller();
             if(self.settings.animate)
                 self.settings.animate();
         }
         catch (e) {
-            self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
-            console.log(e);
+            self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
             if (self.settings.tmpl.custom) {
                 delete self.settings.tmpl.custom;
                 self.BaseLoad.Tmpl(self.settings.tmpl, function () {

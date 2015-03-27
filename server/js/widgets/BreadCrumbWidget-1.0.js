@@ -109,12 +109,13 @@ var BreadCrumbWidget = function(){
                         ko.applyBindings(data, $('#' + self.settings.containerId[i])[0]);
                         self.ShowContainer(self.settings.containerId[i]);
                         self.WidgetLoader(true );
+                        if(typeof AnimateBreadCrumb == 'function')
+                            new AnimateBreadCrumb();
                         if(self.settings.animate)
                             self.settings.animate();
                     }
                     catch(e){
-                        self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']');
-                        console.log(e);
+                        self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
                         if(self.settings.tmpl.custom){
                             delete self.settings.tmpl.custom;
                             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
@@ -127,6 +128,10 @@ var BreadCrumbWidget = function(){
                             self.WidgetLoader(true);
                         }
                     }
+                }
+                else{
+                    self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId[i] + ']');
+                    self.WidgetLoader(true);
                 }
                 delete data;
             }
