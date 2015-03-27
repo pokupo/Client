@@ -128,7 +128,7 @@ var AuthenticationWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerFormId);
                     if(typeof AnimateAuthentication == 'function')
                         new AnimateAuthentication();
                     if(self.settings.animate)
@@ -145,13 +145,13 @@ var AuthenticationWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerFormId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerFormId);
             }
         }
     };
