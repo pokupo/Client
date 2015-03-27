@@ -120,7 +120,7 @@ var CatalogWidget = function(){
                 try{
                     ko.cleanNode($('#' + self.settings.catalogContainerId )[0]);
                     ko.applyBindings(data, $('#' + self.settings.catalogContainerId )[0]);
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.catalogContainerId);
                     if(typeof AnimateCatalog== 'function')
                         new AnimateCatalog();
                     if(self.settings.animate)
@@ -137,13 +137,13 @@ var CatalogWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.catalogContainerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.catalogContainerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.catalogContainerId);
             }
         }
     }

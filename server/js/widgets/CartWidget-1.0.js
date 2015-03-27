@@ -111,12 +111,11 @@ var CartWidget = function(){
         self.Render(info);
     };
     self.Render = function(data){
-        console.log(data);
         if ($('#' + self.settings.containerId).length > 0) {
             try{
                 ko.cleanNode($('#' + self.settings.containerId)[0]);
                 ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
                 if(typeof AnimateCart == 'function')
                     new AnimateCart();
                 if (self.settings.animate)
@@ -133,13 +132,13 @@ var CartWidget = function(){
                 }
                 else {
                     self.InsertContainer.EmptyWidget();
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerId);
                 }
             }
         }
         else {
             self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
     };
     self.SetPosition = function(){

@@ -224,7 +224,7 @@ window.ButtonPaymentWidget = function () {
                         }
                     });
                     $("#" + self.settings.containerId).show();
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerId);
                     if(typeof AnimateButtonPayment == 'function')
                         new AnimateButtonPayment();
                     if(self.settings.animate)
@@ -241,13 +241,13 @@ window.ButtonPaymentWidget = function () {
                     }
                     else {
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
             }
         }
     };
