@@ -201,7 +201,7 @@ var ContentWidget = function(){
     };
     self.CheckData = function(data){
         self.InsertContainer.EmptyBlockWidget();
-        if(data.err){
+        if(data.err || data == false){
             if(data.err == 'categoriesNotCreated'){
                 var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'categoriesNotCreated'});
                 self.InsertContainer.Block(0, block.typeView);

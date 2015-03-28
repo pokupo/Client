@@ -148,6 +148,7 @@ var Loader = {
             this.ShowContent();
             $('#loadingContainer').remove();
             $("body").removeClass('loading');
+            EventDispatcher.DispatchEvent('widget.display.ready');
         }
     },
     InsertContainer : function(container){
@@ -509,10 +510,17 @@ var Widget = function (){
         ko.bindingHandlers.embedWidget = {
             init: function(element, valueAccessor) {
                 var options = valueAccessor() || {};
-                self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
-                    options.widget = options.widget.split('-')[0];
-                    EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
-                });
+                var widgetName = options.widget.split('-');
+                if(typeof(window[widgetName[0]]) == 'function'){
+                    options.widget = widgetName[0];
+                    EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                }
+                else {
+                    self.BaseLoad.Script('widgets/' + options.widget + '.js', function () {
+                        options.widget = options.widget.split('-')[0];
+                        EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                    });
+                }
             }
         };
         ko.global = {

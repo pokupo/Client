@@ -197,41 +197,41 @@ var OrderListWidget = function() {
         Detail: function(id) {
             self.BaseLoad.OrderInfo(id + '/yes', function(data) {
                 if(!data.err){
-                if(data.goods.length > 0){
-                    self.BaseLoad.GoodsInfo(data.goods[0].id, '1010000', function(goodsInfo){
-                        self.sellerId = goodsInfo.shop.id;
-                        self.InsertContainer.Detail();
-                        var order = Parameters.cache.order.info;
-                        if ($.isEmptyObject(order)) {
-                            OrderViewModel.prototype.Back = function(){
-                                Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: Routing.GetLastPageNumber()});
-                            };
-                            OrderViewModel.prototype.ClickEdit = function(){
-                                EventDispatcher.DispatchEvent('OrderList.order.edit', {id: id});
-                            };
-                            OrderViewModel.prototype.ClickDelete = function(){
-                                EventDispatcher.DispatchEvent('OrderList.order.delete', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
-                            };
-                            OrderViewModel.prototype.ClickCancel = function(){
-                                EventDispatcher.DispatchEvent('OrderList.order.cancel', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
-                            };
-                            OrderViewModel.prototype.ClickPay = function(){
-                                EventDispatcher.DispatchEvent('OrderList.order.pay', {id: id, fn: function(){}})
-                            };
-                            OrderViewModel.prototype.ClickCheck = function(){
-                                EventDispatcher.DispatchEvent('OrderList.order.check', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block:'detail', id: Routing.params.id})}})
-                            };
-                            OrderViewModel.prototype.ClickRepeat = function(){
-                                EventDispatcher.DispatchEvent('OrderList.order.repeat', {id: id})
-                            };
-                            OrderViewModel.prototype.ClickReturn = function(){
-                                EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
-                            };
-                            order = new OrderViewModel();
-                            Parameters.cache.order.info = order;
-                        }
-                        order.AddContent(data);
-                        self.Render.Detail(order);
+                    if(data.goods.length > 0){
+                        self.BaseLoad.GoodsInfo(data.goods[0].id, '1010000', function(goodsInfo){
+                            self.sellerId = goodsInfo.shop.id;
+                            self.InsertContainer.Detail();
+                            var order = Parameters.cache.order.info;
+                            if ($.isEmptyObject(order)) {
+                                OrderViewModel.prototype.Back = function(){
+                                    Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: Routing.GetLastPageNumber()});
+                                };
+                                OrderViewModel.prototype.ClickEdit = function(){
+                                    EventDispatcher.DispatchEvent('OrderList.order.edit', {id: id});
+                                };
+                                OrderViewModel.prototype.ClickDelete = function(){
+                                    EventDispatcher.DispatchEvent('OrderList.order.delete', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
+                                };
+                                OrderViewModel.prototype.ClickCancel = function(){
+                                    EventDispatcher.DispatchEvent('OrderList.order.cancel', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
+                                };
+                                OrderViewModel.prototype.ClickPay = function(){
+                                    EventDispatcher.DispatchEvent('OrderList.order.pay', {id: id, fn: function(){}})
+                                };
+                                OrderViewModel.prototype.ClickCheck = function(){
+                                    EventDispatcher.DispatchEvent('OrderList.order.check', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block:'detail', id: Routing.params.id})}})
+                                };
+                                OrderViewModel.prototype.ClickRepeat = function(){
+                                    EventDispatcher.DispatchEvent('OrderList.order.repeat', {id: id})
+                                };
+                                OrderViewModel.prototype.ClickReturn = function(){
+                                    EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
+                                };
+                                order = new OrderViewModel();
+                                Parameters.cache.order.info = order;
+                            }
+                            order.AddContent(data);
+                            self.Render.Detail(order);
                         });
                     }
                 }
@@ -283,27 +283,29 @@ var OrderListWidget = function() {
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
+                //try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateOrderList == 'function')
+                        new AnimateOrderList();
                     if(self.settings.animate)
                         self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Detail();
-                            self.Render.Detail(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
+                //}
+                //catch(e){
+                //    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']', e);
+                //    if(self.settings.tmpl.custom){
+                //        delete self.settings.tmpl.custom;
+                //        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                //            self.InsertContainer.Detail();
+                //            self.Render.Detail(data);
+                //        });
+                //    }
+                //    else{
+                //        self.InsertContainer.EmptyWidget();
+                //        self.WidgetLoader(true, self.settings.containerFormId);
+                //    }
+                //}
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
