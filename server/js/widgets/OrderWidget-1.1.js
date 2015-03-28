@@ -78,12 +78,12 @@ var OrderWidget = function() {
     self.CheckRouteOrder = function() {
         if (Routing.route == 'order') {
             self.WidgetLoader(false);
+            self.order.sellerId = Routing.params.sellerId;
             if (Routing.params.create) {
                 self.BaseLoad.Login(false, false, false, function(data) {
                     if (Routing.params.create == 'fromCart') {
                         if (data.err) {
                             self.order.type = 'cart';
-                            self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = null;
                             self.order.count = null
 
@@ -96,7 +96,6 @@ var OrderWidget = function() {
                                     {create: 'fromCart', sellerId: Routing.params.sellerId},
                             function() {
                                 self.order.type = 'cart';
-                                self.order.sellerId = Routing.params.sellerId;
                                 self.DataOrder.Cart(function() {
                                     Routing.SetHash('order', 'Оформление заказа', {step: 2});
                                 });
@@ -107,7 +106,6 @@ var OrderWidget = function() {
                     else if (Routing.params.create == 'directly') {
                         if (data.err) {
                             self.order.type = 'directly';
-                            self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = Routing.params.goodsId;
                             self.order.count = Routing.params.count;
 
@@ -120,7 +118,6 @@ var OrderWidget = function() {
                                     {create: 'directly', sellerId: Routing.params.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
                             function() {
                                 self.order.type = 'directly';
-                                self.order.sellerId = Routing.params.sellerId;
                                 self.order.goodsId = Routing.params.goodsId;
                                 self.order.count = Routing.params.count;
                                 self.DataOrder.Directly(function() {
@@ -708,6 +705,7 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step4: function() {
+            console.log(self.order);
             self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function(data) {
                 self.InsertContainer.Step4();
                 self.Fill.Step4(data);

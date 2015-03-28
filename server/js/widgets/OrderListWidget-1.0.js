@@ -114,7 +114,7 @@ var OrderListWidget = function() {
         EventDispatcher.AddEventListener('OrderList.order.check', function(opt) {
             self.BaseLoad.ConfirmOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
-                    self.ShowMessage(Config.OrderList.message.orderCheck, function() {
+                    self.ShowMessage(Config.OrderList.message.orderConfirm, function() {
                         Parameters.cache.orderList = {};
                         opt.fn()
                     }, false);

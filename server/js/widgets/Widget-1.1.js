@@ -1369,7 +1369,7 @@ var Widget = function (){
             }, true);
         },
         DeleteOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
@@ -1388,21 +1388,21 @@ var Widget = function (){
                 callback(Parameters.cache.orderList[queryHash]);
         },
         RepeatOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         ReturnOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         CancelOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
