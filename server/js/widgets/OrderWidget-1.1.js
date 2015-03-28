@@ -78,12 +78,13 @@ var OrderWidget = function() {
     self.CheckRouteOrder = function() {
         if (Routing.route == 'order') {
             self.WidgetLoader(false);
+            if(Routing.params.sellerId)
+                self.order.sellerId = Routing.params.sellerId;
             if (Routing.params.create) {
                 self.BaseLoad.Login(false, false, false, function(data) {
                     if (Routing.params.create == 'fromCart') {
                         if (data.err) {
                             self.order.type = 'cart';
-                            self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = null;
                             self.order.count = null
 
@@ -93,10 +94,9 @@ var OrderWidget = function() {
                         }
                         else {
                             self.DataOrder.Create(
-                                    {create: 'fromCart', sellerId: Routing.params.sellerId},
+                                    {create: 'fromCart', sellerId: self.order.sellerId},
                             function() {
                                 self.order.type = 'cart';
-                                self.order.sellerId = Routing.params.sellerId;
                                 self.DataOrder.Cart(function() {
                                     Routing.SetHash('order', 'Оформление заказа', {step: 2});
                                 });
@@ -107,7 +107,6 @@ var OrderWidget = function() {
                     else if (Routing.params.create == 'directly') {
                         if (data.err) {
                             self.order.type = 'directly';
-                            self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = Routing.params.goodsId;
                             self.order.count = Routing.params.count;
 
@@ -117,10 +116,9 @@ var OrderWidget = function() {
                         }
                         else {
                             self.DataOrder.Create(
-                                    {create: 'directly', sellerId: Routing.params.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
+                                    {create: 'directly', sellerId: self.order.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
                             function() {
                                 self.order.type = 'directly';
-                                self.order.sellerId = Routing.params.sellerId;
                                 self.order.goodsId = Routing.params.goodsId;
                                 self.order.count = Routing.params.count;
                                 self.DataOrder.Directly(function() {
@@ -1564,7 +1562,7 @@ var OrderFormStep3ViewModel = function() {
             self.shipping.push(item);
             if(data.length == 1)
                 item.ClickItem();
-        }   
+        }
     };
     self.HasShipping = function() {
         var test = false;

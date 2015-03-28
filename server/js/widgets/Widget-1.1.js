@@ -148,6 +148,7 @@ var Loader = {
             this.ShowContent();
             $('#loadingContainer').remove();
             $("body").removeClass('loading');
+            EventDispatcher.DispatchEvent('widget.display.ready');
         }
     },
     InsertContainer : function(container){
@@ -509,10 +510,17 @@ var Widget = function (){
         ko.bindingHandlers.embedWidget = {
             init: function(element, valueAccessor) {
                 var options = valueAccessor() || {};
-                self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
-                    options.widget = options.widget.split('-')[0];
-                    EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
-                });
+                var widgetName = options.widget.split('-');
+                if(typeof(window[widgetName[0]]) == 'function'){
+                    options.widget = widgetName[0];
+                    EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                }
+                else {
+                    self.BaseLoad.Script('widgets/' + options.widget + '.js', function () {
+                        options.widget = options.widget.split('-')[0];
+                        EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                    });
+                }
             }
         };
         ko.global = {
@@ -1362,14 +1370,14 @@ var Widget = function (){
             }, true);
         },
         ConfirmOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         DeleteOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
@@ -1388,21 +1396,21 @@ var Widget = function (){
                 callback(Parameters.cache.orderList[queryHash]);
         },
         RepeatOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         ReturnOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         CancelOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);

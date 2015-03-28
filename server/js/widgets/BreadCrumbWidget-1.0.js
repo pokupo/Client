@@ -191,6 +191,8 @@ var BreadCrumbViewModel = function(){
     self.Return = function(){
         Parameters.cache.history.pop();
         var link = Parameters.cache.history.pop();
+        if(link.route == 'order' && link.data.create)
+            link = Parameters.cache.history.pop();
         Routing.SetHash(link.route, link.title, link.data, true);
     };
     self.AddCrumbs = function(data){

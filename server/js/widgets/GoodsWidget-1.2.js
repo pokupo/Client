@@ -157,7 +157,7 @@ var GoodsWidget = function(){
     self.Render = {
         Goods: function(data){
             if($("#" + self.settings.containerId).length > 0) {
-                try {
+                //try {
                     self.InsertContainer.Content();
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
@@ -198,21 +198,21 @@ var GoodsWidget = function(){
                     delete data;
 
                     self.WidgetLoader(true, self.settings.containerId);
-                }
-                catch (e) {
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
-                    if (self.settings.tmpl.custom) {
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                            self.InsertContainer.Content();
-                            self.Render.Goods(data);
-                        });
-                    }
-                    else {
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+                //}
+                //catch (e) {
+                //    self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
+                //    if (self.settings.tmpl.custom) {
+                //        delete self.settings.tmpl.custom;
+                //        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                //            self.InsertContainer.Content();
+                //            self.Render.Goods(data);
+                //        });
+                //    }
+                //    else {
+                //        self.InsertContainer.EmptyWidget();
+                //        self.WidgetLoader(true, self.settings.containerId);
+                //    }
+                //}
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
