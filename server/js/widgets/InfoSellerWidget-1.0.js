@@ -22,7 +22,8 @@ window.InfoSellerWidget = function () {
         self.settings.style = Config.InfoSeller.style;
         self.Loader();
         self.RegisterEvents();
-        self.LoadTmpl();
+        if(Loader.IsReady())
+            self.LoadTmpl();
     };
     self.Loader = function () {
         Loader.InsertContainer(self.settings.container);
@@ -62,6 +63,10 @@ window.InfoSellerWidget = function () {
         });
     };
     self.RegisterEvents = function () {
+        EventDispatcher.AddEventListener('widget.display.ready', function(){
+            self.LoadTmpl();
+        });
+
         EventDispatcher.AddEventListener('InfoSellerWidget.onload.tmpl.' + self.settings.hash, function (data) {
             if (self.settings.infoSeller['data']) {
                 self.InsertContainer.Content();
@@ -69,7 +74,6 @@ window.InfoSellerWidget = function () {
             }
             else {
                 window.console && console.log('No data on the Seller');
-                self.WidgetLoader(true);
             }
         });
 

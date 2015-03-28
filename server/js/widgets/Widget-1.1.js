@@ -1370,7 +1370,7 @@ var Widget = function (){
             }, true);
         },
         ConfirmOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);

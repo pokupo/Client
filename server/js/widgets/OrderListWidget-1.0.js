@@ -113,11 +113,19 @@ var OrderListWidget = function() {
 
         EventDispatcher.AddEventListener('OrderList.order.check', function(opt) {
             self.BaseLoad.ConfirmOrder(opt.id, function(data) {
-                if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
+                if(data.err){
+                    self.ShowMessage(data.msg, function() {
+                        if(data.err == "Not defined Payment Method")
+                            Routing.SetHash('order', 'Оформление заказа', {step: 4, id: opt.id, sellerId: self.sellerId});
+                        else
+                            Routing.SetHash('order', 'Оформление заказа', {step: 2, id: opt.id, sellerId: self.sellerId});
+                    });
+                }
+                else{
                     self.ShowMessage(Config.OrderList.message.orderConfirm, function() {
                         Parameters.cache.orderList = {};
                         opt.fn()
-                    }, false);
+                    });
                 }
             });
         });
@@ -125,7 +133,7 @@ var OrderListWidget = function() {
         EventDispatcher.AddEventListener('OrderList.order.delete', function(opt) {
             self.Confirm(Config.OrderList.message.confirmDeleteOrder, function(){
                 self.BaseLoad.DeleteOrder(opt.id, function(data) {
-                    if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
+                    if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.delete', opt)})){
                         self.ShowMessage(Config.OrderList.message.orderDelete, function() {
                             Parameters.cache.orderList = {};
                             opt.fn()
