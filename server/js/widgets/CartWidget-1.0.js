@@ -219,7 +219,7 @@ var CartViewModel = function(){
     };
     self.ClickIssueOrder = function(){
         if(self.count() > 0){
-//            Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.seller.id});
+            Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.shop.id});
         }
     };
 };

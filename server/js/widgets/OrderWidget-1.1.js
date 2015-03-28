@@ -78,7 +78,8 @@ var OrderWidget = function() {
     self.CheckRouteOrder = function() {
         if (Routing.route == 'order') {
             self.WidgetLoader(false);
-            self.order.sellerId = Routing.params.sellerId;
+            if(Routing.params.sellerId)
+                self.order.sellerId = Routing.params.sellerId;
             if (Routing.params.create) {
                 self.BaseLoad.Login(false, false, false, function(data) {
                     if (Routing.params.create == 'fromCart') {
@@ -93,7 +94,7 @@ var OrderWidget = function() {
                         }
                         else {
                             self.DataOrder.Create(
-                                    {create: 'fromCart', sellerId: Routing.params.sellerId},
+                                    {create: 'fromCart', sellerId: self.order.sellerId},
                             function() {
                                 self.order.type = 'cart';
                                 self.DataOrder.Cart(function() {
@@ -115,7 +116,7 @@ var OrderWidget = function() {
                         }
                         else {
                             self.DataOrder.Create(
-                                    {create: 'directly', sellerId: Routing.params.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
+                                    {create: 'directly', sellerId: self.order.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
                             function() {
                                 self.order.type = 'directly';
                                 self.order.goodsId = Routing.params.goodsId;
@@ -705,7 +706,6 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step4: function() {
-            console.log(self.order);
             self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function(data) {
                 self.InsertContainer.Step4();
                 self.Fill.Step4(data);
@@ -1562,7 +1562,7 @@ var OrderFormStep3ViewModel = function() {
             self.shipping.push(item);
             if(data.length == 1)
                 item.ClickItem();
-        }   
+        }
     };
     self.HasShipping = function() {
         var test = false;

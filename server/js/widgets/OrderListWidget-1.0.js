@@ -22,6 +22,7 @@ var OrderListWidget = function() {
         style: null,
         customContainer: null
     };
+    self.sellerId = null;
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.orderList.widget;
         self.settings.customContainer = Config.Containers.orderList.customClass;
@@ -74,19 +75,18 @@ var OrderListWidget = function() {
         EventDispatcher.AddEventListener('widget.change.route', function() {
             self.CheckRouteListOrder();
         });
-        
+
         EventDispatcher.AddEventListener('OrderList.order.repeat', function(opt) {
             self.BaseLoad.RepeatOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.repeat', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderRepeat, function() {
                         Parameters.cache.orderList = {};
-                        console.log(data);
-                        EventDispatcher.DispatchEvent('OrderList.order.edit', {id: data.id});
+                        EventDispatcher.DispatchEvent('OrderList.order.edit', {id: data.id,});
                     }, false);
                 }
             });
         });
-        
+
         EventDispatcher.AddEventListener('OrderList.order.return', function(opt) {
             self.BaseLoad.ReturnOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.return', opt)})){
@@ -97,7 +97,7 @@ var OrderListWidget = function() {
                 }
             });
         });
-        
+
         EventDispatcher.AddEventListener('OrderList.order.cancel', function(opt) {
             self.Confirm(Config.OrderList.message.confirmCancelOrder, function(){
                 self.BaseLoad.CancelOrder(opt.id, function(data) {
@@ -110,7 +110,7 @@ var OrderListWidget = function() {
                 });
             })
         });
-        
+
         EventDispatcher.AddEventListener('OrderList.order.check', function(opt) {
             self.BaseLoad.ConfirmOrder(opt.id, function(data) {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.check', opt)})){
@@ -121,7 +121,7 @@ var OrderListWidget = function() {
                 }
             });
         });
-        
+
         EventDispatcher.AddEventListener('OrderList.order.delete', function(opt) {
             self.Confirm(Config.OrderList.message.confirmDeleteOrder, function(){
                 self.BaseLoad.DeleteOrder(opt.id, function(data) {
@@ -134,11 +134,11 @@ var OrderListWidget = function() {
                 });
             });
         });
-        
+
         EventDispatcher.AddEventListener('OrderList.order.edit', function(opt) {
-            Routing.SetHash('order', 'Оформление заказа', {step: 2, id: opt.id});
+            Routing.SetHash('order', 'Оформление заказа', {step: 2, id: opt.id, sellerId: self.sellerId});
         });
-        
+
         EventDispatcher.AddEventListener('OrderList.order.pay', function(opt) {
             console.log('pay');
         });
@@ -180,7 +180,7 @@ var OrderListWidget = function() {
     self.Fill = {
         List: function() {
             var start = Routing.GetCurrentPage() * Config.Paging.itemsPerPage - Config.Paging.itemsPerPage;
-            var query = '/' + start + '/' + Config.Paging.itemsPerPage; 
+            var query = '/' + start + '/' + Config.Paging.itemsPerPage;
             self.BaseLoad.OrderList(query, function(data) {
                 if (!data.err) {
                     self.InsertContainer.List();
@@ -197,38 +197,43 @@ var OrderListWidget = function() {
         Detail: function(id) {
             self.BaseLoad.OrderInfo(id + '/yes', function(data) {
                 if(!data.err){
-                    self.InsertContainer.Detail();
-                    var order = Parameters.cache.order.info;
-                    if ($.isEmptyObject(order)) {
-                        OrderViewModel.prototype.Back = function(){
-                            Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: Routing.GetLastPageNumber()});
-                        };
-                        OrderViewModel.prototype.ClickEdit = function(){
-                            EventDispatcher.DispatchEvent('OrderList.order.edit', {id: id});
-                        };
-                        OrderViewModel.prototype.ClickDelete = function(){
-                            EventDispatcher.DispatchEvent('OrderList.order.delete', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
-                        };
-                        OrderViewModel.prototype.ClickCancel = function(){
-                            EventDispatcher.DispatchEvent('OrderList.order.cancel', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
-                        };
-                        OrderViewModel.prototype.ClickPay = function(){
-                            EventDispatcher.DispatchEvent('OrderList.order.pay', {id: id, fn: function(){}})
-                        };
-                        OrderViewModel.prototype.ClickCheck = function(){
-                            EventDispatcher.DispatchEvent('OrderList.order.check', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block:'detail', id: Routing.params.id})}})
-                        };
-                        OrderViewModel.prototype.ClickRepeat = function(){
-                            EventDispatcher.DispatchEvent('OrderList.order.repeat', {id: id})
-                        };
-                        OrderViewModel.prototype.ClickReturn = function(){
-                            EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
-                        };
-                        order = new OrderViewModel();
-                        Parameters.cache.order.info = order;
+                if(data.goods.length > 0){
+                    self.BaseLoad.GoodsInfo(data.goods[0].id, '1010000', function(goodsInfo){
+                        self.sellerId = goodsInfo.shop.id;
+                        self.InsertContainer.Detail();
+                        var order = Parameters.cache.order.info;
+                        if ($.isEmptyObject(order)) {
+                            OrderViewModel.prototype.Back = function(){
+                                Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: Routing.GetLastPageNumber()});
+                            };
+                            OrderViewModel.prototype.ClickEdit = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.edit', {id: id});
+                            };
+                            OrderViewModel.prototype.ClickDelete = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.delete', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
+                            };
+                            OrderViewModel.prototype.ClickCancel = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.cancel', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
+                            };
+                            OrderViewModel.prototype.ClickPay = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.pay', {id: id, fn: function(){}})
+                            };
+                            OrderViewModel.prototype.ClickCheck = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.check', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block:'detail', id: Routing.params.id})}})
+                            };
+                            OrderViewModel.prototype.ClickRepeat = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.repeat', {id: id})
+                            };
+                            OrderViewModel.prototype.ClickReturn = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
+                            };
+                            order = new OrderViewModel();
+                            Parameters.cache.order.info = order;
+                        }
+                        order.AddContent(data);
+                        self.Render.Detail(order);
+                        });
                     }
-                    order.AddContent(data);
-                    self.Render.Detail(order);
                 }
                 else{
                     self.WidgetLoader(true, self.settings.containerFormId);
@@ -490,7 +495,7 @@ var OrderListDetailViewModel = function(data) {
         if(self.viewDelete())
             count++;
         for(var i = 1; i <=5 - count; i++){
-           self.emptyTd.push({id: i}); 
+           self.emptyTd.push({id: i});
         }
     };
     self.countEmptyTd();
