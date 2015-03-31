@@ -40,7 +40,14 @@ window.RelatedGoodsWidget = function(){
         Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
-        self.settings.tmpl = Config.RelatedGoods.tmpl;
+        self.settings.tmpl.path = Config.RelatedGoods.tmpl.path;
+        self.settings.tmpl.id = Config.RelatedGoods.tmpl.id = {
+                table : "relatedGoodsTableTmpl", // id шаблона таблицы
+                list : "relatedGoodsListTmpl", // id шаблона списка
+                tile : "relatedGoodsTileTmpl", // id шаблона плитки
+                slider : "relatedGoodsSliderTmpl", // id шаблона слайдера
+                carousel : "relatedGoodsCarouselTmpl" // id шаблона карусели
+        };
         self.settings.relatedGoods = Config.RelatedGoods;
         self.settings.container = data.element;
         
@@ -53,13 +60,14 @@ window.RelatedGoodsWidget = function(){
                 self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
-        
+
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
-                if(data.options.params['tmpl']['path'])
-                    self.settings.tmpl.path = data.options.params['tmpl']['path'];
-                if(data.options.params['tmpl']['id'])
-                    self.settings.tmpl.id = data.options.params['tmpl']['id'];
+                if(data.options.params.tmpl['path'])
+                    self.settings.tmpl.path = data.options.params.tmpl['path'];
+                if(data.options.params.tmpl['id']) {
+                    self.settings.tmpl.id = data.options.params.tmpl['id'];
+                }
             }
             else if (key == 'uniq' && data.options.params['uniq'])
                 self.settings.uniq = data.options.params['uniq'];

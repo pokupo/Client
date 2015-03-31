@@ -182,7 +182,6 @@ var Loader = {
                 children.show();
             Loader.ShowCustomContent(Loader.containers[i]);
         });
-        this.containers = [];
         this.action = 'show';
     },
     AddShowContainer : function(widget, id){
@@ -1326,7 +1325,7 @@ var Widget = function (){
         },
         ShopInfo : function(callback){
             if($.isEmptyObject(Parameters.cache.infoShop)){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'info/' + Parameters.shopId + '/0100000/'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'info/' + Parameters.shopId + '/1000000/'), function(data){
                     Parameters.cache.infoShop = data;
                     if(callback)
                         callback(data);
