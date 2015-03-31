@@ -7,6 +7,7 @@ var Routing = {
     more : {},
     page : 1,
     SetHash : function(route, title, data, ret){
+        Loader.containers = [];
         this.route = route;
         this.more = {};
         var params = [];
