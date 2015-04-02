@@ -22,7 +22,6 @@ var OrderListWidget = function() {
         style: null,
         customContainer: null
     };
-    self.sellerId = null;
     self.InitWidget = function() {
         self.settings.containerFormId = Config.Containers.orderList.widget;
         self.settings.customContainer = Config.Containers.orderList.customClass;
@@ -81,7 +80,7 @@ var OrderListWidget = function() {
                 if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderList.order.repeat', opt)})){
                     self.ShowMessage(Config.OrderList.message.orderRepeat, function() {
                         Parameters.cache.orderList = {};
-                        EventDispatcher.DispatchEvent('OrderList.order.edit', {id: data.id,});
+                        EventDispatcher.DispatchEvent('OrderList.order.edit', {id: data.id});
                     }, false);
                 }
             });
@@ -116,9 +115,9 @@ var OrderListWidget = function() {
                 if(data.err){
                     self.ShowMessage(data.msg, function() {
                         if(data.err == "Not defined Payment Method")
-                            Routing.SetHash('order', 'Оформление заказа', {step: 4, id: opt.id, sellerId: self.sellerId});
+                            Routing.SetHash('order', 'Оформление заказа', {step: 4, id: opt.id});
                         else
-                            Routing.SetHash('order', 'Оформление заказа', {step: 2, id: opt.id, sellerId: self.sellerId});
+                            Routing.SetHash('order', 'Оформление заказа', {step: 2, id: opt.id});
                     });
                 }
                 else{
@@ -144,7 +143,7 @@ var OrderListWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderList.order.edit', function(opt) {
-            Routing.SetHash('order', 'Оформление заказа', {step: 2, id: opt.id, sellerId: self.sellerId});
+            Routing.SetHash('order', 'Оформление заказа', {step: 2, id: opt.id});
         });
 
         EventDispatcher.AddEventListener('OrderList.order.pay', function(opt) {
@@ -206,41 +205,38 @@ var OrderListWidget = function() {
             self.BaseLoad.OrderInfo(id + '/yes', function(data) {
                 if(!data.err){
                     if(data.goods.length > 0){
-                        self.BaseLoad.GoodsInfo(data.goods[0].id, '1010000', function(goodsInfo){
-                            self.sellerId = goodsInfo.shop.id;
-                            self.InsertContainer.Detail();
-                            var order = Parameters.cache.order.info;
-                            if ($.isEmptyObject(order)) {
-                                OrderViewModel.prototype.Back = function(){
-                                    Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: Routing.GetLastPageNumber()});
-                                };
-                                OrderViewModel.prototype.ClickEdit = function(){
-                                    EventDispatcher.DispatchEvent('OrderList.order.edit', {id: id});
-                                };
-                                OrderViewModel.prototype.ClickDelete = function(){
-                                    EventDispatcher.DispatchEvent('OrderList.order.delete', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
-                                };
-                                OrderViewModel.prototype.ClickCancel = function(){
-                                    EventDispatcher.DispatchEvent('OrderList.order.cancel', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
-                                };
-                                OrderViewModel.prototype.ClickPay = function(){
-                                    EventDispatcher.DispatchEvent('OrderList.order.pay', {id: id, fn: function(){}})
-                                };
-                                OrderViewModel.prototype.ClickCheck = function(){
-                                    EventDispatcher.DispatchEvent('OrderList.order.check', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block:'detail', id: Routing.params.id})}})
-                                };
-                                OrderViewModel.prototype.ClickRepeat = function(){
-                                    EventDispatcher.DispatchEvent('OrderList.order.repeat', {id: id})
-                                };
-                                OrderViewModel.prototype.ClickReturn = function(){
-                                    EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
-                                };
-                                order = new OrderViewModel();
-                                Parameters.cache.order.info = order;
-                            }
-                            order.AddContent(data);
-                            self.Render.Detail(order);
-                        });
+                        self.InsertContainer.Detail();
+                        var order = Parameters.cache.order.info;
+                        if ($.isEmptyObject(order)) {
+                            OrderViewModel.prototype.Back = function(){
+                                Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: Routing.GetLastPageNumber()});
+                            };
+                            OrderViewModel.prototype.ClickEdit = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.edit', {id: id});
+                            };
+                            OrderViewModel.prototype.ClickDelete = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.delete', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
+                            };
+                            OrderViewModel.prototype.ClickCancel = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.cancel', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block: 'list', page: 1})}})
+                            };
+                            OrderViewModel.prototype.ClickPay = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.pay', {id: id, fn: function(){}})
+                            };
+                            OrderViewModel.prototype.ClickCheck = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.check', {id: id, fn: function(){Routing.SetHash('purchases', 'Мои покупки', {block:'detail', id: Routing.params.id})}})
+                            };
+                            OrderViewModel.prototype.ClickRepeat = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.repeat', {id: id})
+                            };
+                            OrderViewModel.prototype.ClickReturn = function(){
+                                EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
+                            };
+                            order = new OrderViewModel();
+                            Parameters.cache.order.info = order;
+                        }
+                        order.AddContent(data);
+                        self.Render.Detail(order);
                     }
                 }
                 else{

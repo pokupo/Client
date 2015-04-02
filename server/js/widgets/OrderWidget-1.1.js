@@ -89,7 +89,13 @@ var OrderWidget = function() {
                             self.order.count = null
 
                             setTimeout(function() {
-                                Routing.SetHash('order', 'Оформление заказа', {step: 1});
+                                Parameters.cache.history.pop();
+                                var link = Parameters.cache.history.pop();
+                                if(link.route == 'order' && link.data.create)
+                                    link = Parameters.cache.history.pop();
+                                if(link.route == 'login')
+                                    link = Parameters.cache.history.pop();
+                                Routing.SetHash(link.route, link.title, link.data, true);
                             }, 1000);
                         }
                         else {
@@ -111,7 +117,13 @@ var OrderWidget = function() {
                             self.order.count = Routing.params.count;
 
                             setTimeout(function() {
-                                Routing.SetHash('order', 'Оформление заказа', {step: 1});
+                                Parameters.cache.history.pop();
+                                var link = Parameters.cache.history.pop();
+                                if(link.route == 'order' && link.data.create)
+                                    link = Parameters.cache.history.pop();
+                                if(link.route == 'login')
+                                    link = Parameters.cache.history.pop();
+                                Routing.SetHash(link.route, link.title, link.data, true);
                             }, 1000);
                         }
                         else {
@@ -697,18 +709,25 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step3: function() {
-            if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function(data) {
-                    self.InsertContainer.Step3();
-                    self.Fill.Step3(data);
+            if (self.DataOrder.IsRealGoods()) {
+                self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function(goodsInfo) {
+                    self.order.sellerId = goodsInfo.shop.id;
+                    self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function (data) {
+                        self.InsertContainer.Step3();
+                        self.Fill.Step3(data);
+                    });
                 });
+            }
             else
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
-        Step4: function() {
-            self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function(data) {
-                self.InsertContainer.Step4();
-                self.Fill.Step4(data);
+        Step4: function () {
+            self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function (goodsInfo) {
+                self.order.sellerId = goodsInfo.shop.id;
+                self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function (data) {
+                    self.InsertContainer.Step4();
+                    self.Fill.Step4(data);
+                });
             });
         },
         Step5: function() {
