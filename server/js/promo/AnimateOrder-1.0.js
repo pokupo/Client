@@ -42,6 +42,14 @@ var AnimateOrder = function(){
     setTimeout(function(){
         $('.country_list_profile').trigger('chosen:updated');
     }, 1000)
+
+    $.widget("ui.tooltip", $.ui.tooltip, {
+        options: {
+            content: function () {
+                return $(this).prop('title');
+            }
+        }
+    });
     $('[rel=tooltip]').tooltip();
 }
 

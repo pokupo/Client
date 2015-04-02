@@ -305,7 +305,6 @@ var BlockGoodsForSellerViewModel = function(content){
         for(var i in removedGoods){
             self.goods.remove(removedGoods[i]);
         }
-console.log(self.sellerInfo);
         EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.shop.id});
 
         if(self.goods().length == 0)
