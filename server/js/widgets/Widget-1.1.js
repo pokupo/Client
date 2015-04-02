@@ -481,14 +481,11 @@ var Widget = function (){
             var sellerId = data.sellerId ? data.sellerId : false;
             var count = data.count ? data.count : false;
             var goodsId = data.goodsId;
-            var hash = data.hash;
             self.BaseLoad.AddGoodsToCart(goodsId, sellerId, count, function(data){
                 if(data.err){
                     self.ShowMessage(data.err, false, false);
                 }
                 else{
-                    if(typeof AnimateAddToCart !== 'undefined')
-                        new AnimateAddToCart(hash);
                     EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
                 }
             });
