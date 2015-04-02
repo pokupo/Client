@@ -27,8 +27,12 @@ var AnimateCart = function () {
     $(document).click(function (e) {
         var $this = $(e.target);
 
-        if ($this.is('#cart_dropdown__trigger')) {
-            //
+        if ($this.is('#cart_dropdown__trigger, .btn-circle--drop')) {
+            if($('.b-cart-menu__goods li').length == 0){
+                $('#cart_dropdown__trigger').
+                    removeClass('active').
+                    siblings('#cart_dropdown__content').addClass('hidden');
+            }
         } else {
             if (1 !== $this.parents().filter('#cart_dropdown__content').length) {
                 $('#cart_dropdown__trigger').
