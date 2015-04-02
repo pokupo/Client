@@ -347,7 +347,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
 
-        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.shop.id});
 
         if(self.goods().length == 0)
             content.content.remove(self);
@@ -381,7 +381,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             }
             content.sellerBlock.remove(self);
             
-            EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.seller.id});
+            EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.shop.id});
             if(content.sellerBlock().length == 0)
                 EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
         });

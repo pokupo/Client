@@ -305,8 +305,8 @@ var BlockGoodsForSellerViewModel = function(content){
         for(var i in removedGoods){
             self.goods.remove(removedGoods[i]);
         }
-
-        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+console.log(self.sellerInfo);
+        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.shop.id});
 
         if(self.goods().length == 0)
             content.sellerBlock.remove(self);
@@ -343,8 +343,7 @@ var BlockGoodsForSellerViewModel = function(content){
                 self.goods.remove(removedGoods[i]);
             }
             content.sellerBlock.remove(self);
-            
-            EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerInfo.seller.id});
+            EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId: self.sellerInfo.shop.id });
             if(content.sellerBlock().length == 0)
                 EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
         });
