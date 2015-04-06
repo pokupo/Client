@@ -611,6 +611,7 @@ var OrderWidget = function() {
         Cart: function(callback) {
             self.BaseLoad.CartGoods(self.order.sellerId, function(data) {
                 self.order.content = data;
+                self.order.content.main = data[0].goods;
                 if (callback)
                     callback();
             });
@@ -618,6 +619,7 @@ var OrderWidget = function() {
         Directly: function(callback) {
             self.BaseLoad.GoodsInfo(self.order.goodsId, '1000000', function(data) {
                 self.order.content = data;
+                self.order.content.main = [data.main];
                 if (callback)
                     callback();
             })
@@ -710,6 +712,7 @@ var OrderWidget = function() {
         },
         Step3: function() {
             if (self.DataOrder.IsRealGoods()) {
+                console.log(self.order.content);
                 self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function(goodsInfo) {
                     self.order.sellerId = goodsInfo.shop.id;
                     self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function (data) {
@@ -722,6 +725,7 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step4: function () {
+            console.log(self.order.content);
             self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function (goodsInfo) {
                 self.order.sellerId = goodsInfo.shop.id;
                 self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function (data) {
