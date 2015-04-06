@@ -611,6 +611,7 @@ var OrderWidget = function() {
         Cart: function(callback) {
             self.BaseLoad.CartGoods(self.order.sellerId, function(data) {
                 self.order.content = data;
+                self.order.content.main = data[0].goods;
                 if (callback)
                     callback();
             });
@@ -618,6 +619,7 @@ var OrderWidget = function() {
         Directly: function(callback) {
             self.BaseLoad.GoodsInfo(self.order.goodsId, '1000000', function(data) {
                 self.order.content = data;
+                self.order.content.main = [data.main];
                 if (callback)
                     callback();
             })
@@ -818,8 +820,8 @@ var OrderWidget = function() {
                 var form = Parameters.cache.order.step2;
                 if ($.isEmptyObject(form)) {
                     form = new OrderFormStep2ViewModel();
-                    form.AddContent(data, self.order);
                 }
+                form.AddContent(data, self.order);
 
                 self.Render.Step2(form);
                 Parameters.cache.order.step2 = form;
@@ -842,18 +844,18 @@ var OrderWidget = function() {
             var form = Parameters.cache.order.step3;
             if ($.isEmptyObject(form)) {
                 form = new OrderFormStep3ViewModel();
-                form.AddShipping(data);
-                Parameters.cache.order.step3 = form;
             }
+            form.AddShipping(data);
+            Parameters.cache.order.step3 = form;
             self.Render.Step3(form);
         },
         Step4: function(data) {
             var form = Parameters.cache.order.step4;
             if ($.isEmptyObject(form)) {
                 form = new OrderFormStep4ViewModel();
-                form.AddPayment(data);
-                Parameters.cache.order.step4 = form;
             }
+            form.AddPayment(data);
+            Parameters.cache.order.step4 = form;
             self.Render.Step4(form);
         },
         Step5: function(data) {
@@ -881,7 +883,7 @@ var OrderWidget = function() {
                     Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'add'});
                 };
                 form = new OrderViewModel();
-                
+
                 Parameters.cache.order.step5 = form;
             }
             form.AddContent(data);
