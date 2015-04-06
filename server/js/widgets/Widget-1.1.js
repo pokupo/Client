@@ -1278,15 +1278,11 @@ var Widget = function (){
             }, true);
         },
         DeliveryAddressList : function(callback){
-            if(!Parameters.cache.delivery){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info/'), function(data){
-                    Parameters.cache.delivery = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else
-                callback(Parameters.cache.delivery);
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info/'), function(data){
+                Parameters.cache.delivery = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         ChangePassword : function(form, callback){
             if(form.find('#change_password_query').length == 0)
