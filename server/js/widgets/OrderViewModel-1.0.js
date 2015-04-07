@@ -123,6 +123,7 @@ var OrderViewModel = function(){
             self.finalCost(order.final_cost);
             itog = itog + order.final_cost;
         }
+        itog = Math.round(itog * 100) / 100;
         self.itog(itog)
 
         self.goods = ko.observableArray();
