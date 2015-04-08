@@ -356,6 +356,9 @@ var StandalonePaymentWidget = function () {
                     }
                 }
             }
+            else {
+                self.WidgetLoader(true);
+            }
         },
         PaymentList: function (data) {
             if ($("#" + self.settings.containerId.content.widget).length > 0) {
@@ -391,7 +394,7 @@ var StandalonePaymentWidget = function () {
         },
         Content: function (data) {
             if ($("#" + self.settings.containerId.content.widget).length > 0) {
-                //try {
+                try {
                     ko.cleanNode($("#" + self.settings.containerId.content.widget)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId.content.widget)[0]);
                     $.each(data.inData(), function (i) {
@@ -405,21 +408,21 @@ var StandalonePaymentWidget = function () {
                         new AnimateStandalonePayment();
                     if (self.settings.animate)
                         self.settings.animate();
-                //}
-                //catch (e) {
-                //    self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']', e);
-                //    if (self.settings.tmpl.custom) {
-                //        delete self.settings.tmpl.custom;
-                //        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                //            self.InsertContainer.Content();
-                //            self.Render.Content(data);
-                //        });
-                //    }
-                //    else {
-                //        self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
-                //        self.WidgetLoader(true, self.settings.containerId.content.widget);
-                //    }
-                //}
+                }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']', e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
+                        self.WidgetLoader(true, self.settings.containerId.content.widget);
+                    }
+                }
             }
             else {
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId.content.widget + ']');
