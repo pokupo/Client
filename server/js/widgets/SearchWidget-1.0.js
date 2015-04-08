@@ -59,7 +59,7 @@ var SearchWidget = function(){
     };
     self.CheckRoute = function(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
-            self.WidgetLoader(true);
+            self.WidgetLoader(true, self.settings.containerId);
         }
         else{
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){

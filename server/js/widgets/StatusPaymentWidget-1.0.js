@@ -22,7 +22,7 @@ var StatusPaymentWidget = function () {
         self.settings.tmpl = Config.StatusPayment.tmpl;
         self.settings.style = Config.StatusPayment.style;
         self.RegisterEvents();
-        self.CheckRoute();
+        self.CheckRouteSearch();
         self.SetInputParameters();
         self.SetPosition();
     };
@@ -72,7 +72,7 @@ var StatusPaymentWidget = function () {
             $("#" + self.settings.containerId).append($('script#' + self.GetTmplName()).html()).children().hide();
         }
     };
-    self.CheckRoute = function(){
+    self.CheckRouteSearch = function(){
         if(Routing.route == 'status_payment'){
             var orderId = $.cookie(Config.Base.cookie.orderId);
             if(orderId){
@@ -95,7 +95,7 @@ var StatusPaymentWidget = function () {
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('widget.change.route', function (data){
-            self.CheckRoute();
+            self.CheckRouteSearch();
         });
     };
     self.Fill = function(data){
