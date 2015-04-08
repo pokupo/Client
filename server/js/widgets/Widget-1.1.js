@@ -177,7 +177,6 @@ var Loader = {
     },
     ShowContent : function(){
         $.each(this.containers, function(i){
-            console.log(Loader.containers[i].container);
             var children =  $('#' + Loader.containers[i].container).children();
             if(children)
                 children.show();
