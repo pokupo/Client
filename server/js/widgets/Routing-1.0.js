@@ -57,14 +57,18 @@ var Routing = {
         }
 
         this.params = {};
-            
-        if(hash[2]){
-            var parameters = hash[2].split('&');
+        for(var j = 2;  j <= hash.length-1; ++j){
+            var parameters = hash[j].split('&');
             for(var i = 0; i <= parameters.length-1; i++){
-                var parameter = parameters[i].split('='); 
+                var parameter = parameters[i].split('=');
                 this.params[parameter[0]] = parameter[1];
             }
         }
+
+        if(this.params.hasOwnProperty('dev')) {
+            JSSettings.dev = this.params.dev;
+        }
+
         if(init){
             if(!this.defaultTitle )
                 this.defaultTitle = this.GetDefaultTitle()

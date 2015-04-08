@@ -5,7 +5,9 @@ var Config = {
         loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузчика
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
-           previously_viewed : 'previously_viewed'  // id просмотренных товаров
+            previously_viewed : 'previously_viewed',  // id просмотренных товаров
+            userEmail: 'user_email',
+            orderId: 'order_id'
         },
         containerIdErrorWindow : 'dialogErrorMessage', // id модального окна с ошибкой
         conteinerIdTextErrorWindow: 'containerError', // id контейнера для текста ошибки
@@ -52,6 +54,11 @@ var Config = {
         order : {widget: 'orderWidgetId', def: 'defaultOrderWidgetId', customClass: 'custom_block'}, // id конетейнера оформления заказа
         orderList : {widget: 'orderListWidgetId', def: 'defaultOrderListWidgetId', customClass: 'custom_block'}, // id конетейнера списка заказов
         buttonPayment : {widget: 'paymentWidgetId', def: 'defaultPaymentWidgetId', customClass: 'custom_block'}, // id контейнера страницы оплаты
+        standalonePayment: {
+            content: { widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId', customClass: 'custom_block'},
+            button: { widget: 'standalonePaymentButtonWidgetId', def: 'defaultStandalonePaymentButtonWidgetId', customClass: 'custom_block'}
+        }, // id контейнера страницы оплаты
+        statusPayment: { widget: 'statusPaymentWidgetId', def: 'defaultStatusPaymentWidgetId', customClass: 'custom_block'},
         message : {widget: 'messageWidgetId', def: 'defaultMessageWidgetId', customClass: 'custom_block'} // id контейнера списка сообщений
     },
     Goods : {
@@ -66,7 +73,7 @@ var Config = {
             opinion : 'Отзывы покупателей' // заголовок блока "Отзывы покупателей"
         },
         message : {
-            maxIsReached : "Достигнут максимум", // сообщение о том что достигнут максимум при выборе кол-ва товара
+            maxIsReached : "Достигнут максимум" // сообщение о том что достигнут максимум при выборе кол-ва товара
         },
         share : {
             element: 'share',  // id блока в котором будут размещены ссылки на соц сети
@@ -101,7 +108,7 @@ var Config = {
     BreadCrumb : {
         tmpl: {
             path : "breadCrumbTmpl.html", // путь к шаблонам
-            id : "breadCrumbTmpl", // id шаблона виджета хлебных крошек по умолчанию
+            id : "breadCrumbTmpl" // id шаблона виджета хлебных крошек по умолчанию
         },
         style : { // стиль блока
             'position' : 'absolute', 
@@ -181,7 +188,7 @@ var Config = {
             },
             form : {
                 path : "advancedSearchFormTmpl.html", // файл шаблонов расширенной формы
-                id : "advancedSearchFormTmpl", // id шаблона расширенной формы
+                id : "advancedSearchFormTmpl" // id шаблона расширенной формы
             }
         },
         idAdvancedSearchForm : "advancedSearch", // id расширенной формы
@@ -272,7 +279,7 @@ var Config = {
                 step1 : "registrationFromStep1Tmpl", //id шаблона формы регистрации шаг 1
                 step2 : "registrationFromStep2Tmpl", //id шаблона формы регистрации шаг 2
                 step3 : "registrationFromStep3Tmpl", //id шаблона формы регистрации шаг 3
-                step4 : "registrationFromStep4Tmpl", //id шаблона формы регистрации шаг 4
+                step4 : "registrationFromStep4Tmpl" //id шаблона формы регистрации шаг 4
             }
         },
         regular : { // регулярные выражения полей
@@ -324,7 +331,7 @@ var Config = {
                 confirm : 'Указанный код не принят системой'
             },
             confirmLater : {
-                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи',
+                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи'
             },
             firstName : {
                 empty : 'Поле обязательно для заполнения',
@@ -422,12 +429,12 @@ var Config = {
                 confirm : 'Указанный код не принят системой'
             },
             confirmLater : {
-                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи',
+                empty : 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи'
             },
             typeSeller : {
                 empty : 'Поле обязательно для заполнения',
                 minLength : 'Минимум 5 символов',
-                maxLength : 'Максимум 40 символов',
+                maxLength : 'Максимум 40 символов'
             }
         },
         style : {// стиль блока
@@ -442,7 +449,7 @@ var Config = {
     MenuPersonalCabinet : {
         tmpl : {
             path : "menuPersonalCabinetTmpl.html", // файл шаблонов
-            id : 'menuPersonalCabinetTmpl', // id шаблона меню личного кабинета
+            id : 'menuPersonalCabinetTmpl' // id шаблона меню личного кабинета
         },
         style : {// стиль блока
             'position' : 'relative', 
@@ -589,7 +596,7 @@ var Config = {
         },
         tmpl : {
             path : "cartTmpl.html", // файл шаблонов
-            id : "cartTmpl", //id шаблона формы авторизации
+            id : "cartTmpl" //id шаблона формы авторизации
         },
         style : {// стиль блока
             'position' : 'absolute', 
@@ -657,7 +664,7 @@ var Config = {
             id: {
                 content: "favoritesTmpl",//id шаблона формы авторизации
                 empty : "emptyFavoritesTmpl"
-            }, 
+            }
         },
         showBlocks : ['infoShop','addToCart','buy'],
         message :{
@@ -687,7 +694,7 @@ var Config = {
                 step2Form : 'orderDeliveryFormStep2Tmpl',
                 step3 : "orderFormStep3Tmpl", //id шаблона формы заказа шаг 3
                 step4 : "orderFormStep4Tmpl", //id шаблона формы заказа шаг 4
-                step5 : "orderFormStep5Tmpl", //id шаблона формы заказа шаг 5
+                step5 : "orderFormStep5Tmpl" //id шаблона формы заказа шаг 5
             }
         },
         regular : { // регулярные выражения полей
@@ -716,7 +723,7 @@ var Config = {
             confirmDeleteOrder : 'Вы уверны, что хотите удалить заказ?',
             deleteOrderConfirm : 'Ваш заказ удален.',
             sendToken : 'Код активации успешно выслан по указанным данным.',
-            failSendToken : 'Код не был отправлен. Попробуйте повторить запрос позднее.',
+            failSendToken : 'Код не был отправлен. Попробуйте повторить запрос позднее.'
         },
         error : { // сообщения об ошибках при валидации формы регистрации
             username : {
@@ -765,7 +772,7 @@ var Config = {
             phoneToken : {
                 empty : 'Поле обязательно для заполнения',
                 confirm : 'Указанный код не принят системой'
-            },
+            }
         },
         style : {// стиль блока
             'position' : 'absolute', 
@@ -782,7 +789,7 @@ var Config = {
             id : {
                 list : "orderListTmpl", //id шаблона списка заказов
                 empty : 'orderEmptyListTmpl', //id шаблона пустого списка
-                detail : "orderDetailTmpl", //id шаблона списка заказов
+                detail : "orderDetailTmpl" //id шаблона списка заказов
             }
         },
         message : {
@@ -857,6 +864,45 @@ var Config = {
             required : 'Поле обязательно для заполнения.',
             regExp : 'Не допустимое значение.',
             maxlength : 'Максимум %s% символов.'
+        }
+    },
+    StandalonePayment : {
+        title : "Оплатить", // заголовок кнопки
+        tmpl : {
+            path : 'standalonePaymentTmpl.html', // файл шаблонов
+            id : {
+                content : 'standalonePaymentPageTmpl', //id шаблона страницы оплаты
+                paymentList: 'standalonePaymentListTmpl',
+                button : 'standalonePaymentButtonImpl' //id шаблона кнопки
+            }
+        },
+        Error : {
+            required : 'Поле обязательно для заполнения.',
+            regExp : 'Не допустимое значение.',
+            maxlength : 'Максимум %s% символов.',
+            email : {
+                empty : 'Поле обязательно для заполнения',
+                maxLength : 'Максимум 64 символа',
+                regular : 'Не является адресом электронной почты',
+                uniq : 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            count: {
+                empty: 'Поле обязательно для заполнения',
+                count: "Введите количество товара"
+            },
+            coast: {
+                empty: 'Поле обязательно для заполнения',
+                count: "Введите стоимость услуги"
+            }
+        },
+        regular : { // регулярные выражения полей
+            email : /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/
+        }
+    },
+    StatusPayment : {
+        tmpl : {
+            path : 'statusPaymentTmpl.html', // файл шаблонов
+            id : 'statusPaymentPageTmpl' //id шаблона страницы статуса оплаты
         }
     },
     Paging : {

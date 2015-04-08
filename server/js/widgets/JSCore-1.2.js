@@ -139,8 +139,6 @@ var JSCore = {
         JSCore.SetInputParameters();
         JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.shopId = JSSettings.shopId;
-        if(JSSettings.dev)
-            JSCore.dev = true;
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
     },
