@@ -70,7 +70,7 @@ var ContentWidget = function(){
             input = WParameters.content;
         }
         
-        if(JSCore.dev)
+        if(JSSettings.dev)
             Logger.Console.VarDump(self.widgetName, "Input parameters", input);
         
         if(!$.isEmptyObject(input)){
@@ -104,7 +104,7 @@ var ContentWidget = function(){
             }
         }
         self.settings.inputParameters = input;
-        if(JSCore.dev)
+        if(JSSettings.dev)
             Logger.Console.VarDump(self.widgetName, "Result settings", self.settings);
     };
     self.InitWidget = function(){
@@ -153,7 +153,7 @@ var ContentWidget = function(){
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
             self.BaseLoad.Blocks(Routing.GetActiveCategory(), function(data){
-                if(JSCore.dev)
+                if(JSSettings.dev)
                     Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
                 
                 self.CheckData(data)
@@ -289,7 +289,7 @@ var ContentWidget = function(){
     self.Fill = {
         Block : function(data){
             var block = new BlockViewModel(data, self.settings.countGoodsInBlock);
-            if(JSCore.dev)
+            if(JSSettings.dev)
                 Logger.Console.VarDump(self.widgetName, 'data blockId = [' + block.id + '] typeView = [' + block.typeView + ']' , block)
             block.AddContent();
         },

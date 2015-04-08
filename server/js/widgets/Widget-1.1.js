@@ -116,7 +116,7 @@ var Loader = {
             }
             if(container)
                 this.containers.push({container: container, widgetName: widget});
-            if(JSCore.dev)
+            if(JSSettings.dev)
                 Logger.Console.VarDump('Loader', 'widgets', this.widgets);
             this.ShowLoading();
         }
@@ -433,7 +433,11 @@ var Widget = function (){
             }
         }
     };
-    this.Events = function(){       
+    this.Events = function(){
+        EventDispatcher.AddEventListener('widget.display.ready', function(){
+            Routing.CheckRoute();
+        });
+
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
@@ -1408,6 +1412,13 @@ var Widget = function (){
                     callback(data);
             }, true);
         },
+        StatusPayment: function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'status/' + str), function(data){
+                Parameters.cache.orderList = {};
+                if(callback)
+                    callback(data);
+            }, true);
+        },
         InvoicesOrder : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'order/' + str), function(data){
                 Parameters.cache.orderList = {};
@@ -1417,6 +1428,20 @@ var Widget = function (){
         },
         InvoicesGoods : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'goods/' + str), function(data){
+                Parameters.cache.orderList = {};
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        InvoicesPartnerGoods: function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'goods_partner/' + str), function(data){
+                Parameters.cache.orderList = {};
+                if(callback)
+                    callback(data);
+            }, true);
+        },
+        InvoicesService: function(str, callback){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.paymentPathApi + 'service/' + str), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
