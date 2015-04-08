@@ -177,7 +177,6 @@ var Loader = {
     },
     ShowContent : function(){
         $.each(this.containers, function(i){
-            console.log(Loader.containers[i].container);
             var children =  $('#' + Loader.containers[i].container).children();
             if(children)
                 children.show();
@@ -434,7 +433,11 @@ var Widget = function (){
             }
         }
     };
-    this.Events = function(){       
+    this.Events = function(){
+        EventDispatcher.AddEventListener('widget.display.ready', function(){
+            Routing.CheckRoute();
+        });
+
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();

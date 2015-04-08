@@ -77,6 +77,17 @@ var Routing = {
         else 
             this.AddHistory()
     },
+    CheckRoute: function () {
+        if (Routing.route == 'standalone_payment') {
+            if (!Loader.widgets['StandalonePaymentWidget'])
+                Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
+        }
+        if (Routing.route == 'status_payment'){
+            if (!Loader.widgets['StatusPaymentWidget'])
+                Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
+        }
+        return true;
+    },
     InitHistory : function(){
         if(Parameters.cache.history.length == 0)
             this.AddHistory();
