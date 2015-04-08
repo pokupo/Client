@@ -89,6 +89,9 @@ var StatusPaymentWidget = function () {
                 alert('Нет параметров инициализации!');
             }
         }
+        else{
+            self.WidgetLoader(true, self.settings.containerId);
+        }
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('widget.change.route', function (data){
