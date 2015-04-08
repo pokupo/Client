@@ -221,38 +221,47 @@ window.ButtonPaymentWidget = function () {
         },
         Content: function (data) {
             var content = new PaymentViewModel();
+
+            var str = [];
+            var fields = data.pay_form.hidden_field;
+            $.each(fields, function(i){
+                str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
+            });
+            if(str)
+                $.cookie(Config.Base.cookie.orderId, str.join('&'));
+
             content.AddContent(data);
             self.Render.Content(content);
         }
     };
     self.Render = {
         Button: function (data) {
-            //try {
+            try {
                 ko.cleanNode($(self.settings.containerButton).children()[0]);
                 ko.applyBindings(data, $(self.settings.containerButton).children()[0]);
                 if(typeof AnimateButtonPayment == 'function')
                     new AnimateButtonPayment();
                 if(self.settings.animate)
                     self.settings.animate();
-            //}
-            //catch (e) {
-            //    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
-            //    if (self.settings.tmpl.custom) {
-            //        delete self.settings.tmpl.custom;
-            //        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-            //            self.InsertContainer.Button();
-            //            self.Render.Button(data);
-            //        });
-            //    }
-            //    else {
-            //        self.InsertContainer.EmptyWidget();
-            //        self.WidgetLoader(true);
-            //    }
-            //}
+            }
+            catch (e) {
+                self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
+                if (self.settings.tmpl.custom) {
+                    delete self.settings.tmpl.custom;
+                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                        self.InsertContainer.Button();
+                        self.Render.Button(data);
+                    });
+                }
+                else {
+                    self.InsertContainer.EmptyWidget();
+                    self.WidgetLoader(true);
+                }
+            }
         },
         Content: function (data) {
             if ($("#" + self.settings.containerId.widget).length > 0) {
-                //try {
+                try {
                     ko.cleanNode($("#" + self.settings.containerId.widget)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId.widget)[0]);
                     $.each(data.inData(), function (i) {
@@ -266,21 +275,21 @@ window.ButtonPaymentWidget = function () {
                         new AnimateButtonPayment();
                     if(self.settings.animate)
                         self.settings.animate();
-                //}
-                //catch (e) {
-                //    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
-                //    if (self.settings.tmpl.custom) {
-                //        delete self.settings.tmpl.custom;
-                //        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                //            self.InsertContainer.Content()();
-                //            self.Render.Content(data);
-                //        });
-                //    }
-                //    else {
-                //        self.InsertContainer.EmptyWidget();
-                //        self.WidgetLoader(true, self.settings.containerId);
-                //    }
-                //}
+                }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Content()();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
