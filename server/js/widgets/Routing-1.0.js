@@ -73,6 +73,10 @@ var Routing = {
         else 
             this.AddHistory()
     },
+    CheckRoute: function(){
+        if(Routing.route == 'payment' || Routing.route == '')
+            return true;
+    },
     InitHistory : function(){
         if(Parameters.cache.history.length == 0)
             this.AddHistory();
