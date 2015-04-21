@@ -121,7 +121,7 @@ var GoodsWidget = function(){
             self.goods.AddBlock('main', new GoodsMainBlockViewModel(data));
             var key = 'description';
             self.goods.AddBlock(key, data.description);
-            if(data.description.match(/data-bind/))
+            if(data.description && data.description.match(/data-bind/))
                 self.hasButton = key;
         },
         Gallery : function(data){
