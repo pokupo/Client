@@ -1,4 +1,5 @@
 var AnimateInfoSeller = function () {
+    $('#user_information_slidedown').unbind('click');
     $('#user_information_slidedown').click(function (e) {
         e.preventDefault();
         var $this = $(this);

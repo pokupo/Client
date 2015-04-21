@@ -99,7 +99,6 @@ var RegistrationWidget = function() {
                 }
                 else
                     test = false;
-                
                 if (test) {
                     var params = [];
                     if (step1.username())

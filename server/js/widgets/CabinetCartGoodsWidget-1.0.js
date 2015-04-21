@@ -133,7 +133,7 @@ var CabinetCartGoodsWidget = function(){
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
                 EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : {}, active : ''});
             });
-        },
+        }
     };
     self.InsertContainer = {
         EmptyWidget : function(){
@@ -186,7 +186,7 @@ var CabinetCartGoodsWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true,self.settings.containerId);
                     if(typeof AnimateCabinetCartGoods == 'function')
                         new AnimateCabinetCartGoods();
                     if(self.settings.animate)
@@ -203,13 +203,13 @@ var CabinetCartGoodsWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
             }
         },
         EmptyCart : function(){
@@ -347,7 +347,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
 
-        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.shop.id});
 
         if(self.goods().length == 0)
             content.content.remove(self);
@@ -381,7 +381,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             }
             content.sellerBlock.remove(self);
             
-            EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.seller.id});
+            EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.shop.id});
             if(content.sellerBlock().length == 0)
                 EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
         });

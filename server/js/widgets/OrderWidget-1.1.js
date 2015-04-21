@@ -78,25 +78,31 @@ var OrderWidget = function() {
     self.CheckRouteOrder = function() {
         if (Routing.route == 'order') {
             self.WidgetLoader(false);
+            if(Routing.params.sellerId)
+                self.order.sellerId = Routing.params.sellerId;
             if (Routing.params.create) {
                 self.BaseLoad.Login(false, false, false, function(data) {
                     if (Routing.params.create == 'fromCart') {
                         if (data.err) {
                             self.order.type = 'cart';
-                            self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = null;
                             self.order.count = null
 
                             setTimeout(function() {
-                                Routing.SetHash('order', 'Оформление заказа', {step: 1});
+                                Parameters.cache.history.pop();
+                                var link = Parameters.cache.history.pop();
+                                if(link.route == 'order' && link.data.create)
+                                    link = Parameters.cache.history.pop();
+                                if(link.route == 'login')
+                                    link = Parameters.cache.history.pop();
+                                Routing.SetHash(link.route, link.title, link.data, true);
                             }, 1000);
                         }
                         else {
                             self.DataOrder.Create(
-                                    {create: 'fromCart', sellerId: Routing.params.sellerId},
+                                    {create: 'fromCart', sellerId: self.order.sellerId},
                             function() {
                                 self.order.type = 'cart';
-                                self.order.sellerId = Routing.params.sellerId;
                                 self.DataOrder.Cart(function() {
                                     Routing.SetHash('order', 'Оформление заказа', {step: 2});
                                 });
@@ -107,20 +113,24 @@ var OrderWidget = function() {
                     else if (Routing.params.create == 'directly') {
                         if (data.err) {
                             self.order.type = 'directly';
-                            self.order.sellerId = Routing.params.sellerId;
                             self.order.goodsId = Routing.params.goodsId;
                             self.order.count = Routing.params.count;
 
                             setTimeout(function() {
-                                Routing.SetHash('order', 'Оформление заказа', {step: 1});
+                                Parameters.cache.history.pop();
+                                var link = Parameters.cache.history.pop();
+                                if(link.route == 'order' && link.data.create)
+                                    link = Parameters.cache.history.pop();
+                                if(link.route == 'login')
+                                    link = Parameters.cache.history.pop();
+                                Routing.SetHash(link.route, link.title, link.data, true);
                             }, 1000);
                         }
                         else {
                             self.DataOrder.Create(
-                                    {create: 'directly', sellerId: Routing.params.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
+                                    {create: 'directly', sellerId: self.order.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
                             function() {
                                 self.order.type = 'directly';
-                                self.order.sellerId = Routing.params.sellerId;
                                 self.order.goodsId = Routing.params.goodsId;
                                 self.order.count = Routing.params.count;
                                 self.DataOrder.Directly(function() {
@@ -601,6 +611,7 @@ var OrderWidget = function() {
         Cart: function(callback) {
             self.BaseLoad.CartGoods(self.order.sellerId, function(data) {
                 self.order.content = data;
+                self.order.content.main = data[0].goods;
                 if (callback)
                     callback();
             });
@@ -608,6 +619,7 @@ var OrderWidget = function() {
         Directly: function(callback) {
             self.BaseLoad.GoodsInfo(self.order.goodsId, '1000000', function(data) {
                 self.order.content = data;
+                self.order.content.main = [data.main];
                 if (callback)
                     callback();
             })
@@ -699,18 +711,25 @@ var OrderWidget = function() {
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
         Step3: function() {
-            if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function(data) {
-                    self.InsertContainer.Step3();
-                    self.Fill.Step3(data);
+            if (self.DataOrder.IsRealGoods()) {
+                self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function(goodsInfo) {
+                    self.order.sellerId = goodsInfo.shop.id;
+                    self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function (data) {
+                        self.InsertContainer.Step3();
+                        self.Fill.Step3(data);
+                    });
                 });
+            }
             else
                 Routing.SetHash('order', 'Оформление заказа', {step: 4});
         },
-        Step4: function() {
-            self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function(data) {
-                self.InsertContainer.Step4();
-                self.Fill.Step4(data);
+        Step4: function () {
+            self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function (goodsInfo) {
+                self.order.sellerId = goodsInfo.shop.id;
+                self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function (data) {
+                    self.InsertContainer.Step4();
+                    self.Fill.Step4(data);
+                });
             });
         },
         Step5: function() {
@@ -801,8 +820,8 @@ var OrderWidget = function() {
                 var form = Parameters.cache.order.step2;
                 if ($.isEmptyObject(form)) {
                     form = new OrderFormStep2ViewModel();
-                    form.AddContent(data, self.order);
                 }
+                form.AddContent(data, self.order);
 
                 self.Render.Step2(form);
                 Parameters.cache.order.step2 = form;
@@ -825,18 +844,18 @@ var OrderWidget = function() {
             var form = Parameters.cache.order.step3;
             if ($.isEmptyObject(form)) {
                 form = new OrderFormStep3ViewModel();
-                form.AddShipping(data);
-                Parameters.cache.order.step3 = form;
             }
+            form.AddShipping(data);
+            Parameters.cache.order.step3 = form;
             self.Render.Step3(form);
         },
         Step4: function(data) {
             var form = Parameters.cache.order.step4;
             if ($.isEmptyObject(form)) {
                 form = new OrderFormStep4ViewModel();
-                form.AddPayment(data);
-                Parameters.cache.order.step4 = form;
             }
+            form.AddPayment(data);
+            Parameters.cache.order.step4 = form;
             self.Render.Step4(form);
         },
         Step5: function(data) {
@@ -864,7 +883,7 @@ var OrderWidget = function() {
                     Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'add'});
                 };
                 form = new OrderViewModel();
-                
+
                 Parameters.cache.order.step5 = form;
             }
             form.AddContent(data);
@@ -1564,7 +1583,7 @@ var OrderFormStep3ViewModel = function() {
             self.shipping.push(item);
             if(data.length == 1)
                 item.ClickItem();
-        }   
+        }
     };
     self.HasShipping = function() {
         var test = false;

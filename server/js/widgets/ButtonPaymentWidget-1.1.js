@@ -25,19 +25,47 @@ window.ButtonPaymentWidget = function () {
         sourceVal: null
     };
     self.InitWidget = function () {
+        self.settings.containerId = Config.Containers.buttonPayment.widget;
+        self.settings.tmpl = Config.ButtonPayment.tmpl;
+        self.settings.title = Config.ButtonPayment.title;
+        self.SetInputParameters();
         self.RegisterEvents();
         self.CheckRouteButtonPayment();
-        self.Loader();
-        self.LoadTmpl();
     };
     self.Loader = function () {
         Loader.InsertContainer(self.settings.containerButton);
     };
-    self.SetParameters = function (data) {
-        self.settings.containerId = Config.Containers.buttonPayment.widget;
-        self.settings.tmpl = Config.ButtonPayment.tmpl;
-        self.settings.title = Config.ButtonPayment.title;
+    self.SetInputParameters = function() {
+        var input = {};
+        if (Config.Base.sourceParameters == 'string') {
+            var temp = JSCore.ParserInputParameters(/ButtonPaymentWidget/);
+            if (temp.buttonPayment) {
+                input = temp.buttonPayment;
+            }
+        }
+        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.buttonPayment) {
+            input = WParameters.buttonPayment;
+        }
 
+        if(!$.isEmptyObject(input)){
+            if(input.tmpl){
+                if(input.tmpl.path)
+                    self.settings.tmpl.path = input.tmpl.path;
+                if(input.tmpl.id){
+                    for(var key in input.tmpl.id){
+                        self.settings.tmpl.id[key] = input.tmpl.id[key];
+                    }
+                }
+            }
+            if(input.container)
+                self.settings.containerId = input.container;
+            if(input.animate)
+                self.settings.animate = input.animate;
+        }
+
+        self.settings.inputParameters = input;
+    };
+    self.SetParameters = function (data) {
         self.settings.containerButton = data.element;
 
         var input = {};
@@ -121,6 +149,13 @@ window.ButtonPaymentWidget = function () {
             self.CheckRouteButtonPayment();
         });
 
+        EventDispatcher.AddEventListener('widget.display.ready', function(){
+            if(self.settings.containerButton != null){
+                self.Loader();
+                self.LoadTmpl();
+            }
+        });
+
         EventDispatcher.AddEventListener('ButtonPaymentWidget.form.submit', function (form) {
             self.InsertContainer.Content();
             var dataStr = [];
@@ -149,7 +184,9 @@ window.ButtonPaymentWidget = function () {
     self.GetData = {
         Order: function (id) {
             self.BaseLoad.InvoicesOrder(id, function (data) {
-                self.Fill.Content(data);
+                if(self.QueryError(data, function(){ self.GetData.Order(id)}, function(){Routing.SetHash('default', 'Домашняя', {}); })){
+                    self.Fill.Content(data);
+                }
             });
         },
         Goods: function (id) {
@@ -173,8 +210,8 @@ window.ButtonPaymentWidget = function () {
             $(self.settings.containerButton).html($('script#' + self.GetTmplName('skin')).html());
         },
         Content: function () {
-            self.InsertContainer.EmptyWidget("#" + self.settings.containerId);
-            $("#" + self.settings.containerId).html($('script#' + self.GetTmplName('content')).html()).hide();
+            self.InsertContainer.EmptyWidget("#" + self.settings.containerId.widget);
+            $("#" + self.settings.containerId.widget).html($('script#' + self.GetTmplName('content')).html()).hide();
         }
     };
     self.Fill = {
@@ -184,6 +221,15 @@ window.ButtonPaymentWidget = function () {
         },
         Content: function (data) {
             var content = new PaymentViewModel();
+
+            var str = [];
+            var fields = data.pay_form.hidden_field;
+            $.each(fields, function(i){
+                str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
+            });
+            if(str)
+                $.cookie(Config.Base.cookie.orderId, str.join('&'));
+
             content.AddContent(data);
             self.Render.Content(content);
         }
@@ -214,17 +260,17 @@ window.ButtonPaymentWidget = function () {
             }
         },
         Content: function (data) {
-            if ($("#" + self.settings.containerId).length > 0) {
+            if ($("#" + self.settings.containerId.widget).length > 0) {
                 try {
-                    ko.cleanNode($("#" + self.settings.containerId)[0]);
-                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
+                    ko.cleanNode($("#" + self.settings.containerId.widget)[0]);
+                    ko.applyBindings(data, $("#" + self.settings.containerId.widget)[0]);
                     $.each(data.inData(), function (i) {
                         if (data.inData()[i].mask()) {
                             $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
                         }
                     });
-                    $("#" + self.settings.containerId).show();
-                    self.WidgetLoader(true);
+                    $("#" + self.settings.containerId.widget).show();
+                    self.WidgetLoader(true, self.settings.containerId.widget);
                     if(typeof AnimateButtonPayment == 'function')
                         new AnimateButtonPayment();
                     if(self.settings.animate)
@@ -241,13 +287,13 @@ window.ButtonPaymentWidget = function () {
                     }
                     else {
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
             }
         }
     };
@@ -306,7 +352,7 @@ var PaymentViewModel = function () {
     self.Back = function () {
         var last = Parameters.cache.lastPage;
         if (last.route == 'payment' || !last.route)
-            Routing.SetHash('default', 'Домашняя', {});
+            Routing.SetHash('purchases', 'Заказ № ' + Routing.params.orderId, {block: 'detail', id: 697});
         else
             Routing.SetHash(last.route, last.title, last.data);
     };
@@ -446,3 +492,21 @@ var PaymentFieldViewModel = function () {
         return true;
     };
 }
+
+var TestButtonPayment = {
+    Init: function() {
+        if (typeof Widget == 'function') {
+            window.ButtonPaymentWidget.prototype = new Widget();
+            var buttonPayment = new window.ButtonPaymentWidget();
+            buttonPayment.settings.uniq = EventDispatcher.GetUUID();
+            buttonPayment.Init(buttonPayment);
+        }
+        else {
+            setTimeout(function() {
+                TestButtonPayment.Init()
+            }, 100);
+        }
+    }
+};
+
+TestButtonPayment.Init();

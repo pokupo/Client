@@ -155,7 +155,6 @@ var AnimateSearchResult = function () {
                 .toggleClass('active');
     });
 
-    $('.b-item__order-button .btn').unbind('click');
     $('.b-item__order-button .btn').click(function () {
         var $this = $(this);
         var item = $this.closest('.b-item__popover');

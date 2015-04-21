@@ -26,7 +26,7 @@ var Config = {
     Containers : {  
         catalog : {widget: 'catalogWidgetId', def: 'defaultCatalogWidgetId', customClass: 'custom_block'}, // id контейнера каталога
         search  : {widget: 'searchWidgetId', def: 'defaultSearchWidgetId', customClass: 'custom_block'}, // id контейнера формы поиска
-        breadCrumb : {widget: ['breadCrumbsWidgetId_1','breadCrumbsWidgetId_2'], def: ['defaultBreadCrumbsWidgetId_1','defaultBreadCrumbsWidgetId_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
+        breadCrumb : {widget: ['breadCrumbsWidgetId_1'], def: ['defaultBreadCrumbsWidgetId_1','defaultBreadCrumbsWidgetId_2'], customClass: ['custom_block_1, custom_block_2']}, // id контейнеров хлебных крошек
         content : {
             content : {widget: 'contentWidgetId', def: 'defaultContentWidgetId', customClass: 'custom_block'},
             block: {

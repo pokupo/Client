@@ -332,27 +332,32 @@ var StandalonePaymentWidget = function () {
     };
     self.Render = {
         Button: function (data) {
-            try {
-                ko.cleanNode($('#' + self.settings.containerId.button.widget).children()[0]);
-                ko.applyBindings(data, $('#' + self.settings.containerId.button.widget).children()[0]);
-                if (typeof AnimateStandalonePayment == 'function')
-                    new AnimateStandalonePayment();
-                if (self.settings.animate)
-                    self.settings.animate();
+            if ($("#" + self.settings.containerId.button.widget).length > 0){
+                try {
+                    ko.cleanNode($('#' + self.settings.containerId.button.widget)[0]);
+                    ko.applyBindings(data, $('#' + self.settings.containerId.button.widget)[0]);
+                    if (typeof AnimateStandalonePayment == 'function')
+                        new AnimateStandalonePayment();
+                    if (self.settings.animate)
+                        self.settings.animate();
+                }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('button') + ']', e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Button();
+                            self.Render.Button(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget('#' + self.settings.containerId.button.widget);
+                        self.WidgetLoader(true, self.settings.containerId.button.widget);
+                    }
+                }
             }
-            catch (e) {
-                self.Exception('Ошибка шаблона [' + self.GetTmplName('button') + ']', e);
-                if (self.settings.tmpl.custom) {
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                        self.InsertContainer.Button();
-                        self.Render.Button(data);
-                    });
-                }
-                else {
-                    self.InsertContainer.EmptyWidget('#' + self.settings.containerId.button.widget);
-                    self.WidgetLoader(true, self.settings.containerId.button.widget);
-                }
+            else {
+                self.WidgetLoader(true);
             }
         },
         PaymentList: function (data) {
@@ -555,8 +560,6 @@ var StandalonePaymentListViewModel = function(settings){
             test = false;
         if(!self.AmountValidation() && !self.isGoodsId())
             test = false;
-        console.log(self.error.amount(), self.error.count());
-        console.log(test);
         if(test) {
             self.Cookie.Set.UserEmail(self.mailUser());
             data.callback();

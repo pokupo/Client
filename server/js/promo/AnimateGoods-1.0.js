@@ -12,7 +12,7 @@ var AnimateGoods = function () {
         thumbborderwidth: 4,
         arrows: false,
         shadows: true,
-        transition: 'slide',
+        transition: 'slide'
     });
 
     $('#more_block .tab__trigger').click(function () {
@@ -56,7 +56,7 @@ var AnimateGoods = function () {
     });
     if(Ya != undefined){
         new Ya.share({
-            element: 'ya_share',
+            element: 'ya_share'
         });
     }
     $('[rel=tooltip]').tooltip();

@@ -33,13 +33,21 @@ window.RelatedGoodsWidget = function(){
     self.InitWidget = function(){
         self.Loader();
         self.RegisterEvents();
-        self.LoadTmpl();
+        if(Loader.IsReady())
+            self.LoadTmpl();
     };
     self.Loader = function(){
         Loader.InsertContainer(self.settings.container);
     };
     self.SetParameters = function(data){
-        self.settings.tmpl = Config.RelatedGoods.tmpl;
+        self.settings.tmpl.path = Config.RelatedGoods.tmpl.path;
+        self.settings.tmpl.id = Config.RelatedGoods.tmpl.id = {
+                table : "relatedGoodsTableTmpl", // id шаблона таблицы
+                list : "relatedGoodsListTmpl", // id шаблона списка
+                tile : "relatedGoodsTileTmpl", // id шаблона плитки
+                slider : "relatedGoodsSliderTmpl", // id шаблона слайдера
+                carousel : "relatedGoodsCarouselTmpl" // id шаблона карусели
+        };
         self.settings.relatedGoods = Config.RelatedGoods;
         self.settings.container = data.element;
         
@@ -52,13 +60,14 @@ window.RelatedGoodsWidget = function(){
                 self.settings.animate = input.animate;
         }
         self.settings.inputParameters = input;
-        
+
         for(var key in data.options.params){
             if(key == 'tmpl' && data.options.params['tmpl']){
-                if(data.options.params['tmpl']['path'])
-                    self.settings.tmpl.path = data.options.params['tmpl']['path'];
-                if(data.options.params['tmpl']['id'])
-                    self.settings.tmpl.id = data.options.params['tmpl']['id'];
+                if(data.options.params.tmpl['path'])
+                    self.settings.tmpl.path = data.options.params.tmpl['path'];
+                if(data.options.params.tmpl['id']) {
+                    self.settings.tmpl.id = data.options.params.tmpl['id'];
+                }
             }
             else if (key == 'uniq' && data.options.params['uniq'])
                 self.settings.uniq = data.options.params['uniq'];
@@ -74,7 +83,12 @@ window.RelatedGoodsWidget = function(){
             EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
         });
     };
-    self.RegisterEvents = function(){    
+    self.RegisterEvents = function(){
+        EventDispatcher.AddEventListener('widget.display.ready', function(){
+            if(self.settings.container)
+                self.LoadTmpl();
+        });
+
         EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq, function (data){
             var query = self.settings.relatedGoods.start + '/' + self.settings.relatedGoods.count + '/' + self.settings.relatedGoods.orderBy;
             self.BaseLoad.RelatedGoods(self.settings.relatedGoods.id, query, function(data){
@@ -86,7 +100,7 @@ window.RelatedGoodsWidget = function(){
             self.Render(data);
         });
         EventDispatcher.AddEventListener('widget.change.route', function() {
-            self.WidgetLoader(true);
+            self.settings.container = null;
         });
     };
     self.InsertContainer = {
@@ -130,7 +144,6 @@ window.RelatedGoodsWidget = function(){
                 new AnimateRelatedGoods();
             if(self.settings.animate)
                 self.settings.animate();
-            self.WidgetLoader(true);
         }
         catch(e){
             self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']', e);
@@ -143,7 +156,6 @@ window.RelatedGoodsWidget = function(){
             }
             else{
                 self.InsertContainer.EmptyWidget();
-                self.WidgetLoader(true);
             }
         }
     };

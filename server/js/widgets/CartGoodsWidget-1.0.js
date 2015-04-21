@@ -166,7 +166,7 @@ var CartGoodsWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerId);
                     if(typeof AnimateCartGoods == 'function')
                         new AnimateCartGoods();
                     if(self.settings.animate)
@@ -183,13 +183,13 @@ var CartGoodsWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
             }
         },
         EmptyCart : function(){
@@ -305,8 +305,7 @@ var BlockGoodsForSellerViewModel = function(content){
         for(var i in removedGoods){
             self.goods.remove(removedGoods[i]);
         }
-
-        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.seller.id});
+        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.shop.id});
 
         if(self.goods().length == 0)
             content.sellerBlock.remove(self);
@@ -343,8 +342,7 @@ var BlockGoodsForSellerViewModel = function(content){
                 self.goods.remove(removedGoods[i]);
             }
             content.sellerBlock.remove(self);
-            
-            EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId:self.sellerInfo.seller.id});
+            EventDispatcher.DispatchEvent('CartGoods.clear', {sellerId: self.sellerInfo.shop.id });
             if(content.sellerBlock().length == 0)
                 EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
         });

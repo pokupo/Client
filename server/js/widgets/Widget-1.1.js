@@ -148,6 +148,7 @@ var Loader = {
             this.ShowContent();
             $('#loadingContainer').remove();
             $("body").removeClass('loading');
+            EventDispatcher.DispatchEvent('widget.display.ready');
         }
     },
     InsertContainer : function(container){
@@ -176,13 +177,11 @@ var Loader = {
     },
     ShowContent : function(){
         $.each(this.containers, function(i){
-            console.log(Loader.containers[i].container);
             var children =  $('#' + Loader.containers[i].container).children();
             if(children)
                 children.show();
             Loader.ShowCustomContent(Loader.containers[i]);
         });
-        this.containers = [];
         this.action = 'show';
     },
     AddShowContainer : function(widget, id){
@@ -434,7 +433,11 @@ var Widget = function (){
             }
         }
     };
-    this.Events = function(){       
+    this.Events = function(){
+        EventDispatcher.AddEventListener('widget.display.ready', function(){
+            Routing.CheckRoute();
+        });
+
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
@@ -482,14 +485,11 @@ var Widget = function (){
             var sellerId = data.sellerId ? data.sellerId : false;
             var count = data.count ? data.count : false;
             var goodsId = data.goodsId;
-            var hash = data.hash;
             self.BaseLoad.AddGoodsToCart(goodsId, sellerId, count, function(data){
                 if(data.err){
                     self.ShowMessage(data.err, false, false);
                 }
                 else{
-                    if(typeof AnimateAddToCart !== 'undefined')
-                        new AnimateAddToCart(hash);
                     EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
                 }
             });
@@ -510,10 +510,17 @@ var Widget = function (){
         ko.bindingHandlers.embedWidget = {
             init: function(element, valueAccessor) {
                 var options = valueAccessor() || {};
-                self.BaseLoad.Script('widgets/' + options.widget + '.js', function(){
-                    options.widget = options.widget.split('-')[0];
-                    EventDispatcher.DispatchEvent('widget.onload.script', {element:element, options:options});
-                });
+                var widgetName = options.widget.split('-');
+                if(typeof(window[widgetName[0]]) == 'function'){
+                    options.widget = widgetName[0];
+                    EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                }
+                else {
+                    self.BaseLoad.Script('widgets/' + options.widget + '.js', function () {
+                        options.widget = options.widget.split('-')[0];
+                        EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                    });
+                }
             }
         };
         ko.global = {
@@ -1275,15 +1282,11 @@ var Widget = function (){
             }, true);
         },
         DeliveryAddressList : function(callback){
-            if(!Parameters.cache.delivery){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info/'), function(data){
-                    Parameters.cache.delivery = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else
-                callback(Parameters.cache.delivery);
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi  + 'geo/info/'), function(data){
+                Parameters.cache.delivery = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         ChangePassword : function(form, callback){
             if(form.find('#change_password_query').length == 0)
@@ -1319,7 +1322,7 @@ var Widget = function (){
         },
         ShopInfo : function(callback){
             if($.isEmptyObject(Parameters.cache.infoShop)){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'info/' + Parameters.shopId + '/0100000/'), function(data){
+                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.shopPathApi + 'info/' + Parameters.shopId + '/1000000/'), function(data){
                     Parameters.cache.infoShop = data;
                     if(callback)
                         callback(data);
@@ -1363,14 +1366,14 @@ var Widget = function (){
             }, true);
         },
         ConfirmOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'confirm/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         DeleteOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'delete/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
@@ -1389,21 +1392,21 @@ var Widget = function (){
                 callback(Parameters.cache.orderList[queryHash]);
         },
         RepeatOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'repeat/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         ReturnOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'return/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);
             }, true);
         },
         CancelOrder : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'cancel/' + str + '/'), function(data){
                 Parameters.cache.orderList = {};
                 if(callback)
                     callback(data);

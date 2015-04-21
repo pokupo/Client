@@ -136,7 +136,7 @@ var UserInformationWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerId);
                     if(typeof AnimateUserInformation == 'function')
                         new AnimateUserInformation();
                     if(self.settings.animate)
@@ -153,13 +153,13 @@ var UserInformationWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
             }
         },
         InfoBlock : function(data){
@@ -167,7 +167,7 @@ var UserInformationWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true);
+                    self.WidgetLoader(true, self.settings.containerId);
                     if(typeof AnimateUserInformation == 'function')
                         new AnimateUserInformation();
                     if(self.settings.animate)
@@ -184,13 +184,13 @@ var UserInformationWidget = function(){
                     }
                     else{
                         self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true);
+                        self.WidgetLoader(true, self.settings.containerId);
                     }
                 }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true);
+                self.WidgetLoader(true, self.settings.containerId);
             }
         }
     }
