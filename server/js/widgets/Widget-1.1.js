@@ -1,4 +1,4 @@
-Parameters = {
+var Parameters = {
     pathToImages : null,
     sortingBlockContainer : null,
     loading : null,
