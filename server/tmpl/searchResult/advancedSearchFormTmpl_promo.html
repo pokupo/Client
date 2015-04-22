@@ -11,6 +11,7 @@
 
                         <div class="first column">
                             <div class="content">
+                                <!-- ko if: showCatalog -->
                                 <div class="b-location dropdown">
                                     <a href="javascript:void(0);" data-target="location" class="b-location__current dropdown__trigger" id="advansed_search_form__category_dropdown__trigger">
                                         <span id="js-multilocation" class="fancytree-checkbox part"></span>Все категории
@@ -47,6 +48,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- /ko -->
                                 <div class="input-holder">
                                     <select id="typeSeller" name="typeSeller" class="form_select" data-bind="css: cssTypeSeller, value: typeSeller">
                                         <!-- ko foreach: typesSellers-->
@@ -88,7 +90,7 @@
                     </div>
                     <button type="submit" class="btn btn-block b-advanced-search__submit">
                         Начать расширенный поиск <i class="icon icon-search"></i>
-                        </buton>
+                        </button>
                 </form>
             </div>
         </div>

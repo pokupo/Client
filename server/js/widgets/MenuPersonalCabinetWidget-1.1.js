@@ -12,6 +12,8 @@ var MenuPersonalCabinetWidget = function () {
             path: null,
             id: null
         },
+        showCart: null,
+        showRegSeller: null,
         animate: null,
         style: null,
         customContainer: null
@@ -23,6 +25,8 @@ var MenuPersonalCabinetWidget = function () {
         self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
         self.settings.customContainer = Config.Containers.menuPersonalCabinet.customClass;
         self.settings.style = Config.MenuPersonalCabinet.style;
+        self.settings.showCart = Config.MenuPersonalCabinet.showCart;
+        self.settings.showRegSeller = Config.MenuPersonalCabinet.showRegSeller;
         self.RegisterEvents();
         self.SetPosition();
     };
@@ -38,6 +42,12 @@ var MenuPersonalCabinetWidget = function () {
                 for (var key in input.tmpl.id) {
                     self.settings.tmpl.id[key] = input.tmpl.id[key];
                 }
+            }
+            if(input.showCart){
+                self.settings.showCart = input.showCart;
+            }
+            if(input.showRegSeller){
+                self.settings.showRegSeller = input.showRegSeller;
             }
             if(input.animate)
                 self.settings.animate = input.animate;
@@ -72,6 +82,10 @@ var MenuPersonalCabinetWidget = function () {
                     && Routing.route != 'cabinet_cart'
                     && Routing.route != 'purchases'
                     && Routing.route != 'messages') {
+                $("#" + self.settings.containerMenuId).empty();
+                self.WidgetLoader(true);
+            }
+            if(Routing.route == 'cabinet_cart' && !self.settings.showCart){
                 $("#" + self.settings.containerMenuId).empty();
                 self.WidgetLoader(true);
             }
@@ -185,6 +199,7 @@ var MenuPersonalCabinetViewModel = function (menu) {
     self.ClickFavorites = function () {
         Routing.SetHash('favorites', 'Избранное', {});
     };
+    self.showCart = menu.settings.showCart;
     self.activeCart = ko.computed(function () {
         if (Routing.route == 'cabinet_cart')
             return 'active';
@@ -203,6 +218,10 @@ var MenuPersonalCabinetViewModel = function (menu) {
     };
     self.ClickBecomeSeller = function () {
         window.location.href = 'https://' + window.location.hostname + '/seller/register';
+    };
+    self.showRegSeller = menu.settings.showRegSeller;
+    self.ClickRegistrationSeller = function(){
+        Routing.SetHash('registration_seller', 'Стать продавцом', {});
     };
 };
 

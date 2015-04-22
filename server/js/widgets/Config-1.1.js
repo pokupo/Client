@@ -149,6 +149,7 @@ var Config = {
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
         sortList : [{name: 'rating', title: 'рейтингу'}, {name: 'name', title: 'названию'}, {name: 'cost', title: 'цене'}],
         orderBy : 'name', // сортировка по умолчанию
+        showCart: true,
         style : { // стиль блока 
             'position' : 'absolute', 
             'top' : '50px', 
@@ -159,6 +160,7 @@ var Config = {
         }
     },
     Search : {
+        showCatalog: true,
         tmpl : {
             path : "searchTmpl.html", // путь к шаблонам
             id : "searchTmpl" // id шаблона формы поиска по умолчанию
@@ -176,6 +178,8 @@ var Config = {
         }
     },
     SearchResult : {
+        showCatalog: true,
+        showForm: true,
         tmpl: {
             content : {
                 path : "searchResultTmpl.html", // результатов поиска
@@ -194,7 +198,8 @@ var Config = {
         idAdvancedSearchForm : "advancedSearch", // id расширенной формы
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
         sortList : [{name: 'rating', title: 'рейтингу'}, {name: 'name', title: 'названию'}, {name: 'cost', title: 'цене'}],
-        listTypeSearch : { // тип поиска 
+        showCart: true,
+        listTypeSearch : { // тип поиска
             any : 'Любое из слов',
             all : 'Все слова'
         },
@@ -447,6 +452,8 @@ var Config = {
         }
     },
     MenuPersonalCabinet : {
+        showCart: true,
+        showRegSeller: true,
         tmpl : {
             path : "menuPersonalCabinetTmpl.html", // файл шаблонов
             id : 'menuPersonalCabinetTmpl' // id шаблона меню личного кабинета

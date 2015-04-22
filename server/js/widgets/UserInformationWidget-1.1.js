@@ -245,6 +245,12 @@ var UserInformationBlockViewModel = function(data){
         return true;
     };
     self.ratingUser = data.rating_user;
+
+    self.showProfile= function(){
+        if($.inArray('profile', Config.UserInformation.showBlocks) < 0)
+            return false;
+        return true;
+    };
     
     self.ClickLogout = function(){
         self.Confirm(Config.Authentication.message.confirmLogOut, function(){

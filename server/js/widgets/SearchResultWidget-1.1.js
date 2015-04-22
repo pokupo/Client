@@ -32,6 +32,9 @@ var SearchResultWidget = function(){
             content: null,
             form: null
         },
+        showCatalog: null,
+        showCart: null,
+        showForm: null,
         idAdvancedSearchForm : null,
         idTreeCategoriesForAdvancedSearchForm : 'tree_categories_for_advanced_search',
         inputParameters : {},
@@ -52,6 +55,9 @@ var SearchResultWidget = function(){
         self.settings.listTypeSearch = Config.SearchResult.listTypeSearch;
         self.settings.listTypeSeller = Config.SearchResult.listTypeSeller;
         self.settings.styleSearchResult = Config.SearchResult.style;
+        self.settings.showCatalog = Config.SearchResult.showCatalog;
+        self.settings.showCart = Config.SearchResult.showCart;
+        self.settings.showForm = Config.SearchResult.showForm;
         self.settings.paging = Config.Paging;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -72,6 +78,8 @@ var SearchResultWidget = function(){
         
         if(!$.isEmptyObject(input)){
             if(input.content){
+                if(input.content.showCart)
+                    self.settings.showCart = input.content.showCart;
                 if(input.content.defaultCount)
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
@@ -86,6 +94,10 @@ var SearchResultWidget = function(){
                     self.settings.animate.content = input.content.animate;
             }
             if(input.form){
+                if(input.form.showForm)
+                    self.settings.showForm = input.form.showForm;
+                if(input.form.showCatalog)
+                    self.settings.showCatalog = input.form.showCatalog;
                 if(input.form.tmpl){
                     if(input.form.tmpl.path)
                         self.settings.tmpl.form.path = input.form.tmpl.path;
@@ -128,10 +140,12 @@ var SearchResultWidget = function(){
     };
     self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
-            $("#" + self.settings.containerIdForAdvancedSearch).html("");
-            self.BaseLoad.Roots(function(){
-                EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
-            })
+            if(self.settings.showForm) {
+                $("#" + self.settings.containerIdForAdvancedSearch).html("");
+                self.BaseLoad.Roots(function () {
+                    EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
+                })
+            }
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
@@ -320,6 +334,7 @@ var AdvancedSearchFormViewModel = function(params){
     self.exceptWords = Parameters.filter.exceptWords;
     self.typeSeller = ko.observable();
     self.typeSeller(Parameters.filter.typeSeller);
+    self.showCatalog = params.showCatalog;
     
     self.categories = [];
     self.typesSearch = ko.observableArray();
@@ -469,6 +484,7 @@ var ListSearchResultViewModel = function(settings){
     self.titleBlock    = 'Расширенный поиск';
     self.typeView      = 'tile';
     self.countGoods    = 0;
+    self.showCart = settings.showCart;
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
