@@ -41,14 +41,14 @@ var SearchWidget = function(){
             input = WParameters.search;
         }
         if(!$.isEmptyObject(input)){
-            if (input.showCatalog)
+            if (input.hasOwnProperty('showCatalog'))
                 self.settings.showCatalog = input.showCatalog;
             if (input.tmpl)
                 self.settings.tmplPath = 'search/' + input.tmpl + '.html';
             if(input.animate)
                 self.settings.animate = input.animate;
         }
-
+console.log(self.settings.showCatalog);
         self.settings.inputParameters = input;
     };
     self.InsertContainer = {

@@ -3,12 +3,12 @@ var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
 
-    host : "server.pokupo.ru/prod/server/",
+    host : "pokupo-server.asmsoft.ru/",
     pathToJS : "js/",
-    pathToTmpl : "pokupo.ru/themes/",
+    pathToTmpl : "pokupo-promo.asmsoft.ru/themes/",
     theme: 'default',
-    pathToData : "prod/server/services/DataProxy.php?query=",
-    pathToPostData : "prod/server/services/DataPostProxy.php",
+    pathToData : "services/DataProxy.php?query=",
+    pathToPostData : "services/DataPostProxy.php",
     pathToCore: "index.html",
     pathToPostCore : 'postData.html',
     hostApi : "api.pokupo.ru/", // урл API
@@ -26,18 +26,18 @@ var JSSettings = {
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
-        'easyXDM.min.js',
-        'knockout-2.2.0.js',
-        'jquery.cookie.js',
-        'jquery.textchange.min.js',
-        'widgets/Config-1.1.js',
-        'widgets/Routing-1.0.js',
-        'widgets/Paging-1.0.js',
-        'widgets/ContentViewModel-1.0.js',
-        'widgets/OrderViewModel-1.0.js',
-        'widgets/RegistrationViewModel-1.0.js',
-        'widgets/AuthenticationViewModel-1.1.js',
-        'widgets/Widget-1.1.js'
+        //'easyXDM.min.js',
+        //'knockout-2.2.0.js',
+        //'jquery.cookie.js',
+        //'jquery.textchange.min.js',
+        //'widgets/Config-1.1.js',
+        //'widgets/Routing-1.0.js',
+        //'widgets/Paging-1.0.js',
+        //'widgets/ContentViewModel-1.0.js',
+        //'widgets/OrderViewModel-1.0.js',
+        //'widgets/RegistrationViewModel-1.0.js',
+        //'widgets/AuthenticationViewModel-1.1.js',
+        //'widgets/Widget-1.1.js'
     ],
     inputParameters : {}
 }
@@ -154,7 +154,6 @@ var JSCore = {
             var string = attr.split('?');
             if(string.length > 1){
                 var parameters = string[1].split('&');
-
                 for(var i = 0; i <= parameters.length-1; i++){
                     var parameter = parameters[i].split('=');
                     obj[parameter[0]] = parameter[1];
@@ -168,6 +167,8 @@ var JSCore = {
     },
     SetInputParameters : function(){
         var input = JSCore.ParserInputParameters(/JSCore/);
+        if($.isEmptyObject(input))
+            input = JSCore.ParserInputParameters(/pokupo.widgets.[a-z0-9]{32}.min.js/);
         if(input){
             for(var key in input){
                 if(JSSettings.hasOwnProperty(key)){

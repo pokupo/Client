@@ -78,9 +78,9 @@ var SearchResultWidget = function(){
         
         if(!$.isEmptyObject(input)){
             if(input.content){
-                if(input.content.showCart)
+                if(input.content.hasOwnProperty('showCart'))
                     self.settings.showCart = input.content.showCart;
-                if(input.content.defaultCount)
+                if(input.content.hasOwnProperty('defaultCount'))
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
@@ -94,9 +94,9 @@ var SearchResultWidget = function(){
                     self.settings.animate.content = input.content.animate;
             }
             if(input.form){
-                if(input.form.showForm)
+                if(input.form.hasOwnProperty('showForm'))
                     self.settings.showForm = input.form.showForm;
-                if(input.form.showCatalog)
+                if(input.form.hasOwnProperty('showCatalog'))
                     self.settings.showCatalog = input.form.showCatalog;
                 if(input.form.tmpl){
                     if(input.form.tmpl.path)
