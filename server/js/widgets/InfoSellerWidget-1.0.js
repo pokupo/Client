@@ -22,8 +22,6 @@ window.InfoSellerWidget = function () {
         self.settings.style = Config.InfoSeller.style;
         self.Loader();
         self.RegisterEvents();
-        if(Loader.IsReady())
-            self.LoadTmpl();
     };
     self.Loader = function () {
         Loader.InsertContainer(self.settings.container);
@@ -56,10 +54,14 @@ window.InfoSellerWidget = function () {
             else
                 self.settings.infoSeller[key] = data.options.params[key];
         }
+        Parameters.cache.infoSellerCollection[data.options.params['uniq']] = true;
     };
     self.LoadTmpl = function () {
         self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-            EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + self.settings.hash)
+            $.each(Parameters.cache.infoSellerCollection, function(i){
+                EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + i);
+                delete Parameters.cache.infoSellerCollection[i];
+            })
         });
     };
     self.RegisterEvents = function () {
