@@ -23,6 +23,7 @@ var Parameters = {
         roots: [],
         infoCategory : {},
         infoSeller : {},
+        infoSellerCollection: {},
         infoShop: {},
         goodsInfo : {},
         relatedGoods : {},
