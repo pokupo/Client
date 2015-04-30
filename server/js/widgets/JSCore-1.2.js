@@ -26,18 +26,18 @@ var JSSettings = {
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
-        //'easyXDM.min.js',
-        //'knockout-2.2.0.js',
-        //'jquery.cookie.js',
-        //'jquery.textchange.min.js',
-        //'widgets/Config-1.1.js',
-        //'widgets/Routing-1.0.js',
-        //'widgets/Paging-1.0.js',
-        //'widgets/ContentViewModel-1.0.js',
-        //'widgets/OrderViewModel-1.0.js',
-        //'widgets/RegistrationViewModel-1.0.js',
-        //'widgets/AuthenticationViewModel-1.1.js',
-        //'widgets/Widget-1.1.js'
+        'easyXDM.min.js',
+        'knockout-2.2.0.js',
+        'jquery.cookie.js',
+        'jquery.textchange.min.js',
+        'widgets/Config-1.1.js',
+        'widgets/Routing-1.0.js',
+        'widgets/Paging-1.0.js',
+        'widgets/ContentViewModel-1.0.js',
+        'widgets/OrderViewModel-1.0.js',
+        'widgets/RegistrationViewModel-1.0.js',
+        'widgets/AuthenticationViewModel-1.1.js',
+        'widgets/Widget-1.1.js'
     ],
     inputParameters : {}
 }

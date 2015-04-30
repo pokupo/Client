@@ -76,11 +76,11 @@ var ContentWidget = function(){
             Logger.Console.VarDump(self.widgetName, "Input parameters", input);
         
         if(!$.isEmptyObject(input)){
-            if(input.showCart){
+            if(input.hasOwnProperty('showCart')){
                 self.settings.showCart = input.showCart;
             }
             if(input.block){
-                if(input.block.showBlocks)
+                if(input.block.hasOwnProperty('showBlocks'))
                     self.settings.showBlocks = input.block.showBlocks;
                 if(input.block.count)
                     self.settings.countGoodsInBlock = input.block.count;

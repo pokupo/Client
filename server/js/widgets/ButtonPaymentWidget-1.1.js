@@ -261,7 +261,7 @@ window.ButtonPaymentWidget = function () {
         },
         Content: function (data) {
             if ($("#" + self.settings.containerId.widget).length > 0) {
-                try {
+                //try {
                     ko.cleanNode($("#" + self.settings.containerId.widget)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId.widget)[0]);
                     $.each(data.inData(), function (i) {
@@ -275,21 +275,21 @@ window.ButtonPaymentWidget = function () {
                         new AnimateButtonPayment();
                     if(self.settings.animate)
                         self.settings.animate();
-                }
-                catch (e) {
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
-                    if (self.settings.tmpl.custom) {
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                            self.InsertContainer.Content()();
-                            self.Render.Content(data);
-                        });
-                    }
-                    else {
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+                //}
+                //catch (e) {
+                //    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
+                //    if (self.settings.tmpl.custom) {
+                //        delete self.settings.tmpl.custom;
+                //        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                //            self.InsertContainer.Content();
+                //            self.Render.Content(data);
+                //        });
+                //    }
+                //    else {
+                //        self.InsertContainer.EmptyWidget();
+                //        self.WidgetLoader(true, self.settings.containerId);
+                //    }
+                //}
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
@@ -404,6 +404,9 @@ var PaymentViewModel = function () {
                 self.payForm.target('_blank');
             }
             $.each(data.pay_form.hidden_field, function (i) {
+                var params = data.pay_form.hidden_field[i];
+                if(!data.pay_form.hidden_field[i].hasOwnProperty('value'))
+                    params.value = '';
                 self.payForm.field.push(data.pay_form.hidden_field[i]);
             });
         }

@@ -48,7 +48,6 @@ var SearchWidget = function(){
             if(input.animate)
                 self.settings.animate = input.animate;
         }
-console.log(self.settings.showCatalog);
         self.settings.inputParameters = input;
     };
     self.InsertContainer = {
