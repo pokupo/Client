@@ -196,6 +196,7 @@ var OrderListWidget = function() {
                     self.Render.List(list);
                 }
                 else {
+                    console.log('test3');
                     self.InsertContainer.EmptyList();
                     self.Render.EmptyList();
                 }
@@ -287,7 +288,7 @@ var OrderListWidget = function() {
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                //try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
@@ -295,21 +296,21 @@ var OrderListWidget = function() {
                         new AnimateOrderList();
                     if(self.settings.animate)
                         self.settings.animate();
-                //}
-                //catch(e){
-                //    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']', e);
-                //    if(self.settings.tmpl.custom){
-                //        delete self.settings.tmpl.custom;
-                //        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                //            self.InsertContainer.Detail();
-                //            self.Render.Detail(data);
-                //        });
-                //    }
-                //    else{
-                //        self.InsertContainer.EmptyWidget();
-                //        self.WidgetLoader(true, self.settings.containerFormId);
-                //    }
-                //}
+                }
+                catch(e){
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']', e);
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Detail();
+                            self.Render.Detail(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');

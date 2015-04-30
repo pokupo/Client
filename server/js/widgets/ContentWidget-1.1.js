@@ -45,6 +45,8 @@ var ContentWidget = function(){
         orderByContent : null,
         filterName : '',
         listPerPage : null,
+        showCart: null,
+        showBlocks: null,
         slider : [],
         paging : null,
         styleContent : null
@@ -74,7 +76,12 @@ var ContentWidget = function(){
             Logger.Console.VarDump(self.widgetName, "Input parameters", input);
         
         if(!$.isEmptyObject(input)){
+            if(input.hasOwnProperty('showCart')){
+                self.settings.showCart = input.showCart;
+            }
             if(input.block){
+                if(input.block.hasOwnProperty('showBlocks'))
+                    self.settings.showBlocks = input.block.showBlocks;
                 if(input.block.count)
                     self.settings.countGoodsInBlock = input.block.count;
                 if(input.block.animate)
@@ -116,6 +123,7 @@ var ContentWidget = function(){
         self.settings.countGoodsInBlock = Config.Content.countGoodsInBlock;
         self.settings.orderByContent = Config.Content.orderBy;
         self.settings.listPerPage = Config.Content.listPerPage;
+        self.settings.showCart = Config.Content.showCart;
         self.settings.paging = Config.Paging;
         self.settings.styleContent = Config.Content.style;
         self.SetInputParameters();
@@ -141,10 +149,14 @@ var ContentWidget = function(){
                 self.WidgetLoader(true);
         }
         else{
-            if(!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()){
-                self.BaseLoad.Tmpl(self.settings.tmpl.block, function(){
-                    EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
-                });
+            if(self.settings.showBlocks) {
+                if (!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()) {
+                    self.BaseLoad.Tmpl(self.settings.tmpl.block, function () {
+                        EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
+                    });
+                }
+                else
+                    self.WidgetLoader(true);
             }
             else
                 self.WidgetLoader(true);
@@ -288,7 +300,7 @@ var ContentWidget = function(){
     };
     self.Fill = {
         Block : function(data){
-            var block = new BlockViewModel(data, self.settings.countGoodsInBlock);
+            var block = new BlockViewModel(data, self.settings);
             if(JSSettings.dev)
                 Logger.Console.VarDump(self.widgetName, 'data blockId = [' + block.id + '] typeView = [' + block.typeView + ']' , block)
             block.AddContent();
@@ -496,13 +508,15 @@ var EmptyViewBlock = function(data){
 };
 
 /* Block */
-var BlockViewModel = function(data, countGoodsInContent){
+var BlockViewModel = function(data, settings){
     var self = this;
+    self.countGoodsInContent = settings.countGoodsInBlock;
     self.id            = data.block.id;
     self.sort          = data.sort;
     self.titleBlock    = data.block.name_category;
     self.typeView      = data.block.type_view;
     self.countGoods    = data.block.count_goods ? data.block.count_goods : 0;
+    self.showCart      = settings.showCart;
     
     self.cssBlock      = 'block_sort_' + data.sort;
     self.cssBlockContainer  = 'sliderContainer_' + self.id ;
@@ -511,18 +525,18 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.contentBlock  = ko.observableArray();
     
     self.AddContent = function(){
-        var query = '0/' + countGoodsInContent + '/name/';
+        var query = '0/' + self.countGoodsInContent + '/name/';
         var queryHash = self.id + EventDispatcher.HashCode(query);
         var content = Parameters.cache.content[queryHash].content;
         if(content && content.length > 1){
             var last = content.shift()
             self.countGoods  = last.count_goods;
         
-            if(content.length < countGoodsInContent)
-                countGoodsInContent = content.length;
+            if(content.length < self.countGoodsInContent)
+                self.countGoodsInContent = content.length;
             
             var f = 0;
-            for(var i = 0; i <= countGoodsInContent-1; i++){
+            for(var i = 0; i <= self.countGoodsInContent-1; i++){
                 if(self.typeView == 'tile'){
                     var str = new BlockTrForTableViewModel();
                     for(var j = 0; j <= 2; j++){
@@ -560,6 +574,7 @@ var ListContentViewModel = function(settings){
     self.typeView      = 'tile';
     self.countGoods    = 0;
     self.message = '';
+    self.showCart = settings.showCart;
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
