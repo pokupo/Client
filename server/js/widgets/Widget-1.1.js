@@ -440,6 +440,7 @@ var Widget = function (){
         });
 
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
+            console.log(data.options.widget);
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
             data.options.params['uniq'] = EventDispatcher.GetUUID();
@@ -616,89 +617,58 @@ var Widget = function (){
     };
     this.QueryError = function(data, callback, callbackPost){
         if (data.err) {
-            if($('#' + Config.Base.containerIdErrorWindow).length == 0){
-                $('body').append(Config.Base.errorWindow);
-            }
-            
             var text = '';
             if(data.msg)
                 text = data.msg;
             else
                 text = data.err;
-            
-            $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(text);
-            
-            $( "#" + Config.Base.containerIdErrorWindow ).dialog({
-                modal: true,
-                buttons: [
-                    { text: "Повторить запрос", click: function(){
-                        $( this ).dialog( "close" );
-                        callback();
-                        self.WidgetLoader(true);
-                    }},
-                    { text: "Закрыть", click: function() { 
-                        $( this ).dialog( "close" ); 
-                        if(callbackPost)
-                            callbackPost();
-                    }}
-                ]
+            self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+                var information = new ModalMessageWidget(
+                    'error',
+                    text,
+                    callbackPost
+                );
+                information.Init(information);
             });
-            $('.ui-dialog-titlebar-close').hide();
             self.WidgetLoader(true);
             return false;
         }
         return true;
     };
-    this.ShowMessage = function(message, callback, hide){
-        if($('#' + Config.Base.containerIdMessageWindow).length == 0){
-            $('body').append(Config.Base.containerMessage);
-        }
-        $('#' + Config.Base.containerIdMessageWindow + ' #' + Config.Base.conteinerIdTextMessageWindow).text(message);
-            
-        var button = [];
-        if(!hide){
-            button.push({ text: "Закрыть", click: function() { 
-                    $( this ).dialog( "close" );
-                    if(callback)
-                        callback();
-                }});
-        }
-        else{
-            setTimeout(function() {
-                $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
-                if(callback)
-                    callback();
-            }, Config.Base.timeMessage);
-        }
-        
-        $( "#" + Config.Base.containerIdMessageWindow ).dialog({
-            modal: false,
-            buttons: button
+    this.ShowError = function(message, callback, hide){
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'error',
+                message,
+                callback,
+                false,
+                hide
+            );
+            information.Init(information);
         });
-        $('.ui-dialog-titlebar-close').hide();
+    };
+    this.ShowMessage = function(message, callback, hide){
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'success',
+                message,
+                callback,
+                false,
+                hide
+            );
+            information.Init(information);
+        });
     };
     this.Confirm = function(message, callbackOk, callbackFail){
-        if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
-            $('body').append(Config.Base.containerConfirm);
-        }
-        $('#' + Config.Base.containerIdConfirmWindow + ' #' + Config.Base.conteinerIdTextConfirmWindow).text(message);
-        
-        $( "#" + Config.Base.containerIdConfirmWindow ).dialog({
-            modal: true,
-            buttons: [
-                { text: "Ok", click: function(){
-                    $( this ).dialog( "close" );
-                    if(callbackOk)
-                        callbackOk();
-                }},
-                { text: "Отменить", click: function() { 
-                    $( this ).dialog( "close" ); 
-                    if(callbackFail)
-                        callbackFail();
-                }}
-            ]
-        });
-        $('.ui-dialog-titlebar-close').hide();
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'confirm',
+                message,
+                callbackOk,
+                callbackFail
+            );
+            information.Init(information);
+        })
     };
     this.ErrorVertionTmpl = function(tmpl, hash, temp){
         var version = /<!--\s*version ([\d.]*)\s*-->/;
@@ -1031,10 +1001,12 @@ var Widget = function (){
             }
         },
         Script : function(script, callback){
-            if(!Parameters.cache.scripts[EventDispatcher.HashCode(script)]){
+            var hash = EventDispatcher.HashCode(script);
+            if(!Parameters.cache.scripts[hash]){
                 if(!$.isArray(script))
                     script = [script];
                 JSLoader.Load(script, callback);
+                Parameters.cache.scripts[hash] = true;
             }
             else{
                 if(callback)callback();

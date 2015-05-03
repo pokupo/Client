@@ -419,7 +419,7 @@ var GoodsMainBlockViewModel = function(data){
         if(Parameters.cache.userInformation != null && !Parameters.cache.userInformation.err)
             self.AddCommentForm();
         else
-            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
+            self.ShowError(Config.Authentication.message.pleaseLogIn, false, false);
     };
     self.comment = ko.observable('');
     self.AddCommentForm = function(){

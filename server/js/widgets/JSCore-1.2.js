@@ -22,7 +22,7 @@ var JSSettings = {
     orderPathApi : "order/", // префикс API заказов
     paymentPathApi : "payment/", // префикс API оплаты
     messagePathApi : "message/", // префикс API сообщений
-    dev: false,
+    dev: true,
     
     sourceData : 'api', //варианты api, proxy
     scripts : [
@@ -33,10 +33,6 @@ var JSSettings = {
         'widgets/Config-1.1.js',
         'widgets/Routing-1.0.js',
         'widgets/Paging-1.0.js',
-        'widgets/ContentViewModel-1.0.js',
-        'widgets/OrderViewModel-1.0.js',
-        'widgets/RegistrationViewModel-1.0.js',
-        'widgets/AuthenticationViewModel-1.1.js',
         'widgets/Widget-1.1.js'
     ],
     inputParameters : {}

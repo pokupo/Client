@@ -124,6 +124,7 @@ var ContentWidget = function(){
         self.settings.orderByContent = Config.Content.orderBy;
         self.settings.listPerPage = Config.Content.listPerPage;
         self.settings.showCart = Config.Content.showCart;
+        self.settings.showBlocks = Config.Content.showBlocks;
         self.settings.paging = Config.Paging;
         self.settings.styleContent = Config.Content.style;
         self.SetInputParameters();
@@ -164,19 +165,23 @@ var ContentWidget = function(){
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
-            self.BaseLoad.Blocks(Routing.GetActiveCategory(), function(data){
-                if(JSSettings.dev)
-                    Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
-                
-                self.CheckData(data)
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                self.BaseLoad.Blocks(Routing.GetActiveCategory(), function (data) {
+                    if (JSSettings.dev)
+                        Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
+
+                    self.CheckData(data)
+                });
             });
         });
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
-            self.BaseLoad.Info(Routing.GetActiveCategory(), function(data){
-                self.InsertContainer.EmptyBlockWidget();
-                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
-            })
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                self.BaseLoad.Info(Routing.GetActiveCategory(), function (data) {
+                    self.InsertContainer.EmptyBlockWidget();
+                    EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
+                })
+            });
         });
         
         EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){ 
