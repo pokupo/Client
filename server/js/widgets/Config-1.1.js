@@ -150,6 +150,7 @@ var Config = {
         sortList : [{name: 'rating', title: 'рейтингу'}, {name: 'name', title: 'названию'}, {name: 'cost', title: 'цене'}],
         orderBy : 'name', // сортировка по умолчанию
         showCart: true,
+        showBlocks: true,
         style : { // стиль блока 
             'position' : 'absolute', 
             'top' : '50px', 
@@ -465,6 +466,17 @@ var Config = {
             'width' : '100%', 
             'height' : '50px', 
             'background' : '#ddd'
+        }
+    },
+    ModalMessage: {
+        tmpl : {
+            path : "modalMessageTmpl.html", // файл шаблонов
+            id : {
+                confirm: 'modalMessageConfirmTmpl',
+                success: 'modalMessageSuccessTmpl',
+                error: 'modalMessageErrorTmpl',
+                message: 'modalMessageMessageTmpl'
+            }
         }
     },
     Profile : {

@@ -158,7 +158,9 @@ var OrderListWidget = function() {
                 self.Fill.List();
             }
             else if (Routing.params.block == 'detail' && Routing.params.id)
-                self.Fill.Detail(Routing.params.id);
+                self.BaseLoad.Script('widgets/OrderViewModel-1.0.js', function() {
+                    self.Fill.Detail(Routing.params.id);
+                });
         },
         Menu: function() {
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function() {

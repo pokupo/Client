@@ -55,15 +55,17 @@ var RegistrationWidget = function() {
     };
     self.CheckRouteRegistration = function() {
         if (Routing.route == 'registration') {
-            self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                if (Routing.params.step == 1)
-                    self.Step.Step1();
-                if (Routing.params.step == 2)
-                    self.Step.Step2();
-                if (Routing.params.step == 3)
-                    self.Step.Step3();
-                if (Routing.params.step == 4)
-                    self.Step.Step4();
+            self.BaseLoad.Tmpl(self.settings.tmpl, function() {
+                self.BaseLoad.Script('widgets/RegistrationViewModel-1.0.js', function () {
+                    if (Routing.params.step == 1)
+                        self.Step.Step1();
+                    if (Routing.params.step == 2)
+                        self.Step.Step2();
+                    if (Routing.params.step == 3)
+                        self.Step.Step3();
+                    if (Routing.params.step == 4)
+                        self.Step.Step4();
+                });
             });
         }
         else
