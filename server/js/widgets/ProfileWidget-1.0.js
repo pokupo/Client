@@ -420,12 +420,13 @@
         },
         Personal : function(){
             self.InsertContainer.Personal();
-            
-            self.BaseLoad.Profile(function(registration){
-                self.BaseLoad.ProfileInfo(function(data) {
-                    self.Fill.Personal(registration, data);
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                self.BaseLoad.Profile(function (registration) {
+                    self.BaseLoad.ProfileInfo(function (data) {
+                        self.Fill.Personal(registration, data);
+                    });
                 });
-            });
+            })
         },
         Delivery : function(){
             self.BaseLoad.DeliveryAddressList(function(data){
@@ -434,8 +435,10 @@
             });
         },
         DeliveryForm : function(){
-            var form = new DeliveryAddressFormViewModel();
-            self.Fill.DeliveryForm(form);
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                var form = new DeliveryAddressFormViewModel();
+                self.Fill.DeliveryForm(form);
+            });
         },
         Security : function(){
             self.InsertContainer.Security();
