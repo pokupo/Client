@@ -39,16 +39,18 @@ var StandalonePaymentWidget = function () {
         mailUser: null,
         idMethodPayment: null,
         paymentInfo: {},
-        description: ''
+        description: '',
+        showButton: null
     };
 
     self.InitWidget = function () {
         self.settings.containerId = Config.Containers.standalonePayment;
         self.settings.tmpl = Config.StandalonePayment.tmpl;
         self.settings.title = Config.StandalonePayment.title;
+        self.settings.showButton = Config.StandalonePayment.showButton;
 
-        self.SetParameters();
-        self.RegisterEvents();
+        //self.SetParameters();
+        //self.RegisterEvents();
         self.CheckRouteStandalonePayment();
     };
     self.SetParameters = function (data) {
@@ -97,13 +99,19 @@ var StandalonePaymentWidget = function () {
             }
             if (input.uid)
                 self.settings.uid  = input.uid;
+            if(Routing.params.uid)
+                self.settings.uid = Routing.params.uid;
 
             if(input.idShopPartner)
                 self.settings.idShopPartner = input.idShopPartner;
             if(Routing.params.idShopPartner)
                 self.settings.idShopPartner = Routing.params.idShopPartner;
+
             if (input.mailUser)
                 self.settings.mailUser = input.mailUser;
+            else if(Routing.params.mailUser)
+                self.settings.mailUser = Routing.params.mailUser;
+
             if (input.idMethodPayment)
                 self.settings.idMethodPayment = input.idMethodPayment;
             if(Routing.params.idMethodPayment)
@@ -112,6 +120,9 @@ var StandalonePaymentWidget = function () {
                 self.settings.description = input.description;
             if(Routing.params.description)
                 self.settings.description = input.description;
+
+            if(input.showButton)
+                self.settings.showButton = input.showButton;
 
             if(input.tmpl){
                 if(input.tmpl.path)
@@ -137,6 +148,8 @@ var StandalonePaymentWidget = function () {
             Logger.Console.VarDump(self.widgetName, "Result settings", self.settings);
     };
     self.CheckRouteStandalonePayment = function () {
+        self.SetParameters();
+        self.RegisterEvents();
         self.BaseLoad.Tmpl(self.settings.tmpl, function () {
             if (Routing.route == 'standalone_payment') {
                 if(self.settings.idGoods != null){
@@ -148,12 +161,16 @@ var StandalonePaymentWidget = function () {
                             self.GetData.PartnerGoods();
                     });
                 }
+
                 if (self.settings.idShop != null)
                     self.GetData.Service();
             }
-            else{
+            else if(self.settings.showButton){
                 self.InsertContainer.Button();
                 self.Fill.Button();
+            }
+            else{
+                self.WidgetLoader(true);
             }
         });
     };
@@ -711,7 +728,7 @@ var StandalonePaymentViewModel = function () {
         if (data.hasOwnProperty('url_invoice')) {
             self.urlInvoice(data.url_invoice);
         }
-        if(self.paymentInfo)
+        if(!$.isEmptyObject(self.paymentInfo))
             self.showPaymentInfo = true;
     };
 };

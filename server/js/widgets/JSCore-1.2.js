@@ -3,12 +3,12 @@ var JSSettings = {
     protocolHTTP : 'http://',
     protocolHTTPS : 'https://',
 
-    host : "pokupo-server.asmsoft.ru/",
+    host : "server.pokupo.ru/prod/server/",
     pathToJS : "js/",
-    pathToTmpl : "pokupo-promo.asmsoft.ru/themes/",
+    pathToTmpl : "pokupo.ru/themes/",
     theme: 'default',
-    pathToData : "services/DataProxy.php?query=",
-    pathToPostData : "services/DataPostProxy.php",
+    pathToData : "prod/server/services/DataProxy.php?query=",
+    pathToPostData : "prod/server/services/DataPostProxy.php",
     pathToCore: "index.html",
     pathToPostCore : 'postData.html',
     hostApi : "api.pokupo.ru/", // урл API
@@ -22,7 +22,7 @@ var JSSettings = {
     orderPathApi : "order/", // префикс API заказов
     paymentPathApi : "payment/", // префикс API оплаты
     messagePathApi : "message/", // префикс API сообщений
-    dev: true,
+    dev: false,
     
     sourceData : 'api', //варианты api, proxy
     scripts : [

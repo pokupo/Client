@@ -56,7 +56,7 @@ var Config = {
         buttonPayment : {widget: 'paymentWidgetId', def: 'defaultPaymentWidgetId', customClass: 'custom_block'}, // id контейнера страницы оплаты
         standalonePayment: {
             content: { widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId', customClass: 'custom_block'},
-            button: { widget: 'standalonePaymentButtonWidgetId', def: 'defaultStandalonePaymentButtonWidgetId', customClass: 'custom_block'}
+            button: { widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId', customClass: 'custom_block'}
         }, // id контейнера страницы оплаты
         statusPayment: { widget: 'statusPaymentWidgetId', def: 'defaultStatusPaymentWidgetId', customClass: 'custom_block'},
         message : {widget: 'messageWidgetId', def: 'defaultMessageWidgetId', customClass: 'custom_block'} // id контейнера списка сообщений
@@ -886,6 +886,7 @@ var Config = {
         }
     },
     StandalonePayment : {
+        showButton: false,
         title : "Оплатить", // заголовок кнопки
         tmpl : {
             path : 'standalonePaymentTmpl.html', // файл шаблонов
