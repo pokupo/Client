@@ -424,17 +424,13 @@ var GoodsMainBlockViewModel = function(data){
     self.comment = ko.observable('');
     self.AddCommentForm = function(){
         self.comment(' ');
-        $( "#dialog-form-batch" ).dialog({
-            height: 300,
-            width: 396,
-            modal: true,
-            buttons: {
-                "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, count:self.ordered(), data:self});
-                     $( this ).dialog( "close" );
-                }
+        this.ShowCommentForm(
+            self.comment(),
+            function(comment){
+                self.comment(comment);
+                EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment:self.comment(), data:self});
             }
-        });
+        );
     };
     self.IsFavorite = ko.observable();
     

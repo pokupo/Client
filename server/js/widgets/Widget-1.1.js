@@ -440,7 +440,6 @@ var Widget = function (){
         });
 
         EventDispatcher.AddEventListener('widget.onload.script', function(data){
-            console.log(data.options.widget);
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
             data.options.params['uniq'] = EventDispatcher.GetUUID();
@@ -651,6 +650,18 @@ var Widget = function (){
         self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
             var information = new ModalMessageWidget(
                 'success',
+                message,
+                callback,
+                false,
+                hide
+            );
+            information.Init(information);
+        });
+    };
+    this.ShowCommentForm = function(message, callback, hide){
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'message',
                 message,
                 callback,
                 false,

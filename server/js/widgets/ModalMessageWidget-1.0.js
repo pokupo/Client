@@ -133,7 +133,7 @@ var ModalMessageWidget = function (type, message, callbackOk, callbackFail, hide
 
 var ModalMessageViewModel = function(message, callbackOk, callbackFail, hide){
     var self = this;
-    self.message = message;
+    self.message = ko.observable(message);
     self.idWindow = 'pokupoModalMessage';
     self.Click = {
         Close: function(){
@@ -147,6 +147,11 @@ var ModalMessageViewModel = function(message, callbackOk, callbackFail, hide){
         NotConfirm: function(){
             if(callbackFail)
                 callbackFail();
+            self.Click.Close();
+        },
+        GetMessage: function(){
+            if(callbackOk)
+                callbackOk(self.message());
             self.Click.Close();
         }
     }
