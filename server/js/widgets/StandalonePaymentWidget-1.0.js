@@ -49,8 +49,6 @@ var StandalonePaymentWidget = function () {
         self.settings.title = Config.StandalonePayment.title;
         self.settings.showButton = Config.StandalonePayment.showButton;
 
-        //self.SetParameters();
-        //self.RegisterEvents();
         self.CheckRouteStandalonePayment();
     };
     self.SetParameters = function (data) {
@@ -388,6 +386,10 @@ var StandalonePaymentWidget = function () {
                         new AnimateStandalonePayment();
                     if (self.settings.animate)
                         self.settings.animate();
+
+                    $('#' + data.cssAmount).bind('textchange', function(event, previousText) {
+                        data.amount($(this).val());
+                    })
                 }
                 catch (e) {
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('paymentList') + ']', e);
@@ -466,6 +468,8 @@ var StandalonePaymentListViewModel = function(settings){
     self.title = ko.observable();
     self.count = ko.observable();
     self.amount = ko.observable();
+    self.formatAmount = ko.observable();
+    self.cssAmount = 'pokupo_amount';
 
     if(settings.idGoods){
         self.title(settings.goodsInfo.main.chort_name);
@@ -480,6 +484,7 @@ var StandalonePaymentListViewModel = function(settings){
         self.amount(settings.amount);
         self.isGoodsId(false);
     }
+    self.formatAmount = self.amount().toFixed(2);
 
     self.mailUser = ko.observable();
     self.idMethodPayment = ko.observable();
@@ -539,6 +544,11 @@ var StandalonePaymentListViewModel = function(settings){
             self.show.errorAmount(true);
             return false;
         }
+        if(isNaN(self.amount())){
+            self.error.amount(Config.StandalonePayment.Error.coast.integer);
+            self.show.errorAmount(true);
+            return false;
+        }
         if (parseFloat(self.amount()) != self.amount()) {
             self.error.amount(Config.StandalonePayment.Error.coast.integer);
             self.show.errorAmount(true);
@@ -594,8 +604,11 @@ var StandalonePaymentItemViewModel = function(obj, data){
     self.logoPayment = obj.logo_payment;
     self.timePayment = obj.time_payment;
     self.itog = ko.computed(function() {
-        var result = data.amount() ? parseInt(data.amount()) : 0 + self.costPayment ? parseInt(self.costPayment) : 0;
-        return result;
+        var result = (data.amount() ? data.amount() : 0) + (self.costPayment ? self.costPayment : 0);
+        if(result == 0 || isNaN(result))
+            return 0;
+        else
+            return result.toFixed(2);
     }, this);
     self.errorEmail = ko.observable();
 

@@ -198,7 +198,6 @@ var StatusPaymentViewModel = function(data){
 
 var StatusPaymentParametersViewModel = function(data){
     var self = this;
-    console.log(data);
     self.label = ko.observable(data.label);
     self.value = ko.observable(data.value);
     self.help = ko.observable(data.help);
