@@ -390,6 +390,9 @@ var StandalonePaymentWidget = function () {
                     $('#' + data.cssAmount).bind('textchange', function(event, previousText) {
                         data.amount($(this).val());
                     })
+                    $('#' + data.cssCount).bind('textchange', function(event, previousText) {
+                        data.count($(this).val());
+                    })
                 }
                 catch (e) {
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('paymentList') + ']', e);
@@ -470,6 +473,7 @@ var StandalonePaymentListViewModel = function(settings){
     self.amount = ko.observable();
     self.formatAmount = ko.observable();
     self.cssAmount = 'pokupo_amount';
+    self.cssCount = 'pokupo_count';
 
     if(settings.idGoods){
         self.title(settings.goodsInfo.main.chort_name);
@@ -484,7 +488,8 @@ var StandalonePaymentListViewModel = function(settings){
         self.amount(settings.amount);
         self.isGoodsId(false);
     }
-    self.formatAmount = self.amount().toFixed(2);
+    if(self.amount())
+        self.formatAmount = self.amount().toFixed(2);
 
     self.mailUser = ko.observable();
     self.idMethodPayment = ko.observable();
@@ -604,11 +609,13 @@ var StandalonePaymentItemViewModel = function(obj, data){
     self.logoPayment = obj.logo_payment;
     self.timePayment = obj.time_payment;
     self.itog = ko.computed(function() {
-        var result = (data.amount() ? data.amount() : 0) + (self.costPayment ? self.costPayment : 0);
+        var result = (data.amount() ? parseFloat(data.amount()) : 0) + (self.costPayment ? parseFloat(self.costPayment) : 0);
         if(result == 0 || isNaN(result))
             return 0;
-        else
-            return result.toFixed(2);
+        else {
+            result = result.toFixed(2);
+            return result;
+        }
     }, this);
     self.errorEmail = ko.observable();
 
