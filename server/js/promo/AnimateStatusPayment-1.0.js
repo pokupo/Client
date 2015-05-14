@@ -1,6 +1,8 @@
 var AnimateStatusPayment = function () {
     /*инициализация селекта по загрузке*/
 
+    $('html').addClass('pkp_html');
+    $('body').addClass('pkp_body');
 
     $(".j-pkp-select").selecter({
         label: "По умолчанию"

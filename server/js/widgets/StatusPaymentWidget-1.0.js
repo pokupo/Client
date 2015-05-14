@@ -48,10 +48,6 @@ var StatusPaymentWidget = function () {
                 if(input.tmpl.id)
                     self.settings.tmpl.id = input.tmpl.id;
             }
-            if(input.container){
-                if(input.container)
-                    self.settings.containerId = input.container;
-            }
             if(input.animate)
                 self.settings.animate = input.animate;
         }
