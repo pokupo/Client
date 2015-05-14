@@ -163,7 +163,7 @@ var StandalonePaymentWidget = function () {
                 if (self.settings.idShop != null)
                     self.GetData.Service();
             }
-            else if(self.settings.showButton){
+            else if(self.settings.showButton && Routing.route != 'status_payment'){
                 self.InsertContainer.Button();
                 self.Fill.Button();
             }
@@ -334,10 +334,15 @@ var StandalonePaymentWidget = function () {
 
             var str = [];
             var fields = data.pay_form.hidden_field;
+            var orderId = null;
             $.each(fields, function(i){
                 str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
+                if(fields[i].name == 'PKP_ID_ORDER')
+                    orderId = fields[i].value;
             });
-            if(str)
+            if(orderId)
+                $.cookie(Config.Base.cookie.orderId, 'PKP_ID_ORDER=' + orderId);
+            else if(str)
                 $.cookie(Config.Base.cookie.orderId, str.join('&'));
 ;
             content.paymentInfo = self.settings.paymentInfo;
@@ -351,6 +356,9 @@ var StandalonePaymentWidget = function () {
                 try {
                     ko.cleanNode($('#' + self.settings.containerId.button.widget)[0]);
                     ko.applyBindings(data, $('#' + self.settings.containerId.button.widget)[0]);
+
+                    self.WidgetLoader(true, self.settings.containerId.button.widget);
+
                     if (typeof AnimateStandalonePayment == 'function')
                         new AnimateStandalonePayment();
                     if (self.settings.animate)
@@ -489,7 +497,7 @@ var StandalonePaymentListViewModel = function(settings){
         self.isGoodsId(false);
     }
     if(self.amount())
-        self.formatAmount = self.amount().toFixed(2);
+        self.formatAmount = parseFloat(self.amount()).toFixed(2);
 
     self.mailUser = ko.observable();
     self.idMethodPayment = ko.observable();

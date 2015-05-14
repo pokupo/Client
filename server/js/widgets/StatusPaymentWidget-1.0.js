@@ -71,9 +71,10 @@ var StatusPaymentWidget = function () {
     self.CheckRouteSearch = function(){
         if(Routing.route == 'status_payment'){
             var orderId = $.cookie(Config.Base.cookie.orderId);
+            var mailUser = $.cookie(Config.Base.cookie.userEmail);
             if(orderId){
                 var paymentType = Routing.params.name;
-                var str = paymentType + '/?' + orderId
+                var str = paymentType + '/?' + orderId + '&mailUser=' + mailUser;
                 self.BaseLoad.Tmpl(self.settings.tmpl, function () {
                     self.BaseLoad.StatusPayment(str, function (data) {
                         self.Fill(data);
