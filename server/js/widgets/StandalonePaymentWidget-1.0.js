@@ -193,6 +193,7 @@ var StandalonePaymentWidget = function () {
 
         EventDispatcher.AddEventListener('StandalonePaymentWidget.back', function(){
             self.settings.idMethodPayment = null;
+            self.settings.mailUser = null;
             self.CheckRouteStandalonePayment()
         });
 
