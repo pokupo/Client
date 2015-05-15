@@ -17,7 +17,8 @@ var StandalonePaymentWidget = function () {
             id : {
                 button : null,
                 paymentList: null,
-                content : null
+                content : null,
+                error: null
             }
         },
         animate: null,
@@ -199,6 +200,12 @@ var StandalonePaymentWidget = function () {
             self.CheckRouteStandalonePayment();
         });
 
+        EventDispatcher.AddEventListener('StandalonePaymentWidget.payment.clear', function(){
+            self.settings.idMethodPayment = null;
+            self.settings.mailUser = null;
+            self.CheckRouteStandalonePayment();
+        });
+
         EventDispatcher.AddEventListener('StandalonePaymentWidget.form.submit', function (form) {
             self.InsertContainer.Content();
             var dataStr = [];
@@ -297,6 +304,10 @@ var StandalonePaymentWidget = function () {
         Content: function () {
             self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
             $("#" + self.settings.containerId.content.widget).html($('script#' + self.GetTmplName('content')).html()).hide();
+        },
+        Error: function(){
+            self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
+            $("#" + self.settings.containerId.content.widget).html($('script#' + self.GetTmplName('error')).html()).hide();
         }
     };
     self.Fill = {
@@ -305,35 +316,43 @@ var StandalonePaymentWidget = function () {
             self.Render.Button(button);
         },
         PaymentList: function(data){
-            if(!self.settings.idMethodPayment) {
-                var list = new StandalonePaymentListViewModel(self.settings);
-                if(data.err){
-                    list.error.base(data.msg);
-                    list.show.errorBase(true);
+            if(data.err){
+                self.InsertContainer.Error();
+                self.Fill.Error(data);
+            }
+            else {
+                if (!self.settings.idMethodPayment) {
+                    var list = new StandalonePaymentListViewModel(self.settings);
+                    if (data.err) {
+                        list.error.base(data.msg);
+                        list.show.errorBase(true);
+                    }
+                    else {
+                        list.error.base('');
+                        list.show.errorBase(false);
+                        if (data) {
+                            $.each(data, function (i) {
+                                list.payments.push(new StandalonePaymentItemViewModel(data[i], list));
+                            });
+                        }
+                    }
+
+                    self.InsertContainer.PaymentList();
+                    self.Render.PaymentList(list);
                 }
                 else {
-                    list.error.base('');
-                    list.show.errorBase(false);
-                    if (data) {
-                        $.each(data, function (i) {
-                            list.payments.push(new StandalonePaymentItemViewModel(data[i], list));
-                        });
-                    }
+                    self.InsertContainer.Content();
+                    self.Fill.Content(data);
                 }
-
-                self.InsertContainer.PaymentList();
-                self.Render.PaymentList(list);
-            }
-            else{
-                self.InsertContainer.Content();
-                self.Fill.Content(data);
             }
         },
         Content: function (data) {
             var content = new StandalonePaymentViewModel();
 
             var str = [];
-            var fields = data.pay_form.hidden_field;
+            var fields = {};
+            if(data.pay_form)
+                fields = data.pay_form.hidden_field;
             var orderId = null;
             $.each(fields, function(i){
                 str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
@@ -348,6 +367,10 @@ var StandalonePaymentWidget = function () {
             content.paymentInfo = self.settings.paymentInfo;
             content.AddContent(data);
             self.Render.Content(content);
+        },
+        Error: function(data){
+            var list = new StandalonePaymentListViewModel(self.settings);
+            self.Render.Error(list);
         }
     };
     self.Render = {
@@ -441,6 +464,39 @@ var StandalonePaymentWidget = function () {
                 }
                 catch (e) {
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']', e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
+                        self.WidgetLoader(true, self.settings.containerId.content.widget);
+                    }
+                }
+            }
+            else {
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId.content.widget + ']');
+                self.WidgetLoader(true);
+            }
+        },
+        Error: function (data) {
+            if ($("#" + self.settings.containerId.content.widget).length > 0) {
+                try {
+                    ko.cleanNode($("#" + self.settings.containerId.content.widget)[0]);
+                    ko.applyBindings(data, $("#" + self.settings.containerId.content.widget)[0]);
+
+                    $("#" + self.settings.containerId.content.widget).show();
+                    self.WidgetLoader(true);
+                    if (typeof AnimateStandalonePayment == 'function')
+                        new AnimateStandalonePayment();
+                    if (self.settings.animate)
+                        self.settings.animate();
+                }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('error') + ']', e);
                     if (self.settings.tmpl.custom) {
                         delete self.settings.tmpl.custom;
                         self.BaseLoad.Tmpl(self.settings.tmpl, function () {
@@ -590,6 +646,11 @@ var StandalonePaymentListViewModel = function(settings){
         self.error.email(null);
         self.show.errorEmail(false);
         return true;
+    };
+
+    self.ClickClearPayment = function(){
+        self.idMethodPayment(null);
+        EventDispatcher.DispatchEvent('StandalonePaymentWidget.payment.clear');
     };
 
     EventDispatcher.AddEventListener('StandalonePaymentWidget.payment.validate', function(data){

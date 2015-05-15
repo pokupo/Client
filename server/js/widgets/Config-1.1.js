@@ -893,7 +893,8 @@ var Config = {
             id : {
                 content : 'standalonePaymentPageTmpl', //id шаблона страницы оплаты
                 paymentList: 'standalonePaymentListTmpl',
-                button : 'standalonePaymentButtonImpl' //id шаблона кнопки
+                button : 'standalonePaymentButtonImpl', //id шаблона кнопки
+                error: 'standalonePaymentErrorTmpl'
             }
         },
         Error : {
