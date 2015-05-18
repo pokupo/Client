@@ -177,6 +177,12 @@ var StatusPaymentViewModel = function(data){
 
     self.egoods = [];
     if(data.egoods){
+        $.each(data.egoods, function(i){
+            if(!data.egoods[i]['max_upload'])
+                data.egoods[i]['max_upload'] = false;
+            if(!data.egoods[i]['expiration'])
+                data.egoods[i]['expiration'] = false;
+        })
         self.egoods = data.egoods;
     }
 
