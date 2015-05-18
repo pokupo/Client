@@ -40,6 +40,7 @@ var StandalonePaymentWidget = function () {
         mailUser: null,
         idMethodPayment: null,
         paymentInfo: {},
+        paymentList: false,
         description: '',
         showButton: null
     };
@@ -73,6 +74,10 @@ var StandalonePaymentWidget = function () {
 
             if (input.idGoods) {
                 self.settings.idGoods = input.idGoods;
+                self.settings.showAmount = false;
+            }
+            else if (Routing.params.idGoods) {
+                self.settings.idGoods = Routing.params.idGoods;
                 self.settings.showAmount = false;
             }
             if (input.count ){
@@ -317,25 +322,20 @@ var StandalonePaymentWidget = function () {
             self.Render.Button(button);
         },
         PaymentList: function(data){
-            if(data.err){
+            if(data.hasOwnProperty('err')){
                 self.InsertContainer.Error();
                 self.Fill.Error(data);
             }
             else {
-                if (!self.settings.idMethodPayment) {
+                if (!data.hasOwnProperty('pay_form')) {
                     var list = new StandalonePaymentListViewModel(self.settings);
-                    if (data.err) {
-                        list.error.base(data.msg);
-                        list.show.errorBase(true);
-                    }
-                    else {
-                        list.error.base('');
-                        list.show.errorBase(false);
-                        if (data) {
-                            $.each(data, function (i) {
-                                list.payments.push(new StandalonePaymentItemViewModel(data[i], list));
-                            });
-                        }
+                    list.error.base('');
+                    list.show.errorBase(false);
+                    if (data) {
+                        $.each(data, function (i) {
+                            self.settings.paymentList = true;
+                            list.payments.push(new StandalonePaymentItemViewModel(data[i], list));
+                        });
                     }
 
                     self.InsertContainer.PaymentList();
@@ -348,7 +348,7 @@ var StandalonePaymentWidget = function () {
             }
         },
         Content: function (data) {
-            var content = new StandalonePaymentViewModel();
+            var content = new StandalonePaymentViewModel(self.settings);
 
             var str = [];
             var fields = {};
@@ -370,7 +370,7 @@ var StandalonePaymentWidget = function () {
             self.Render.Content(content);
         },
         Error: function(data){
-            var list = new StandalonePaymentListViewModel(self.settings);
+            var list = new StandalonePaymentErrorViewModel(data, self.settings);
             self.Render.Error(list);
         }
     };
@@ -557,7 +557,7 @@ var StandalonePaymentListViewModel = function(settings){
         self.formatAmount = parseFloat(self.amount()).toFixed(2);
 
     self.mailUser = ko.observable();
-    self.idMethodPayment = ko.observable();
+    self.idMethodPayment = ko.observable(settings.idMethodPayment);
     self.payments = ko.observableArray();
 
     self.error = {
@@ -649,11 +649,6 @@ var StandalonePaymentListViewModel = function(settings){
         return true;
     };
 
-    self.ClickClearPayment = function(){
-        self.idMethodPayment(null);
-        EventDispatcher.DispatchEvent('StandalonePaymentWidget.payment.clear');
-    };
-
     EventDispatcher.AddEventListener('StandalonePaymentWidget.payment.validate', function(data){
         var test = true;
         if(!self.EmailValidation())
@@ -704,12 +699,13 @@ var StandalonePaymentItemViewModel = function(obj, data){
 
 }
 
-var StandalonePaymentViewModel = function () {
+var StandalonePaymentViewModel = function (settings) {
     var self = this;
     self.paymentInfo = {};
     self.showPaymentInfo = false;
     self.instruction = ko.observable();
     self.cssInstruction = 'instructtion_print_block';
+    self.idMethodPayment = settings.idMethodPayment;
 
     self.outData = ko.observableArray();
 
@@ -875,13 +871,6 @@ var StandalonePaymentFieldViewModel = function () {
                 return false;
             }
         }
-//        if(self.regExp()){
-//            var reg = new RegExp(self.regExp(), 'gi');
-//            if(! reg.test(self.value())){
-//                self.error(Config.ButtonPayment.Error.regExp);
-//                return false;
-//            }
-//        }
         if (self.maxlength()) {
             if (self.value().length > self.maxlength()) {
                 self.error(Config.ButtonPayment.Error.maxlength.replace('%s%', self.maxlength()));
@@ -889,6 +878,17 @@ var StandalonePaymentFieldViewModel = function () {
             }
         }
         return true;
+    };
+}
+
+var StandalonePaymentErrorViewModel = function(data, settings){
+    var self = this;
+    self.code = data.err;
+    self.message = data.msg;
+    self.hasPaymentList = settings.paymentList;
+
+    self.ClickClearPayment = function(){
+        EventDispatcher.DispatchEvent('StandalonePaymentWidget.payment.clear');
     };
 }
 
