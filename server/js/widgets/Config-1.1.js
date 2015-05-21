@@ -59,6 +59,7 @@ var Config = {
             button: { widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId', customClass: 'custom_block'}
         }, // id контейнера страницы оплаты
         statusPayment: { widget: 'statusPaymentWidgetId', def: 'defaultStatusPaymentWidgetId', customClass: 'custom_block'},
+        shopInfo: { widget: 'shopInfoWidgetId', def: 'defaultShopInfoWidgetId', customClass: 'custom_block' },
         message : {widget: 'messageWidgetId', def: 'defaultMessageWidgetId', customClass: 'custom_block'} // id контейнера списка сообщений
     },
     Goods : {
@@ -925,6 +926,17 @@ var Config = {
         tmpl : {
             path : 'statusPaymentTmpl.html', // файл шаблонов
             id : 'statusPaymentPageTmpl' //id шаблона страницы статуса оплаты
+        }
+    },
+    ShopInfo : {
+        defaultLogo: "//seller.pokupo.ru/images/logos/shop/1.png",
+        show: {
+            logo: true,
+            title: true
+        },
+        tmpl : {
+            path : 'shopInfoTmpl.html', // файл шаблонов
+            id : 'shopInfoTmpl'
         }
     },
     Paging : {
