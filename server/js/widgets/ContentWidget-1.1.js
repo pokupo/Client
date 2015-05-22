@@ -231,26 +231,29 @@ var ContentWidget = function(){
             }
         }
         else{
-            self.testBlock.count = data.length;
+            self.testBlock.count = 0;
             self.testBlock.ready = 0;
             self.Render.Animate.block = ko.observableArray();
             for(var i = 0; i <= data.length - 1; i++){
-                Parameters.cache.contentBlock[data[i].id] = {
-                    sort : i, 
-                    block : data[i]
-                };
-                self.InsertContainer.Block(i, data[i].type_view);
+                if(data[i].count_goods > 0) {
+                    ++self.testBlock.count;
+                    Parameters.cache.contentBlock[data[i].id] = {
+                        sort: i,
+                        block: data[i]
+                    };
+                    self.InsertContainer.Block(i, data[i].type_view);
 
-                var query = '0/' + self.settings.countGoodsInBlock + '/name/';
-                var queryHash = data[i].id + EventDispatcher.HashCode(query);
+                    var query = '0/' + self.settings.countGoodsInBlock + '/name/';
+                    var queryHash = data[i].id + EventDispatcher.HashCode(query);
 
-                EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
-                    self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
-                });
+                    EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function (data) {
+                        self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
+                    });
 
-                self.BaseLoad.Content(data[i].id, query, function(data){
-                    EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
-                })
+                    self.BaseLoad.Content(data[i].id, query, function (data) {
+                        EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
+                    })
+                }
             }
         }
     };
@@ -338,7 +341,6 @@ var ContentWidget = function(){
                 if(Loader.IsReady()){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
-                        $('#' + b[i].data.cssBlock).show();
                         if(typeof AnimateContent == 'function')
                             new AnimateContent();
                         if(self.settings.animate.block)
@@ -355,7 +357,6 @@ var ContentWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
                     if(typeof AnimateContent == 'function')
                         new AnimateContent();
