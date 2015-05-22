@@ -239,6 +239,7 @@ var XDMTransport = {
             })
         },
         Data: function(data, callback, protocol){
+            protocol = JSSettings.protocolHTTPS;
             var hash = EventDispatcher.HashCode(data + callback.toString());
 
             if(XDMTransport.event[hash] == undefined)

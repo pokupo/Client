@@ -66,8 +66,10 @@ var SearchWidget = function(){
         }
         else{
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+                self.BaseLoad.Roots(function(){
+                    self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
+                        EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+                    });
                 });
             });
         }

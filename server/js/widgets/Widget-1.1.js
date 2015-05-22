@@ -317,12 +317,10 @@ var Widget = function (){
                     this.SelfInit();
                     if(!noindicate)
                         Loader.Indicator(widget.widgetName, false);
-                    this.BaseLoad.Roots(function(){
                         widget.InitWidget();
                         self.widgetName = widget.widgetName;
                         self.minTmplVersion = widget.minTmplVersion;
                         self.maxTmplVersion = widget.maxTmplVersion;
-                    });
                 }
                 else{
                     Loader.Indicator(widget.widgetName, true);
@@ -341,11 +339,8 @@ var Widget = function (){
     this.SelfInit = function(){
         if(!this.isReady){
             this.isReady = true;
-            var hostApi = JSSettings.protocolHTTP + JSSettings.hostApi;
-            if(document.location.protocol == 'https:')
-                hostApi = JSSettings.protocolHTTPS + JSSettings.hostApi;
             self.settings = {
-                hostApi : hostApi,
+                hostApi : JSSettings.protocolHTTPS + JSSettings.hostApi,
                 httpsHostApi : JSSettings.protocolHTTPS + JSSettings.hostApi,
                 catalogPathApi : JSSettings.catalogPathApi,
                 goodsPathApi : JSSettings.goodsPathApi,
