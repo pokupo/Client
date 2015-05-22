@@ -135,7 +135,6 @@ var SearchResultWidget = function(){
         }
         else{
             EventDispatcher.DispatchEvent('searchResultWidget.show.form');
-            self.WidgetLoader(true);  
         }
     };
     self.RegisterEvents = function(){ 
@@ -146,6 +145,8 @@ var SearchResultWidget = function(){
                     EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
                 })
             }
+            else
+                self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
