@@ -231,7 +231,9 @@ var SearchResultWidget = function(){
     self.Fill = {
         AdvancedSearchForm : function(){
             var searchForm = new AdvancedSearchFormViewModel(self.settings);
-            searchForm.AddCategories(Parameters.cache.roots);
+            self.BaseLoad.Roots(function(data) {
+                searchForm.AddCategories(data);
+            });
         },
         SearchResult : function(data){
             var searchResult = new ListSearchResultViewModel(self.settings);

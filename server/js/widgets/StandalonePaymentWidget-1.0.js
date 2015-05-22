@@ -80,6 +80,10 @@ var StandalonePaymentWidget = function () {
                 self.settings.idGoods = Routing.params.idGoods;
                 self.settings.showAmount = false;
             }
+            else{
+                self.settings.idShop = JSSettings.shopId;
+                self.settings.showCount = false;
+            }
             if (input.count ){
                 self.settings.count  = input.count;
                 self.settings.showCount = false;
@@ -89,10 +93,6 @@ var StandalonePaymentWidget = function () {
                 self.settings.showCount = false;
             }
 
-            if (input.idShop ) {
-                self.settings.idShop = input.idShop;
-                self.settings.showCount = false;
-            }
             if (input.amount) {
                 self.settings.amount = input.amount;
                 self.settings.showAmount = false;
@@ -123,7 +123,7 @@ var StandalonePaymentWidget = function () {
             if(input.description)
                 self.settings.description = input.description;
             if(Routing.params.description)
-                self.settings.description = input.description;
+                self.settings.description = Routing.params.description;
 
             if(input.showButton)
                 self.settings.showButton = input.showButton;
@@ -273,7 +273,7 @@ var StandalonePaymentWidget = function () {
         Service: function () {
             var str = self.settings.idShop + '/';
             if(self.settings.idShopPartner)
-                str = str + self.settings.idShopPartner;
+                str = str + self.settings.idShopPartner + '/';
 
             var parameters = [];
             if(self.settings.amount)
@@ -420,8 +420,16 @@ var StandalonePaymentWidget = function () {
                         self.settings.animate();
 
                     $('#' + data.cssAmount).bind('textchange', function(event, previousText) {
-                        data.amount($(this).val());
+                        var text = $(this).val();
+                        data.amount(text);
+                        self.settings.amount = text;
+                        setTimeout(function(){
+                            if(text == self.settings.amount){
+                                self.GetData.Service();
+                            }
+                        }, 500);
                     })
+
                     $('#' + data.cssCount).bind('textchange', function(event, previousText) {
                         data.count($(this).val());
                     })
@@ -547,7 +555,6 @@ var StandalonePaymentListViewModel = function(settings){
         self.amount(coast);
         self.isGoodsId(true);
     }
-
     if(settings.idShop){
         self.title(settings.description);
         self.amount(settings.amount);
@@ -905,6 +912,4 @@ var TestStandalonePayment = {
     }
 }
 
-$().ready(function(){
-    TestStandalonePayment.Init();
-})
+TestStandalonePayment.Init();

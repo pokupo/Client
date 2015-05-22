@@ -49,7 +49,9 @@ var CatalogWidget = function(){
     self.CheckRouteCatalog = function(){
         if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                self.Update();
+                self.BaseLoad.Roots(function(){
+                    self.Update();
+                })
             });
         }
         else
@@ -99,7 +101,9 @@ var CatalogWidget = function(){
             }
             else if(Routing.IsSection() || Parameters.cache.catalogs[Routing.GetActiveCategory()]){
                 self.InsertContainer.Main();
-                self.Fill.Tree(Parameters.cache.roots);
+                self.BaseLoad.Roots(function(data) {
+                    self.Fill.Tree(data);
+                });
             }
             else{
                 self.WidgetLoader(true);
