@@ -134,7 +134,9 @@ var ContentWidget = function(){
     };
     self.CheckContentRouting = function(){
         if(Routing.route == 'catalog' || Routing.IsDefault()){
-            self.SelectTypeContent();
+            self.BaseLoad.Roots(function() {
+                self.SelectTypeContent();
+            });
         }
         else
             self.WidgetLoader(true);
@@ -142,9 +144,32 @@ var ContentWidget = function(){
     self.SelectTypeContent = function(){
         if(Routing.IsCategory()){ 
             if(!self.HasDefaultContent('content', 'content') || !Routing.IsDefault()){
-                self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
-                    EventDispatcher.DispatchEvent('onload.content.tmpl')
+                self.Get.Content();
+            }
+            else
+                self.WidgetLoader(true);
+        }
+        else if(Routing.IsDefault()){
+            Config.Base.defaultSection = Parameters.cache.roots[0].id;
+            if(Parameters.cache.roots[0].type_category != 'section'){
+                self.Get.Content();
+            }
+            else if(self.settings.showBlocks){
+                self.Get.Blocks();
+            }
+            else if(!self.settings.showBlocks){
+                var children = Parameters.cache.roots[0].children;
+                var category = null;
+                $.each(children, function(i){
+                    if(children[i].type_category == 'category'){
+                        category = children[i];
+                        return false;
+                    }
                 });
+                if(category)
+                    Routing.SetHash('catalog', category.name_category, {section: Parameters.cache.roots[0].id, category: category.id})
+                else
+                    self.WidgetLoader(true);
             }
             else
                 self.WidgetLoader(true);
@@ -152,9 +177,7 @@ var ContentWidget = function(){
         else{
             if(self.settings.showBlocks) {
                 if (!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()) {
-                    self.BaseLoad.Tmpl(self.settings.tmpl.block, function () {
-                        EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
-                    });
+                    self.Get.Blocks();
                 }
                 else
                     self.WidgetLoader(true);
@@ -163,28 +186,36 @@ var ContentWidget = function(){
                 self.WidgetLoader(true);
         }
     };
+    self.Get = {
+        Content: function(){
+            self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
+                EventDispatcher.DispatchEvent('onload.content.tmpl')
+            });
+        },
+        Blocks: function(){
+            self.BaseLoad.Tmpl(self.settings.tmpl.block, function () {
+                EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
+            });
+        }
+    };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
             self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
-                self.BaseLoad.Roots(function(){
-                    self.BaseLoad.Blocks(Routing.GetActiveCategory(), function (data) {
-                        if (JSSettings.dev)
-                            Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
+                self.BaseLoad.Blocks(Routing.GetActiveCategory(), function (data) {
+                    if (JSSettings.dev)
+                        Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
 
-                        self.CheckData(data)
-                    });
-                })
+                    self.CheckData(data)
+                });
             });
         });
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
             self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
-                self.BaseLoad.Roots(function() {
-                    self.BaseLoad.Info(Routing.GetActiveCategory(), function (data) {
-                        self.InsertContainer.EmptyBlockWidget();
-                        EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
-                    })
-                });
+                self.BaseLoad.Info(Routing.GetActiveCategory(), function (data) {
+                    self.InsertContainer.EmptyBlockWidget();
+                    EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
+                })
             });
         });
         
