@@ -1,6 +1,6 @@
 var JSSettings = {
     shopId: 0,
-    protocolHTTP : 'http://',
+    protocolHTTP : 'https://',
     protocolHTTPS : 'https://',
 
     host : "server.pokupo.ru/prod/server/",

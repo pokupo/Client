@@ -79,11 +79,11 @@ var Routing = {
     },
     CheckRoute: function () {
         if (Routing.route == 'standalone_payment') {
-            if (!Loader.widgets['StandalonePaymentWidget'])
+            if (!Loader.widgets['StandalonePaymentWidget'] && Loader.widgets['OrderListWidget'])
                 Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
         }
         if (Routing.route == 'status_payment'){
-            if (!Loader.widgets['StatusPaymentWidget'])
+            if (!Loader.widgets['StatusPaymentWidget'] && Loader.widgets['OrderListWidget'])
                 Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
         }
         return true;

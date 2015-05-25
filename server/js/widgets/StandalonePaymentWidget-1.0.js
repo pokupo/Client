@@ -238,6 +238,27 @@ var StandalonePaymentWidget = function () {
         });
     };
     self.GetData = {
+        Price: function(){
+            var str = self.settings.idShop + '/';
+            if(self.settings.idShopPartner)
+                str = str + self.settings.idShopPartner + '/';
+
+            var parameters = [];
+            if(self.settings.amount)
+                parameters.push('amount=' + self.settings.amount);
+            if(self.settings.uid)
+                parameters.push('uid=' + self.settings.uid);
+            if(self.settings.idMethodPayment)
+                parameters.push('idMethodPayment=' + self.settings.idMethodPayment);
+
+            parameters.push('description=' + self.settings.description);
+            if(parameters.length > 0)
+                str = str + '?' + parameters.join('&');
+
+            self.BaseLoad.InvoicesService(str, function (data) {
+                self.Fill.PaymentList(data);
+            });
+        },
         Goods: function () {
             var str = self.settings.idGoods + '/';
             if(self.settings.count)
@@ -364,7 +385,7 @@ var StandalonePaymentWidget = function () {
                 $.cookie(Config.Base.cookie.orderId, 'PKP_ID_ORDER=' + orderId);
             else if(str)
                 $.cookie(Config.Base.cookie.orderId, str.join('&'));
-;
+
             content.paymentInfo = self.settings.paymentInfo;
             content.AddContent(data);
             self.Render.Content(content);
@@ -425,7 +446,7 @@ var StandalonePaymentWidget = function () {
                         self.settings.amount = text;
                         setTimeout(function(){
                             if(text == self.settings.amount){
-                                self.GetData.Service();
+                                self.GetData.Price();
                             }
                         }, 500);
                     })
