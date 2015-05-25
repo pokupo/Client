@@ -219,7 +219,7 @@ var ContentWidget = function(){
             });
         });
         
-        EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){ 
+        EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){
             var start = (Routing.GetCurrentPage()-1) * self.settings.paging.itemsPerPage;
             var orderBy = Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : self.settings.orderByContent;
             var query = start + '/' + self.settings.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Routing.GetMoreParameter('filterName'));
