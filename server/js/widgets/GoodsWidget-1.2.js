@@ -397,11 +397,11 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-        if(Parameters.cache.userInformation.err){
+        if(Parameters.cache.userInformation == null ||(Parameters.cache.userInformation != null && Parameters.cache.userInformation.err)){
             Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()}};
             Routing.SetHash('login', 'Авторизация пользователя', {});
         }
-        else{           
+        else{
             Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
         }
     };
