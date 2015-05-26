@@ -16,7 +16,7 @@ var Routing = {
         for(var key in data){
             if(data[key] && key != 'idCategories'){
                 if(key != 'page')
-                    params.push(key + '=' + decodeURIComponent(data[key]));
+                    params.push(key + '=' + encodeURIComponent(data[key]));
                 else if(data[key] != 1)
                     params.push(key + '=' + data[key]);
                 if(key == 'page')
@@ -61,7 +61,7 @@ var Routing = {
             var parameters = hash[j].split('&');
             for(var i = 0; i <= parameters.length-1; i++){
                 var parameter = parameters[i].split('=');
-                this.params[parameter[0]] = parameter[1];
+                this.params[parameter[0]] = decodeURIComponent(parameter[1]);
             }
         }
 

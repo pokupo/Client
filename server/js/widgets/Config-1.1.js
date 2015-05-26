@@ -2,7 +2,7 @@ var Config = {
     Base : {
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
         containerIdForTmpl : "container_tmpl", // id контейнера в который будут загружены все шаблоны
-        loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузчика
+        loading : "https://promodev.pokupo.ru/images/loader_32px.gif", // иконка загрузчика
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
             previously_viewed : 'previously_viewed',  // id просмотренных товаров
