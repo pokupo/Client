@@ -71,6 +71,8 @@ var StandalonePaymentWidget = function () {
         if(!$.isEmptyObject(input)){
             if (input.title)
                 self.settings.title = input.title;
+            else
+                self.settings.title = null;
 
             if (input.idGoods) {
                 self.settings.idGoods = input.idGoods;
@@ -81,15 +83,21 @@ var StandalonePaymentWidget = function () {
                 self.settings.showAmount = false;
             }
             else{
+                self.settings.idGoods = null;
                 self.settings.idShop = JSSettings.shopId;
                 self.settings.showCount = false;
             }
+
             if (input.count ){
                 self.settings.count  = input.count;
                 self.settings.showCount = false;
             }
             else if(Routing.params.count){
                 self.settings.count  = Routing.params.count;
+                self.settings.showCount = false;
+            }
+            else{
+                self.settings.count  = 1;
                 self.settings.showCount = false;
             }
 
@@ -101,6 +109,11 @@ var StandalonePaymentWidget = function () {
                 self.settings.amount = Routing.params.amount;
                 self.settings.showAmount = false;
             }
+            else{
+                self.settings.amount = null;
+                self.settings.showAmount = true;
+            }
+
             if (input.uid)
                 self.settings.uid  = input.uid;
             if(Routing.params.uid)
@@ -166,7 +179,7 @@ var StandalonePaymentWidget = function () {
                     });
                 }
 
-                if (self.settings.idShop != null)
+                if (self.settings.idShop != null && self.settings.idGoods == null)
                     self.GetData.Service();
             }
             else if(self.settings.showButton && Routing.route != 'status_payment'){
