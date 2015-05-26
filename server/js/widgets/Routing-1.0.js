@@ -12,7 +12,7 @@ var Routing = {
         this.more = {};
         var params = [];
         this.SetTitle(title);
-        
+
         for(var key in data){
             if(data[key] && key != 'idCategories'){
                 if(key != 'page')
