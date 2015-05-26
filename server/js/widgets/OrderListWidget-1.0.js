@@ -17,6 +17,9 @@ var OrderListWidget = function() {
                 detail : null
             }
         },
+        show: {
+            menu: true
+        },
         animate: null,
         inputParameters: {},
         style: null,
@@ -36,14 +39,19 @@ var OrderListWidget = function() {
         var input = {};
         if (Config.Base.sourceParameters == 'string') {
             var temp = JSCore.ParserInputParameters(/OrderListWidget/);
-            if (temp.order) {
-                input = temp.order;
+            if (temp.orderList) {
+                input = temp.orderList;
             }
         }
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.order) {
-            input = WParameters.order;
+        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.orderList) {
+            input = WParameters.orderList;
         }
         if(!$.isEmptyObject(input)){
+            if(input.show){
+                if(input.show.hasOwnProperty('menu')){
+                    self.settings.show.menu = input.show.menu;
+                }
+            }
             if(input.animate)
                 self.settings.animate = input.animate;
         }
@@ -56,7 +64,8 @@ var OrderListWidget = function() {
             self.BaseLoad.Login(false, false, false, function(data) {
                 if (!data.err) {
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        self.Update.Menu();
+                        if(self.settings.show.menu)
+                            self.Update.Menu();
                         self.Update.Content();
                     });
                 }
@@ -198,7 +207,6 @@ var OrderListWidget = function() {
                     self.Render.List(list);
                 }
                 else {
-                    console.log('test3');
                     self.InsertContainer.EmptyList();
                     self.Render.EmptyList();
                 }
@@ -235,7 +243,7 @@ var OrderListWidget = function() {
                             OrderViewModel.prototype.ClickReturn = function(){
                                 EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
                             };
-                            order = new OrderViewModel();
+                            order = new OrderViewModel(self.settings);
                             Parameters.cache.order.info = order;
                         }
                         order.AddContent(data);
