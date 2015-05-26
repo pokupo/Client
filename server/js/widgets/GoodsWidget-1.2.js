@@ -269,6 +269,7 @@ var GoodsViewModel  = function(){
             return true;
         return false;
     };
+
     self.AddBlock = function(name, data){
         this.blocks[name] = data;
     }
@@ -408,6 +409,11 @@ var GoodsMainBlockViewModel = function(data){
     self.ReportAvailability = function(){
 
     };
+    self.showFavorites = ko.computed(function(){
+        if($.inArray('favorites', Config.Goods.showBlocks) >= 0 && self.count != 0)
+            return true;
+        return false;
+    }, this);
     self.ToCart = function(){
         Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
         Routing.SetHash('cart', Config.CartGoods.title, {});
