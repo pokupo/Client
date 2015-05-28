@@ -733,9 +733,11 @@ var OrderWidget = function() {
             });
         },
         Step5: function() {
-            self.BaseLoad.OrderInfo(self.order.id + '/yes', function(data) {
-                self.InsertContainer.Step5();
-                self.Fill.Step5(data);
+            self.BaseLoad.Script('widgets/OrderViewModel-1.0.js', function() {
+                self.BaseLoad.OrderInfo(self.order.id + '/yes', function (data) {
+                    self.InsertContainer.Step5();
+                    self.Fill.Step5(data);
+                });
             });
         }
     };
@@ -781,8 +783,12 @@ var OrderWidget = function() {
         Step1: function() {
             var form = Parameters.cache.order.step1.reg;
             if ($.isEmptyObject(form)) {
-                form = new OrderFormStep1ViewModel();
-                Parameters.cache.order.step1.reg = form;
+                self.BaseLoad.Script('widgets/RegistrationViewModel-1.0.js', function() {
+                    self.BaseLoad.Script('widgets/AuthenticationViewModel-1.1.js', function() {
+                        form = new OrderFormStep1ViewModel();
+                        Parameters.cache.order.step1.reg = form;
+                    });
+                });
             }
             self.Render.Step1(form);
         },

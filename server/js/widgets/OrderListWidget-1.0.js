@@ -17,6 +17,9 @@ var OrderListWidget = function() {
                 detail : null
             }
         },
+        show: {
+            menu: true
+        },
         animate: null,
         inputParameters: {},
         style: null,
@@ -36,14 +39,19 @@ var OrderListWidget = function() {
         var input = {};
         if (Config.Base.sourceParameters == 'string') {
             var temp = JSCore.ParserInputParameters(/OrderListWidget/);
-            if (temp.order) {
-                input = temp.order;
+            if (temp.orderList) {
+                input = temp.orderList;
             }
         }
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.order) {
-            input = WParameters.order;
+        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.orderList) {
+            input = WParameters.orderList;
         }
         if(!$.isEmptyObject(input)){
+            if(input.show){
+                if(input.show.hasOwnProperty('menu')){
+                    self.settings.show.menu = input.show.menu;
+                }
+            }
             if(input.animate)
                 self.settings.animate = input.animate;
         }
@@ -56,7 +64,8 @@ var OrderListWidget = function() {
             self.BaseLoad.Login(false, false, false, function(data) {
                 if (!data.err) {
                     self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        self.Update.Menu();
+                        if(self.settings.show.menu)
+                            self.Update.Menu();
                         self.Update.Content();
                     });
                 }
@@ -158,7 +167,9 @@ var OrderListWidget = function() {
                 self.Fill.List();
             }
             else if (Routing.params.block == 'detail' && Routing.params.id)
-                self.Fill.Detail(Routing.params.id);
+                self.BaseLoad.Script('widgets/OrderViewModel-1.0.js', function() {
+                    self.Fill.Detail(Routing.params.id);
+                });
         },
         Menu: function() {
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function() {
@@ -232,7 +243,7 @@ var OrderListWidget = function() {
                             OrderViewModel.prototype.ClickReturn = function(){
                                 EventDispatcher.DispatchEvent('OrderList.order.return', {id: id})
                             };
-                            order = new OrderViewModel();
+                            order = new OrderViewModel(self.settings);
                             Parameters.cache.order.info = order;
                         }
                         order.AddContent(data);
@@ -287,7 +298,7 @@ var OrderListWidget = function() {
         },
         Detail: function(data) {
             if ($("#" + self.settings.containerFormId).length > 0) {
-                //try{
+                try{
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerFormId)[0]);
                     self.WidgetLoader(true, self.settings.containerFormId);
@@ -295,21 +306,21 @@ var OrderListWidget = function() {
                         new AnimateOrderList();
                     if(self.settings.animate)
                         self.settings.animate();
-                //}
-                //catch(e){
-                //    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']', e);
-                //    if(self.settings.tmpl.custom){
-                //        delete self.settings.tmpl.custom;
-                //        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                //            self.InsertContainer.Detail();
-                //            self.Render.Detail(data);
-                //        });
-                //    }
-                //    else{
-                //        self.InsertContainer.EmptyWidget();
-                //        self.WidgetLoader(true, self.settings.containerFormId);
-                //    }
-                //}
+                }
+                catch(e){
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('detail') + ']', e);
+                    if(self.settings.tmpl.custom){
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
+                            self.InsertContainer.Detail();
+                            self.Render.Detail(data);
+                        });
+                    }
+                    else{
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerFormId);
+                    }
+                }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');

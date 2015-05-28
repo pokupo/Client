@@ -80,7 +80,9 @@ window.RelatedGoodsWidget = function(){
     };
     self.LoadTmpl = function(){
         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
+            });
         });
     };
     self.RegisterEvents = function(){

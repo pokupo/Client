@@ -1,6 +1,6 @@
 var JSSettings = {
     shopId: 0,
-    protocolHTTP : 'http://',
+    protocolHTTP : 'https://',
     protocolHTTPS : 'https://',
 
     host : "server.pokupo.ru/prod/server/",
@@ -27,16 +27,12 @@ var JSSettings = {
     sourceData : 'api', //варианты api, proxy
     scripts : [
         'easyXDM.min.js',
-        'knockout-2.2.0.js',
+        'knockout-3.2.0.js',
         'jquery.cookie.js',
         'jquery.textchange.min.js',
         'widgets/Config-1.1.js',
         'widgets/Routing-1.0.js',
         'widgets/Paging-1.0.js',
-        'widgets/ContentViewModel-1.0.js',
-        'widgets/OrderViewModel-1.0.js',
-        'widgets/RegistrationViewModel-1.0.js',
-        'widgets/AuthenticationViewModel-1.1.js',
         'widgets/Widget-1.1.js'
     ],
     inputParameters : {}
@@ -154,7 +150,6 @@ var JSCore = {
             var string = attr.split('?');
             if(string.length > 1){
                 var parameters = string[1].split('&');
-
                 for(var i = 0; i <= parameters.length-1; i++){
                     var parameter = parameters[i].split('=');
                     obj[parameter[0]] = parameter[1];
@@ -168,6 +163,8 @@ var JSCore = {
     },
     SetInputParameters : function(){
         var input = JSCore.ParserInputParameters(/JSCore/);
+        if($.isEmptyObject(input))
+            input = JSCore.ParserInputParameters(/pokupo.widgets.[a-z0-9]{32}.min.js/);
         if(input){
             for(var key in input){
                 if(JSSettings.hasOwnProperty(key)){
@@ -242,6 +239,7 @@ var XDMTransport = {
             })
         },
         Data: function(data, callback, protocol){
+            protocol = JSSettings.protocolHTTPS;
             var hash = EventDispatcher.HashCode(data + callback.toString());
 
             if(XDMTransport.event[hash] == undefined)

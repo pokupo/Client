@@ -3,9 +3,17 @@
     <div>
         <div class="profile-nav grey">
             <div class="container">
-                <a href="https://seller.pokupo.ru/seller" class="btn btn-sm">
-                    <i class="icon icon-store--small"></i>Стать продавцом
-                </a>
+                <!-- ko if not: showRegSeller -->
+                    <a href="https://seller.pokupo.ru/seller" class="btn btn-sm">
+                        <i class="icon icon-store--small"></i>Стать продавцом
+                    </a>
+                <!-- /ko -->
+                <!-- ko if: showRegSeller -->
+                    <a href="#" class="btn btn-sm" data-bind="click: ClickRegistrationSeller()">
+                        <i class="icon icon-store--small"></i>Стать продавцом
+                    </a>
+                <!--/ko -->
+
                 <ul class="menu b-profile-nav">
                     <li data-bind="attr: {class: 'menu__item ' + activeProfile()}">
                         <a href="#" class="icon__profile" data-bind="click: ClickProfile">
@@ -17,11 +25,13 @@
                             <span>Избранное</span>
                         </a>
                     </li>
+                    <!-- ko if: showCart -->
                     <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activeCart()}">
                         <a href="#" class="icon__cart" data-bind="click: ClickCart">
                             <span>Корзина</span>
                         </a>
                     </li>
+                    <!-- /ko -->
                     <li class="menu__item" data-bind="attr: {class: 'menu__item ' + activePurchases()}">
                         <a href="#" class="icon__order" data-bind="click: ClickPurchases">
                             <span>Заказы</span>

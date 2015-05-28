@@ -7,7 +7,8 @@ var SearchWidget = function(){
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
     self.settings = {
-        containerId : null, 
+        containerId : null,
+        showCatalog: null,
         tmpl: {
             path : null,
             id : null
@@ -20,6 +21,7 @@ var SearchWidget = function(){
     self.InitWidget = function(){
         self.settings.containerId = Config.Containers.search.widget; 
         self.settings.customContainer = Config.Containers.search.customClass;
+        self.settings.showCatalog = Config.Search.showCatalog;
         self.settings.tmpl = Config.Search.tmpl;
         self.settings.style = Config.Search.style;
         self.RegisterEvents();
@@ -39,12 +41,13 @@ var SearchWidget = function(){
             input = WParameters.search;
         }
         if(!$.isEmptyObject(input)){
+            if (input.hasOwnProperty('showCatalog'))
+                self.settings.showCatalog = input.showCatalog;
             if (input.tmpl)
                 self.settings.tmplPath = 'search/' + input.tmpl + '.html';
             if(input.animate)
                 self.settings.animate = input.animate;
         }
-
         self.settings.inputParameters = input;
     };
     self.InsertContainer = {
@@ -63,8 +66,10 @@ var SearchWidget = function(){
         }
         else{
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                    EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+                self.BaseLoad.Roots(function(){
+                    self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
+                        EventDispatcher.DispatchEvent('searchWidget.onload.section', data)
+                    });
                 });
             });
         }
@@ -95,7 +100,7 @@ var SearchWidget = function(){
     };
     self.Fill = function(data){
         SearchViewModel.prototype = new Widget();
-        var search = new SearchViewModel();
+        var search = new SearchViewModel(self.settings);
 
         search.AddListCategory(data);
     };
@@ -180,7 +185,7 @@ var SearchCategoryItemForTree = function(data, level, select){
     }
 }
 
-var SearchViewModel = function(){
+var SearchViewModel = function(settings){
     var self = this;
     self.text = ko.observable();
     if(Routing.route == 'search')
@@ -195,6 +200,7 @@ var SearchViewModel = function(){
     self.idCategories = Parameters.filter.idCategories;
     self.typeCategories = [];
     self.cachData = {};
+    self.showCatalog = settings.showCatalog;
     
     self.ClickAdvancedSearch = function(){
         EventDispatcher.DispatchEvent('searchResultWidget.show.form');

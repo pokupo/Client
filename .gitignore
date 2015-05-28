@@ -2,7 +2,6 @@
 /client/logs
 /server/logs
 /server/images
-/server/css
 /server/tilescss
 /nbproject
 /.idea/

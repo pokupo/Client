@@ -20,8 +20,11 @@ window.InfoSellerWidget = function () {
     };
     self.InitWidget = function () {
         self.settings.style = Config.InfoSeller.style;
-        self.Loader();
         self.RegisterEvents();
+        if(Loader.IsReady()) {
+            self.Loader();
+            self.LoadTmpl();
+        }
     };
     self.Loader = function () {
         Loader.InsertContainer(self.settings.container);

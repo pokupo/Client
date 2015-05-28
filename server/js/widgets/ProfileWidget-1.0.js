@@ -320,9 +320,11 @@
         });
         
          EventDispatcher.AddEventListener('ProfileWidget.delivery.edit', function(data){
-             var form = new DeliveryAddressFormViewModel();
-             form.AddContent(data);
-             self.Fill.DeliveryForm(form);
+             self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                 var form = new DeliveryAddressFormViewModel();
+                 form.AddContent(data);
+                 self.Fill.DeliveryForm(form);
+             });
          });
          
          EventDispatcher.AddEventListener('ProfileWidget.delivery.sedDefault', function(data){
@@ -420,12 +422,13 @@
         },
         Personal : function(){
             self.InsertContainer.Personal();
-            
-            self.BaseLoad.Profile(function(registration){
-                self.BaseLoad.ProfileInfo(function(data) {
-                    self.Fill.Personal(registration, data);
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                self.BaseLoad.Profile(function (registration) {
+                    self.BaseLoad.ProfileInfo(function (data) {
+                        self.Fill.Personal(registration, data);
+                    });
                 });
-            });
+            })
         },
         Delivery : function(){
             self.BaseLoad.DeliveryAddressList(function(data){
@@ -434,8 +437,10 @@
             });
         },
         DeliveryForm : function(){
-            var form = new DeliveryAddressFormViewModel();
-            self.Fill.DeliveryForm(form);
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                var form = new DeliveryAddressFormViewModel();
+                self.Fill.DeliveryForm(form);
+            });
         },
         Security : function(){
             self.InsertContainer.Security();
@@ -624,9 +629,9 @@
                     self.WidgetLoader(true, self.settings.containerFormId);
 
                     if(typeof AnimateProfile == 'function')
-                        new AnimateProfile();
+                        new AnimateProfile(form.postalAddress.country);
                     if(self.settings.animate)
-                        self.settings.animate();
+                        self.settings.animate(form.postalAddress.country);
                     
                     if(Routing.params.edit == 'postal_address'){
                         self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
@@ -808,9 +813,9 @@
                     });
 
                     if(typeof AnimateProfile == 'function')
-                        new AnimateProfile();
+                        new AnimateProfile(delivery.country);
                     if(self.settings.animate)
-                        self.settings.animate();
+                        self.settings.animate(delivery.country);
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']', e);
@@ -1131,7 +1136,7 @@ var ProfilePostalAddressViewModel = function(){
     self.countryList = ko.observableArray();
     
     self.isEditBlock = ko.observable(0);
-    
+
     self.AddContent = function(data){ 
         self.data = data;
         

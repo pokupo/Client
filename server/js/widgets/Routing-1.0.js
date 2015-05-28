@@ -12,11 +12,11 @@ var Routing = {
         this.more = {};
         var params = [];
         this.SetTitle(title);
-        
+
         for(var key in data){
             if(data[key] && key != 'idCategories'){
                 if(key != 'page')
-                    params.push(key + '=' + decodeURIComponent(data[key]));
+                    params.push(key + '=' + encodeURIComponent(data[key]));
                 else if(data[key] != 1)
                     params.push(key + '=' + data[key]);
                 if(key == 'page')
@@ -61,7 +61,7 @@ var Routing = {
             var parameters = hash[j].split('&');
             for(var i = 0; i <= parameters.length-1; i++){
                 var parameter = parameters[i].split('=');
-                this.params[parameter[0]] = parameter[1];
+                this.params[parameter[0]] = decodeURIComponent(parameter[1]);
             }
         }
 
@@ -79,11 +79,11 @@ var Routing = {
     },
     CheckRoute: function () {
         if (Routing.route == 'standalone_payment') {
-            if (!Loader.widgets['StandalonePaymentWidget'])
+            if (!Loader.widgets['StandalonePaymentWidget'] && Loader.widgets['OrderListWidget'])
                 Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
         }
         if (Routing.route == 'status_payment'){
-            if (!Loader.widgets['StatusPaymentWidget'])
+            if (!Loader.widgets['StatusPaymentWidget'] && Loader.widgets['OrderListWidget'])
                 Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
         }
         return true;

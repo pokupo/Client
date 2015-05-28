@@ -48,10 +48,6 @@ var StatusPaymentWidget = function () {
                 if(input.tmpl.id)
                     self.settings.tmpl.id = input.tmpl.id;
             }
-            if(input.container){
-                if(input.container)
-                    self.settings.containerId = input.container;
-            }
             if(input.animate)
                 self.settings.animate = input.animate;
         }
@@ -75,9 +71,10 @@ var StatusPaymentWidget = function () {
     self.CheckRouteSearch = function(){
         if(Routing.route == 'status_payment'){
             var orderId = $.cookie(Config.Base.cookie.orderId);
+            var mailUser = $.cookie(Config.Base.cookie.userEmail);
             if(orderId){
                 var paymentType = Routing.params.name;
-                var str = paymentType + '/?' + orderId
+                var str = paymentType + '/?' + orderId + '&mailUser=' + mailUser;
                 self.BaseLoad.Tmpl(self.settings.tmpl, function () {
                     self.BaseLoad.StatusPayment(str, function (data) {
                         self.Fill(data);
@@ -180,6 +177,12 @@ var StatusPaymentViewModel = function(data){
 
     self.egoods = [];
     if(data.egoods){
+        $.each(data.egoods, function(i){
+            if(!data.egoods[i]['max_upload'])
+                data.egoods[i]['max_upload'] = false;
+            if(!data.egoods[i]['expiration'])
+                data.egoods[i]['expiration'] = false;
+        })
         self.egoods = data.egoods;
     }
 
@@ -198,7 +201,6 @@ var StatusPaymentViewModel = function(data){
 
 var StatusPaymentParametersViewModel = function(data){
     var self = this;
-    console.log(data);
     self.label = ko.observable(data.label);
     self.value = ko.observable(data.value);
     self.help = ko.observable(data.help);
