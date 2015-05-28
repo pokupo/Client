@@ -111,7 +111,8 @@ var StandalonePaymentWidget = function () {
             }
             else{
                 self.settings.amount = null;
-                self.settings.showAmount = true;
+                if(!self.settings.idGoods)
+                    self.settings.showAmount = true;
             }
 
             if (input.uid)
@@ -585,7 +586,7 @@ var StandalonePaymentListViewModel = function(settings){
     if(settings.idGoods){
         self.title(settings.goodsInfo.main.chort_name);
         self.count(settings.count);
-        var coast = settings.count * parseInt(settings.goodsInfo.main.sell_end_cost);
+        var coast = settings.count * parseFloat(settings.goodsInfo.main.sell_end_cost);
         self.amount(coast);
         self.isGoodsId(true);
     }

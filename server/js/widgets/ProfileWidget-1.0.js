@@ -320,9 +320,11 @@
         });
         
          EventDispatcher.AddEventListener('ProfileWidget.delivery.edit', function(data){
-             var form = new DeliveryAddressFormViewModel();
-             form.AddContent(data);
-             self.Fill.DeliveryForm(form);
+             self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                 var form = new DeliveryAddressFormViewModel();
+                 form.AddContent(data);
+                 self.Fill.DeliveryForm(form);
+             });
          });
          
          EventDispatcher.AddEventListener('ProfileWidget.delivery.sedDefault', function(data){
@@ -627,9 +629,9 @@
                     self.WidgetLoader(true, self.settings.containerFormId);
 
                     if(typeof AnimateProfile == 'function')
-                        new AnimateProfile();
+                        new AnimateProfile(form.postalAddress.country);
                     if(self.settings.animate)
-                        self.settings.animate();
+                        self.settings.animate(form.postalAddress.country);
                     
                     if(Routing.params.edit == 'postal_address'){
                         self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
@@ -811,9 +813,9 @@
                     });
 
                     if(typeof AnimateProfile == 'function')
-                        new AnimateProfile();
+                        new AnimateProfile(delivery.country);
                     if(self.settings.animate)
-                        self.settings.animate();
+                        self.settings.animate(delivery.country);
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']', e);
@@ -1134,7 +1136,7 @@ var ProfilePostalAddressViewModel = function(){
     self.countryList = ko.observableArray();
     
     self.isEditBlock = ko.observable(0);
-    
+
     self.AddContent = function(data){ 
         self.data = data;
         

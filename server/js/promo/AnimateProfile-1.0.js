@@ -1,4 +1,4 @@
-var AnimateProfile = function () {
+var AnimateProfile = function (country) {
     $(":input:not(:checkbox):not(:button):not([type=hidden]):not([type=search]):not(.no-label)").floatlabel();
 
     jQuery(function ($) {
@@ -87,12 +87,14 @@ var AnimateProfile = function () {
         var $this = $(this);
         $this.closest('tr').addClass('active').siblings().removeClass('active');
     });
-    
+
     $('.country_list_profile').chosen({
         disable_search_threshold: 6,
         width: '100%'
     });
     setTimeout(function(){
+        if(country && country())
+            $('.country_list_profile').val(country().id);
         $('.country_list_profile').trigger('chosen:updated');
     }, 1000)
     $('[rel=tooltip]').tooltip();

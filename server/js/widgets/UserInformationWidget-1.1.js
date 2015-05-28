@@ -236,8 +236,12 @@ var UserInformationBlockViewModel = function(data){
         return true;
     };
     self.iconUser = data.route_icon_user;
-    self.background = "background: url('" + self.iconUser + "')";
-    self.backgroundImage = "background-image: url('" + self.iconUser + "')";
+    self.background = '';
+    self.backgroundImage = '';
+    if(self.iconUser){
+        self.background = "background: url('" + self.iconUser + "')";
+        self.backgroundImage = "background-image: url('" + self.iconUser + "')";
+    }
     
     self.showRaiting = function(){
         if($.inArray('raiting', Config.UserInformation.showBlocks) < 0)
