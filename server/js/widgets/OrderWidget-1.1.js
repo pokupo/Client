@@ -386,7 +386,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step3.message', function() {
-            self.ShowMessage(Config.Order.message.selectMethodShipping, false, false);
+            self.ShowError(Config.Order.message.selectMethodShipping, false, false);
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step2.add', function(data) {
@@ -454,7 +454,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step2.message', function() {
-            self.ShowMessage(Config.Order.message.selectAddress, false, false);
+            self.ShowError(Config.Order.message.selectAddress, false, false);
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step4.change', function(data) {
@@ -467,7 +467,7 @@ var OrderWidget = function() {
         });
 
         EventDispatcher.AddEventListener('OrderWidget.step4.message', function() {
-            self.ShowMessage(Config.Order.message.selectMethodPayment, false, false);
+            self.ShowError(Config.Order.message.selectMethodPayment, false, false);
         });
 
 
@@ -1120,6 +1120,13 @@ var OrderWidget = function() {
                     });
                     $('#' + delivery.cssCountryList).change(function() {
                         var v = $('#' + delivery.cssCountryList + ' option:selected').val();
+                        if(v) {
+                            delivery.errorCountry('');
+                            delivery.errorRegion('');
+                            delivery.errorCity('');
+                            delivery.errorAddress('');
+                            delivery.errorPostCode('');
+                        }
                         $.grep(delivery.countryList(), function(data) {
                             if (data.id == v) {
                                 delivery.country(data);
@@ -1135,6 +1142,10 @@ var OrderWidget = function() {
                     });
 
                     $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
+                        delivery.errorRegion('');
+                        delivery.errorCity('');
+                        delivery.errorAddress('');
+                        delivery.errorPostCode('');
                         delivery.customRegion($(this).val());
                         delivery.customCity(null);
                         delivery.city(null);
@@ -1144,11 +1155,31 @@ var OrderWidget = function() {
                     });
 
                     $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
+                        delivery.errorCity('');
+                        delivery.errorAddress('');
+                        delivery.errorPostCode('');
                         delivery.customCity($(this).val());
                         delivery.customAddress(null)
                         delivery.address(null);
                         delivery.postCode(null);
                     });
+
+                    $('#' + delivery.cssAddressList).bind('textchange', function(event, previousText) {
+                        delivery.errorAddress('');
+                        delivery.errorPostCode('');
+                    });
+
+                    $('#' + delivery.cssPostCode).bind('textchange', function(event, previousText) {
+                        delivery.errorPostCode('');
+                    });
+
+                    $('#' + delivery.cssAddressee).bind('textchange', function(event, previousText) {
+                        delivery.errorAddressee('');
+                    });
+
+                    $('#' + delivery.cssContactPhone).bind('textchange', function(event, previousText) {
+                        delivery.errorContactPhone('');
+                    })
 
                     self.WidgetLoader(true, self.settings.containerFormId);
                 }
@@ -1303,6 +1334,7 @@ var OrderFormStep2ViewModel = function() {
     };
     self.AddContent = function(data, order) {
         if (!data.err)
+            self.addressList = ko.observableArray();
             for (var key in data) {
                 OrderItemFormStep2ViewModel.prototype = new Widget();
                 var address = new OrderItemFormStep2ViewModel(data[key], self)
@@ -1419,23 +1451,44 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
     self.customRegion = ko.observable();
     self.cssRegionList = 'delivery_region';
     self.errorRegion = ko.observable(null);
+    self.showRegion = ko.computed(function(){
+        if(self.country())
+            return false;
+        return true;
+    }, this);
 
     self.codeCity = ko.observable();
     self.city = ko.observable();
     self.customCity = ko.observable();
     self.cssCityList = 'delivery_city';
     self.errorCity = ko.observable(null);
-
-    self.postCode = ko.observable();
-    self.cssPostCode = 'delivery_post_index';
-    self.errorPostCode = ko.observable(null);
+    self.showCity = ko.computed(function(){
+        if(self.customRegion())
+            return false;
+        return true;
+    }, this);
 
     self.address = ko.observable();
     self.customAddress = ko.observable();
     self.cssAddress = 'delivery_cssAddress';
     self.errorAddress = ko.observable(null);
+    self.showAddress = ko.computed(function(){
+        if(self.customCity())
+            return false;
+        return true;
+    }, this);
+
+    self.postCode = ko.observable();
+    self.cssPostCode = 'delivery_post_index';
+    self.errorPostCode = ko.observable(null);
+    self.showPostIndex = ko.computed(function(){
+        if(self.customAddress())
+            return false;
+        return true;
+    }, this);
 
     self.addressee = ko.observable();
+    self.cssAddressee = 'delivery_addressee';
     self.errorAddressee = ko.observable(null);
 
     self.contactPhone = ko.observable();
@@ -1528,6 +1581,14 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
             self.errorPostCode(Config.Order.error.postIndex.empty);
             return false;
         }
+        if (5 > self.postCode().length  || self.postCode().length > 6) {
+            self.errorPostCode(Config.Order.error.postIndex.length);
+            return false;
+        }
+        if (!Config.Order.regular.postIndex.test(self.postCode())) {
+            self.errorPostCode(Config.Order.error.postIndex.regular);
+            return false;
+        }
         self.errorPostCode(null);
         return true;
     };
@@ -1545,7 +1606,7 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
             return false;
         }
         if (!Config.Order.regular.addressee.test(self.addressee())) {
-            self.errorAddressee(Config.Registration.error.addressee.regular);
+            self.errorAddressee(Config.Order.error.addressee.regular);
             return false;
         }
         self.errorAddressee(null);

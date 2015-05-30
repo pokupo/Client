@@ -772,6 +772,14 @@ var RegistrationFormStep4ViewModel = function() {
             self.errorPostIndex(Config.Registration.error.postIndex.empty);
             return false;
         }
+        if (5 <= self.postIndex().length <= 6) {
+            self.errorPostIndex(Config.Registration.error.postIndex.length);
+            return false;
+        }
+        if (!Config.Registration.regular.postIndex.test(self.postIndex())) {
+            self.errorPostIndex(Config.Registration.error.postIndex.regular);
+            return false;
+        }
         self.errorPostIndex(null);
         return true;
     };
