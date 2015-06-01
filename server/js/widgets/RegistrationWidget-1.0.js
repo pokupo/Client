@@ -521,16 +521,12 @@ var RegistrationWidget = function() {
                     ko.cleanNode($("#" + self.settings.containerFormId)[0]);
                     ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
 
-                    $('#' + form.cssCountryList).change(function() {
-                        form.customRegion(null);
-                        form.region(null);
-                        form.customCity(null);
-                        form.city(null);
-                        form.customAddress(null)
-                        form.address(null);
-                        form.postIndex(null);
-                    });
-                    
+                    self.WidgetLoader(true, self.settings.containerFormId);
+                    if(typeof AnimateRegistration == 'function')
+                        new AnimateRegistration();
+                    if(self.settings.animate)
+                        self.settings.animate();
+
                     $('#' + form.cssRegionList).autocomplete({
                         source: function(request, response) {
                             self.BaseLoad.Region(form.idCountry() + '/' + encodeURIComponent(request.term), function(data) {
@@ -617,7 +613,32 @@ var RegistrationWidget = function() {
                         }
                     });
 
+                    $('#' + form.cssCountryList).change(function() {
+                        if(form.idCountry()) {
+                            form.errorCountry('');
+                            form.errorRegion('');
+                            form.errorCity('');
+                            form.errorAddress('');
+                            form.errorPostIndex('');
+                        }
+                        $.grep(form.countryList(), function(data) {
+                            if (data.id == form.idCountry()) {
+                                form.customRegion(null);
+                                form.region(null);
+                                form.customCity(null);
+                                form.city(null);
+                                form.customAddress(null)
+                                form.address(null);
+                                form.postIndex(null);
+                            }
+                        })
+                    });
+
                     $('#' + form.cssRegionList).bind('textchange', function(event, previousText) {
+                        form.errorRegion('');
+                        form.errorCity('');
+                        form.errorAddress('');
+                        form.errorPostIndex('');
                         form.customRegion($(this).val());
                         form.customCity(null);
                         form.city(null);
@@ -627,17 +648,23 @@ var RegistrationWidget = function() {
                     });
 
                     $('#' + form.cssCityList).bind('textchange', function(event, previousText) {
+                        form.errorCity('');
+                        form.errorAddress('');
+                        form.errorPostIndex('');
                         form.customCity($(this).val());
                         form.customAddress(null)
                         form.address(null);
                         form.postIndex(null);
                     });
 
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateRegistration == 'function')
-                        new AnimateRegistration();
-                    if(self.settings.animate)
-                        self.settings.animate();
+                    $('#' + form.cssAddress).bind('textchange', function(event, previousText) {
+                        form.errorAddress('');
+                        form.errorPostIndex('');
+                    });
+
+                    $('#' + form.cssPostIndex).bind('textchange', function(event, previousText) {
+                        form.errorPostIndex('');
+                    });
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']', e);
@@ -685,20 +712,40 @@ var RegistrationFormStep4ViewModel = function() {
     self.customRegion = ko.observable();
     self.cssRegionList = 'region_list';
     self.errorRegion = ko.observable(null);
+    self.showRegion = ko.computed(function(){
+        if(self.idCountry())
+            return false;
+        return true;
+    }, this);
 
     self.city = ko.observable();
     self.customCity = ko.observable();
     self.cssCityList = 'city_list';
     self.errorCity = ko.observable(null);
+    self.showCity = ko.computed(function(){
+        if(self.customRegion())
+            return false;
+        return true;
+    }, this);
 
     self.address = ko.observable();
     self.customAddress = ko.observable();
     self.cssAddress = 'address';
     self.errorAddress = ko.observable(null);
+    self.showAddress = ko.computed(function(){
+        if(self.customCity())
+            return false;
+        return true;
+    }, this);
 
     self.postIndex = ko.observable();
     self.cssPostIndex = 'post_index';
     self.errorPostIndex = ko.observable(null);
+    self.showPostIndex = ko.computed(function(){
+        if(self.customAddress())
+            return false;
+        return true;
+    }, this);
 
     self.countryList = ko.observableArray();
 
@@ -772,7 +819,7 @@ var RegistrationFormStep4ViewModel = function() {
             self.errorPostIndex(Config.Registration.error.postIndex.empty);
             return false;
         }
-        if (5 <= self.postIndex().length <= 6) {
+        if (5 > self.postIndex().length  || self.postIndex().length > 6) {
             self.errorPostIndex(Config.Registration.error.postIndex.length);
             return false;
         }
