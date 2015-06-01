@@ -1294,7 +1294,7 @@ var ProfilePostalAddressViewModel = function(){
             self.errorPostIndex(Config.Profile.error.postIndex.empty);
             return false;
         }
-        if (5 <= self.postIndex().length <= 6) {
+        if (5 > self.postIndex().length  || self.postIndex().length > 6) {
             self.errorPostIndex(Config.Profile.error.postIndex.length);
             return false;
         }
