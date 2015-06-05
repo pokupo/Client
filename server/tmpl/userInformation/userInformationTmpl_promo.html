@@ -7,10 +7,11 @@
                     <!-- ko if: countNewMessage() > 0 -->
                     <sup class="circles-menu__num" data-bind="text: countNewMessage"></sup>
                     <!-- /ko -->
-                </a>click:
+                </a>
                 <div data-target="profile" class="b-profile-menu dropdown__content hidden user_information_dropdown__content">
                     <p class="b-profile-menu__name" data-bind="text: login"></p>
                     <ul class="menu">
+                        <!-- ko if: showProfile -->
                         <li class="menu__item">
                             <a href="#" data-bind="click: ClickPrivateOffice">Профиль</a>
                         </li>
@@ -28,6 +29,7 @@
                                 <!-- /ko -->
                             </a>
                         </li>
+                        <!-- /ko -->
                         <li class="menu__item">
                             <a id="js-logout" href="#" class="b-profile-menu__logout" data-bind="click: ClickLogout">Выйти</a>
                         </li>

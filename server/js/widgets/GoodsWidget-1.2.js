@@ -269,6 +269,7 @@ var GoodsViewModel  = function(){
             return true;
         return false;
     };
+
     self.AddBlock = function(name, data){
         this.blocks[name] = data;
     }
@@ -397,17 +398,22 @@ var GoodsMainBlockViewModel = function(data){
         return false;
     }, this);
     self.Buy = function(){
-        if(Parameters.cache.userInformation.err){
+        if(Parameters.cache.userInformation == null ||(Parameters.cache.userInformation != null && Parameters.cache.userInformation.err)){
             Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()}};
             Routing.SetHash('login', 'Авторизация пользователя', {});
         }
-        else{           
+        else{
             Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.shopId, goodsId: self.id, count: self.ordered()});
         }
     };
     self.ReportAvailability = function(){
 
     };
+    self.showFavorites = ko.computed(function(){
+        if($.inArray('favorites', Config.Goods.showBlocks) >= 0 && self.count != 0)
+            return true;
+        return false;
+    }, this);
     self.ToCart = function(){
         Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
         Routing.SetHash('cart', Config.CartGoods.title, {});
@@ -419,22 +425,18 @@ var GoodsMainBlockViewModel = function(data){
         if(Parameters.cache.userInformation != null && !Parameters.cache.userInformation.err)
             self.AddCommentForm();
         else
-            self.ShowMessage(Config.Authentication.message.pleaseLogIn, false, false);
+            self.ShowError(Config.Authentication.message.pleaseLogIn, false, false);
     };
     self.comment = ko.observable('');
     self.AddCommentForm = function(){
         self.comment(' ');
-        $( "#dialog-form-batch" ).dialog({
-            height: 300,
-            width: 396,
-            modal: true,
-            buttons: {
-                "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, count:self.ordered(), data:self});
-                     $( this ).dialog( "close" );
-                }
+        this.ShowCommentForm(
+            self.comment(),
+            function(comment){
+                self.comment(comment);
+                EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment:self.comment(), data:self});
             }
-        });
+        );
     };
     self.IsFavorite = ko.observable();
     

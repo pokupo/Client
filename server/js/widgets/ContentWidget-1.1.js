@@ -45,6 +45,8 @@ var ContentWidget = function(){
         orderByContent : null,
         filterName : '',
         listPerPage : null,
+        showCart: null,
+        showBlocks: null,
         slider : [],
         paging : null,
         styleContent : null
@@ -74,7 +76,12 @@ var ContentWidget = function(){
             Logger.Console.VarDump(self.widgetName, "Input parameters", input);
         
         if(!$.isEmptyObject(input)){
+            if(input.hasOwnProperty('showCart')){
+                self.settings.showCart = input.showCart;
+            }
             if(input.block){
+                if(input.block.hasOwnProperty('showBlocks'))
+                    self.settings.showBlocks = input.block.showBlocks;
                 if(input.block.count)
                     self.settings.countGoodsInBlock = input.block.count;
                 if(input.block.animate)
@@ -116,6 +123,8 @@ var ContentWidget = function(){
         self.settings.countGoodsInBlock = Config.Content.countGoodsInBlock;
         self.settings.orderByContent = Config.Content.orderBy;
         self.settings.listPerPage = Config.Content.listPerPage;
+        self.settings.showCart = Config.Content.showCart;
+        self.settings.showBlocks = Config.Content.showBlocks;
         self.settings.paging = Config.Paging;
         self.settings.styleContent = Config.Content.style;
         self.SetInputParameters();
@@ -125,7 +134,9 @@ var ContentWidget = function(){
     };
     self.CheckContentRouting = function(){
         if(Routing.route == 'catalog' || Routing.IsDefault()){
-            self.SelectTypeContent();
+            self.BaseLoad.Roots(function() {
+                self.SelectTypeContent();
+            });
         }
         else
             self.WidgetLoader(true);
@@ -133,41 +144,82 @@ var ContentWidget = function(){
     self.SelectTypeContent = function(){
         if(Routing.IsCategory()){ 
             if(!self.HasDefaultContent('content', 'content') || !Routing.IsDefault()){
-                self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
-                    EventDispatcher.DispatchEvent('onload.content.tmpl')
+                self.Get.Content();
+            }
+            else
+                self.WidgetLoader(true);
+        }
+        else if(Routing.IsDefault()){
+            Config.Base.defaultSection = Parameters.cache.roots[0].id;
+            if(Parameters.cache.roots[0].type_category != 'section'){
+                self.Get.Content();
+            }
+            else if(self.settings.showBlocks){
+                self.Get.Blocks();
+            }
+            else if(!self.settings.showBlocks){
+                var children = Parameters.cache.roots[0].children;
+                var category = null;
+                $.each(children, function(i){
+                    if(children[i].type_category == 'category'){
+                        category = children[i];
+                        return false;
+                    }
                 });
+                if(category)
+                    Routing.SetHash('catalog', category.name_category, {section: Parameters.cache.roots[0].id, category: category.id})
+                else
+                    self.WidgetLoader(true);
             }
             else
                 self.WidgetLoader(true);
         }
         else{
-            if(!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()){
-                self.BaseLoad.Tmpl(self.settings.tmpl.block, function(){
-                    EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
-                });
+            if(self.settings.showBlocks) {
+                if (!self.HasDefaultContent('content', 'block') || !Routing.IsDefault()) {
+                    self.Get.Blocks();
+                }
+                else
+                    self.WidgetLoader(true);
             }
             else
                 self.WidgetLoader(true);
         }
     };
+    self.Get = {
+        Content: function(){
+            self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
+                EventDispatcher.DispatchEvent('onload.content.tmpl')
+            });
+        },
+        Blocks: function(){
+            self.BaseLoad.Tmpl(self.settings.tmpl.block, function () {
+                EventDispatcher.DispatchEvent('onload.blockContent.tmpl')
+            });
+        }
+    };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
-            self.BaseLoad.Blocks(Routing.GetActiveCategory(), function(data){
-                if(JSSettings.dev)
-                    Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
-                
-                self.CheckData(data)
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                self.BaseLoad.Blocks(Routing.GetActiveCategory(), function (data) {
+                    if (JSSettings.dev)
+                        Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
+
+                    self.CheckData(data)
+                });
             });
         });
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
-            self.BaseLoad.Info(Routing.GetActiveCategory(), function(data){
-                self.InsertContainer.EmptyBlockWidget();
-                EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
-            })
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                self.BaseLoad.Info(Routing.GetActiveCategory(), function (data) {
+                    self.InsertContainer.EmptyBlockWidget();
+                    EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
+                })
+            });
         });
         
-        EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){ 
+        EventDispatcher.AddEventListener('contentWidget.load.categoryInfo', function(){
             var start = (Routing.GetCurrentPage()-1) * self.settings.paging.itemsPerPage;
             var orderBy = Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : self.settings.orderByContent;
             var query = start + '/' + self.settings.paging.itemsPerPage + '/' + orderBy + '/' + encodeURIComponent(Routing.GetMoreParameter('filterName'));
@@ -214,26 +266,29 @@ var ContentWidget = function(){
             }
         }
         else{
-            self.testBlock.count = data.length;
+            self.testBlock.count = 0;
             self.testBlock.ready = 0;
             self.Render.Animate.block = ko.observableArray();
             for(var i = 0; i <= data.length - 1; i++){
-                Parameters.cache.contentBlock[data[i].id] = {
-                    sort : i, 
-                    block : data[i]
-                };
-                self.InsertContainer.Block(i, data[i].type_view);
+                if(data[i].count_goods > 0) {
+                    ++self.testBlock.count;
+                    Parameters.cache.contentBlock[data[i].id] = {
+                        sort: i,
+                        block: data[i]
+                    };
+                    self.InsertContainer.Block(i, data[i].type_view);
 
-                var query = '0/' + self.settings.countGoodsInBlock + '/name/';
-                var queryHash = data[i].id + EventDispatcher.HashCode(query);
+                    var query = '0/' + self.settings.countGoodsInBlock + '/name/';
+                    var queryHash = data[i].id + EventDispatcher.HashCode(query);
 
-                EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function(data){
-                    self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
-                });
+                    EventDispatcher.AddEventListener('contentWidget.onload.content%%' + queryHash, function (data) {
+                        self.Fill.Block(Parameters.cache.contentBlock[data.categoryId]);
+                    });
 
-                self.BaseLoad.Content(data[i].id, query, function(data){
-                    EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
-                })
+                    self.BaseLoad.Content(data[i].id, query, function (data) {
+                        EventDispatcher.DispatchEvent('contentWidget.onload.content%%' + queryHash, data)
+                    })
+                }
             }
         }
     };
@@ -288,7 +343,7 @@ var ContentWidget = function(){
     };
     self.Fill = {
         Block : function(data){
-            var block = new BlockViewModel(data, self.settings.countGoodsInBlock);
+            var block = new BlockViewModel(data, self.settings);
             if(JSSettings.dev)
                 Logger.Console.VarDump(self.widgetName, 'data blockId = [' + block.id + '] typeView = [' + block.typeView + ']' , block)
             block.AddContent();
@@ -321,7 +376,6 @@ var ContentWidget = function(){
                 if(Loader.IsReady()){
                     var b = self.Render.Animate.block()
                     $.each(b, function(i){
-                        $('#' + b[i].data.cssBlock).show();
                         if(typeof AnimateContent == 'function')
                             new AnimateContent();
                         if(self.settings.animate.block)
@@ -338,7 +392,6 @@ var ContentWidget = function(){
                 try{
                     ko.cleanNode($("#" + self.settings.containerId)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    $("#" + self.settings.containerId).children().show();
                     self.WidgetLoader(true, self.settings.containerId);
                     if(typeof AnimateContent == 'function')
                         new AnimateContent();
@@ -496,13 +549,15 @@ var EmptyViewBlock = function(data){
 };
 
 /* Block */
-var BlockViewModel = function(data, countGoodsInContent){
+var BlockViewModel = function(data, settings){
     var self = this;
+    self.countGoodsInContent = settings.countGoodsInBlock;
     self.id            = data.block.id;
     self.sort          = data.sort;
     self.titleBlock    = data.block.name_category;
     self.typeView      = data.block.type_view;
     self.countGoods    = data.block.count_goods ? data.block.count_goods : 0;
+    self.showCart      = settings.showCart;
     
     self.cssBlock      = 'block_sort_' + data.sort;
     self.cssBlockContainer  = 'sliderContainer_' + self.id ;
@@ -511,18 +566,18 @@ var BlockViewModel = function(data, countGoodsInContent){
     self.contentBlock  = ko.observableArray();
     
     self.AddContent = function(){
-        var query = '0/' + countGoodsInContent + '/name/';
+        var query = '0/' + self.countGoodsInContent + '/name/';
         var queryHash = self.id + EventDispatcher.HashCode(query);
         var content = Parameters.cache.content[queryHash].content;
         if(content && content.length > 1){
             var last = content.shift()
             self.countGoods  = last.count_goods;
         
-            if(content.length < countGoodsInContent)
-                countGoodsInContent = content.length;
+            if(content.length < self.countGoodsInContent)
+                self.countGoodsInContent = content.length;
             
             var f = 0;
-            for(var i = 0; i <= countGoodsInContent-1; i++){
+            for(var i = 0; i <= self.countGoodsInContent-1; i++){
                 if(self.typeView == 'tile'){
                     var str = new BlockTrForTableViewModel();
                     for(var j = 0; j <= 2; j++){
@@ -560,6 +615,7 @@ var ListContentViewModel = function(settings){
     self.typeView      = 'tile';
     self.countGoods    = 0;
     self.message = '';
+    self.showCart = settings.showCart;
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();

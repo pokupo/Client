@@ -2,7 +2,7 @@ var Config = {
     Base : {
         sortingBlockContainer : '.sortingBlock', // id раскрывающегося списка сортировки товаров
         containerIdForTmpl : "container_tmpl", // id контейнера в который будут загружены все шаблоны
-        loading : "http://seller.pokupo.ru/images/loading50.gif", // иконка загрузчика
+        loading : "https://promodev.pokupo.ru/images/loader_32px.gif", // иконка загрузчика
         title : 'Pokupo', // заголовок страницы по умолчанию
         cookie : {
             previously_viewed : 'previously_viewed',  // id просмотренных товаров
@@ -56,9 +56,10 @@ var Config = {
         buttonPayment : {widget: 'paymentWidgetId', def: 'defaultPaymentWidgetId', customClass: 'custom_block'}, // id контейнера страницы оплаты
         standalonePayment: {
             content: { widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId', customClass: 'custom_block'},
-            button: { widget: 'standalonePaymentButtonWidgetId', def: 'defaultStandalonePaymentButtonWidgetId', customClass: 'custom_block'}
+            button: { widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId', customClass: 'custom_block'}
         }, // id контейнера страницы оплаты
         statusPayment: { widget: 'statusPaymentWidgetId', def: 'defaultStatusPaymentWidgetId', customClass: 'custom_block'},
+        shopInfo: { widget: 'shopInfoWidgetId', def: 'defaultShopInfoWidgetId', customClass: 'custom_block' },
         message : {widget: 'messageWidgetId', def: 'defaultMessageWidgetId', customClass: 'custom_block'} // id контейнера списка сообщений
     },
     Goods : {
@@ -149,6 +150,8 @@ var Config = {
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
         sortList : [{name: 'rating', title: 'рейтингу'}, {name: 'name', title: 'названию'}, {name: 'cost', title: 'цене'}],
         orderBy : 'name', // сортировка по умолчанию
+        showCart: true,
+        showBlocks: true,
         style : { // стиль блока 
             'position' : 'absolute', 
             'top' : '50px', 
@@ -159,6 +162,7 @@ var Config = {
         }
     },
     Search : {
+        showCatalog: true,
         tmpl : {
             path : "searchTmpl.html", // путь к шаблонам
             id : "searchTmpl" // id шаблона формы поиска по умолчанию
@@ -176,6 +180,8 @@ var Config = {
         }
     },
     SearchResult : {
+        showCatalog: true,
+        showForm: true,
         tmpl: {
             content : {
                 path : "searchResultTmpl.html", // результатов поиска
@@ -194,7 +200,8 @@ var Config = {
         idAdvancedSearchForm : "advancedSearch", // id расширенной формы
         listPerPage : [10, 20, 50], // массив списка фильтра кол-ва товаров на странице
         sortList : [{name: 'rating', title: 'рейтингу'}, {name: 'name', title: 'названию'}, {name: 'cost', title: 'цене'}],
-        listTypeSearch : { // тип поиска 
+        showCart: true,
+        listTypeSearch : { // тип поиска
             any : 'Любое из слов',
             all : 'Все слова'
         },
@@ -290,7 +297,8 @@ var Config = {
             lastName : /^[a-zа-яёА-ЯЁA-Z]+$/,
             middleName : /^[a-zа-яёА-ЯЁA-Z]+$/,
             birthDay : /^[\d]{2}.[\d]{2}.[\d]{4}$/,
-            gender : /^[mw]$/
+            gender : /^[mw]$/,
+            postIndex: /^[0-9]+$/
         },
         message : {
             registrationSuccessful : "Вы успешно зарегистрировались в магазине"
@@ -372,7 +380,9 @@ var Config = {
                 empty : 'Поле обязательно для заполнения'
             },
             postIndex : {
-                empty : 'Поле обязательно для заполнения'
+                empty : 'Поле обязательно для заполнения',
+                length: 'В почтовом индексе должно быть 5 или 6 цифр',
+                regular: 'Только цифры'
             }
         },
         style : {// стиль блока
@@ -447,6 +457,8 @@ var Config = {
         }
     },
     MenuPersonalCabinet : {
+        showCart: true,
+        showRegSeller: true,
         tmpl : {
             path : "menuPersonalCabinetTmpl.html", // файл шаблонов
             id : 'menuPersonalCabinetTmpl' // id шаблона меню личного кабинета
@@ -458,6 +470,17 @@ var Config = {
             'width' : '100%', 
             'height' : '50px', 
             'background' : '#ddd'
+        }
+    },
+    ModalMessage: {
+        tmpl : {
+            path : "modalMessageTmpl.html", // файл шаблонов
+            id : {
+                confirm: 'modalMessageConfirmTmpl',
+                success: 'modalMessageSuccessTmpl',
+                error: 'modalMessageErrorTmpl',
+                message: 'modalMessageMessageTmpl'
+            }
         }
     },
     Profile : {
@@ -503,6 +526,9 @@ var Config = {
             failSetDefaultDelivery : 'Данные не обновлены.'
         },
         error : { // сообщения об ошибках при валидации формы регистрации
+            iconUser: {
+                extension: 'Раширение фала должно быть jpeg, png или gif'
+            },
             email : {
                 empty : 'Поле обязательно для заполнения',
                 maxLength : 'Максимум 64 символа',
@@ -571,7 +597,7 @@ var Config = {
             },
             postIndex : {
                 empty : 'Поле обязательно для заполнения',
-                length: 'В почтовом индексе должно быть 6 цифр',
+                length: 'В почтовом индексе должно быть 5 или 6 цифр',
                 regular: 'Только цифры'
             }
         },
@@ -706,7 +732,8 @@ var Config = {
             middleName : /^[a-zа-яёА-ЯЁA-Z]+$/,
             birthDay : /^[\d]{2}.[\d]{2}.[\d]{4}$/,
             gender : /^[mw]$/,
-            addressee : /^[a-zа-яёА-ЯЁA-Z\s]+$/
+            addressee : /^[a-zа-яёА-ЯЁA-Z\s]+$/,
+            postIndex: /^[0-9]+$/
         },
         message : {
             addAddressDelivery : 'Данные успешно сохранены.',
@@ -752,7 +779,9 @@ var Config = {
                 empty : 'Поле обязательно для заполнения'
             },
             postIndex : {
-                empty : 'Поле обязательно для заполнения'
+                empty : 'Поле обязательно для заполнения',
+                length: 'В почтовом индексе должно быть 5 или 6 цифр',
+                regular: 'Только цифры'
             },
             addressee : {
                 empty : 'Поле обязательно для заполнения',
@@ -862,23 +891,25 @@ var Config = {
         },
         Error : {
             required : 'Поле обязательно для заполнения.',
-            regExp : 'Не допустимое значение.',
+            regExp : 'Недопустимое значение.',
             maxlength : 'Максимум %s% символов.'
         }
     },
     StandalonePayment : {
+        showButton: false,
         title : "Оплатить", // заголовок кнопки
         tmpl : {
             path : 'standalonePaymentTmpl.html', // файл шаблонов
             id : {
                 content : 'standalonePaymentPageTmpl', //id шаблона страницы оплаты
                 paymentList: 'standalonePaymentListTmpl',
-                button : 'standalonePaymentButtonImpl' //id шаблона кнопки
+                button : 'standalonePaymentButtonImpl', //id шаблона кнопки
+                error: 'standalonePaymentErrorTmpl'
             }
         },
         Error : {
             required : 'Поле обязательно для заполнения.',
-            regExp : 'Не допустимое значение.',
+            regExp : 'Недопустимое значение.',
             maxlength : 'Максимум %s% символов.',
             email : {
                 empty : 'Поле обязательно для заполнения',
@@ -892,7 +923,8 @@ var Config = {
             },
             coast: {
                 empty: 'Поле обязательно для заполнения',
-                count: "Введите стоимость услуги"
+                count: "Введите стоимость услуги",
+                integer: "Недопустимое значение"
             }
         },
         regular : { // регулярные выражения полей
@@ -903,6 +935,17 @@ var Config = {
         tmpl : {
             path : 'statusPaymentTmpl.html', // файл шаблонов
             id : 'statusPaymentPageTmpl' //id шаблона страницы статуса оплаты
+        }
+    },
+    ShopInfo : {
+        defaultLogo: "//seller.pokupo.ru/images/logos/shop/1.png",
+        show: {
+            logo: true,
+            title: true
+        },
+        tmpl : {
+            path : 'shopInfoTmpl.html', // файл шаблонов
+            id : 'shopInfoTmpl'
         }
     },
     Paging : {

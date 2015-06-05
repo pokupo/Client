@@ -1,6 +1,10 @@
-var OrderViewModel = function(){
+var OrderViewModel = function(settings){
     var self = this;
     self.id = ko.observable();
+
+    self.showBackList = true;
+    if(settings && settings.show.hasOwnProperty('menu'))
+        self.showBackList = settings.show.menu;
     
     self.nameMethodShipping = ko.observable();
     self.logoMethodShipping = ko.observable();

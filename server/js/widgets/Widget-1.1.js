@@ -1,4 +1,4 @@
-Parameters = {
+var Parameters = {
     pathToImages : null,
     sortingBlockContainer : null,
     loading : null,
@@ -317,12 +317,10 @@ var Widget = function (){
                     this.SelfInit();
                     if(!noindicate)
                         Loader.Indicator(widget.widgetName, false);
-                    this.BaseLoad.Roots(function(){
                         widget.InitWidget();
                         self.widgetName = widget.widgetName;
                         self.minTmplVersion = widget.minTmplVersion;
                         self.maxTmplVersion = widget.maxTmplVersion;
-                    });
                 }
                 else{
                     Loader.Indicator(widget.widgetName, true);
@@ -341,11 +339,8 @@ var Widget = function (){
     this.SelfInit = function(){
         if(!this.isReady){
             this.isReady = true;
-            var hostApi = JSSettings.protocolHTTP + JSSettings.hostApi;
-            if(document.location.protocol == 'https:')
-                hostApi = JSSettings.protocolHTTPS + JSSettings.hostApi;
             self.settings = {
-                hostApi : hostApi,
+                hostApi : JSSettings.protocolHTTPS + JSSettings.hostApi,
                 httpsHostApi : JSSettings.protocolHTTPS + JSSettings.hostApi,
                 catalogPathApi : JSSettings.catalogPathApi,
                 goodsPathApi : JSSettings.goodsPathApi,
@@ -616,89 +611,70 @@ var Widget = function (){
     };
     this.QueryError = function(data, callback, callbackPost){
         if (data.err) {
-            if($('#' + Config.Base.containerIdErrorWindow).length == 0){
-                $('body').append(Config.Base.errorWindow);
-            }
-            
             var text = '';
             if(data.msg)
                 text = data.msg;
             else
                 text = data.err;
-            
-            $('#' + Config.Base.containerIdErrorWindow + ' #' + Config.Base.conteinerIdTextErrorWindow).text(text);
-            
-            $( "#" + Config.Base.containerIdErrorWindow ).dialog({
-                modal: true,
-                buttons: [
-                    { text: "Повторить запрос", click: function(){
-                        $( this ).dialog( "close" );
-                        callback();
-                        self.WidgetLoader(true);
-                    }},
-                    { text: "Закрыть", click: function() { 
-                        $( this ).dialog( "close" ); 
-                        if(callbackPost)
-                            callbackPost();
-                    }}
-                ]
+            self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+                var information = new ModalMessageWidget(
+                    'error',
+                    text,
+                    callbackPost
+                );
+                information.Init(information);
             });
-            $('.ui-dialog-titlebar-close').hide();
             self.WidgetLoader(true);
             return false;
         }
         return true;
     };
-    this.ShowMessage = function(message, callback, hide){
-        if($('#' + Config.Base.containerIdMessageWindow).length == 0){
-            $('body').append(Config.Base.containerMessage);
-        }
-        $('#' + Config.Base.containerIdMessageWindow + ' #' + Config.Base.conteinerIdTextMessageWindow).text(message);
-            
-        var button = [];
-        if(!hide){
-            button.push({ text: "Закрыть", click: function() { 
-                    $( this ).dialog( "close" );
-                    if(callback)
-                        callback();
-                }});
-        }
-        else{
-            setTimeout(function() {
-                $( "#" + Config.Base.containerIdMessageWindow ).dialog( "close" );
-                if(callback)
-                    callback();
-            }, Config.Base.timeMessage);
-        }
-        
-        $( "#" + Config.Base.containerIdMessageWindow ).dialog({
-            modal: false,
-            buttons: button
+    this.ShowError = function(message, callback, hide){
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'error',
+                message,
+                callback,
+                false,
+                hide
+            );
+            information.Init(information);
         });
-        $('.ui-dialog-titlebar-close').hide();
+    };
+    this.ShowMessage = function(message, callback, hide){
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'success',
+                message,
+                callback,
+                false,
+                hide
+            );
+            information.Init(information);
+        });
+    };
+    this.ShowCommentForm = function(message, callback, hide){
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'message',
+                message,
+                callback,
+                false,
+                hide
+            );
+            information.Init(information);
+        });
     };
     this.Confirm = function(message, callbackOk, callbackFail){
-        if($('#' + Config.Base.containerIdConfirmWindow).length == 0){
-            $('body').append(Config.Base.containerConfirm);
-        }
-        $('#' + Config.Base.containerIdConfirmWindow + ' #' + Config.Base.conteinerIdTextConfirmWindow).text(message);
-        
-        $( "#" + Config.Base.containerIdConfirmWindow ).dialog({
-            modal: true,
-            buttons: [
-                { text: "Ok", click: function(){
-                    $( this ).dialog( "close" );
-                    if(callbackOk)
-                        callbackOk();
-                }},
-                { text: "Отменить", click: function() { 
-                    $( this ).dialog( "close" ); 
-                    if(callbackFail)
-                        callbackFail();
-                }}
-            ]
-        });
-        $('.ui-dialog-titlebar-close').hide();
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(
+                'confirm',
+                message,
+                callbackOk,
+                callbackFail
+            );
+            information.Init(information);
+        })
     };
     this.ErrorVertionTmpl = function(tmpl, hash, temp){
         var version = /<!--\s*version ([\d.]*)\s*-->/;
@@ -1031,10 +1007,12 @@ var Widget = function (){
             }
         },
         Script : function(script, callback){
-            if(!Parameters.cache.scripts[EventDispatcher.HashCode(script)]){
+            var hash = EventDispatcher.HashCode(script);
+            if(!Parameters.cache.scripts[hash]){
                 if(!$.isArray(script))
                     script = [script];
                 JSLoader.Load(script, callback);
+                Parameters.cache.scripts[hash] = true;
             }
             else{
                 if(callback)callback();
@@ -1214,26 +1192,18 @@ var Widget = function (){
             XDMTransport.Load.DataPost(form, true);
         },
         ProfileInfo : function(callback){
-            if($.isEmptyObject(Parameters.cache.profile.info)){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'info/'), function(data){
-                    Parameters.cache.profile.info = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else
-                callback(Parameters.cache.profile.info);
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'info/'), function(data){
+                Parameters.cache.profile.info = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         Profile : function(callback){
-            if($.isEmptyObject(Parameters.cache.profile.personal)){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'profile/'), function(data){
-                    Parameters.cache.profile.personal = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else
-                callback(Parameters.cache.profile.personal);
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'profile/'), function(data){
+                Parameters.cache.profile.personal = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         EditContacts : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/contact/' + Parameters.shopId + '/' + str), function(data){
@@ -1533,4 +1503,13 @@ var Widget = function (){
         }
         
     };
+};
+
+var CountryListViewModel = function(data) {
+    var self = this;
+    self.id = data.id;
+    self.name = data.name;
+    self.fullName = data.full_name;
+    self.partWorld = data.part_world;
+    self.location = data.location;
 };

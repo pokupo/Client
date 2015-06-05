@@ -320,9 +320,11 @@
         });
         
          EventDispatcher.AddEventListener('ProfileWidget.delivery.edit', function(data){
-             var form = new DeliveryAddressFormViewModel();
-             form.AddContent(data);
-             self.Fill.DeliveryForm(form);
+             self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                 var form = new DeliveryAddressFormViewModel();
+                 form.AddContent(data);
+                 self.Fill.DeliveryForm(form);
+             });
          });
          
          EventDispatcher.AddEventListener('ProfileWidget.delivery.sedDefault', function(data){
@@ -379,9 +381,10 @@
                     contacts.errorEmailConfirm(Config.Profile.error.emailToken.confirm);
                     return false;
                 }
+                return true;
             }
 
-            return true;
+            return false;
         },
         PhoneToken: function(data, contacts) {
             if (data.confirm_phone) {
@@ -389,9 +392,10 @@
                     contacts.errorPhoneConfirm(Config.Profile.error.phoneToken.confirm);
                     return false;
                 }
+                return true;
             }
 
-            return true;
+            return false;
         },
         Profile: function(data, step3) {
             if (data.err) {
@@ -420,12 +424,13 @@
         },
         Personal : function(){
             self.InsertContainer.Personal();
-            
-            self.BaseLoad.Profile(function(registration){
-                self.BaseLoad.ProfileInfo(function(data) {
-                    self.Fill.Personal(registration, data);
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                self.BaseLoad.Profile(function (registration) {
+                    self.BaseLoad.ProfileInfo(function (data) {
+                        self.Fill.Personal(registration, data);
+                    });
                 });
-            });
+            })
         },
         Delivery : function(){
             self.BaseLoad.DeliveryAddressList(function(data){
@@ -434,8 +439,10 @@
             });
         },
         DeliveryForm : function(){
-            var form = new DeliveryAddressFormViewModel();
-            self.Fill.DeliveryForm(form);
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                var form = new DeliveryAddressFormViewModel();
+                self.Fill.DeliveryForm(form);
+            });
         },
         Security : function(){
             self.InsertContainer.Security();
@@ -624,9 +631,9 @@
                     self.WidgetLoader(true, self.settings.containerFormId);
 
                     if(typeof AnimateProfile == 'function')
-                        new AnimateProfile();
+                        new AnimateProfile(form.postalAddress.country);
                     if(self.settings.animate)
-                        self.settings.animate();
+                        self.settings.animate(form.postalAddress.country);
                     
                     if(Routing.params.edit == 'postal_address'){
                         self.ScrollTop(form.postalAddress.cssPostAddressForm, 700);
@@ -808,9 +815,9 @@
                     });
 
                     if(typeof AnimateProfile == 'function')
-                        new AnimateProfile();
+                        new AnimateProfile(delivery.country);
                     if(self.settings.animate)
-                        self.settings.animate();
+                        self.settings.animate(delivery.country);
                 }
                 catch(e){
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('deliveryForm') + ']', e);
@@ -946,11 +953,15 @@ var ProfileDataRegistrationViewModel = function(){
     
     self.isEditBlock = ko.observable(0);
     self.iconUser = ko.observable();
+    self.cssIconUser = 'avatar_file';
+    self.errorIconUser = ko.observable(null);
     
     self.cssRegistrationDataForm = 'profile_registration_data_form';
     
     self.ValidationForm = function() {
         var test = true;
+        if (!self.IconUserValidation())
+            test = false;
         if (!self.FirstNameValidation())
             test = false;
         if (!self.LastNameValidation())
@@ -961,6 +972,21 @@ var ProfileDataRegistrationViewModel = function(){
             test = false;
 
         return test;
+    };
+    self.IconUserValidation = function() {
+        var file = $('#' + self.cssIconUser).val();
+        if(file){
+            var fileAr = file.split('.');
+            var ext = fileAr[fileAr.length-1];
+            ext = ext.toLowerCase();
+
+            if ($.inArray(ext, ['jpeg', 'jpg', 'png', 'gif']) < 0){
+                self.errorIconUser(Config.Profile.error.iconUser.extension);
+                return false;
+            }
+        }
+        self.errorIconUser(null);
+        return true;
     };
     self.FirstNameValidation = function() {
         if (!self.firstNameField()) {
@@ -1108,30 +1134,50 @@ var ProfilePostalAddressViewModel = function(){
     self.customRegion = ko.observable();
     self.cssRegionList = 'region_list';
     self.errorRegion = ko.observable(null);
+    self.showRegion = ko.computed(function(){
+        if(self.country())
+            return false;
+        return true;
+    }, this);
 
     self.cityText = ko.observable();
     self.city = ko.observable();
     self.customCity = ko.observable();
     self.cssCityList = 'city_list';
     self.errorCity = ko.observable(null);
+    self.showCity = ko.computed(function(){
+        if(self.customRegion())
+            return false;
+        return true;
+    }, this);
 
     self.addressText = ko.observable();
     self.address = ko.observable();
     self.customAddress = ko.observable();
     self.cssAddress = 'address';
     self.errorAddress = ko.observable(null);
+    self.showAddress = ko.computed(function(){
+        if(self.customCity())
+            return false;
+        return true;
+    }, this);
 
     self.postIndexText = ko.observable();
     self.postIndex = ko.observable();
     self.cssPostIndex = 'post_index';
     self.errorPostIndex = ko.observable(null);
+    self.showPostIndex = ko.computed(function(){
+        if(self.customAddress())
+            return false;
+        return true;
+    }, this);
     
     self.checkInfo = ko.observable();
 
     self.countryList = ko.observableArray();
     
     self.isEditBlock = ko.observable(0);
-    
+
     self.AddContent = function(data){ 
         self.data = data;
         
@@ -1248,7 +1294,7 @@ var ProfilePostalAddressViewModel = function(){
             self.errorPostIndex(Config.Profile.error.postIndex.empty);
             return false;
         }
-        if (self.postIndex().length != 6) {
+        if (5 > self.postIndex().length  || self.postIndex().length > 6) {
             self.errorPostIndex(Config.Profile.error.postIndex.length);
             return false;
         }
@@ -1338,6 +1384,8 @@ var ProfileContactsViewModel = function(){
         return true;
     };
     self.EmailTokenValidation = function() {
+        var token = $.trim(self.emailToken());
+        self.emailToken(token);
         if (!self.emailToken()) {
             self.errorEmailToken(Config.Profile.error.emailToken.empty);
             return false;
@@ -1347,6 +1395,8 @@ var ProfileContactsViewModel = function(){
         return true;
     };
     self.PhoneTokenValidation = function() {
+        var token = $.trim(self.phoneToken());
+        self.phoneToken(token);
         if (!self.phoneToken()) {
             self.errorPhoneToken(Config.Profile.error.phoneToken.empty);
             return false;
@@ -1471,25 +1521,45 @@ var DeliveryAddressFormViewModel = function(model){
     self.customRegion = ko.observable();
     self.cssRegionList = 'delivery_region';
     self.errorRegion = ko.observable(null);
+    self.showRegion = ko.computed(function(){
+        if(self.country())
+            return false;
+        return true;
+    }, this);
     
     self.codeCity = ko.observable();
     self.city = ko.observable();
     self.customCity = ko.observable();
     self.cssCityList = 'delivery_city';
     self.errorCity = ko.observable(null);
-    
-    self.postIndex = ko.observable();
-    self.cssPostCode = 'delivery_post_index';
-    self.errorPostCode = ko.observable(null);
-    
+    self.showCity = ko.computed(function(){
+        if(self.customRegion())
+            return false;
+        return true;
+    }, this);
+
     self.address = ko.observable();
     self.customAddress = ko.observable();
     self.cssAddress = 'delivery_cssAddress';
     self.errorAddress = ko.observable(null);
-    
+    self.showAddress = ko.computed(function(){
+        if(self.customCity())
+            return false;
+        return true;
+    }, this);
+
+    self.postIndex = ko.observable();
+    self.cssPostCode = 'delivery_post_index';
+    self.errorPostCode = ko.observable(null);
+    self.showPostIndex = ko.computed(function(){
+        if(self.customAddress())
+            return false;
+        return true;
+    }, this);
+
     self.addressee = ko.observable();
     self.errorAddressee = ko.observable(null);
-    
+
     self.contactPhone = ko.observable();
     self.cssContactPhone = 'delivery_contact_phone';
     self.errorContactPhone = ko.observable(null)
@@ -1585,6 +1655,14 @@ var DeliveryAddressFormViewModel = function(model){
     self.PostIndexValidation = function() {
         if (!self.postIndex()) {
             self.errorPostCode(Config.Profile.error.postIndex.empty);
+            return false;
+        }
+        if (5 <= self.postIndex().length <= 6) {
+            self.errorPostCode(Config.Profile.error.postIndex.length);
+            return false;
+        }
+        if (!Config.Profile.regular.postIndex.test(self.postIndex())) {
+            self.errorPostCode(Config.Profile.error.postIndex.regular);
             return false;
         }
         self.errorPostCode(null);

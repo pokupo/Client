@@ -361,11 +361,11 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
         Routing.SetHash('default', 'Домашняя', {});
     };
     self.ClickIssueOrder = function(){
-        if(Parameters.cache.userInformation.err){
+        if(Parameters.cache.userInformation != null && Parameters.cache.userInformation.err){
             Parameters.cache.lastPage = { route : 'order', title: 'Оформление заказа', data: {create: 'fromCart', sellerId: self.sellerInfo.shop.id}};
             Routing.SetHash('login', 'Авторизация пользователя', {});
         }
-        else{           
+        else{
             Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.shop.id});
         };
     };

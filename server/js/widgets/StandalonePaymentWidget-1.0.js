@@ -17,7 +17,8 @@ var StandalonePaymentWidget = function () {
             id : {
                 button : null,
                 paymentList: null,
-                content : null
+                content : null,
+                error: null
             }
         },
         animate: null,
@@ -39,16 +40,17 @@ var StandalonePaymentWidget = function () {
         mailUser: null,
         idMethodPayment: null,
         paymentInfo: {},
-        description: ''
+        paymentList: false,
+        description: '',
+        showButton: null
     };
 
     self.InitWidget = function () {
         self.settings.containerId = Config.Containers.standalonePayment;
         self.settings.tmpl = Config.StandalonePayment.tmpl;
         self.settings.title = Config.StandalonePayment.title;
+        self.settings.showButton = Config.StandalonePayment.showButton;
 
-        self.SetParameters();
-        self.RegisterEvents();
         self.CheckRouteStandalonePayment();
     };
     self.SetParameters = function (data) {
@@ -69,11 +71,23 @@ var StandalonePaymentWidget = function () {
         if(!$.isEmptyObject(input)){
             if (input.title)
                 self.settings.title = input.title;
+            else
+                self.settings.title = null;
 
             if (input.idGoods) {
                 self.settings.idGoods = input.idGoods;
                 self.settings.showAmount = false;
             }
+            else if (Routing.params.idGoods) {
+                self.settings.idGoods = Routing.params.idGoods;
+                self.settings.showAmount = false;
+            }
+            else{
+                self.settings.idGoods = null;
+                self.settings.idShop = JSSettings.shopId;
+                self.settings.showCount = false;
+            }
+
             if (input.count ){
                 self.settings.count  = input.count;
                 self.settings.showCount = false;
@@ -82,11 +96,11 @@ var StandalonePaymentWidget = function () {
                 self.settings.count  = Routing.params.count;
                 self.settings.showCount = false;
             }
-
-            if (input.idShop ) {
-                self.settings.idShop = input.idShop;
+            else{
+                self.settings.count  = 1;
                 self.settings.showCount = false;
             }
+
             if (input.amount) {
                 self.settings.amount = input.amount;
                 self.settings.showAmount = false;
@@ -95,15 +109,27 @@ var StandalonePaymentWidget = function () {
                 self.settings.amount = Routing.params.amount;
                 self.settings.showAmount = false;
             }
+            else{
+                self.settings.amount = null;
+                if(!self.settings.idGoods)
+                    self.settings.showAmount = true;
+            }
+
             if (input.uid)
                 self.settings.uid  = input.uid;
+            if(Routing.params.uid)
+                self.settings.uid = Routing.params.uid;
 
             if(input.idShopPartner)
                 self.settings.idShopPartner = input.idShopPartner;
             if(Routing.params.idShopPartner)
                 self.settings.idShopPartner = Routing.params.idShopPartner;
+
             if (input.mailUser)
                 self.settings.mailUser = input.mailUser;
+            else if(Routing.params.mailUser)
+                self.settings.mailUser = Routing.params.mailUser;
+
             if (input.idMethodPayment)
                 self.settings.idMethodPayment = input.idMethodPayment;
             if(Routing.params.idMethodPayment)
@@ -111,7 +137,10 @@ var StandalonePaymentWidget = function () {
             if(input.description)
                 self.settings.description = input.description;
             if(Routing.params.description)
-                self.settings.description = input.description;
+                self.settings.description = Routing.params.description;
+
+            if(input.showButton)
+                self.settings.showButton = input.showButton;
 
             if(input.tmpl){
                 if(input.tmpl.path)
@@ -137,6 +166,8 @@ var StandalonePaymentWidget = function () {
             Logger.Console.VarDump(self.widgetName, "Result settings", self.settings);
     };
     self.CheckRouteStandalonePayment = function () {
+        self.SetParameters();
+        self.RegisterEvents();
         self.BaseLoad.Tmpl(self.settings.tmpl, function () {
             if (Routing.route == 'standalone_payment') {
                 if(self.settings.idGoods != null){
@@ -148,12 +179,16 @@ var StandalonePaymentWidget = function () {
                             self.GetData.PartnerGoods();
                     });
                 }
-                if (self.settings.idShop != null)
+
+                if (self.settings.idShop != null && self.settings.idGoods == null)
                     self.GetData.Service();
             }
-            else{
+            else if(self.settings.showButton && Routing.route != 'status_payment'){
                 self.InsertContainer.Button();
                 self.Fill.Button();
+            }
+            else{
+                self.WidgetLoader(true);
             }
         });
     };
@@ -177,10 +212,17 @@ var StandalonePaymentWidget = function () {
 
         EventDispatcher.AddEventListener('StandalonePaymentWidget.back', function(){
             self.settings.idMethodPayment = null;
+            self.settings.mailUser = null;
             self.CheckRouteStandalonePayment()
         });
 
         EventDispatcher.AddEventListener('widget.change.route', function () {
+            self.CheckRouteStandalonePayment();
+        });
+
+        EventDispatcher.AddEventListener('StandalonePaymentWidget.payment.clear', function(){
+            self.settings.idMethodPayment = null;
+            self.settings.mailUser = null;
             self.CheckRouteStandalonePayment();
         });
 
@@ -210,6 +252,27 @@ var StandalonePaymentWidget = function () {
         });
     };
     self.GetData = {
+        Price: function(){
+            var str = self.settings.idShop + '/';
+            if(self.settings.idShopPartner)
+                str = str + self.settings.idShopPartner + '/';
+
+            var parameters = [];
+            if(self.settings.amount)
+                parameters.push('amount=' + self.settings.amount);
+            if(self.settings.uid)
+                parameters.push('uid=' + self.settings.uid);
+            if(self.settings.idMethodPayment)
+                parameters.push('idMethodPayment=' + self.settings.idMethodPayment);
+
+            parameters.push('description=' + self.settings.description);
+            if(parameters.length > 0)
+                str = str + '?' + parameters.join('&');
+
+            self.BaseLoad.InvoicesService(str, function (data) {
+                self.Fill.PaymentList(data);
+            });
+        },
         Goods: function () {
             var str = self.settings.idGoods + '/';
             if(self.settings.count)
@@ -245,7 +308,7 @@ var StandalonePaymentWidget = function () {
         Service: function () {
             var str = self.settings.idShop + '/';
             if(self.settings.idShopPartner)
-                str = str + self.settings.idShopPartner;
+                str = str + self.settings.idShopPartner + '/';
 
             var parameters = [];
             if(self.settings.amount)
@@ -282,6 +345,10 @@ var StandalonePaymentWidget = function () {
         Content: function () {
             self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
             $("#" + self.settings.containerId.content.widget).html($('script#' + self.GetTmplName('content')).html()).hide();
+        },
+        Error: function(){
+            self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
+            $("#" + self.settings.containerId.content.widget).html($('script#' + self.GetTmplName('error')).html()).hide();
         }
     };
     self.Fill = {
@@ -290,44 +357,56 @@ var StandalonePaymentWidget = function () {
             self.Render.Button(button);
         },
         PaymentList: function(data){
-            if(!self.settings.idMethodPayment) {
-                var list = new StandalonePaymentListViewModel(self.settings);
-                if(data.err){
-                    list.error.base(data.msg);
-                    list.show.errorBase(true);
-                }
-                else {
+            if(data.hasOwnProperty('err')){
+                self.InsertContainer.Error();
+                self.Fill.Error(data);
+            }
+            else {
+                if (!data.hasOwnProperty('pay_form')) {
+                    var list = new StandalonePaymentListViewModel(self.settings);
                     list.error.base('');
                     list.show.errorBase(false);
                     if (data) {
                         $.each(data, function (i) {
+                            self.settings.paymentList = true;
                             list.payments.push(new StandalonePaymentItemViewModel(data[i], list));
                         });
                     }
-                }
 
-                self.InsertContainer.PaymentList();
-                self.Render.PaymentList(list);
-            }
-            else{
-                self.InsertContainer.Content();
-                self.Fill.Content(data);
+                    self.InsertContainer.PaymentList();
+                    self.Render.PaymentList(list);
+                }
+                else {
+                    self.InsertContainer.Content();
+                    self.Fill.Content(data);
+                }
             }
         },
         Content: function (data) {
-            var content = new StandalonePaymentViewModel();
+            var content = new StandalonePaymentViewModel(self.settings);
 
             var str = [];
-            var fields = data.pay_form.hidden_field;
+            var fields = {};
+            if(data.pay_form)
+                fields = data.pay_form.hidden_field;
+            var orderId = null;
             $.each(fields, function(i){
                 str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
+                if(fields[i].name == 'PKP_ID_ORDER')
+                    orderId = fields[i].value;
             });
-            if(str)
+            if(orderId)
+                $.cookie(Config.Base.cookie.orderId, 'PKP_ID_ORDER=' + orderId);
+            else if(str)
                 $.cookie(Config.Base.cookie.orderId, str.join('&'));
-;
+
             content.paymentInfo = self.settings.paymentInfo;
             content.AddContent(data);
             self.Render.Content(content);
+        },
+        Error: function(data){
+            var list = new StandalonePaymentErrorViewModel(data, self.settings);
+            self.Render.Error(list);
         }
     };
     self.Render = {
@@ -336,6 +415,9 @@ var StandalonePaymentWidget = function () {
                 try {
                     ko.cleanNode($('#' + self.settings.containerId.button.widget)[0]);
                     ko.applyBindings(data, $('#' + self.settings.containerId.button.widget)[0]);
+
+                    self.WidgetLoader(true, self.settings.containerId.button.widget);
+
                     if (typeof AnimateStandalonePayment == 'function')
                         new AnimateStandalonePayment();
                     if (self.settings.animate)
@@ -371,6 +453,25 @@ var StandalonePaymentWidget = function () {
                         new AnimateStandalonePayment();
                     if (self.settings.animate)
                         self.settings.animate();
+
+                    if(self.settings.showAmount) {
+                        $('#' + data.cssAmount).bind('textchange', function (event, previousText) {
+                            var text = $(this).val();
+                            data.amount(text);
+                            self.settings.amount = text;
+                            setTimeout(function () {
+                                if (text == self.settings.amount) {
+                                    self.GetData.Price();
+                                }
+                            }, 500);
+                        })
+
+                        $('#' + data.cssAmount).focus();
+                    }
+
+                    $('#' + data.cssCount).bind('textchange', function(event, previousText) {
+                        data.count($(this).val());
+                    })
                 }
                 catch (e) {
                     self.Exception('Ошибка шаблона [' + self.GetTmplName('paymentList') + ']', e);
@@ -428,6 +529,39 @@ var StandalonePaymentWidget = function () {
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId.content.widget + ']');
                 self.WidgetLoader(true);
             }
+        },
+        Error: function (data) {
+            if ($("#" + self.settings.containerId.content.widget).length > 0) {
+                try {
+                    ko.cleanNode($("#" + self.settings.containerId.content.widget)[0]);
+                    ko.applyBindings(data, $("#" + self.settings.containerId.content.widget)[0]);
+
+                    $("#" + self.settings.containerId.content.widget).show();
+                    self.WidgetLoader(true);
+                    if (typeof AnimateStandalonePayment == 'function')
+                        new AnimateStandalonePayment();
+                    if (self.settings.animate)
+                        self.settings.animate();
+                }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('error') + ']', e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget("#" + self.settings.containerId.content.widget);
+                        self.WidgetLoader(true, self.settings.containerId.content.widget);
+                    }
+                }
+            }
+            else {
+                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId.content.widget + ']');
+                self.WidgetLoader(true);
+            }
         }
     };
 };
@@ -449,23 +583,27 @@ var StandalonePaymentListViewModel = function(settings){
     self.title = ko.observable();
     self.count = ko.observable();
     self.amount = ko.observable();
+    self.formatAmount = ko.observable();
+    self.cssAmount = 'pokupo_amount';
+    self.cssCount = 'pokupo_count';
 
     if(settings.idGoods){
         self.title(settings.goodsInfo.main.chort_name);
         self.count(settings.count);
-        var coast = settings.count * parseInt(settings.goodsInfo.main.sell_end_cost);
+        var coast = settings.count * parseFloat(settings.goodsInfo.main.sell_end_cost);
         self.amount(coast);
         self.isGoodsId(true);
     }
-
     if(settings.idShop){
         self.title(settings.description);
         self.amount(settings.amount);
         self.isGoodsId(false);
     }
+    if(self.amount())
+        self.formatAmount = parseFloat(self.amount()).toFixed(2);
 
     self.mailUser = ko.observable();
-    self.idMethodPayment = ko.observable();
+    self.idMethodPayment = ko.observable(settings.idMethodPayment);
     self.payments = ko.observableArray();
 
     self.error = {
@@ -522,7 +660,17 @@ var StandalonePaymentListViewModel = function(settings){
             self.show.errorAmount(true);
             return false;
         }
+        if(isNaN(self.amount())){
+            self.error.amount(Config.StandalonePayment.Error.coast.integer);
+            self.show.errorAmount(true);
+            return false;
+        }
         if (parseFloat(self.amount()) != self.amount()) {
+            self.error.amount(Config.StandalonePayment.Error.coast.integer);
+            self.show.errorAmount(true);
+            return false;
+        }
+        if (self.amount() < 0.01) {
             self.error.amount(Config.StandalonePayment.Error.coast.integer);
             self.show.errorAmount(true);
             return false;
@@ -577,8 +725,15 @@ var StandalonePaymentItemViewModel = function(obj, data){
     self.logoPayment = obj.logo_payment;
     self.timePayment = obj.time_payment;
     self.itog = ko.computed(function() {
-        var result = data.amount() ? parseInt(data.amount()) : 0 + self.costPayment ? parseInt(self.costPayment) : 0;
-        return result;
+        if(data.amount() && !data.AmountValidation())
+            return 0;
+        var result = (data.amount() ? parseFloat(data.amount()) : 0) + (self.costPayment ? parseFloat(self.costPayment) : 0);
+        if(result == 0 || isNaN(result))
+            return 0;
+        else {
+            result = result.toFixed(2);
+            return result;
+        }
     }, this);
     self.errorEmail = ko.observable();
 
@@ -597,12 +752,13 @@ var StandalonePaymentItemViewModel = function(obj, data){
 
 }
 
-var StandalonePaymentViewModel = function () {
+var StandalonePaymentViewModel = function (settings) {
     var self = this;
     self.paymentInfo = {};
     self.showPaymentInfo = false;
     self.instruction = ko.observable();
     self.cssInstruction = 'instructtion_print_block';
+    self.idMethodPayment = settings.idMethodPayment;
 
     self.outData = ko.observableArray();
 
@@ -711,7 +867,7 @@ var StandalonePaymentViewModel = function () {
         if (data.hasOwnProperty('url_invoice')) {
             self.urlInvoice(data.url_invoice);
         }
-        if(self.paymentInfo)
+        if(!$.isEmptyObject(self.paymentInfo))
             self.showPaymentInfo = true;
     };
 };
@@ -768,13 +924,6 @@ var StandalonePaymentFieldViewModel = function () {
                 return false;
             }
         }
-//        if(self.regExp()){
-//            var reg = new RegExp(self.regExp(), 'gi');
-//            if(! reg.test(self.value())){
-//                self.error(Config.ButtonPayment.Error.regExp);
-//                return false;
-//            }
-//        }
         if (self.maxlength()) {
             if (self.value().length > self.maxlength()) {
                 self.error(Config.ButtonPayment.Error.maxlength.replace('%s%', self.maxlength()));
@@ -782,6 +931,17 @@ var StandalonePaymentFieldViewModel = function () {
             }
         }
         return true;
+    };
+}
+
+var StandalonePaymentErrorViewModel = function(data, settings){
+    var self = this;
+    self.code = data.err;
+    self.message = data.msg;
+    self.hasPaymentList = settings.paymentList;
+
+    self.ClickClearPayment = function(){
+        EventDispatcher.DispatchEvent('StandalonePaymentWidget.payment.clear');
     };
 }
 
@@ -798,6 +958,4 @@ var TestStandalonePayment = {
     }
 }
 
-$().ready(function(){
-    TestStandalonePayment.Init();
-})
+TestStandalonePayment.Init();

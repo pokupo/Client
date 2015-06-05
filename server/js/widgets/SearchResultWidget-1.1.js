@@ -32,6 +32,9 @@ var SearchResultWidget = function(){
             content: null,
             form: null
         },
+        showCatalog: null,
+        showCart: null,
+        showForm: null,
         idAdvancedSearchForm : null,
         idTreeCategoriesForAdvancedSearchForm : 'tree_categories_for_advanced_search',
         inputParameters : {},
@@ -52,6 +55,9 @@ var SearchResultWidget = function(){
         self.settings.listTypeSearch = Config.SearchResult.listTypeSearch;
         self.settings.listTypeSeller = Config.SearchResult.listTypeSeller;
         self.settings.styleSearchResult = Config.SearchResult.style;
+        self.settings.showCatalog = Config.SearchResult.showCatalog;
+        self.settings.showCart = Config.SearchResult.showCart;
+        self.settings.showForm = Config.SearchResult.showForm;
         self.settings.paging = Config.Paging;
         self.RegisterEvents();
         self.SetInputParameters();
@@ -72,7 +78,9 @@ var SearchResultWidget = function(){
         
         if(!$.isEmptyObject(input)){
             if(input.content){
-                if(input.content.defaultCount)
+                if(input.content.hasOwnProperty('showCart'))
+                    self.settings.showCart = input.content.showCart;
+                if(input.content.hasOwnProperty('defaultCount'))
                     self.settings.paging.itemsPerPage = input.content.defaultCount;
                 if(input.content.list)
                     self.settings.listPerPage = input.content.list;
@@ -86,6 +94,10 @@ var SearchResultWidget = function(){
                     self.settings.animate.content = input.content.animate;
             }
             if(input.form){
+                if(input.form.hasOwnProperty('showForm'))
+                    self.settings.showForm = input.form.showForm;
+                if(input.form.hasOwnProperty('showCatalog'))
+                    self.settings.showCatalog = input.form.showCatalog;
                 if(input.form.tmpl){
                     if(input.form.tmpl.path)
                         self.settings.tmpl.form.path = input.form.tmpl.path;
@@ -123,15 +135,18 @@ var SearchResultWidget = function(){
         }
         else{
             EventDispatcher.DispatchEvent('searchResultWidget.show.form');
-            self.WidgetLoader(true);  
         }
     };
     self.RegisterEvents = function(){ 
         EventDispatcher.AddEventListener('searchResultWidget.show.form', function(){
-            $("#" + self.settings.containerIdForAdvancedSearch).html("");
-            self.BaseLoad.Roots(function(){
-                EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
-            })
+            if(self.settings.showForm) {
+                $("#" + self.settings.containerIdForAdvancedSearch).html("");
+                self.BaseLoad.Roots(function () {
+                    EventDispatcher.DispatchEvent('searchResultWidget.onload.roots.show.form')
+                })
+            }
+            else
+                self.WidgetLoader(true, self.settings.containerIdForAdvancedSearch);
         });
         
         EventDispatcher.AddEventListener('searchResultWidget.onload.roots.show.form', function (data){
@@ -217,7 +232,9 @@ var SearchResultWidget = function(){
     self.Fill = {
         AdvancedSearchForm : function(){
             var searchForm = new AdvancedSearchFormViewModel(self.settings);
-            searchForm.AddCategories(Parameters.cache.roots);
+            self.BaseLoad.Roots(function(data) {
+                searchForm.AddCategories(data);
+            });
         },
         SearchResult : function(data){
             var searchResult = new ListSearchResultViewModel(self.settings);
@@ -320,6 +337,7 @@ var AdvancedSearchFormViewModel = function(params){
     self.exceptWords = Parameters.filter.exceptWords;
     self.typeSeller = ko.observable();
     self.typeSeller(Parameters.filter.typeSeller);
+    self.showCatalog = params.showCatalog;
     
     self.categories = [];
     self.typesSearch = ko.observableArray();
@@ -469,6 +487,7 @@ var ListSearchResultViewModel = function(settings){
     self.titleBlock    = 'Расширенный поиск';
     self.typeView      = 'tile';
     self.countGoods    = 0;
+    self.showCart = settings.showCart;
 
     self.content  = ko.observableArray();
     self.paging = ko.observableArray();
