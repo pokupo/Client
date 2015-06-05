@@ -177,6 +177,7 @@ var RegistrationConfirmFormViewModel = function(cache) {
         return test;
     };
     self.EmailTokenValidation = function() {
+        self.mailToken($.trim(self.mailToken()));
         if (!self.mailConfirmLater()) {
             if (!self.mailToken()) {
                 self.errorEmailConfirm(Config.Registration.error.emailToken.empty);

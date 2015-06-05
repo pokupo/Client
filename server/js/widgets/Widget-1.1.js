@@ -1192,26 +1192,18 @@ var Widget = function (){
             XDMTransport.Load.DataPost(form, true);
         },
         ProfileInfo : function(callback){
-            if($.isEmptyObject(Parameters.cache.profile.info)){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'info/'), function(data){
-                    Parameters.cache.profile.info = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else
-                callback(Parameters.cache.profile.info);
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'info/'), function(data){
+                Parameters.cache.profile.info = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         Profile : function(callback){
-            if($.isEmptyObject(Parameters.cache.profile.personal)){
-                XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'profile/'), function(data){
-                    Parameters.cache.profile.personal = data;
-                    if(callback)
-                        callback(data);
-                }, true);
-            }
-            else
-                callback(Parameters.cache.profile.personal);
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'profile/'), function(data){
+                Parameters.cache.profile.personal = data;
+                if(callback)
+                    callback(data);
+            }, true);
         },
         EditContacts : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'edit/contact/' + Parameters.shopId + '/' + str), function(data){
@@ -1511,4 +1503,13 @@ var Widget = function (){
         }
         
     };
+};
+
+var CountryListViewModel = function(data) {
+    var self = this;
+    self.id = data.id;
+    self.name = data.name;
+    self.fullName = data.full_name;
+    self.partWorld = data.part_world;
+    self.location = data.location;
 };

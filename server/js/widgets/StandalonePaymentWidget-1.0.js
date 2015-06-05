@@ -454,16 +454,20 @@ var StandalonePaymentWidget = function () {
                     if (self.settings.animate)
                         self.settings.animate();
 
-                    $('#' + data.cssAmount).bind('textchange', function(event, previousText) {
-                        var text = $(this).val();
-                        data.amount(text);
-                        self.settings.amount = text;
-                        setTimeout(function(){
-                            if(text == self.settings.amount){
-                                self.GetData.Price();
-                            }
-                        }, 500);
-                    })
+                    if(self.settings.showAmount) {
+                        $('#' + data.cssAmount).bind('textchange', function (event, previousText) {
+                            var text = $(this).val();
+                            data.amount(text);
+                            self.settings.amount = text;
+                            setTimeout(function () {
+                                if (text == self.settings.amount) {
+                                    self.GetData.Price();
+                                }
+                            }, 500);
+                        })
+
+                        $('#' + data.cssAmount).focus();
+                    }
 
                     $('#' + data.cssCount).bind('textchange', function(event, previousText) {
                         data.count($(this).val());
@@ -666,6 +670,11 @@ var StandalonePaymentListViewModel = function(settings){
             self.show.errorAmount(true);
             return false;
         }
+        if (self.amount() < 0.01) {
+            self.error.amount(Config.StandalonePayment.Error.coast.integer);
+            self.show.errorAmount(true);
+            return false;
+        }
         self.error.amount(null);
         self.show.errorAmount(false);
         return true;
@@ -716,6 +725,8 @@ var StandalonePaymentItemViewModel = function(obj, data){
     self.logoPayment = obj.logo_payment;
     self.timePayment = obj.time_payment;
     self.itog = ko.computed(function() {
+        if(data.amount() && !data.AmountValidation())
+            return 0;
         var result = (data.amount() ? parseFloat(data.amount()) : 0) + (self.costPayment ? parseFloat(self.costPayment) : 0);
         if(result == 0 || isNaN(result))
             return 0;
