@@ -1658,7 +1658,7 @@ var DeliveryAddressFormViewModel = function(model){
             self.errorPostCode(Config.Profile.error.postIndex.empty);
             return false;
         }
-        if (5 <= self.postIndex().length <= 6) {
+        if (5 > self.postIndex().length  || self.postIndex().length > 6) {
             self.errorPostCode(Config.Profile.error.postIndex.length);
             return false;
         }
