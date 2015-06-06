@@ -237,8 +237,10 @@ var SearchResultWidget = function(){
             });
         },
         SearchResult : function(data){
-            var searchResult = new ListSearchResultViewModel(self.settings);
-            searchResult.AddContent(data);
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+                var searchResult = new ListSearchResultViewModel(self.settings);
+                searchResult.AddContent(data);
+            });
         }
     };
     self.Render = {
@@ -568,7 +570,7 @@ var ListSearchResultViewModel = function(settings){
         }
         if(data && data.length > 1){
             var last = data.shift();
-            self.countGoods = last.count_goods;
+            self.countGoods = parseInt(last.count_goods);
             var f = 0;
             for(var i = 0; i <= data.length-1; i++){
                 if(self.typeView == 'tile'){

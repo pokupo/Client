@@ -609,6 +609,12 @@ var Widget = function (){
     this.Exception = function(text, exeption){
         Logger.Console.Exception(this.widgetName, text, exeption);
     };
+    this.NewModal = function(type, message, callback, callbackFail, hide){
+        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+            var information = new ModalMessageWidget(type, message, callback, callbackFail, hide);
+            information.Init(information);
+        });
+    };
     this.QueryError = function(data, callback, callbackPost){
         if (data.err) {
             var text = '';
@@ -616,65 +622,23 @@ var Widget = function (){
                 text = data.msg;
             else
                 text = data.err;
-            self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
-                var information = new ModalMessageWidget(
-                    'error',
-                    text,
-                    callbackPost
-                );
-                information.Init(information);
-            });
+            this.NewModal('error', text, callbackPost);
             self.WidgetLoader(true);
             return false;
         }
         return true;
     };
     this.ShowError = function(message, callback, hide){
-        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
-            var information = new ModalMessageWidget(
-                'error',
-                message,
-                callback,
-                false,
-                hide
-            );
-            information.Init(information);
-        });
+        this.NewModal('error', message, callback, false, hide);
     };
     this.ShowMessage = function(message, callback, hide){
-        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
-            var information = new ModalMessageWidget(
-                'success',
-                message,
-                callback,
-                false,
-                hide
-            );
-            information.Init(information);
-        });
+        this.NewModal('success',  message, callback, false, hide);
     };
     this.ShowCommentForm = function(message, callback, hide){
-        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
-            var information = new ModalMessageWidget(
-                'message',
-                message,
-                callback,
-                false,
-                hide
-            );
-            information.Init(information);
-        });
+        this.NewModal('message', message, callback, false, hide);
     };
     this.Confirm = function(message, callbackOk, callbackFail){
-        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
-            var information = new ModalMessageWidget(
-                'confirm',
-                message,
-                callbackOk,
-                callbackFail
-            );
-            information.Init(information);
-        })
+        this.NewModal('confirm', message, callbackOk, callbackFail);
     };
     this.ErrorVertionTmpl = function(tmpl, hash, temp){
         var version = /<!--\s*version ([\d.]*)\s*-->/;
@@ -1042,23 +1006,28 @@ var Widget = function (){
                 protocol :  opt.protocol,
                 callback : function(data){
                     if(callback)
-                        callback(data);
+                        callback(JSON.parse(data));
                 }
             })
         },
         Login : function(username, password, remember_me, callback){
             if(Parameters.cache.userInformation == null || Parameters.cache.userInformation.err){
-                var opt = self.ProtocolPreparation();
-                var str = "";
-                if(username && password)
-                    str = '?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) +'&remember_me=' + remember_me;
-                XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.userPathApi + 'login/' + str), function(data){
-                    Parameters.cache.userInformation = data;
-                    if(str)
-                        self.BaseLoad.LoginForProxy(username, password, remember_me, function(request2){});
-                    if(callback)
-                        callback(data);
-                }, opt.protocol);
+                self.BaseLoad.LoginForProxy(username, password, remember_me, function(data1){
+                    Parameters.cache.userInformation = data1;
+                    if(!data1.err) {
+                        var opt = self.ProtocolPreparation();
+                        var str = "";
+                        if (username && password)
+                            str = '?username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password) + '&remember_me=' + remember_me;
+                        XDMTransport.Load.Data(encodeURIComponent(opt.host + self.settings.userPathApi + 'login/' + str), function (data) {
+                            Parameters.cache.userInformation = data;
+                            if (callback)
+                                callback(data);
+                        }, opt.protocol);
+                    }
+                    else if(callback)
+                        callback(Parameters.cache.userInformation);
+                });
             }
             else{
                 if(callback)
