@@ -78,14 +78,14 @@ var Routing = {
             this.AddHistory()
     },
     CheckRoute: function () {
-        if (Routing.route == 'standalone_payment') {
-            if (!Loader.widgets['StandalonePaymentWidget'] && Loader.widgets['OrderListWidget'])
-                Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
-        }
-        if (Routing.route == 'status_payment'){
-            if (!Loader.widgets['StatusPaymentWidget'] && Loader.widgets['OrderListWidget'])
-                Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
-        }
+        //if (Routing.route == 'standalone_payment') {
+        //    if (!Loader.widgets['StandalonePaymentWidget'] && Loader.widgets['OrderListWidget'])
+        //        Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
+        //}
+        //if (Routing.route == 'status_payment'){
+        //    if (!Loader.widgets['StatusPaymentWidget'] && Loader.widgets['OrderListWidget'])
+        //        Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
+        //}
         return true;
     },
     InitHistory : function(){
@@ -200,6 +200,11 @@ var Routing = {
     },
     SetMoreParameters : function(opt){
         this.more = opt;
+    },
+    GetParameter: function(name){
+        if(this.params[name])
+            return this.params[name];
+        return '';
     },
     GetMoreParameter : function(name){
         if(this.more[name])

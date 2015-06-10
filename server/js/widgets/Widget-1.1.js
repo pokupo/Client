@@ -483,10 +483,12 @@ var Widget = function (){
             var goodsId = data.goodsId;
             self.BaseLoad.AddGoodsToCart(goodsId, sellerId, count, function(data){
                 if(data.err){
-                    self.ShowMessage(data.err, false, false);
+                    self.ShowError(data.err, false, false);
                 }
                 else{
-                    EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
+                    self.ShowMessage('Товар успешно добавлен в корзину', function(){
+                        EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
+                    }, false);
                 }
             });
         });
@@ -1255,7 +1257,7 @@ var Widget = function (){
             }, true);
         },
         DeleteDeliveryAddress : function(str, callback){
-            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/del/' + str), function(data){
+            XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'geo/del/' + str + '/'), function(data){
                 if(callback)
                     callback(data);
             }, true);

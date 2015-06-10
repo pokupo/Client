@@ -14,6 +14,7 @@ var StatusPaymentWidget = function () {
             id: null
         },
         inputParameters: {},
+        status: null,
         style: null
     };
     self.InitWidget = function(){
@@ -73,11 +74,16 @@ var StatusPaymentWidget = function () {
             var orderId = $.cookie(Config.Base.cookie.orderId);
             var mailUser = $.cookie(Config.Base.cookie.userEmail);
             if(orderId){
-                var paymentType = Routing.params.name;
-                var str = paymentType + '/?' + orderId + '&mailUser=' + mailUser;
+                var path = Routing.GetParameter('name');
+                var status = Routing.GetParameter('status');
+                if(status)
+                    path = path + '/' + status;
+                var str = path + '/?' + orderId + '&mailUser=' + mailUser;
                 self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                    self.BaseLoad.StatusPayment(str, function (data) {
-                        self.Fill(data);
+                    self.BaseLoad.StatusPayment(str, function (data1) {
+                        self.BaseLoad.ShopInfo(function (data2) {
+                            self.Fill(data1, data2);
+                        });
                     })
                 });
             }
@@ -94,9 +100,12 @@ var StatusPaymentWidget = function () {
         EventDispatcher.AddEventListener('widget.change.route', function (data){
             self.CheckRouteSearch();
         });
+        EventDispatcher.AddEventListener('StatusPaymentWidget.update', function (data){
+            self.CheckRouteSearch();
+        });
     };
-    self.Fill = function(data){
-        var info = new StatusPaymentViewModel(data);
+    self.Fill = function(data1, data2){
+        var info = new StatusPaymentViewModel(data1, data2);
         self.InsertContainer.Content();
         self.Render(info);
     };
@@ -146,7 +155,7 @@ var StatusPaymentWidget = function () {
     };
 }
 
-var StatusPaymentViewModel = function(data){
+var StatusPaymentViewModel = function(data, shop){
     var self = this;
 
     self.orderId = data.id_order;
@@ -196,7 +205,15 @@ var StatusPaymentViewModel = function(data){
     self.ClickPrintOrder = function () {
         self.Print(self.cssOrder);
     };
-
+    self.ClickBack = function(){
+        window.location.href = shop.site_shop;
+    };
+    self.ClickRefresh =function(){
+        EventDispatcher.DispatchEvent('StatusPaymentWidget.update');
+    };
+    self.showRefresh = false;
+    if(Routing.GetParameter('status') == 'success' && self.status == 'wait_pay')
+        self.showRefresh = true;
 }
 
 var StatusPaymentParametersViewModel = function(data){
