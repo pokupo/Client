@@ -194,6 +194,11 @@ var CartViewModel = function(){
             return true;
         return false;
     },this);
+    self.ShowFullInfo = ko.computed(function(){
+        if(Config.Cart.showBlocks.fullInfo && self.goods().length > 0)
+            return true;
+        return false;
+    },this);
 
     self.AddContent = function(data){
         var info = data.info;
