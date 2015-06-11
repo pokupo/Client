@@ -235,7 +235,9 @@ var UserInformationBlockViewModel = function(data){
             return false;
         return true;
     };
-    self.iconUser = data.route_icon_user;
+    self.iconUser = '';
+    if(data.route_icon_user)
+        self.iconUser = data.route_icon_user+ '?' + EventDispatcher.HashCode(EventDispatcher.GetUUID());
     self.background = '';
     self.backgroundImage = '';
     if(self.iconUser){

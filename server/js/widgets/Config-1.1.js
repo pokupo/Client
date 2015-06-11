@@ -616,9 +616,9 @@ var Config = {
         showBlocks : {
             title : 'always', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
             count : true, // отображать кол-во товара
-            baseCost : true, // отображать сумму без скидок
-            finalCost : true, // отображать конечную сумму
-            fullInfo : true // отображать информацию по товарам
+            baseCost : false, // отображать сумму без скидок
+            finalCost : false, // отображать конечную сумму
+            fullInfo : false // отображать информацию по товарам
         },
         tmpl : {
             path : "cartTmpl.html", // файл шаблонов
