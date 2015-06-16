@@ -594,13 +594,14 @@ var StandalonePaymentListViewModel = function(settings){
         self.amount(coast);
         self.isGoodsId(true);
     }
-    if(settings.idShop){
+    if(settings.idShop && !settings.idGoods){
         self.title(settings.description);
-        self.amount(settings.amount);
+        if(settings.amount)
+            self.amount(parseFloat(settings.amount));
         self.isGoodsId(false);
     }
     if(self.amount())
-        self.formatAmount = parseFloat(self.amount()).toFixed(2);
+        self.formatAmount = self.amount().toFixed(2);
 
     self.mailUser = ko.observable();
     self.idMethodPayment = ko.observable(settings.idMethodPayment);
