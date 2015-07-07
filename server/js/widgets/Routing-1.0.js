@@ -152,6 +152,13 @@ var Routing = {
         }
         return false;
     },
+    IsGoods : function(){
+        if(this.route == 'goods'){
+            if(this.params.id)
+                return true;
+        }
+        return false;
+    },
     IsDefault : function(){
         if(this.route == 'default'){
             return true;

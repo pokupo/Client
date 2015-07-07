@@ -47,7 +47,7 @@ var CatalogWidget = function(){
         self.settings.inputParameters = input;
     };
     self.CheckRouteCatalog = function(){
-        if(Routing.route == 'catalog' || (Routing.IsDefault() && !self.HasDefaultContent())){
+        if(Routing.route == 'catalog' || Routing.route == 'goods' || (Routing.IsDefault() && !self.HasDefaultContent())){
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
                 self.BaseLoad.Roots(function(){
                     self.Update();
@@ -77,37 +77,37 @@ var CatalogWidget = function(){
         }
     },
     self.Update = function(){
-        if(Routing.IsSection() && !Parameters.cache.catalogs[Routing.GetActiveCategory()]){
-                self.InsertContainer.Main();
-                self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
-                    
-                    self.BaseLoad.Path(Routing.GetActiveCategory(), function(path){
-                        if(path[path.length-1]){
-                            var parent = []
-                            parent[0] = {
-                                id : path[path.length-1].id,
-                                name_category : path[path.length-1].name_category,
-                                type_category : 'section',
-                                back : 'return',
-                                children : Parameters.cache.childrenCategory[Routing.GetActiveCategory()]
-                            }
-                            self.Fill.Tree(parent);
+        if(!Parameters.cache.catalogs[Routing.GetActiveCategory()]){
+            self.InsertContainer.Main();
+            self.BaseLoad.Section(Routing.GetActiveCategory(), function(data){
+
+                self.BaseLoad.Path(Routing.GetActiveCategory(), function(path){
+                    if(path[path.length-1]){
+                        var parent = []
+                        parent[0] = {
+                            id : path[path.length-1].id,
+                            name_category : path[path.length-1].name_category,
+                            type_category : 'section',
+                            back : 'return',
+                            children : Parameters.cache.childrenCategory[Routing.GetActiveCategory()]
                         }
-                        else{
-                            self.Fill.Tree(data);
-                        }
-                    });
-                })
-            }
-            else if(Routing.IsSection() || Parameters.cache.catalogs[Routing.GetActiveCategory()]){
-                self.InsertContainer.Main();
-                self.BaseLoad.Roots(function(data) {
-                    self.Fill.Tree(data);
+                        self.Fill.Tree(parent);
+                    }
+                    else{
+                        self.Fill.Tree(data);
+                    }
                 });
-            }
-            else{
-                self.WidgetLoader(true);
-            }
+            })
+        }
+        else if(Parameters.cache.catalogs[Routing.GetActiveCategory()]){
+            self.InsertContainer.Main();
+            self.BaseLoad.Roots(function(data) {
+                self.Fill.Tree(data);
+            });
+        }
+        else{
+            self.WidgetLoader(true);
+        }
     }
     self.Fill = {
         Tree : function(data){
