@@ -57,6 +57,8 @@ window.ButtonPaymentWidget = function () {
                     }
                 }
             }
+            if (input.title)
+                self.settings.title = input.title;
             if(input.container)
                 self.settings.containerId = input.container;
             if(input.animate)
@@ -220,7 +222,7 @@ window.ButtonPaymentWidget = function () {
             self.Render.Button(button);
         },
         Content: function (data) {
-            var content = new PaymentViewModel();
+            var content = new PaymentViewModel(self.settings);
 
             var str = [];
             var fields = data.pay_form.hidden_field;
@@ -261,7 +263,7 @@ window.ButtonPaymentWidget = function () {
         },
         Content: function (data) {
             if ($("#" + self.settings.containerId.widget).length > 0) {
-                //try {
+                try {
                     ko.cleanNode($("#" + self.settings.containerId.widget)[0]);
                     ko.applyBindings(data, $("#" + self.settings.containerId.widget)[0]);
                     $.each(data.inData(), function (i) {
@@ -275,21 +277,21 @@ window.ButtonPaymentWidget = function () {
                         new AnimateButtonPayment();
                     if(self.settings.animate)
                         self.settings.animate();
-                //}
-                //catch (e) {
-                //    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
-                //    if (self.settings.tmpl.custom) {
-                //        delete self.settings.tmpl.custom;
-                //        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                //            self.InsertContainer.Content();
-                //            self.Render.Content(data);
-                //        });
-                //    }
-                //    else {
-                //        self.InsertContainer.EmptyWidget();
-                //        self.WidgetLoader(true, self.settings.containerId);
-                //    }
-                //}
+                }
+                catch (e) {
+                    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
+                    if (self.settings.tmpl.custom) {
+                        delete self.settings.tmpl.custom;
+                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+                            self.InsertContainer.Content();
+                            self.Render.Content(data);
+                        });
+                    }
+                    else {
+                        self.InsertContainer.EmptyWidget();
+                        self.WidgetLoader(true, self.settings.containerId);
+                    }
+                }
             }
             else{
                 self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
@@ -314,8 +316,9 @@ var ButtonPaymentViewModel = function (opt) {
     };
 };
 
-var PaymentViewModel = function () {
+var PaymentViewModel = function (opt) {
     var self = this;
+    self.title = opt.title;
     self.instruction = ko.observable();
     self.cssInstruction = 'instructtion_print_block';
 
