@@ -11,6 +11,9 @@ var StandaloneGoodsWidget = function(){
     self.settings = {
         idGoods: null,
         count: null,
+        idShopPartner: null,
+        mailUser: null,
+        idMethodPayment: null,
         containerId : null,
         tmpl : {
             path : null,
@@ -49,7 +52,19 @@ var StandaloneGoodsWidget = function(){
         }
 
         if(Routing.params.id)
-            self.settings.idGoods = Routing.params.id
+            self.settings.idGoods = Routing.params.id;
+        if(Routing.params.idShopPartner)
+            self.settings.idShopPartner = Routing.params.idShopPartner;
+        if(Routing.params.mailUser)
+            self.settings.mailUser = Routing.params.mailUser;
+        if(Routing.params.idMethodPayment)
+            self.settings.idMethodPayment = Routing.params.idMethodPayment;
+        if(Routing.params.button)
+            self.settings.button.active = Routing.params.button;
+        if(Routing.params.count)
+            self.settings.count = Routing.params.count;
+        if(input.infoBlock)
+            self.settings.infoBlock = input.infoBlock;
 
         if(!$.isEmptyObject(input)){
             if(input.idGoods)
@@ -61,6 +76,43 @@ var StandaloneGoodsWidget = function(){
                         self.settings.showBlocks.push(input.show[i]);
                 }
             }
+
+            if(input.button)
+                self.settings.button.active = input.button;
+
+            if(input.count)
+                self.settings.count = input.count;
+
+            if(input.animate)
+                self.settings.animate = input.animate;
+        }
+
+        if(Routing.params.blockIdGoods && $.inArray("blockIdGoods", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockIdGoods");
+        if(Routing.params.blockShortName && $.inArray("blockShortName", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockShortName");
+        if(Routing.params.blockFullName && $.inArray("blockFullName", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockFullName");
+        if(Routing.params.blockGallery && $.inArray("blockGallery", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockGallery");
+        if(Routing.params.blockShop && $.inArray("blockShop", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockShop");
+        if(Routing.params.blockInfoSeller && $.inArray("blockInfoSeller", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockInfoSeller");
+        if(Routing.params.blockCount && $.inArray("blockCount", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockCount");
+        if(Routing.params.editableCount && $.inArray("editableCount", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("editableCount");
+        if(Routing.params.blockShare && $.inArray("blockShare", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockShare");
+        if(Routing.params.blockDescription && $.inArray("blockDescription", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockDescription");
+        if(Routing.params.blockShipping && $.inArray("blockShipping", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockShipping");
+        if(Routing.params.blockOpinion && $.inArray("blockOpinion", self.settings.showBlocks) < 0)
+            self.settings.showBlocks.push("blockOpinion");
+
+        if(!$.isEmptyObject(input)){
             if(input.hide){
                 for(var i = 0; i <= input.hide.length-1; i++){
                     var test = $.inArray(input.hide[i], self.settings.showBlocks);
@@ -69,16 +121,8 @@ var StandaloneGoodsWidget = function(){
                     }
                 }
             }
-            if(input.button)
-                self.settings.button.active = input.button;
-            if(input.count)
-                self.settings.count = input.count;
-
-            if(input.infoBlock)
-                self.settings.infoBlock = input.infoBlock;
-            if(input.animate)
-                self.settings.animate = input.animate;
         }
+
         self.settings.inputParameters = input;
     };
     self.CheckRouteGoods = function(){
@@ -346,7 +390,18 @@ var StandaloneGoodsViewModel = function(settings){
         }
     }
     self.Buy = function(){
-        Routing.SetHash('standalone_payment', 'Оплатить товар', {idGoods: settings.idGoods, count: self.blocks.main.ordered()});
+        var params = {
+            idGoods: settings.idGoods,
+            count: self.blocks.main.ordered(),
+        };
+        if(settings.idShopPartner)
+            params.idShopPartner = settings.idShopPartner;
+        if(settings.mailUser)
+            params.mailUser = settings.mailUser;
+        if(settings.idMethodPayment )
+            params.idMethodPayment = settings.idMethodPayment;
+
+        Routing.SetHash('standalone_payment', 'Оплатить товар', params);
     }
 }
 
