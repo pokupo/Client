@@ -41,6 +41,7 @@ var Config = {
             content:{widget: 'advancedSearchResultWidgetId', def: 'defaultAdvancedSearchResultWidgetId', customClass: 'custom_block'}
         }, // id контейнеров расширенной формы и результатов поиска
         goods : {widget: 'goodsWidgetId', def: 'defaultGoodsWidgetId', customClass: 'custom_block'}, // id контейнера информации о товаре
+        standaloneGoods : {widget: 'standaloneGoodsWidgetId', def: 'defaultStandaloneGoodsWidgetId', customClass: 'custom_block'}, // id контейнера информации о товаре
         userInformation : {widget: 'userInformationWidgetId', def: 'defaultUserInformationWidgetId', customClass: 'custom_block'}, // id контейнера информации о пользователе
         authentication : {widget: 'authenticationWidgetId', def: 'defaultAuthenticationWidgetId', customClass: 'custom_block'}, //id контейнеров авторизации
         registration : {widget: 'registrationWidgetId', def: 'defaultRegistrationWidgetId', customClass: 'custom_block'}, // id контейнера регистрации
@@ -89,6 +90,40 @@ var Config = {
             'left' : '5%', 
             'width' : '100%', 
             'height' : '50px', 
+            'background' : '#ddd'
+        }
+    },
+    StandaloneGoods : {
+        tmpl: {
+            path : "standaloneGoodsTmpl.html", // файл шаблона
+            id : "standaloneGoodsTmpl" // id шаблона виджета карточки товара по умолчанию
+        },
+        showBlocks : ['main'], // блоки отображаемые по умолчанию
+        button: {
+            active: 'Купить',
+            inactive: 'Товар недоступен'
+        },
+        moreBlocks : {
+            blockDescription : 'Описание', // заголовок блока "Описание товара"
+            blockShipping : 'Условия доставки', // заголовок блока "Условия доставки"
+            blockOpinion : 'Отзывы покупателей' // заголовок блока "Отзывы покупателей"
+        },
+        message : {
+            maxIsReached : "Достигнут максимум" // сообщение о том что достигнут максимум при выборе кол-ва товара
+        },
+        share : {
+            element: 'share',  // id блока в котором будут размещены ссылки на соц сети
+            elementStyle: {
+                'quickServices': ['vkontakte', 'odnoklassniki', 'facebook', 'twitter', 'gplus'] // массив подключаемых соц сетей в формате http://api.yandex.ru/share/
+            }
+        },
+        galleryId : "jcarousel", // id галереи
+        style : { // стиль блока
+            'position' : 'absolute',
+            'top' : '0px',
+            'left' : '5%',
+            'width' : '100%',
+            'height' : '50px',
             'background' : '#ddd'
         }
     },

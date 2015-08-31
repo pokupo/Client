@@ -51,7 +51,6 @@ var AnimateInfoSeller = function () {
             }
         }
     });
-    $('[rel=tooltip]').tooltip();
 }
 
 
