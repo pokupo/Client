@@ -24,6 +24,5 @@ var AnimateRelatedGoods = function(){
         transition: 'crossfade',
         fit: 'cover'
     });
-    $('[rel=tooltip]').tooltip();
 }
 
