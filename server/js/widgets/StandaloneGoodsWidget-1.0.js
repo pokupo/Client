@@ -10,7 +10,7 @@ var StandaloneGoodsWidget = function(){
     self.hasButton = false;
     self.settings = {
         idGoods: null,
-        count: null,
+        count: 1,
         idShopPartner: null,
         mailUser: null,
         idMethodPayment: null,
