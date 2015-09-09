@@ -68,7 +68,7 @@ window.InfoSellerWidget = function () {
         });
     };
     self.RegisterEvents = function () {
-        EventDispatcher.AddEventListener('widget.display.ready', function(){
+        EventDispatcher.AddEventListener('w.ready', function(){
             self.LoadTmpl();
         });
 

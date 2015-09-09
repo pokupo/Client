@@ -131,7 +131,7 @@ var SearchResultWidget = function(){
                 else
                     Parameters.filter[key] = decodeURIComponent(Routing.params[key]);
             }
-            EventDispatcher.DispatchEvent('widget.change.route')
+            EventDispatcher.DispatchEvent('w.change.route')
         }
         else{
             EventDispatcher.DispatchEvent('searchResultWidget.show.form');
@@ -190,7 +190,7 @@ var SearchResultWidget = function(){
             self.Render.AdvancedSearchForm(data);
         });
         
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             if(Routing.route == 'search'){
                 self.BaseLoad.Tmpl(self.settings.tmpl.content, function(){
                     EventDispatcher.DispatchEvent('searchResultWidget.submit.form');
@@ -237,7 +237,7 @@ var SearchResultWidget = function(){
             });
         },
         SearchResult : function(data){
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
                 var searchResult = new ListSearchResultViewModel(self.settings);
                 searchResult.AddContent(data);
             });

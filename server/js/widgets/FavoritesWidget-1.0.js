@@ -78,7 +78,7 @@ var FavoritesWidget = function() {
         }
     };
     self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('widget.change.route', function() {
+        EventDispatcher.AddEventListener('w.change.route', function() {
             self.CheckRouteFavorites();
         });
         
@@ -149,7 +149,7 @@ var FavoritesWidget = function() {
         },
         Menu : function(){
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
-                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : {}, active : ''});
+                EventDispatcher.DispatchEvent('w.onload.menu', {menu : {}, active : ''});
             });
         },
     };
@@ -394,7 +394,7 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
     }, this);
     
     self.AddToCart = function(){
-        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, hash : self.uniq})
+        EventDispatcher.DispatchEvent('w.cart.add', {goodsId : self.id, hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Favorites.showBlocks) >= 0)

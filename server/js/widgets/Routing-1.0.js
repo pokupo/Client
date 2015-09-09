@@ -41,7 +41,7 @@ var Routing = {
             };
         
         Loader.SetNotReady();
-        EventDispatcher.DispatchEvent('widget.change.route');
+        EventDispatcher.DispatchEvent('w.change.route');
     },
     ParserHash: function(init){
         var hash = window.location.hash;
@@ -198,7 +198,7 @@ var Routing = {
         
         this.ParserHash();
 
-        EventDispatcher.DispatchEvent('widget.change.route');
+        EventDispatcher.DispatchEvent('w.change.route');
     },
     UpdateMoreParameters : function(opt){
         for(var key in opt){

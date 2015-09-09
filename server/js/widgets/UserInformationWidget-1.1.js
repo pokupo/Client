@@ -58,21 +58,21 @@ var UserInformationWidget = function(){
     };
     self.LoadTmpl = function(){
         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            EventDispatcher.DispatchEvent('onload.userInformation.tmpl')
+            EventDispatcher.DispatchEvent('UInfo.tmpl')
         });
     };
-    self.RegisterEvents = function(){ 
-        EventDispatcher.AddEventListener('onload.userInformation.tmpl', function (){
+    self.RegisterEvents = function(){
+        EventDispatcher.AddEventListener('UInfo.tmpl', function (){
             self.BaseLoad.Login(false, false, false, function(data){
                 self.CheckAuthorization(data);
             });
         });
-        
-        EventDispatcher.AddEventListener('widget.authentication.ok', function(data){
+
+        EventDispatcher.AddEventListener('w.auth.ok', function(data){
                self.CheckAuthorization(data.request);
         });
         
-        EventDispatcher.AddEventListener('UserInformationWidget.click.logout', function(){
+        EventDispatcher.AddEventListener('UInfo.logout', function(){
             self.BaseLoad.Logout(function(data){
                 if(data.result == 'ok' || data.result == 'fail'){
                     self.BaseLoad.LogoutForProxy();
@@ -81,9 +81,9 @@ var UserInformationWidget = function(){
             });
         });
         
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                EventDispatcher.DispatchEvent('onload.userInformation.tmpl');
+                EventDispatcher.DispatchEvent('UInfo.tmpl');
             });
         });
     };
@@ -261,7 +261,7 @@ var UserInformationBlockViewModel = function(data){
     self.ClickLogout = function(){
         self.Confirm(Config.Authentication.message.confirmLogOut, function(){
             Loader.Indicator('UserInformationWidget', false);
-            EventDispatcher.DispatchEvent('UserInformationWidget.click.logout');
+            EventDispatcher.DispatchEvent('UInfo.logout');
         }, false);
     };
     self.ClickPrivateOffice = function(){

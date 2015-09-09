@@ -56,7 +56,7 @@ var RegistrationWidget = function() {
     self.CheckRouteRegistration = function() {
         if (Routing.route == 'registration') {
             self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-                self.BaseLoad.Script('widgets/RegistrationViewModel-1.0.js', function () {
+                self.BaseLoad.Script('widgets/RegistrationViewModel-1.0.min.js', function () {
                     if (Routing.params.step == 1)
                         self.Step.Step1();
                     if (Routing.params.step == 2)
@@ -73,7 +73,7 @@ var RegistrationWidget = function() {
     };
 
     self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('widget.change.route', function() {
+        EventDispatcher.AddEventListener('w.change.route', function() {
             self.CheckRouteRegistration();
         });
 
@@ -153,7 +153,7 @@ var RegistrationWidget = function() {
                 if (test) {
                     Parameters.cache.reg.step2 = step2;
                     self.BaseLoad.Login(false, false, false, function(request) {
-                        EventDispatcher.DispatchEvent('widget.authentication.ok', {request: request});
+                        EventDispatcher.DispatchEvent('w.auth.ok', {request: request});
                         if (!request.err)
                             Routing.SetHash('registration', 'Регистрация пользователя', {step: 3});
                     });

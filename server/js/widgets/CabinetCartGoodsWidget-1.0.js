@@ -73,11 +73,11 @@ var CabinetCartGoodsWidget = function(){
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function(){ 
-        EventDispatcher.AddEventListener('widget.change.route', function (){
+        EventDispatcher.AddEventListener('w.change.route', function (){
             self.CheckCabinetCartGoodsRoute();
         });
         
-        EventDispatcher.AddEventListener('CabinetCartGoods.onload.info', function (data){
+        EventDispatcher.AddEventListener('CartCG.onload.info', function (data){
             if(!data.err){
                 self.InsertContainer.Content();
                 self.Fill.Content(data);
@@ -88,7 +88,7 @@ var CabinetCartGoodsWidget = function(){
             }
         });
         
-        EventDispatcher.AddEventListener('CabinetCartGoods.change.count', function(goods){
+        EventDispatcher.AddEventListener('CartCG.change.count', function(goods){
             self.BaseLoad.AddGoodsToCart(goods.goodsId, goods.sellerId, goods.count, function(data){
                  EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
                  goods.sellCost = data.sell_cost;
@@ -96,14 +96,14 @@ var CabinetCartGoodsWidget = function(){
             });
         });
         
-        EventDispatcher.AddEventListener('CabinetCartGoods.clear', function(data){
+        EventDispatcher.AddEventListener('CartCG.clear', function(data){
             var goodsId = data.goodsId ? data.goodsId : false;
             self.BaseLoad.ClearCart(data.sellerId, goodsId, function(data){
                  EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
             });
         });
         
-        EventDispatcher.AddEventListener('CabinetCartGoods.empty.cart', function(){
+        EventDispatcher.AddEventListener('CartCG.empty.cart', function(){
             self.InsertContainer.EmptyCart();
             self.Render.EmptyCart();
         });
@@ -117,7 +117,7 @@ var CabinetCartGoodsWidget = function(){
                     self.BaseLoad.InfoFavorite('no', function(data){
                         Parameters.cache.favorite = data;
                         self.BaseLoad.CartGoods('', function(data){
-                            EventDispatcher.DispatchEvent('CabinetCartGoods.onload.info', data);
+                            EventDispatcher.DispatchEvent('CartCG.onload.info', data);
                         });
                     });
                     self.Update.Menu();
@@ -131,7 +131,7 @@ var CabinetCartGoodsWidget = function(){
         },
         Menu : function(){
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
-                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : {}, active : ''});
+                EventDispatcher.DispatchEvent('w.onload.menu', {menu : {}, active : ''});
             });
         }
     };
@@ -320,7 +320,7 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             modal: true,
             buttons: {
                 "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:checkedGoods.join(','), comment: self.comment(), data: self});
+                     EventDispatcher.DispatchEvent('w.fav.add', {goodsId:checkedGoods.join(','), comment: self.comment(), data: self});
                      $( this ).dialog( "close" );
                 }
             }
@@ -347,12 +347,12 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             self.goods.remove(removedGoods[i]);
         }
 
-        EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.shop.id});
+        EventDispatcher.DispatchEvent('CartCG.clear', {goodsId:checkedGoods.join(','), sellerId: self.sellerInfo.shop.id});
 
         if(self.goods().length == 0)
             content.content.remove(self);
         if(content.content().length == 0)
-            EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart');
+            EventDispatcher.DispatchEvent('CartCG.empty.cart');
     };
     self.IsFavorite = function(){
         
@@ -381,9 +381,9 @@ var BlockCabinetGoodsForSellerViewModel = function(content){
             }
             content.sellerBlock.remove(self);
             
-            EventDispatcher.DispatchEvent('CabinetCartGoods.clear', {sellerId:self.sellerInfo.shop.id});
+            EventDispatcher.DispatchEvent('CartCG.clear', {sellerId:self.sellerInfo.shop.id});
             if(content.sellerBlock().length == 0)
-                EventDispatcher.DispatchEvent('CabinetCartGoods.empty.cart'); 
+                EventDispatcher.DispatchEvent('CartCG.empty.cart');
         });
     };
     self.isDisabledButton = ko.computed(function(){
@@ -456,7 +456,7 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
             self.ordered(self.ordered() + 1);
-            EventDispatcher.DispatchEvent('CabinetCartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
+            EventDispatcher.DispatchEvent('CartCG.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
         }
         else
             self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
@@ -464,7 +464,7 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
     self.ClickMinus = function(){
         if(self.ordered() > 0){
             self.ordered(self.ordered() - 1);
-             EventDispatcher.DispatchEvent('CabinetCartGoods.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
+             EventDispatcher.DispatchEvent('CartCG.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
         }
     };
     self.ClickGoods = function(){
@@ -502,7 +502,7 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
             modal: true,
             buttons: {
                 "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment: block.comment(), data : self});
+                     EventDispatcher.DispatchEvent('w.fav.add', {goodsId:self.id, comment: block.comment(), data : self});
                      $( this ).dialog( "close" );
                 }
             }

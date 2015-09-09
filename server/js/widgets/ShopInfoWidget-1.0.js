@@ -59,7 +59,7 @@ var ShopInfoWidget = function(){
         self.settings.inputParameters = input;
     };
     self.RegisterEvents = function(){
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             self.Fill();
         });
     };

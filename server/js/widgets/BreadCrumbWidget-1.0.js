@@ -75,19 +75,19 @@ var BreadCrumbWidget = function(){
         }
     };
     self.RegisterEvents = function(){
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             self.CheckRouteBreadCrumb(Routing.GetActiveCategory()); 
         });
         
-        EventDispatcher.AddEventListener('widget.route.change.breadCrumb', function(id){
+        EventDispatcher.AddEventListener('w.change.breadCrumb', function(id){
             self.CheckRouteBreadCrumb(id);
         })
         
-        EventDispatcher.AddEventListener('breadCrumbWidget.fill.item', function (data){ 
+        EventDispatcher.AddEventListener('breadCrumb.fill.item', function (data){
             self.Render.BreadCrumb(data);
         });
         
-        EventDispatcher.AddEventListener('breadCrumbWidget.click.item', function(item){
+        EventDispatcher.AddEventListener('breadCrumb.click.item', function(item){
             self.BaseLoad.Path(item.id, function(data){
                 Routing.SetHash('catalog', data[data.length-1].name_category, Routing.GetPath(data));
             });
@@ -165,7 +165,7 @@ var BreadCrumbItem = function(data){
     }, this);
     self.ClickItem = function(){
         if(!self.showSelectList())
-            EventDispatcher.DispatchEvent('breadCrumbWidget.click.item', {id : self.id});
+            EventDispatcher.DispatchEvent('breadCrumb.click.item', {id : self.id});
     };
     self.AddSelectList = function(children){
         for(var i = 0; i <= children.length-1; i++){
@@ -261,7 +261,7 @@ var BreadCrumbViewModel = function(){
                 self.lastItem(last.title);
             }
 
-            EventDispatcher.DispatchEvent('breadCrumbWidget.fill.item', self);
+            EventDispatcher.DispatchEvent('breadCrumb.fill.item', self);
         }
     };
 }
@@ -277,7 +277,7 @@ var SelectListBreadCrumbItem = function(data){
     }, this);
     
     self.ClickItem = function(){
-        EventDispatcher.DispatchEvent('breadCrumbWidget.click.item', {id : self.id});
+        EventDispatcher.DispatchEvent('breadCrumb.click.item', {id : self.id});
     }
 }
 
