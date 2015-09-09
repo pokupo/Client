@@ -66,7 +66,7 @@ var ContentViewModel = function(data, i){
         
     }
     self.ClickBuy = function(){
-         EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, hash : self.uniq})
+         EventDispatcher.DispatchEvent('w.cart.add', {goodsId : self.id, hash : self.uniq})
     }
     self.ClickAuction = function(){
         

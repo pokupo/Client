@@ -91,7 +91,7 @@
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('widget.change.route', function() {
+        EventDispatcher.AddEventListener('w.change.route', function() {
             self.CheckRouteProfile();
         });
         
@@ -320,7 +320,7 @@
         });
         
          EventDispatcher.AddEventListener('ProfileWidget.delivery.edit', function(data){
-             self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+             self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
                  var form = new DeliveryAddressFormViewModel();
                  form.AddContent(data);
                  self.Fill.DeliveryForm(form);
@@ -419,12 +419,12 @@
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
                 if (!Routing.params.info)
                      Routing.params.info = Config.Profile.menu.personalInformation.prefix;
-                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : Config.Profile.menu, active : Routing.params.info});
+                EventDispatcher.DispatchEvent('w.onload.menu', {menu : Config.Profile.menu, active : Routing.params.info});
             });
         },
         Personal : function(){
             self.InsertContainer.Personal();
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
                 self.BaseLoad.Profile(function (registration) {
                     self.BaseLoad.ProfileInfo(function (data) {
                         self.Fill.Personal(registration, data);
@@ -439,7 +439,7 @@
             });
         },
         DeliveryForm : function(){
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
                 var form = new DeliveryAddressFormViewModel();
                 self.Fill.DeliveryForm(form);
             });

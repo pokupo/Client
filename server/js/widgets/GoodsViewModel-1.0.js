@@ -136,7 +136,7 @@ var GoodsMainBlockViewModel = function(data, ordered){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered());
 
-        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : self.id, sellerId : self.shopId, count: self.ordered(), hash : self.uniq})
+        EventDispatcher.DispatchEvent('w.cart.add', {goodsId : self.id, sellerId : self.shopId, count: self.ordered(), hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){
         if($.inArray('buy', Config.Goods.showBlocks) >= 0 && self.count() != 0)
@@ -180,7 +180,7 @@ var GoodsMainBlockViewModel = function(data, ordered){
             self.comment(),
             function(comment){
                 self.comment(comment);
-                EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment:self.comment(), data:self});
+                EventDispatcher.DispatchEvent('w.fav.add', {goodsId:self.id, comment:self.comment(), data:self});
             }
         );
     };
@@ -256,6 +256,6 @@ var AddToCartButtonViewModel = function(data){
         Parameters.cache.cart = data.ordered();
         data.cart(data.cart() + data.ordered());
 
-        EventDispatcher.DispatchEvent('widgets.cart.addGoods', {goodsId : data.id, sellerId : data.sellerId, count: data.ordered(), hash : data.uniq})
+        EventDispatcher.DispatchEvent('w.cart.add', {goodsId : data.id, sellerId : data.sellerId, count: data.ordered(), hash : data.uniq})
     };
 };

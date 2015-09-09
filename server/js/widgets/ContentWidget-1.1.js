@@ -200,7 +200,7 @@ var ContentWidget = function(){
     };
     self.RegisterEvents = function(){
         EventDispatcher.AddEventListener('onload.blockContent.tmpl', function (){
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
                 self.BaseLoad.Blocks(Routing.GetActiveCategory(), function (data) {
                     if (JSSettings.dev)
                         Logger.Console.VarDump(self.widgetName, 'data block for sectionId = [' + Routing.GetActiveCategory() + ']', data);
@@ -211,7 +211,7 @@ var ContentWidget = function(){
         });
         
         EventDispatcher.AddEventListener('onload.content.tmpl', function (){
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
                 self.BaseLoad.Info(Routing.GetActiveCategory(), function (data) {
                     self.InsertContainer.EmptyBlockWidget();
                     EventDispatcher.DispatchEvent('contentWidget.load.categoryInfo')
@@ -236,7 +236,7 @@ var ContentWidget = function(){
             self.Render.List(data);
         });
         
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             self.CheckContentRouting();
         });
     

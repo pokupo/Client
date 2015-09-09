@@ -138,27 +138,27 @@ window.ButtonPaymentWidget = function () {
     };
     self.LoadTmpl = function () {
         self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-            EventDispatcher.DispatchEvent('ButtonPayment.onload.tmpl_' + self.settings.uniq)
+            EventDispatcher.DispatchEvent('BPayment.tmpl_' + self.settings.uniq)
         });
     };
     self.RegisterEvents = function () {
-        EventDispatcher.AddEventListener('ButtonPayment.onload.tmpl_' + self.settings.uniq, function (data) {
+        EventDispatcher.AddEventListener('BPayment.tmpl_' + self.settings.uniq, function (data) {
             self.InsertContainer.Button();
             self.Fill.Button();
         });
 
-        EventDispatcher.AddEventListener('widget.change.route', function () {
+        EventDispatcher.AddEventListener('w.change.route', function () {
             self.CheckRouteButtonPayment();
         });
 
-        EventDispatcher.AddEventListener('widget.display.ready', function(){
+        EventDispatcher.AddEventListener('w.ready', function(){
             if(self.settings.containerButton != null){
                 self.Loader();
                 self.LoadTmpl();
             }
         });
 
-        EventDispatcher.AddEventListener('ButtonPaymentWidget.form.submit', function (form) {
+        EventDispatcher.AddEventListener('BPayment.submit', function (form) {
             self.InsertContainer.Content();
             var dataStr = [];
             $.each(form.inData(), function (i) {
@@ -169,16 +169,17 @@ window.ButtonPaymentWidget = function () {
             });
             var str = dataStr.join('&');
 
-            if (Routing.params.orderId) {
-                str = Routing.params.orderId + '?' + str;
+            var p = Routing.params;
+            if (p.orderId) {
+                str = p.orderId + '?' + str;
                 self.GetData.Order(str);
             }
-            if (Routing.params.goodsId) {
-                str = Routing.params.goodsId + '?' + str;
+            if (p.goodsId) {
+                str = p.goodsId + '?' + str;
                 self.GetData.Goods(str);
             }
-            if (Routing.params.amount) {
-                str = Routing.params.amount + '/' + Parameters.shopId + '?' + str;
+            if (p.amount) {
+                str = p.amount + '/' + Parameters.shopId + '?' + str;
                 self.GetData.Amount(str);
             }
         });
@@ -367,7 +368,7 @@ var PaymentViewModel = function (opt) {
     };
     self.ClickSubmit = function () {
         if (self.ValidationFrom()) {
-            EventDispatcher.DispatchEvent('ButtonPaymentWidget.form.submit', self);
+            EventDispatcher.DispatchEvent('BPayment.submit', self);
         }
     };
     self.ValidationFrom = function () {

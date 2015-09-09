@@ -80,7 +80,7 @@ var OrderListWidget = function() {
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('widget.change.route', function() {
+        EventDispatcher.AddEventListener('w.change.route', function() {
             self.CheckRouteListOrder();
         });
 
@@ -167,13 +167,13 @@ var OrderListWidget = function() {
                 self.Fill.List();
             }
             else if (Routing.params.block == 'detail' && Routing.params.id)
-                self.BaseLoad.Script('widgets/OrderViewModel-1.0.js', function() {
+                self.BaseLoad.Script('widgets/OrderViewModel-1.0.min.js', function() {
                     self.Fill.Detail(Routing.params.id);
                 });
         },
         Menu: function() {
             self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function() {
-                EventDispatcher.DispatchEvent('widget.onload.menuPersonalCabinet', {menu : {}, active : ''});
+                EventDispatcher.DispatchEvent('w.onload.menu', {menu : {}, active : ''});
             });
         }
     };

@@ -80,13 +80,13 @@ window.RelatedGoodsWidget = function(){
     };
     self.LoadTmpl = function(){
         self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.js', function() {
+            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
                 EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
             });
         });
     };
     self.RegisterEvents = function(){
-        EventDispatcher.AddEventListener('widget.display.ready', function(){
+        EventDispatcher.AddEventListener('w.ready', function(){
             if(self.settings.container)
                 self.LoadTmpl();
         });
@@ -101,7 +101,7 @@ window.RelatedGoodsWidget = function(){
         EventDispatcher.AddEventListener('RelatedGoodsWidget.fill.block_' + self.settings.uniq, function (data){
             self.Render(data);
         });
-        EventDispatcher.AddEventListener('widget.change.route', function() {
+        EventDispatcher.AddEventListener('w.change.route', function() {
             self.settings.container = null;
         });
     };

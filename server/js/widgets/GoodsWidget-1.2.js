@@ -69,7 +69,7 @@ var GoodsWidget = function(){
     self.CheckRouteGoods = function(){
         if(Routing.route == 'goods'){
             self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                self.BaseLoad.Script('widgets/GoodsViewModel-1.0.js', function() {
+                self.BaseLoad.Script('widgets/GoodsViewModel-1.0.min.js', function() {
                     self.Update();
                 });
             });
@@ -78,7 +78,7 @@ var GoodsWidget = function(){
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function(){ 
-        EventDispatcher.AddEventListener('widget.change.route', function (){
+        EventDispatcher.AddEventListener('w.change.route', function (){
             self.CheckRouteGoods();
         });
         

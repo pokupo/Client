@@ -94,7 +94,7 @@ var SearchWidget = function(){
             self.Render(data);
         });
         
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             self.CheckRoute(); 
         });
     };
@@ -264,7 +264,7 @@ var SearchViewModel = function(settings){
 
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
 
-            EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
+            EventDispatcher.DispatchEvent('w.change.breadCrumb', selected);
         }
         else{
             self.ShowMessage(Config.Search.message.empty, false, false);
@@ -289,7 +289,7 @@ var SearchViewModel = function(settings){
 
             Routing.SetHash('search','Расширенный поиск', Parameters.filter);
 
-            EventDispatcher.DispatchEvent('widget.route.change.breadCrumb', selected);
+            EventDispatcher.DispatchEvent('w.change.breadCrumb', selected);
         }
         else{
             self.ShowMessage(Config.Search.message.empty, false, false);

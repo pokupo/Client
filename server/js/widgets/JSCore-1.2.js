@@ -25,7 +25,7 @@ var JSSettings = {
     dev: false,
     
     sourceData : 'api', //варианты api, proxy
-    scripts : [
+    devScripts : [
         'easyXDM.min.js',
         'knockout-3.2.0.js',
         'jquery.cookie.js',
@@ -34,6 +34,9 @@ var JSSettings = {
         'widgets/Routing-1.0.js',
         'widgets/Paging-1.0.js',
         'widgets/Widget-1.1.js'
+    ],
+    scripts: [
+        'widgets/widgets.lib.min.js'
     ],
     inputParameters : {}
 }
@@ -133,7 +136,10 @@ var JSCore = {
         if(document.location.protocol == 'https:')
             JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
         JSCore.SetInputParameters();
-        JSLoader.Init(JSSettings.scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
+        var scripts = JSSettings.scripts;
+        if(JSSettings.dev)
+            scripts = JSSettings.devScripts;
+        JSLoader.Init(scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
         JSCore.shopId = JSSettings.shopId;
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;

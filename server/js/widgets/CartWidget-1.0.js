@@ -89,11 +89,11 @@ var CartWidget = function(){
         });
     };
     self.RegisterEvents = function(){
-        EventDispatcher.AddEventListener('widget.authentication.ok', function(){
+        EventDispatcher.AddEventListener('w.auth.ok', function(){
             self.LoadTmpl();
         });
 
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             self.LoadTmpl();
         });
 

@@ -62,27 +62,27 @@ var AuthenticationWidget = function(){
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function(){ 
-        EventDispatcher.AddEventListener('widget.change.route', function (){
+        EventDispatcher.AddEventListener('w.change.route', function (){
             self.CheckAuthenticationRoute();
         });
         
-        EventDispatcher.AddEventListener('AuthenticationWidget.authentication.submit', function (data){
+        EventDispatcher.AddEventListener('AuthW.submit', function (data){
            self.BaseLoad.Login(data.username, data.password, data.rememberMe, function(request){
-               EventDispatcher.DispatchEvent('widget.authentication.test', {data:data, request:request});
+               EventDispatcher.DispatchEvent('w.auth.test', {data:data, request:request});
            })
         });
         
-        EventDispatcher.AddEventListener('widget.authentication.test', function(data){
+        EventDispatcher.AddEventListener('w.auth.test', function(data){
             if(data.request.err){
                 data.data.error = "Ошибка в логине или пароле";
                 self.Render.Authentication(data.data);
             }
             else{
-                EventDispatcher.DispatchEvent('widget.authentication.ok', data);
+                EventDispatcher.DispatchEvent('w.auth.ok', data);
             }
         });
         
-        EventDispatcher.AddEventListener('widget.authentication.ok', function(){
+        EventDispatcher.AddEventListener('w.auth.ok', function(){
             if(Routing.route != 'registration'){
                 var last = Parameters.cache.lastPage;
                 if(last.route == 'login' || !last.route)
@@ -91,7 +91,7 @@ var AuthenticationWidget = function(){
                     Routing.SetHash(last.route, last.title, last.data);
             }
         });
-        EventDispatcher.AddEventListener('widget.authentication.close', function(){
+        EventDispatcher.AddEventListener('w.auth.close', function(){
             self.InsertContainer.EmptyWidget();
         });
     };
@@ -113,13 +113,13 @@ var AuthenticationWidget = function(){
     };
     self.Fill = {
         Authentication : function(){
-            self.BaseLoad.Script('widgets/AuthenticationViewModel-1.1.js', function () {
+            self.BaseLoad.Script('widgets/AuthenticationViewModel-1.1.min.js', function () {
                 AuthenticationViewModel.prototype.ClickRegistration = function () {
                     Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 2];
                     Routing.SetHash('registration', 'Регистрация пользователя', {step: 1});
                 };
                 var form = new AuthenticationViewModel();
-                form.subminEvent('AuthenticationWidget.authentication.submit');
+                form.subminEvent('AuthW.submit');
                 self.Render.Authentication(form);
             });
         }
