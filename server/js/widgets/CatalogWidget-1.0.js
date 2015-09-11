@@ -62,7 +62,7 @@ var CatalogWidget = function(){
             self.Render.Tree(data);
         });
         
-        EventDispatcher.AddEventListener('widget.change.route', function (){
+        EventDispatcher.AddEventListener('w.change.route', function (){
             self.CheckRouteCatalog();
         });
     };

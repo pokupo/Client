@@ -71,7 +71,7 @@ var CartGoodsWidget = function(){
         }
     };
     self.RegisterEvents = function(){ 
-        EventDispatcher.AddEventListener('widget.change.route', function (){
+        EventDispatcher.AddEventListener('w.change.route', function (){
             self.CheckCartGoodsRoute();
         });
         
@@ -279,7 +279,7 @@ var BlockGoodsForSellerViewModel = function(content){
                     $.each(checkedGoods, function(i){
                         checked[i] = checkedGoods[i].id;
                     });
-                    EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:checked.join(','), comment: self.comment(), data: checkedGoods});
+                    EventDispatcher.DispatchEvent('w.fav.add', {goodsId:checked.join(','), comment: self.comment(), data: checkedGoods});
                     $( this ).dialog( "close" );
                 }
             }
@@ -491,7 +491,7 @@ var BlockCartGoodsSellersViewModel = function(data, block, content){
             modal: true,
             buttons: {
                 "Сохранить": function() {
-                     EventDispatcher.DispatchEvent('widgets.favorites.add', {goodsId:self.id, comment: block.comment(), data : self});
+                     EventDispatcher.DispatchEvent('w.fav.add', {goodsId:self.id, comment: block.comment(), data : self});
                      self.IsFavorite(true);
                      $( this ).dialog( "close" );
                 }

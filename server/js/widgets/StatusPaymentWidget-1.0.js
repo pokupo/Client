@@ -97,7 +97,7 @@ var StatusPaymentWidget = function () {
         }
     };
     self.RegisterEvents = function(){
-        EventDispatcher.AddEventListener('widget.change.route', function (data){
+        EventDispatcher.AddEventListener('w.change.route', function (data){
             self.CheckRouteSearch();
         });
         EventDispatcher.AddEventListener('StatusPaymentWidget.update', function (data){

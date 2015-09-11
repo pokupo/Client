@@ -76,7 +76,7 @@ var MenuPersonalCabinetWidget = function () {
         }
     };
     self.RegisterEvents = function () {
-        EventDispatcher.AddEventListener('widget.change.route', function () {
+        EventDispatcher.AddEventListener('w.change.route', function () {
             if (Routing.route != 'profile'
                     && Routing.route != 'favorites'
                     && Routing.route != 'cabinet_cart'

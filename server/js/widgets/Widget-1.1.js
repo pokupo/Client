@@ -149,7 +149,7 @@ var Loader = {
             this.ShowContent();
             $('#loadingContainer').remove();
             $("body").removeClass('loading');
-            EventDispatcher.DispatchEvent('widget.display.ready');
+            EventDispatcher.DispatchEvent('w.ready');
         }
     },
     InsertContainer : function(container){
@@ -430,11 +430,11 @@ var Widget = function (){
         }
     };
     this.Events = function(){
-        EventDispatcher.AddEventListener('widget.display.ready', function(){
+        EventDispatcher.AddEventListener('w.ready', function(){
             Routing.CheckRoute();
         });
 
-        EventDispatcher.AddEventListener('widget.onload.script', function(data){
+        EventDispatcher.AddEventListener('w.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
             data.options.params['uniq'] = EventDispatcher.GetUUID();
@@ -442,7 +442,7 @@ var Widget = function (){
             embed.Init(embed, true);
         });
         
-        EventDispatcher.AddEventListener('widget.onload.menuPersonalCabinet', function(opt){
+        EventDispatcher.AddEventListener('w.onload.menu', function(opt){
             if(!Parameters.cache.profileMenu){
                 MenuPersonalCabinetWidget.prototype = new Widget();
                 Parameters.cache.profileMenu = new MenuPersonalCabinetWidget();
@@ -452,7 +452,7 @@ var Widget = function (){
             Parameters.cache.profileMenu.AddMenu(opt);
         });
         
-        EventDispatcher.AddEventListener('widgets.favorites.add', function(data){
+        EventDispatcher.AddEventListener('w.fav.add', function(data){
             var inputDate = data;
             if(Parameters.cache.userInformation && !Parameters.cache.userInformation.err){
                 self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
@@ -477,7 +477,7 @@ var Widget = function (){
             }
         });
         
-        EventDispatcher.AddEventListener('widgets.cart.addGoods', function(data){
+        EventDispatcher.AddEventListener('w.cart.add', function(data){
             var sellerId = data.sellerId ? data.sellerId : false;
             var count = data.count ? data.count : false;
             var goodsId = data.goodsId;
@@ -493,7 +493,7 @@ var Widget = function (){
             });
         });
         
-        EventDispatcher.AddEventListener('widget.change.countMessage', function() {
+        EventDispatcher.AddEventListener('w.change.count.mess', function() {
             self.BaseLoad.MessageCountUnread(
                 function(data){
                     Parameters.cache.message.countNewMessage(data.count_unread_topic);
@@ -511,12 +511,12 @@ var Widget = function (){
                 var widgetName = options.widget.split('-');
                 if(typeof(window[widgetName[0]]) == 'function'){
                     options.widget = widgetName[0];
-                    EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                    EventDispatcher.DispatchEvent('w.onload.script', {element: element, options: options});
                 }
                 else {
                     self.BaseLoad.Script('widgets/' + options.widget + '.js', function () {
                         options.widget = options.widget.split('-')[0];
-                        EventDispatcher.DispatchEvent('widget.onload.script', {element: element, options: options});
+                        EventDispatcher.DispatchEvent('w.onload.script', {element: element, options: options});
                     });
                 }
             }
@@ -794,7 +794,7 @@ var Widget = function (){
                             var id = 'temp_' + hash;
                             var temp = $('<div id="' + id + '"></div>');
                             temp.append(data);
-                            
+
                             if($.type(tmpl.id) == 'object'){
                                 for(var key in tmpl.id){
                                     if(self.ErrorVertionTmpl(tmpl.id[key], hash, temp)){

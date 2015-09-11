@@ -216,7 +216,7 @@ var StandalonePaymentWidget = function () {
             self.CheckRouteStandalonePayment()
         });
 
-        EventDispatcher.AddEventListener('widget.change.route', function () {
+        EventDispatcher.AddEventListener('w.change.route', function () {
             self.CheckRouteStandalonePayment();
         });
 

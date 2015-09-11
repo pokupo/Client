@@ -69,7 +69,7 @@ var RegistrationSellerWidget = function () {
             self.WidgetLoader(true);
     };
     self.RegisterEvents = function () {
-        EventDispatcher.AddEventListener('widget.change.route', function () {
+        EventDispatcher.AddEventListener('w.change.route', function () {
             self.CheckRouteRegistrationSeller();
         });
 
