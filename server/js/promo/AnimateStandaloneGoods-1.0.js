@@ -23,6 +23,14 @@ var AnimateStandaloneGoods = function () {
             .next()
             .addClass('selected');
     });
+    $('#opinion_btn').click(function(){
+        $('#more_block .tab__trigger, #more_block .tab__content').removeClass('selected');
+        $('#blockOpinion, #blockOpinion_content').addClass('selected');
+
+        $('html,body').animate({
+                scrollTop: $("#blockOpinion").offset().top},
+            'slow');
+    })
 
     $('#btn_to_cart').click(function () {
         var item = $('.b-catalog-item .fotorama__stage__shaft .fotorama__active');

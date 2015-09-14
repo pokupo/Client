@@ -141,13 +141,13 @@ var StandaloneGoodsWidget = function(){
             self.CheckRouteGoods();
         });
 
-        EventDispatcher.AddEventListener('StandaloneGoodsWidget.onload.info', function (data){
+        EventDispatcher.AddEventListener('SGoods.onload.info', function (data){
             self.Fill.Content(data);
         });
     };
     self.Update = function(){
         self.BaseLoad.GoodsInfo(self.settings.idGoods, self.settings.infoBlock, function(data){
-            EventDispatcher.DispatchEvent('StandaloneGoodsWidget.onload.info', data)
+            EventDispatcher.DispatchEvent('SGoods.onload.info', data)
         })
     };
     self.InsertContainer = {
