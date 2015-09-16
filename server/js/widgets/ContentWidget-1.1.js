@@ -300,6 +300,8 @@ var ContentWidget = function(){
             $("#" + self.settings.blockContainerId.carousel.widget).empty().html(temp);
             var temp = $("#" + self.settings.blockContainerId.tile.widget).find(self.SelectCustomContent().join(', ')).clone();
             $("#" + self.settings.blockContainerId.tile.widget).empty().html(temp);
+            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
+            $("#" + self.settings.containerId).empty().html(temp);
         },
         Block : function(sort, type){
             if(type == 'slider'){ 
