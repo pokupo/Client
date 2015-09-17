@@ -42,7 +42,8 @@ var StandalonePaymentWidget = function () {
         paymentInfo: {},
         paymentList: false,
         description: '',
-        showButton: null
+        showButton: null,
+        userParams: {}
     };
 
     self.InitWidget = function () {
@@ -138,6 +139,19 @@ var StandalonePaymentWidget = function () {
                 self.settings.description = input.description;
             if(Routing.params.description)
                 self.settings.description = Routing.params.description;
+
+            if(Routing.params.userParams){
+                var query = decodeURIComponent(Routing.params.userParams);
+                self.settings.userParams = query.replace(/(^\?)/,'').split("&")
+                    .map(function(n){
+                        return n = n.split("="),this[n[0]] = n[1],this
+                    }.bind({}))[0];
+            }
+            if(input.userParams){
+                $.each(input.userParams, function(i, one){
+                    self.settings.userParams[i] = one;
+                })
+            }
 
             if(input.showButton)
                 self.settings.showButton = input.showButton;
@@ -252,6 +266,15 @@ var StandalonePaymentWidget = function () {
         });
     };
     self.GetData = {
+        UserParametrs: function(){
+            var res = '';
+            var params = [];
+            $.each(self.settings.userParams, function(i, one){
+                params.push(i + '=' + one);
+            });
+            res = encodeURIComponent(encodeURIComponent(params.join('&')));
+            return res;
+        },
         Price: function(){
             var str = self.settings.idShop + '/';
             if(self.settings.idShopPartner)
@@ -282,6 +305,8 @@ var StandalonePaymentWidget = function () {
                 parameters.push('mailUser=' + self.settings.mailUser);
             if(self.settings.idMethodPayment)
                 parameters.push('idMethodPayment=' + self.settings.idMethodPayment);
+            if(self.settings.userParams)
+                parameters.push('userParams=' + self.GetData.UserParametrs());
             if(parameters.length > 0)
                 str = str + '?' + parameters.join('&');
             self.BaseLoad.InvoicesGoods(str, function (data) {
@@ -299,6 +324,8 @@ var StandalonePaymentWidget = function () {
                 parameters.push('mailUser=' + self.settings.mailUser);
             if(self.settings.idMethodPayment)
                 parameters.push('idMethodPayment=' + self.settings.idMethodPayment);
+            if(self.settings.userParams)
+                parameters.push('userParams=' + self.GetData.UserParametrs());
             if(parameters.length > 0)
                 str = str + '?' + parameters.join('&');
             self.BaseLoad.InvoicesPartnerGoods(str, function (data) {
@@ -319,7 +346,8 @@ var StandalonePaymentWidget = function () {
                 parameters.push('mailUser=' + self.settings.mailUser);
             if(self.settings.idMethodPayment)
                 parameters.push('idMethodPayment=' + self.settings.idMethodPayment);
-
+            if(self.settings.userParams)
+                parameters.push('userParams=' + self.GetData.UserParametrs());
             parameters.push('description=' + self.settings.description);
             if(parameters.length > 0)
                 str = str + '?' + parameters.join('&');
