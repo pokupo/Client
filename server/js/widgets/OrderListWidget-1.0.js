@@ -70,7 +70,7 @@ var OrderListWidget = function() {
                     });
                 }
                 else {
-                    Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 1];
+                    Parameters.cache.lastPage = {route: 'default'};
                     Routing.SetHash('login', 'Авторизация пользователя', {});
                     self.WidgetLoader(true);
                 }

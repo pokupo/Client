@@ -89,10 +89,10 @@ var CabinetCartGoodsWidget = function(){
         });
         
         EventDispatcher.AddEventListener('CartCG.change.count', function(goods){
-            self.BaseLoad.AddGoodsToCart(goods.goodsId, goods.sellerId, goods.count, function(data){
+            self.BaseLoad.AddGoodsToCart(goods.id, goods.sellerId, goods.ordered(), function(data){
                  EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
-                 goods.sellCost = data.sell_cost;
-                 goods.sellEndCost = data.sell_end_cost;
+                 goods.sellCost(data.sell_cost);
+                 goods.sellEndCost(data.sell_end_cost);
             });
         });
         
@@ -456,7 +456,7 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
     self.ClickPlus = function(){
         if(self.ordered() < self.countReserv){
             self.ordered(self.ordered() + 1);
-            EventDispatcher.DispatchEvent('CartCG.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
+            EventDispatcher.DispatchEvent('CartCG.change.count', self);
         }
         else
             self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
@@ -464,7 +464,7 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
     self.ClickMinus = function(){
         if(self.ordered() > 0){
             self.ordered(self.ordered() - 1);
-             EventDispatcher.DispatchEvent('CartCG.change.count', {goodsId : self.id, sellerId : self.sellerId, count: self.ordered()}, self);
+             EventDispatcher.DispatchEvent('CartCG.change.count', self);
         }
     };
     self.ClickGoods = function(){
@@ -485,14 +485,8 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
         });
     };
     self.Remove = function(){
-        EventDispatcher.DispatchEvent('CartGoods.clear', {goodsId:self.id, sellerId: self.sellerId});
-        block.goods.remove(self);
-        if(block.goods().length == 0){
-            content.content.remove(block);
-            if(content.content().length == 0){
-                EventDispatcher.DispatchEvent('CartGoods.empty.cart'); 
-            }
-        }
+        EventDispatcher.DispatchEvent('CartCG.clear', {goodsId:self.id, sellerId: self.sellerId});
+        RemoveGoods();
     };
     self.AddCommentForm = function(){
         block.comment(' ');
@@ -514,6 +508,31 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
         self.IsFavorite(true)
     else
         self.IsFavorite(false)
+
+    function RemoveGoods(){
+        //block.goods.remove(self);
+        //if(block.goods().length == 0){
+        //    content.content.remove(block);
+        //    if(content.content().length == 0){
+        //        EventDispatcher.DispatchEvent('CartGoods.empty.cart');
+        //    }
+        //}
+        block.goods.remove(self);
+        if(block.goods().length == 0){
+            content.sellerBlock.remove(block);
+            if(content.sellerBlock().length == 0){
+                EventDispatcher.DispatchEvent('CartCG.empty.cart');
+            }
+        }
+    }
+
+    EventDispatcher.AddEventListener('CartGoods.clear.cartInfo.' + self.sellerId + '.' + self.id, function(){
+        RemoveGoods();
+    });
+
+    EventDispatcher.AddEventListener('CartGoods.change.cartInfo.' + self.sellerId + '.' + self.id, function(count){
+        self.ordered(count);
+    });
 };
 
 

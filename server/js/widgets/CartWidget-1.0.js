@@ -102,7 +102,16 @@ var CartWidget = function(){
         });
         EventDispatcher.AddEventListener('widgets.cart.clear', function(data){
             var goodsId = data.goodsId ? data.goodsId : false;
-            self.BaseLoad.ClearCart(data.sellerId, goodsId, function(data){});
+            self.BaseLoad.ClearCart(data.sellerId, goodsId, function(){
+                EventDispatcher.DispatchEvent('CartGoods.clear.cartInfo.' + data.sellerId + '.' + goodsId);
+            });
+        });
+        EventDispatcher.AddEventListener('Cart.change.count', function(goods){
+            self.BaseLoad.AddGoodsToCart(goods.id, goods.sellerId, goods.ordered(), function(data){
+                goods.sellCost(data.sell_cost);
+                goods.sellEndCost(data.sell_end_cost);
+                EventDispatcher.DispatchEvent('CartGoods.change.cartInfo.' + goods.sellerId + '.' + goods.id, goods.ordered());
+            });
         });
     };
     self.Fill = function(data){
@@ -209,9 +218,10 @@ var CartViewModel = function(){
             self.finalCost(info.final_cost);
         }
         if(goods && !goods.err){
+            ShortBlockCartGoodsSellersViewModel.prototype = new Widget();
             $.each(goods, function(i){
                 $.each(goods[i].goods, function(j){
-                    self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i].goods[j], self));
+                    self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i].goods[j], goods[i].seller.id, self));
                 });
             });
         }
@@ -229,7 +239,7 @@ var CartViewModel = function(){
     };
 };
 
-var ShortBlockCartGoodsSellersViewModel = function(data, cart){
+var ShortBlockCartGoodsSellersViewModel = function(data, sellerId, cart){
     var self = this;
     self.id = data.id;
     self.fullName = data.full_name;
@@ -240,6 +250,7 @@ var ShortBlockCartGoodsSellersViewModel = function(data, cart){
     self.routeImages = data.route_image;
     self.routeBigImages = data.route_big_image;
     self.ordered = ko.observable(self.count);
+    self.sellerId = sellerId;
     self.sum = ko.computed(function(){
         return (self.ordered() * self.sellCost()).toFixed(2);
     }, this);
@@ -259,21 +270,24 @@ var ShortBlockCartGoodsSellersViewModel = function(data, cart){
             self.ordered(self.ordered() + 1);
             self.CartItog();
             cart.count(cart.count() + 1);
+            EventDispatcher.DispatchEvent('Cart.change.count', self);
         }
+        else
+            self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
     };
     self.ClickMinus = function(){
-        if(self.ordered() > 1){
+        if(self.ordered() > 0){
             self.ordered(self.ordered() - 1);
             self.CartItog();
             cart.count(cart.count()- 1);
+            EventDispatcher.DispatchEvent('Cart.change.count', self);
         }
     };
     self.ClickGoods = function(){
         Routing.SetHash('goods', self.fullName, {id : self.id});
     };
     self.ClickRemove = function(){
-        EventDispatcher.DispatchEvent('widgets.cart.clear', {goodsId:self.id, sellerId: false});
-        cart.goods
+        EventDispatcher.DispatchEvent('widgets.cart.clear', {goodsId:self.id, sellerId: sellerId});
         cart.goods.remove(self);
         cart.count(cart.count()- self.ordered());
     };
