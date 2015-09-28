@@ -6,32 +6,33 @@ window.InfoSellerWidget = function () {
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        tmpl: {
-            path: null,
-            id: null
-        },
+    self.SetParameters = SetParameters;
+    self.InitWidget = InitWidget;
+
+    var settings = {
+        tmpl: {},
         animate: null,
-        inputParameters: {},
         container: null,
-        style: null,
         infoSeller: {},
-        hash: null
-    };
-    self.InitWidget = function () {
-        self.settings.style = Config.InfoSeller.style;
-        self.RegisterEvents();
-        if(Loader.IsReady()) {
-            self.Loader();
-            self.LoadTmpl();
+        hash: null,
+        show: {
+            blockShop: true,
+            blockInfoSeller: false
         }
-    };
-    self.Loader = function () {
-        Loader.InsertContainer(self.settings.container);
-    };
-    self.SetParameters = function (data) {
-        self.settings.tmpl = Config.InfoSeller.tmpl;
-        self.settings.container = data.element;
+    }
+
+    function InitWidget() {
+        RegisterEvents();
+        if(Loader.IsReady()) {
+            Loader.InsertContainer(settings.container);
+            LoadTmpl();
+        }
+    }
+    function SetParameters(data) {
+        var params = data.options.params;
+
+        settings.tmpl = Config.InfoSeller.tmpl;
+        settings.container = data.element;
         
         var input = {};
         if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.infoSeller) {
@@ -39,109 +40,109 @@ window.InfoSellerWidget = function () {
         }
         if (!$.isEmptyObject(input)) {
             if(input.animate)
-                self.settings.animate = input.animate;
+                settings.animate = input.animate;
         }
-        self.settings.inputParameters = input;
         
-        for (var key in data.options.params) {
-            if (key == 'tmpl' && data.options.params['tmpl']) {
-                if (data.options.params['tmpl']['path'])
-                    self.settings.tmpl.path = data.options.params['tmpl']['path'];
-                if (data.options.params['tmpl']['id'])
-                    self.settings.tmpl.id = data.options.params['tmpl']['id'];
+        for (var key in params) {
+            if (key == 'tmpl' && params.tmpl) {
+                if (params.tmpl['path'])
+                    settings.tmpl.path = params.tmpl.path;
+                if (params.tmpl['id'])
+                    settings.tmpl.id = params.tmpl.id;
             }
-            else if (key == 'uniq' && data.options.params['uniq'])
-                self.settings.hash = data.options.params['uniq'];
-            else if (key == 'animate' && data.options.params['animate'])
-                self.settings.animate = data.options.params['animate'];
+            else if (key == 'uniq' && params.uniq)
+                settings.hash = params.uniq;
+            else if (key == 'show' && params.show)
+                settings.show = params.show;
             else
-                self.settings.infoSeller[key] = data.options.params[key];
+                settings.infoSeller[key] = params[key];
         }
-        Parameters.cache.infoSellerCollection[data.options.params['uniq']] = true;
-    };
-    self.LoadTmpl = function () {
-        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
+        self.settings = settings;
+        Parameters.cache.infoSellerCollection[params['uniq']] = true;
+    }
+    function LoadTmpl() {
+        self.BaseLoad.Tmpl(settings.tmpl, function () {
             $.each(Parameters.cache.infoSellerCollection, function(i){
-                EventDispatcher.DispatchEvent('InfoSellerWidget.onload.tmpl.' + i);
+                EventDispatcher.DispatchEvent('ISeller.tmpl.' + i);
                 delete Parameters.cache.infoSellerCollection[i];
             })
         });
-    };
-    self.RegisterEvents = function () {
+    }
+    function RegisterEvents() {
         EventDispatcher.AddEventListener('w.ready', function(){
-            self.LoadTmpl();
+            LoadTmpl();
         });
 
-        EventDispatcher.AddEventListener('InfoSellerWidget.onload.tmpl.' + self.settings.hash, function (data) {
-            if (self.settings.infoSeller['data']) {
-                self.InsertContainer.Content();
-                self.Fill(self.settings.infoSeller['data'])
+        EventDispatcher.AddEventListener('ISeller.tmpl.' + settings.hash, function (data) {
+            if (settings.infoSeller['data']) {
+                InsertContainerContent();
+                Fill(settings.infoSeller['data'])
             }
             else {
                 window.console && console.log('No data on the Seller');
             }
         });
-
-        EventDispatcher.AddEventListener('InfoSellerWidget.fill.block.' + self.settings.hash, function (data) {
-            self.Render(data);
-        });
-    };
-    self.InsertContainer = {
-        EmptyWidget: function () {
-            var temp = $(self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
-            $(self.settings.container).empty().html(temp);
-        },
-        Content: function () {
-            self.InsertContainer.EmptyWidget();
-            $(self.settings.container).append($('script#' + self.GetTmplName()).html());
-        }
     }
-    self.Fill = function (data) {
-        var info = new InfoSellerViewModel(data);
-        self.Render(info);
-    };
-    self.Render = function (data) {
+    function InsertContainerEmptyWidget() {
+        var temp = $(settings.container).find(self.SelectCustomContent().join(', ')).clone();
+        $(settings.container).empty().html(temp);
+    }
+    function InsertContainerContent() {
+        InsertContainerEmptyWidget();
+        $(settings.container).append($('script#' + self.GetTmplName()).html());
+    }
+    function Fill(data) {
+        var info = new InfoSellerViewModel(data, settings.show);
+        Render(info);
+    }
+    function Render(data) {
         try {
-            ko.cleanNode($(self.settings.container).children()[0]);
-            ko.applyBindings(data, $(self.settings.container).children()[0]);
+            ko.cleanNode($(settings.container).children()[0]);
+            ko.applyBindings(data, $(settings.container).children()[0]);
             if(typeof AnimateInfoSeller == 'function')
                 new AnimateInfoSeller();
-            if(self.settings.animate)
-                self.settings.animate();
+            if(settings.animate)
+                settings.animate();
         }
         catch (e) {
             self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
-            if (self.settings.tmpl.custom) {
-                delete self.settings.tmpl.custom;
-                self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                    self.InsertContainer.Content();
-                    self.Render(data);
+            if (settings.tmpl.custom) {
+                delete settings.tmpl.custom;
+                self.BaseLoad.Tmpl(settings.tmpl, function () {
+                    InsertContainerContent();
+                    Render(data);
                 });
             }
             else {
-                self.InsertContainer.EmptyWidget();
+                InsertContainerEmptyWidget();
             }
         }
     }
 }
 
-var InfoSellerViewModel = function (data) {
-    var self = this;
-    self.sellerId = data.seller.id;
-    self.nameSeller = data.seller.name_seller;
-    self.websiteSeller = data.seller.website;
-    self.shopId = data.shop.id;
-    self.nameShop = data.shop.name_shop;
-    self.emailLinkTitle = data.shop.email_support;
+var InfoSellerViewModel = function (data, show) {
+    var self = this, seller = data.seller, shop = data.shop;
+    self.show = {
+        blockShop: show.blockShop,
+        blockInfoSeller: show.blockInfoSeller
+    }
+
+    self.sellerId = seller.id;
+    self.nameSeller = seller.name_seller;
+    self.websiteSeller = seller.website;
+
+    self.shopId = shop.id;
+    self.nameShop = shop.name_shop;
+    self.emailLinkTitle = shop.email_support;
     self.mailtoShop = 'mailto:' + self.emailLinkTitle;
 
     self.phonesSupportShop = ko.observable();
-    if (data.shop.phones_support)
-        self.phonesSupportShop(data.shop.phones_support);
+    if (shop.phones_support && show.blockShop)
+        self.phonesSupportShop(shop.phones_support);
 
     self.siteSupportShop = ko.observable();
-    if (data.shop.site_support)
-        self.siteSupportShop(data.shop.site_support);
+    if (shop.site_support && show.blockShop)
+        self.siteSupportShop(shop.site_support);
     self.siteLinkTitle = ko.computed(function(){
         var site = '';
         if(self.siteSupportShop()){
@@ -152,19 +153,19 @@ var InfoSellerViewModel = function (data) {
     }, this)
 
     self.skypeSupportShop = ko.observable();
-    if (data.shop.skype_support)
-        self.skypeSupportShop(data.shop.skype_support);
+    if (shop.skype_support && show.blockShop)
+        self.skypeSupportShop(shop.skype_support);
 
     self.icqSupportShop = ko.observable();
-    if (data.shop.icq_support)
-        self.icqSupportShop(data.shop.icq_support);
+    if (shop.icq_support && show.blockShop)
+        self.icqSupportShop(shop.icq_support);
 
-    self.ratingShop = data.shop.rating_shop;
-    self.positiveOpinion = data.shop.positive_opinion;
-    self.negativeOpinion = data.shop.negative_opinion;
-    self.useCart = data.shop.use_cart;
-    self.routeLogoShop = data.shop.route_logo_shop;
-    self.allGoods = data.shop.all_goods;
+    self.ratingShop = shop.rating_shop;
+    self.positiveOpinion = shop.positive_opinion;
+    self.negativeOpinion = shop.negative_opinion;
+    self.useCart = shop.use_cart;
+    self.routeLogoShop = shop.route_logo_shop;
+    self.allGoods = shop.all_goods;
     self.operators = data.operator;
 
     self.ClickOperator = function (data, event) {
