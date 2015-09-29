@@ -31,7 +31,7 @@ var StandalonePaymentWidget = function () {
         idGoods: null,
         goodsInfo: null,
         count: 1,
-        showCount: true,
+        showCount: false,
         idShop: null,
         amount: null,
         showAmount: true,
@@ -43,7 +43,8 @@ var StandalonePaymentWidget = function () {
         paymentList: false,
         description: '',
         showButton: null,
-        userParams: {}
+        userParams: {},
+        backUrl: ''
     };
 
     self.InitWidget = function () {
@@ -70,114 +71,114 @@ var StandalonePaymentWidget = function () {
             Logger.Console.VarDump(self.widgetName, "Input parameters", input);
 
         if(!$.isEmptyObject(input)){
+            var rParams = Routing.params,
+                settings = self.settings;
+
             if (input.title)
-                self.settings.title = input.title;
-            else
-                self.settings.title = null;
+                settings.title = input.title;
 
             if (input.idGoods) {
-                self.settings.idGoods = input.idGoods;
-                self.settings.showAmount = false;
+                settings.idGoods = input.idGoods;
+                settings.showAmount = false;
             }
-            else if (Routing.params.idGoods) {
-                self.settings.idGoods = Routing.params.idGoods;
-                self.settings.showAmount = false;
+            else if (rParams.idGoods) {
+                settings.idGoods = rParams.idGoods;
+                settings.showAmount = false;
             }
-            else{
-                self.settings.idGoods = null;
-                self.settings.idShop = JSSettings.shopId;
-                self.settings.showCount = false;
-            }
+            else
+                settings.idShop = JSSettings.shopId;
 
             if (input.count ){
-                self.settings.count  = input.count;
-                self.settings.showCount = false;
+                settings.count  = input.count;
+                settings.showCount = false;
             }
-            else if(Routing.params.count){
-                self.settings.count  = Routing.params.count;
-                self.settings.showCount = false;
-            }
-            else{
-                self.settings.count  = 1;
-                self.settings.showCount = false;
+            else if(rParams.count){
+                settings.count  = rParams.count;
+                settings.showCount = false;
             }
 
             if (input.amount) {
-                self.settings.amount = input.amount;
-                self.settings.showAmount = false;
+                settings.amount = input.amount;
+                settings.showAmount = false;
             }
-            else if (Routing.params.amount) {
-                self.settings.amount = Routing.params.amount;
-                self.settings.showAmount = false;
+            else if (rParams.amount) {
+                settings.amount = rParams.amount;
+                settings.showAmount = false;
             }
             else{
-                self.settings.amount = null;
-                if(!self.settings.idGoods)
-                    self.settings.showAmount = true;
+                if(!settings.idGoods)
+                    settings.showAmount = true;
             }
 
             if (input.uid)
-                self.settings.uid  = input.uid;
-            if(Routing.params.uid)
-                self.settings.uid = Routing.params.uid;
+                settings.uid  = input.uid;
+            if(rParams.uid)
+                settings.uid = rParams.uid;
 
             if(input.idShopPartner)
-                self.settings.idShopPartner = input.idShopPartner;
-            if(Routing.params.idShopPartner)
-                self.settings.idShopPartner = Routing.params.idShopPartner;
+                settings.idShopPartner = input.idShopPartner;
+            if(rParams.idShopPartner)
+                settings.idShopPartner = rParams.idShopPartner;
 
             if (input.mailUser)
-                self.settings.mailUser = input.mailUser;
-            else if(Routing.params.mailUser)
-                self.settings.mailUser = Routing.params.mailUser;
+                settings.mailUser = input.mailUser;
+            else if(rParams.mailUser)
+                settings.mailUser = rParams.mailUser;
 
             if (input.idMethodPayment)
-                self.settings.idMethodPayment = input.idMethodPayment;
-            if(Routing.params.idMethodPayment)
-                self.settings.idMethodPayment = Routing.params.idMethodPayment;
+                settings.idMethodPayment = input.idMethodPayment;
+            if(rParams.idMethodPayment)
+                settings.idMethodPayment = rParams.idMethodPayment;
             if(input.description)
-                self.settings.description = input.description;
-            if(Routing.params.description)
-                self.settings.description = Routing.params.description;
+                settings.description = input.description;
+            if(rParams.description)
+                settings.description = rParams.description;
 
-            if(Routing.params.userParams){
-                var query = decodeURIComponent(Routing.params.userParams);
-                self.settings.userParams = query.replace(/(^\?)/,'').split("&")
+            if (input.backUrl )
+                settings.backUrl  = input.backUrl;
+            else if(rParams.backUrl )
+                settings.backUrl  = rParams.backUrl;
+
+            if(rParams.userParams){
+                var query = decodeURIComponent(rParams.userParams);
+                settings.userParams = query.replace(/(^\?)/,'').split("&")
                     .map(function(n){
                         return n = n.split("="),this[n[0]] = n[1],this
                     }.bind({}))[0];
             }
             if(input.userParams){
                 $.each(input.userParams, function(i, one){
-                    self.settings.userParams[i] = one;
+                    settings.userParams[i] = one;
                 })
             }
 
             if(input.showButton)
-                self.settings.showButton = input.showButton;
+                settings.showButton = input.showButton;
 
             if(input.tmpl){
                 if(input.tmpl.path)
-                    self.settings.tmpl.path = input.tmpl.path;
+                    settings.tmpl.path = input.tmpl.path;
                 if(input.tmpl.id){
                     for(var key in input.tmpl.id){
-                        self.settings.tmpl.id[key] = input.tmpl.id[key];
+                        settings.tmpl.id[key] = input.tmpl.id[key];
                     }
                 }
             }
             if(input.container){
                 if(input.container){
                     for(var key in input.container){
-                        self.settings.containerId[key] = input.container[key];
+                        settings.containerId[key] = input.container[key];
                     }
                 }
             }
             if(input.animate)
-                self.settings.animate = input.animate;
+                settings.animate = input.animate;
         }
-        self.settings.inputParameters = input;
+        settings.inputParameters = input;
         if(JSSettings.dev)
-            Logger.Console.VarDump(self.widgetName, "Result settings", self.settings);
+            Logger.Console.VarDump(self.widgetName, "Result settings", settings);
+
+        self.settings = settings;
     };
     self.CheckRouteStandalonePayment = function () {
         self.SetParameters();
@@ -742,6 +743,9 @@ var StandalonePaymentListViewModel = function(settings){
             data.callback();
         }
     });
+    self.Back = function(){
+        window.location.href = settings.backUrl;
+    }
 }
 
 var StandalonePaymentItemViewModel = function(obj, data){
@@ -971,7 +975,10 @@ var StandalonePaymentErrorViewModel = function(data, settings){
 
     self.ClickClearPayment = function(){
         EventDispatcher.DispatchEvent('StandalonePaymentWidget.payment.clear');
-    };
+    }
+    self.ClickBack = function(){
+
+    }
 }
 
 var TestStandalonePayment = {
