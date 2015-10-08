@@ -147,7 +147,6 @@ var CartGoodsWidget = function () {
             self.cart.finalCost = data;
         }
     };
-
     function RenderContent(data) {
         self.RenderTemplate(data, settings, null,
             function(data){
@@ -380,6 +379,11 @@ var BlockCartGoodsSellersViewModel = function (data, block, content, settings) {
     }, this);
     self.endSum = ko.computed(function () {
         return (self.ordered() * self.sellEndCost()).toFixed(2);
+    }, this);
+    self.isEgoods = ko.computed(function(){
+        if(data.is_egoods =='yes')
+            return true;
+        return false;
     }, this);
     self.isSelected = ko.observable(false);
     self.isSelected.subscribe(function (check) {
