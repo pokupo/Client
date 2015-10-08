@@ -418,6 +418,11 @@ var BlockCabinetCartGoodsSellersViewModel = function(data, block, content){
     self.endSum = ko.computed(function(){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
+    self.isEgoods = ko.computed(function(){
+        if(data.is_egoods =='yes')
+            return true;
+        return false;
+    }, this);
     self.isSelected = ko.observable(false);
     self.isSelected.subscribe(function(check) {
         var countGoods = block.goods().length;

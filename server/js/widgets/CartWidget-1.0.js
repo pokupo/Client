@@ -257,6 +257,11 @@ var ShortBlockCartGoodsSellersViewModel = function(data, sellerId, cart){
     self.endSum = ko.computed(function(){
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
+    self.isEgoods = ko.computed(function(){
+        if(data.is_egoods =='yes')
+            return true;
+        return false;
+    }, this);
     self.CartItog = ko.computed(function(){
         var itog = 0;
         $.each(cart.goods(), function(i){
