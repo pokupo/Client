@@ -96,7 +96,7 @@ var GoodsMainBlockViewModel = function(data, ordered){
         return null;
     }, this);
     self.ordered = ko.observable(0);
-    if(self.count() > 0)
+    if(self.count() > 0 || self.isEgoods())
         self.ordered(1);
     self.cart = ko.observable(Parameters.cache.cart);
     self.uniq = EventDispatcher.GetUUID();
@@ -135,7 +135,6 @@ var GoodsMainBlockViewModel = function(data, ordered){
     self.AddToCart = function(cart){
         Parameters.cache.cart = self.ordered();
         self.cart(self.cart() + self.ordered());
-
         EventDispatcher.DispatchEvent('w.cart.add', {goodsId : self.id, sellerId : self.shopId, count: self.ordered(), hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){

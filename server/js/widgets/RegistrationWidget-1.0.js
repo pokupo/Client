@@ -56,7 +56,7 @@ var RegistrationWidget = function() {
     self.CheckRouteRegistration = function() {
         if (Routing.route == 'registration') {
             self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-                self.BaseLoad.Script('widgets/RegistrationViewModel-1.0.min.js', function () {
+                self.BaseLoad.Script(PokupoWidgets.model.registration, function () {
                     if (Routing.params.step == 1)
                         self.Step.Step1();
                     if (Routing.params.step == 2)
@@ -330,8 +330,7 @@ var RegistrationWidget = function() {
     };
     self.InsertContainer = {
         EmptyWidget : function(){
-            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.containerFormId).empty().html(temp);
+            $("#" + self.settings.containerFormId).empty().html('');
         },
         Step1: function() {
             self.InsertContainer.EmptyWidget();

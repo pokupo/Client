@@ -320,7 +320,7 @@
         });
         
          EventDispatcher.AddEventListener('ProfileWidget.delivery.edit', function(data){
-             self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
+             self.BaseLoad.Script(PokupoWidgets.model.content, function() {
                  var form = new DeliveryAddressFormViewModel();
                  form.AddContent(data);
                  self.Fill.DeliveryForm(form);
@@ -416,7 +416,7 @@
     }
     self.Info = {
         Menu : function(){
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
+            self.BaseLoad.Script(PokupoWidgets.model.menu, function(){
                 if (!Routing.params.info)
                      Routing.params.info = Config.Profile.menu.personalInformation.prefix;
                 EventDispatcher.DispatchEvent('w.onload.menu', {menu : Config.Profile.menu, active : Routing.params.info});
@@ -424,7 +424,7 @@
         },
         Personal : function(){
             self.InsertContainer.Personal();
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
+            self.BaseLoad.Script(PokupoWidgets.model.content, function() {
                 self.BaseLoad.Profile(function (registration) {
                     self.BaseLoad.ProfileInfo(function (data) {
                         self.Fill.Personal(registration, data);
@@ -439,7 +439,7 @@
             });
         },
         DeliveryForm : function(){
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
+            self.BaseLoad.Script(PokupoWidgets.model.content, function() {
                 var form = new DeliveryAddressFormViewModel();
                 self.Fill.DeliveryForm(form);
             });
@@ -451,8 +451,7 @@
     };
     self.InsertContainer = {
         EmptyWidget : function(){
-            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.containerFormId).empty().html(temp);
+            $("#" + self.settings.containerFormId).empty().html('');
         },
         Personal : function(){
             self.InsertContainer.EmptyWidget();

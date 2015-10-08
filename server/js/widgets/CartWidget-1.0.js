@@ -1,4 +1,4 @@
-var CartWidget = function(){
+var CartWidget = function () {
     var self = this;
     self.widgetName = 'CartWidget';
     self.version = 1.0;
@@ -6,240 +6,199 @@ var CartWidget = function(){
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        title : null,
-        tmpl :{
-            path : null,
-            id : null
+    self.InitWidget = InitWidget;
+
+    var settings = {
+        container: {widget: 'cartInfoWidgetId', def: 'defaultCartInfoWidgetId'},
+        cartId : 'cart', // id корзины товара
+        tmpl : {
+            path : "cartShopTmpl.html", // файл шаблонов
+            id : "cartTmpl" //id шаблона формы авторизации
         },
-        animate: null,
-        inputParameters : {},
-        containerId : null,
-        showBlocks : null,
-        style : null,
-        customContainer : null
+        message : {
+            title : 'Корзина', // заголовок блока
+            cartGoodsTitle: 'Моя корзина',
+            maxIsReached : "Достигнут максимум" // сообщение о том что достигнут максимум при выборе кол-ва товара
+        },
+        showBlocks : {
+            title : 'always', // показывать название «Корзина» - всегда(always)/никогда(never)/когда пустая(empty)
+            count : true, // отображать кол-во товара
+            baseCost : false, // отображать сумму без скидок
+            finalCost : false, // отображать конечную сумму
+            fullInfo : false // отображать информацию по товарам
+        },
+        animate: typeof AnimateCart == 'function' ? AnimateCart : null
     };
-    self.InitWidget = function(){
-        self.settings.containerId = Config.Containers.cart.widget;
-        self.settings.customContainer = Config.Containers.cart.customClass;
-        self.settings.title = Config.Cart.title;
-        self.settings.tmpl = Config.Cart.tmpl;
-        self.settings.style = Config.Cart.style;
-        self.settings.showBlocks = Config.Cart.showBlocks;
-        self.RegisterEvents();
-        self.SetInputParameters();
-        self.LoadTmpl();
-        self.SetPosition();
-    };
-    self.SetInputParameters = function(){
-        var input = {};
-        if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/CartWidget/);
-            if(temp.cart){
-                input = temp.cart;
-            }
-        }
-        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.cart){
-            input = WParameters.cart;
-        }
+    function InitWidget() {
+        SetInputParameters();
+        RegisterEvents();
+        LoadTmpl();
+    }
+    function SetInputParameters() {
+        var input = self.GetInputParameters('cart');
 
         if(!$.isEmptyObject(input)){
-            if(input.show){
-                for(var key in input.show){
-                     self.settings.showBlocks[key] = input.show[key];
+            settings = self.UpdateSettings1(settings, input);
+            if (input.show) {
+                for (var key in input.show) {
+                    settings.showBlocks[key] = input.show[key];
                 }
             }
-            if(input.animate)
-                self.settings.animate = input.animate;
         }
-        self.settings.inputParameters = input;
-    };
-    self.InsertContainer = {
-        EmptyWidget : function(){
-            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.containerId).empty().html(temp);
-        },
-        Main : function(){
-            self.InsertContainer.EmptyWidget();
-            $('#' + self.settings.containerId).append($('script#' + self.settings.tmpl.id).html()).children().hide();
-        }
-    };
-    self.CheckRoute = function(){
-        if(Routing.IsDefault() && self.HasDefaultContent()){
+        Config.Cart = settings;
+    }
+
+    function InsertContainerEmptyWidget() {
+        self.ClearContainer(settings);
+    }
+
+    function InsertContainerMain() {
+        self.InsertContainer(settings);
+    }
+
+    function CheckRoute() {
+        if (Routing.IsDefault() && self.HasDefaultContent()) {
             self.WidgetLoader(true);
         }
-        else{
-            self.BaseLoad.CartInfo('', function(data){
-                if(self.settings.showBlocks.fullInfo){
-                    self.BaseLoad.CartGoods('', function(goods){
-                        self.InsertContainer.Main();
-                        self.Fill({info : data, goods : goods});
-                    });
-                }
-                else{
-                    self.InsertContainer.Main();
-                    self.Fill({info : data});
-                }
-            });
-        }
-    };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.CheckRoute();
-        });
-    };
-    self.RegisterEvents = function(){
-        EventDispatcher.AddEventListener('w.auth.ok', function(){
-            self.LoadTmpl();
-        });
-
-        EventDispatcher.AddEventListener('w.change.route', function (data){
-            self.LoadTmpl();
-        });
-
-        EventDispatcher.AddEventListener('widgets.cart.infoUpdate', function(data){
-             self.LoadTmpl();
-        });
-        EventDispatcher.AddEventListener('widgets.cart.clear', function(data){
-            var goodsId = data.goodsId ? data.goodsId : false;
-            self.BaseLoad.ClearCart(data.sellerId, goodsId, function(){
-                EventDispatcher.DispatchEvent('CartGoods.clear.cartInfo.' + data.sellerId + '.' + goodsId);
-            });
-        });
-        EventDispatcher.AddEventListener('Cart.change.count', function(goods){
-            self.BaseLoad.AddGoodsToCart(goods.id, goods.sellerId, goods.ordered(), function(data){
-                goods.sellCost(data.sell_cost);
-                goods.sellEndCost(data.sell_end_cost);
-                EventDispatcher.DispatchEvent('CartGoods.change.cartInfo.' + goods.sellerId + '.' + goods.id, goods.ordered());
-            });
-        });
-    };
-    self.Fill = function(data){
-        var info = new CartViewModel();
-        info.AddContent(data);
-        self.Render(info);
-    };
-    self.Render = function(data){
-        if ($('#' + self.settings.containerId).length > 0) {
-            try{
-                ko.cleanNode($('#' + self.settings.containerId)[0]);
-                ko.applyBindings(data, $('#' + self.settings.containerId)[0]);
-                self.WidgetLoader(true, self.settings.containerId);
-                if(typeof AnimateCart == 'function')
-                    new AnimateCart();
-                if (self.settings.animate)
-                    self.settings.animate();
-            }
-            catch (e) {
-                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
-                if (self.settings.tmpl.custom) {
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                        self.InsertContainer.Main();
-                        self.Render(data);
+        else {
+            self.BaseLoad.CartInfo('', function (data) {
+                if (settings.showBlocks.fullInfo) {
+                    self.BaseLoad.CartGoods('', function (goods) {
+                        InsertContainerMain();
+                        Fill({info: data, goods: goods});
                     });
                 }
                 else {
-                    self.InsertContainer.EmptyWidget();
-                    self.WidgetLoader(true, self.settings.containerId);
-                }
-            }
-        }
-        else {
-            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-            self.WidgetLoader(true, self.settings.containerId);
-        }
-    };
-    self.SetPosition = function(){
-        if(self.settings.inputParameters['position'] == 'absolute'){
-            for(var key in self.settings.inputParameters){
-                if(self.settings.style[key])
-                    self.settings.style[key] = self.settings.inputParameters[key];
-            }
-            $().ready(function(){
-                if($("#" + self.settings.containerId).length > 0){
-                    $("#" + self.settings.containerId).css(self.settings.style);
+                    InsertContainerMain();
+                    Fill({info: data});
                 }
             });
         }
-    };
+    }
+    function LoadTmpl() {
+        self.BaseLoad.Tmpl(settings.tmpl, function () {
+            CheckRoute();
+        });
+    }
+    function RegisterEvents() {
+        self.AddEvent('w.auth.ok', function () {
+            LoadTmpl();
+        });
+
+        self.AddEvent('w.change.route', function (data) {
+            LoadTmpl();
+        });
+
+        self.AddEvent('widgets.cart.infoUpdate', function (data) {
+            LoadTmpl();
+        });
+        self.AddEvent('widgets.cart.clear', function (data) {
+            var goodsId = data.goodsId ? data.goodsId : false;
+            self.BaseLoad.ClearCart(data.sellerId, goodsId, function () {
+                self.DispatchEvent('CartGoods.clear.cartInfo.' + data.sellerId + '.' + goodsId);
+            });
+        });
+        self.AddEvent('Cart.change.count', function (goods) {
+            self.BaseLoad.AddGoodsToCart(goods.id, goods.sellerId, goods.ordered(), function (data) {
+                goods.sellCost(data.sell_cost);
+                goods.sellEndCost(data.sell_end_cost);
+                self.DispatchEvent('CartGoods.change.cartInfo.' + goods.sellerId + '.' + goods.id, goods.ordered());
+            });
+        });
+    }
+    function Fill(data) {
+        var info = new CartViewModel(settings);
+        info.AddContent(data);
+        Render(info);
+    }
+    function Render(data) {
+        self.RenderTemplate(data, settings, null,
+            function(data){
+                InsertContainerMain();
+                Render(data);
+            },
+            function(){
+                InsertContainerEmptyWidget();
+            }
+        );
+    }
 };
 
-var CartViewModel = function(){
+var CartViewModel = function (settings) {
     var self = this;
-    self.title = Config.Cart.title;
+    self.title = settings.message.title;
     self.goods = ko.observableArray();
-    self.isAuthorized = ko.computed(function(){
-        if(Parameters.cache.userInformation && !Parameters.cache.userInformation.err)
+    self.isAuthorized = ko.computed(function () {
+        if (Parameters.cache.userInformation && !Parameters.cache.userInformation.err)
             return true;
         return false;
     }, this);
-    self.ShowTitle = ko.computed(function(){
-        if(Config.Cart.showBlocks.title == 'never')
+    self.ShowTitle = ko.computed(function () {
+        if (settings.showBlocks.title == 'never')
             return false;
-        if(Config.Cart.showBlocks.title == 'always')
+        if (settings.showBlocks.title == 'always')
             return true;
-        if(Config.Cart.showBlocks.title == 'empty'){
+        if (settings.showBlocks.title == 'empty') {
             return true;
         }
         return false;
     }, this);
     self.count = ko.observable(0);
-    self.ShowCount = ko.computed(function(){
-        if(Config.Cart.showBlocks.count && self.count() > 0){
+    self.ShowCount = ko.computed(function () {
+        if (settings.showBlocks.count && self.count() > 0) {
             return true;
         }
         return false;
-    },this);
+    }, this);
     self.baseCost = ko.observable(0);
-    self.ShowBaseCost = ko.computed(function(){
-        if(Config.Cart.showBlocks.baseCost && self.baseCost() > 0 && self.baseCost() > self.finalCost())
+    self.ShowBaseCost = ko.computed(function () {
+        if (settings.showBlocks.baseCost && self.baseCost() > 0 && self.baseCost() > self.finalCost())
             return true;
         return false;
-    },this);
+    }, this);
     self.finalCost = ko.observable(0);
-    self.ShowFinalCost = ko.computed(function(){
-        if(Config.Cart.showBlocks.finalCost && self.finalCost() > 0)
+    self.ShowFinalCost = ko.computed(function () {
+        if (settings.showBlocks.finalCost && self.finalCost() > 0)
             return true;
         return false;
-    },this);
-    self.ShowFullInfo = ko.computed(function(){
-        if(Config.Cart.showBlocks.fullInfo && self.goods().length > 0)
+    }, this);
+    self.ShowFullInfo = ko.computed(function () {
+        if (settings.showBlocks.fullInfo && self.goods().length > 0)
             return true;
         return false;
-    },this);
+    }, this);
 
-    self.AddContent = function(data){
+    self.AddContent = function (data) {
         var info = data.info;
         var goods = data.goods;
-        if(!info.err){
+        if (!info.err) {
             self.count(info.count);
             self.baseCost(info.base_cost);
             self.finalCost(info.final_cost);
         }
-        if(goods && !goods.err){
+        if (goods && !goods.err) {
             ShortBlockCartGoodsSellersViewModel.prototype = new Widget();
-            $.each(goods, function(i){
-                $.each(goods[i].goods, function(j){
-                    self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i].goods[j], goods[i].seller.id, self));
+            $.each(goods, function (i) {
+                $.each(goods[i].goods, function (j) {
+                    self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i].goods[j], goods[i].seller.id, self, settings));
                 });
             });
         }
     };
-    self.ClickCart = function(){
-        if(self.count() > 0){
-            Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
-            Routing.SetHash('cart', Config.CartGoods.title, {});
+    self.ClickCart = function () {
+        if (self.count() > 0) {
+            Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 1];
+            Routing.SetHash('cart', settings.message.cartGoodsTitle, {});
         }
     };
-    self.ClickIssueOrder = function(){
-        if(self.count() > 0){
+    self.ClickIssueOrder = function () {
+        if (self.count() > 0) {
             Routing.SetHash('order', 'Оформление заказа', {create: 'fromCart', sellerId: self.sellerInfo.shop.id});
         }
     };
 };
 
-var ShortBlockCartGoodsSellersViewModel = function(data, sellerId, cart){
+var ShortBlockCartGoodsSellersViewModel = function (data, sellerId, cart, settings) {
     var self = this;
     self.id = data.id;
     self.fullName = data.full_name;
@@ -251,57 +210,63 @@ var ShortBlockCartGoodsSellersViewModel = function(data, sellerId, cart){
     self.routeBigImages = data.route_big_image;
     self.ordered = ko.observable(self.count);
     self.sellerId = sellerId;
-    self.sum = ko.computed(function(){
+    self.sum = ko.computed(function () {
         return (self.ordered() * self.sellCost()).toFixed(2);
     }, this);
-    self.endSum = ko.computed(function(){
+    self.endSum = ko.computed(function () {
         return (self.ordered() * self.sellEndCost()).toFixed(2);
     }, this);
-    self.CartItog = ko.computed(function(){
+    self.CartItog = ko.computed(function () {
         var itog = 0;
-        $.each(cart.goods(), function(i){
+        $.each(cart.goods(), function (i) {
             itog = itog + parseInt(cart.goods()[i].endSum(), 10);
         });
         cart.finalCost(itog);
         return itog;
     }, this);
-    self.ClickPlus = function(){
-        if(self.ordered() < self.countReserv){
+    self.ClickPlus = function () {
+        if (self.ordered() < self.countReserv) {
             self.ordered(self.ordered() + 1);
             self.CartItog();
             cart.count(cart.count() + 1);
-            EventDispatcher.DispatchEvent('Cart.change.count', self);
+            DispatchEvent('Cart.change.count', self);
         }
         else
-            self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
+            self.ShowMessage(settings.message.maxIsReached, false, false);
     };
-    self.ClickMinus = function(){
-        if(self.ordered() > 0){
+    self.ClickMinus = function () {
+        if (self.ordered() > 0) {
             self.ordered(self.ordered() - 1);
             self.CartItog();
-            cart.count(cart.count()- 1);
-            EventDispatcher.DispatchEvent('Cart.change.count', self);
+            cart.count(cart.count() - 1);
+            DispatchEvent('Cart.change.count', self);
         }
     };
-    self.ClickGoods = function(){
-        Routing.SetHash('goods', self.fullName, {id : self.id});
+    self.ClickGoods = function () {
+        Routing.SetHash('goods', self.fullName, {id: self.id});
     };
-    self.ClickRemove = function(){
-        EventDispatcher.DispatchEvent('widgets.cart.clear', {goodsId:self.id, sellerId: sellerId});
+    self.ClickRemove = function () {
+        DispatchEvent('widgets.cart.clear', {goodsId: self.id, sellerId: sellerId});
         cart.goods.remove(self);
-        cart.count(cart.count()- self.ordered());
+        cart.count(cart.count() - self.ordered());
     };
+
+    function DispatchEvent(name, data){
+        EventDispatcher.DispatchEvent(name, data);
+    }
 }
 
 var TestCart = {
-    Init : function(){
-        if(typeof Widget == 'function'){
+    Init: function () {
+        if (typeof Widget == 'function') {
             CartWidget.prototype = new Widget();
             var cart = new CartWidget();
             cart.Init(cart);
         }
-        else{
-            setTimeout(function(){TestCart.Init()}, 100);
+        else {
+            setTimeout(function () {
+                TestCart.Init()
+            }, 100);
         }
     }
 }

@@ -149,7 +149,7 @@ var OrderViewModel = function(settings){
         self.discountSum = ko.observable(diff);
         
         self.ClickConfirm = function(){
-            EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', {comment: self.commentBuyer()});
+            EventDispatcher.DispatchEvent('Order.step5.confirm', {comment: self.commentBuyer()});
         };
         self.ClickRefresh = function(){
             Routing.SetHash('purchases', 'Мои покупки', {block:'detail', id: self.id()})

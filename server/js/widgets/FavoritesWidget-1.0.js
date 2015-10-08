@@ -1,4 +1,4 @@
-var FavoritesWidget = function() {
+var FavoritesWidget = function () {
     var self = this;
     self.widgetName = 'FavoritesWidget';
     self.version = 1.0;
@@ -7,263 +7,229 @@ var FavoritesWidget = function() {
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
     self.favorites = null;
-    self.settings = {
+    self.InitWidget = InitWidget;
+
+    var settings = {
+        container: {widget: 'content', def: 'defaultFavoritesWidgetId'},
+        title : 'Избранное',
         tmpl : {
-            path: null,
-            id : {
-                content : null,
-                empty : null
+            path : "favoritesTmpl.html", // файл шаблонов
+            id: {
+                content: "favoritesTmpl",//id шаблона формы авторизации
+                empty : "emptyFavoritesTmpl"
             }
         },
-        animate: null,
-        showBlocks : null,
-        inputParameters: {},
-        style: null,
-        containerId: null,
-        customContainer: null
+        showBlocks : ['infoShop','addToCart','buy'],
+        message :{
+            clearGoods : 'Выбранные товары удалены из избранного.',
+            failClearGoods : 'Произошла ошибка при удалении товара из избранного. Попробуйте еще раз.',
+            confirmButchRemove : 'Вы уверены, что хотите удалить выбранный товар из избранного?',
+            confirmRemove : 'Вы уверены что хотите удалить товар из избранного?',
+            confirmClearFavorites : "Вы уверены, что хотите очистить избранное от товаров?"
+        },
+        animate: typeof AnimateFavorite == 'function' ? AnimateFavorite : null
     };
-    self.InitWidget = function() {
-        self.settings.containerId = Config.Containers.favorites.widget;
-        self.settings.customContainer = Config.Containers.favorites.customClass;
-        self.settings.tmpl = Config.Favorites.tmpl;
-        self.settings.showBlocks = Config.Favorites.showBlocks;
-        self.settings.style = Config.Favorites.style;
-        self.RegisterEvents();
-        self.SetInputParameters();
-        self.CheckRouteFavorites();
-        self.SetPosition();
-    };
-    self.SetInputParameters = function() {
-        var input = {};
-        if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/FavoritesWidget/);
-            if(temp.favorites){
-                input = temp.favorites;
-            }
-        }
-        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.favorites){
-            input = WParameters.favorites;
-        }
-        
-        if(!$.isEmptyObject(input)){
+    function InitWidget() {
+        RegisterEvents();
+        SetInputParameters();
+        CheckRouteFavorites();
+    }
+
+    function SetInputParameters() {
+        var input = self.GetInputParameters('favorites');
+
+        if (!$.isEmptyObject(input)) {
+            settings = self.UpdateSettings1(settings, input);
             if (input.show) {
-                for (var i = 0; i <= self.settings.showBlocks.length - 1; i++) {
-                    if ($.inArray(self.settings.showBlocks[i], input.show) < 0)
-                       self.settings.showBlocks.splice(self.settings.showBlocks.indexOf(self.settings.showBlocks[i]), 1);
+                for (var i = 0; i <= settings.showBlocks.length - 1; i++) {
+                    if ($.inArray(settings.showBlocks[i], input.show) < 0)
+                        settings.showBlocks.splice(settings.showBlocks.indexOf(settings.showBlocks[i]), 1);
                 }
             }
-            if(input.animate)
-                self.settings.animate = input.animate;
         }
-        self.settings.inputParameters = input;
-    };
-    self.CheckRouteFavorites = function() {
+
+        Config.Favorites = settings;
+    }
+
+    function CheckRouteFavorites() {
         if (Routing.route == 'favorites') {
-            self.BaseLoad.Login(false, false, false, function(data){
-                if(!data.err){
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        self.Update.Menu();
-                        self.Update.Content();
+            self.BaseLoad.Login(false, false, false, function (data) {
+                if (!data.err) {
+                    self.BaseLoad.Tmpl(settings.tmpl, function () {
+                        UpdateMenu();
+                        UpdateContent();
                     });
                 }
-                else{
-                    Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length-1];
+                else {
+                    Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 1];
                     Routing.SetHash('login', 'Авторизация пользователя', {});
                     self.WidgetLoader(true);
-                }  
+                }
             });
         }
-        else {
+        else
             self.WidgetLoader(true);
-        }
-    };
-    self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('w.change.route', function() {
-            self.CheckRouteFavorites();
+    }
+
+    function RegisterEvents() {
+        self.AddEvent('w.change.route', function () {
+            CheckRouteFavorites();
         });
-        
-        EventDispatcher.AddEventListener('Favorites.empty', function() {
-            self.InsertContainer.EmptyFaforites();
-            self.Render.EmptyFaforites();
+
+        self.AddEvent('Favorites.empty', function () {
+            InsertContainerEmptyFaforites();
+            RenderEmptyFaforites();
         });
-        
-        EventDispatcher.AddEventListener('Favorites.clear.one', function(opt) {
+
+        self.AddEvent('Favorites.clear.one', function (opt) {
             var str = '?idGoods=' + opt.goods.id;
-            self.BaseLoad.ClearFavorite(str, function(data){
-                if(data.result == 'ok'){
-                    self.ShowMessage(Config.Favorites.message.clearGoods,function(){
+            self.BaseLoad.ClearFavorite(str, function (data) {
+                if (data.result == 'ok') {
+                    self.ShowMessage(settings.message.clearGoods, function () {
                         opt.block.goods.remove(opt.goods);
-                        if(opt.block.goods().length == 0){
+                        if (opt.block.goods().length == 0) {
                             opt.content.content.remove(opt.block);
-                            if(opt.content.content().length == 0){
-                                EventDispatcher.DispatchEvent('Favorites.empty'); 
+                            if (opt.content.content().length == 0) {
+                                self.DispatchEvent('Favorites.empty');
                             }
                         }
                     }, false);
                 }
-                else{
-                    if(!data.err)
-                        data.err = Config.Favorites.message.failClearGoods;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear.one', opt)})
+                else {
+                    if (!data.err)
+                        data.err = settings.message.failClearGoods;
+                    self.QueryError(data, function () {
+                        self.DispatchEvent('Favorites.clear.one', opt)
+                    })
                 }
             })
         });
-        
-        EventDispatcher.AddEventListener('Favorites.clear.all', function(opt) {
+
+        self.AddEvent('Favorites.clear.all', function (opt) {
             var str = '?idGoods=' + opt.ids;
-            self.BaseLoad.ClearFavorite(str, function(data){
-                if(data.result == 'ok'){
-                    self.ShowMessage(Config.Favorites.message.clearGoods,function(){
-                        for(var i in opt.goods){
+            self.BaseLoad.ClearFavorite(str, function (data) {
+                if (data.result == 'ok') {
+                    self.ShowMessage(settings.message.clearGoods, function () {
+                        for (var i in opt.goods) {
                             opt.block.goods.remove(opt.goods[i]);
                         }
 
-                        if(opt.block.goods().length == 0)
+                        if (opt.block.goods().length == 0)
                             opt.content.content.remove(opt.block);
-        
-                        if(opt.content.content().length == 0)
-                            EventDispatcher.DispatchEvent('Favorites.empty'); 
+
+                        if (opt.content.content().length == 0)
+                            self.DispatchEvent('Favorites.empty');
                     }, false);
                 }
-                else{
-                    if(!data.err)
-                        data.err = Config.Favorites.message.failClearGoods;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('Favorites.clear.all', opt)})
+                else {
+                    if (!data.err)
+                        data.err = settings.message.failClearGoods;
+                    self.QueryError(data, function () {
+                        self.DispatchEvent('Favorites.clear.all', opt)
+                    })
                 }
             })
         });
     }
-    self.Update = {
-        Content : function(){
-            self.WidgetLoader(false);
-            self.BaseLoad.InfoFavorite('yes', function(data){
-                if(!data.err){
-                    self.InsertContainer.Content();
-                    self.Fill.Content(data);
-                }
-                else{
-                    self.InsertContainer.EmptyFaforites();
-                    self.Render.EmptyFaforites();
-                }
-            });
-        },
-        Menu : function(){
-            self.BaseLoad.Script('widgets/MenuPersonalCabinetWidget-1.1.js', function(){
-                EventDispatcher.DispatchEvent('w.onload.menu', {menu : {}, active : ''});
-            });
-        },
-    };
-    self.InsertContainer = {
-        EmptyWidget : function(){
-            var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.containerId).empty().html(temp);
-        },
-        Content : function(){
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('content')).html()).children().hide();
-        },
-        EmptyFaforites :function(){
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('empty')).html()).children().hide();
-        }
-    };
-    self.Fill =  {
-        Content : function(data){
+
+    function UpdateContent() {
+        self.WidgetLoader(false);
+        self.BaseLoad.InfoFavorite('yes', function (data) {
+            if (!data.err) {
+                InsertContainerContent();
+                fill.Content(data);
+            }
+            else {
+                InsertContainerEmptyFaforites();
+                RenderEmptyFaforites();
+            }
+        });
+    }
+
+    function UpdateMenu() {
+        self.BaseLoad.Script(PokupoWidgets.model.menu, function () {
+            self.DispatchEvent('w.onload.menu', {menu: {}, active: ''});
+        });
+    }
+
+
+    function InsertContainerEmptyWidget() {
+        self.ClearContainer(settings);
+    }
+
+    function InsertContainerContent() {
+        self.InsertContainer(settings, 'content');
+    }
+
+    function InsertContainerEmptyFaforites() {
+        self.InsertContainer(settings, 'empty');
+    }
+
+    var fill = {
+        Content: function (data) {
             var content = new FavoritesViewModel();
-            for(var j in data){
+            for (var j in data) {
                 BlockFavoritesForSellerViewModel.prototype = new Widget();
-                self.favorites = new BlockFavoritesForSellerViewModel(content);
-                for(var key in data[j]){
-                    if(typeof self.Fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()] == 'function')
-                        self.Fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()](data[j][key]);
+                self.favorites = new BlockFavoritesForSellerViewModel(content, settings);
+                for (var key in data[j]) {
+                    if (typeof fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()] == 'function')
+                        fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()](data[j][key]);
                 }
                 content.AddContent(self.favorites);
             }
 
-            self.Render.Content(content);
+            RenderContent(content);
         },
-        Goods : function(data){
+        Goods: function (data) {
             self.favorites.AddContent(data);
         },
-        Seller : function(data){
+        Seller: function (data) {
             self.favorites.sellerInfo['seller'] = data;
         },
-        Shop : function(data){
+        Shop: function (data) {
             self.favorites.sellerInfo['shop'] = data;
         },
-        Operator : function(data){
+        Operator: function (data) {
             self.favorites.sellerInfo['operator'] = data;
         },
-        Final_cost : function(data){
+        Final_cost: function (data) {
             self.favorites.finalCost = data;
         }
-    };
-    self.Render = {
-        Content : function(data){
-            if($("#" + self.settings.containerId).length > 0){
-                try{
-                    ko.cleanNode($("#" + self.settings.containerId)[0]);
-                    ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                    self.WidgetLoader(true, self.settings.containerId);
-                    if(typeof AnimateFavorite == 'function')
-                        new AnimateFavorite();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('content') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Content();
-                            self.Render.Content(data);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
+    }
+
+    function RenderContent(data) {
+        self.RenderTemplate(data, settings, null,
+            function(data){
+                InsertContainerContent();
+                RenderContent(data);
+            },
+            function(){
+                InsertContainerEmptyWidget();
             }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true, self.settings.containerId);
-            }
-        },
-        EmptyFaforites : function(){
-            self.WidgetLoader(true, self.settings.containerId);
-            if(self.settings.animate)
-                self.settings.animate();
-        }
-    };
-    self.SetPosition = function() {
-        if (self.settings.inputParameters['position'] == 'absolute') {
-            for (var key in self.settings.inputParameters) {
-                if (self.settings.style[key])
-                    self.settings.style[key] = self.settings.inputParameters[key];
-            }
-            $().ready(function() {
-                if ($('#' + self.settings.containerId).length > 0)
-                    $('#' + self.settings.containerId).css(self.settings.style);
-            });
-        }
-    };
+        );
+    }
+
+    function RenderEmptyFaforites() {
+        self.WidgetLoader(true, settings.container.widget);
+        if (settings.animate)
+            settings.animate();
+    }
 };
 
-var FavoritesViewModel = function(){
+var FavoritesViewModel = function () {
     var self = this;
     self.content = ko.observableArray();
-    self.AddContent = function(data){
+    self.AddContent = function (data) {
         self.content.push(data);
     };
 };
 
-var BlockFavoritesForSellerViewModel = function(content){
+var BlockFavoritesForSellerViewModel = function (content, settings) {
     var self = this;
 
     self.sellerInfo = {};
-    self.showSellerInfo = ko.computed(function(){
-        if($.inArray('infoShop', Config.Favorites.showBlocks) >= 0)
+    self.showSellerInfo = ko.computed(function () {
+        if ($.inArray('infoShop', settings.showBlocks) >= 0)
             return true;
         return false;
     }, this);
@@ -272,83 +238,99 @@ var BlockFavoritesForSellerViewModel = function(content){
     self.uniq = EventDispatcher.GetUUID();
     self.cssSelectAll = "cartGoodsSelectAll_" + self.uniq;
     self.isSelectedAll = ko.observable(false);
-    self.isSelectedAll.subscribe(function(check) {
-        ko.utils.arrayForEach(self.goods(), function(goods) {
-            $('#' + goods.cssCheckboxGoods )[0].checked = check;
+    self.isSelectedAll.subscribe(function (check) {
+        ko.utils.arrayForEach(self.goods(), function (goods) {
+            $('#' + goods.cssCheckboxGoods)[0].checked = check;
             goods.isSelected(check);
         });
     });
-    self.ClickSelectAll = function(){
+    self.ClickSelectAll = function () {
         var all = $('#' + self.cssSelectAll);
         var check = all.is(':checked');
         var val;
-        if(check){
+        if (check) {
             all[0].checked = false;
             val = false;
         }
-        else{
+        else {
             all[0].checked = true;
             val = true;
         }
-        
-        ko.utils.arrayForEach(self.goods(), function(goods) {
-            $('#' + goods.cssCheckboxGoods )[0].checked = val;
+
+        ko.utils.arrayForEach(self.goods(), function (goods) {
+            $('#' + goods.cssCheckboxGoods)[0].checked = val;
             goods.isSelected(val);
         });
     }
-    
-    self.AddContent = function(data){
-        for(var i = 0; i <= data.length-1; i++){
-           BlockFavoritesGoodsSellersViewModel.prototype = new Widget();
-           self.goods.push(new BlockFavoritesGoodsSellersViewModel(data[i], self, content));
+
+    self.AddContent = function (data) {
+        for (var i = 0; i <= data.length - 1; i++) {
+            BlockFavoritesGoodsSellersViewModel.prototype = new Widget();
+            self.goods.push(new BlockFavoritesGoodsSellersViewModel(data[i], self, content, settings));
         }
         self.finalCost = data.final_cost;
     };
-    self.ClickButchRemove = function(){
-        self.Confirm(Config.Favorites.message.confirmButchRemove, function(){
+    self.ClickButchRemove = function () {
+        self.Confirm(settings.message.confirmButchRemove, function () {
             var checkedGoods = [];
             var removedGoods = [];
-            var count = self.goods().length-1;
+            var count = self.goods().length - 1;
 
-            for(var i = 0; i <= count; i++) {
-                if(self.goods()[i].isSelected()){
-                  checkedGoods.push(self.goods()[i].id);
-                  removedGoods.push(self.goods()[i]);
+            for (var i = 0; i <= count; i++) {
+                if (self.goods()[i].isSelected()) {
+                    checkedGoods.push(self.goods()[i].id);
+                    removedGoods.push(self.goods()[i]);
                 }
-            };
+            }
 
-            EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:checkedGoods, goods:removedGoods, content:content, block:self});
+            DispatchEvent('Favorites.clear.all', {
+                ids: checkedGoods,
+                goods: removedGoods,
+                content: content,
+                block: self
+            });
         })
     };
-    self.ClickClearFavorites = function(){
-        self.Confirm(Config.Favorites.message.confirmClearFavorites, function(){
-            var count = self.goods().length-1;
+    self.ClickClearFavorites = function () {
+        self.Confirm(settings.message.confirmClearFavorites, function () {
+            var count = self.goods().length - 1;
             var removedGoods = [];
             var removedGoodsIds = [];
-            for(var i = 0; i <= count; i++) {
-                  removedGoods.push(self.goods()[i]);
-                  removedGoodsIds.push(self.goods()[i].id);
-            };
+            for (var i = 0; i <= count; i++) {
+                removedGoods.push(self.goods()[i]);
+                removedGoodsIds.push(self.goods()[i].id);
+            }
+            ;
             var ids = removedGoodsIds.join(',');
 
-            EventDispatcher.DispatchEvent('Favorites.clear.all', {ids:ids, goods:removedGoods, content:content, block:self});
+            DispatchEvent('Favorites.clear.all', {
+                ids: ids,
+                goods: removedGoods,
+                content: content,
+                block: self
+            });
         });
     };
-    self.DisabledButton = ko.computed(function(){
+    self.DisabledButton = ko.computed(function () {
         var countGoods = self.goods().length;
         var selectedGoods = [];
-        
-        for(var i = 0; i <= countGoods-1; i++) {
-            if(self.goods()[i].isSelected())
-              selectedGoods.push(self.goods()[i].id);
-        };
-        if(selectedGoods.length > 0)
+
+        for (var i = 0; i <= countGoods - 1; i++) {
+            if (self.goods()[i].isSelected())
+                selectedGoods.push(self.goods()[i].id);
+        }
+
+        if (selectedGoods.length > 0)
             return true;
         return false;
     }, this);
+
+    function DispatchEvent(name, data){
+        EventDispatcher.DispatchEvent(name, data);
+    }
 };
 
-var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
+var BlockFavoritesGoodsSellersViewModel = function (data, block, content, settings) {
     var self = this;
     self.sellerId = block.sellerInfo.seller.id;
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString() + '-' + self.id);
@@ -361,68 +343,80 @@ var BlockFavoritesGoodsSellersViewModel = function(data, block, content){
     self.routeImages = data.route_image;
     self.routeBigImages = data.route_big_image;
     self.isSelected = ko.observable(false);
-    self.isSelected.subscribe(function(check) {
+    self.isSelected.subscribe(function (check) {
         var countGoods = block.goods().length;
         var selectedGoods = [];
-        
-        for(var i = 0; i <= countGoods-1; i++) {
-            if(block.goods()[i].isSelected())
-              selectedGoods.push(block.goods()[i].id);
-        };
-        if(selectedGoods.length < countGoods)
-            $('#' + block.cssSelectAll )[0].checked = false;
+
+        for (var i = 0; i <= countGoods - 1; i++) {
+            if (block.goods()[i].isSelected())
+                selectedGoods.push(block.goods()[i].id);
+        }
+        ;
+        if (selectedGoods.length < countGoods)
+            $('#' + block.cssSelectAll)[0].checked = false;
         else
-            $('#' + block.cssSelectAll )[0].checked = true;
+            $('#' + block.cssSelectAll)[0].checked = true;
     });
     self.cssCheckboxGoods = 'goods_' + self.id;
-    self.ClickOrder = function(){
+    self.ClickOrder = function () {
         var checkBox = $('#' + self.cssCheckboxGoods);
         var isChecked = checkBox.is(':checked');
-        if(isChecked == false){
+        if (isChecked == false) {
             checkBox[0].checked = true;
             self.isSelected(true);
         }
-        else{
+        else {
             checkBox[0].checked = false;
             self.isSelected(false);
         }
     }
-    self.showAddToCart = ko.computed(function(){
-        if($.inArray('addToCart', Config.Favorites.showBlocks) >= 0)
+    self.showAddToCart = ko.computed(function () {
+        if ($.inArray('addToCart', settings.showBlocks) >= 0)
             return true;
         return false;
     }, this);
-    
-    self.AddToCart = function(){
-        EventDispatcher.DispatchEvent('w.cart.add', {goodsId : self.id, hash : self.uniq})
+
+    self.AddToCart = function () {
+        DispatchEvent('w.cart.add', {goodsId: self.id, hash: self.uniq})
     };
-    self.showBuy = ko.computed(function(){
-        if($.inArray('buy', Config.Favorites.showBlocks) >= 0)
+    self.showBuy = ko.computed(function () {
+        if ($.inArray('buy', settings.showBlocks) >= 0)
             return true;
         return false;
     }, this);
-    self.Buy = function(){
-        Routing.SetHash('order', 'Оформление заказа', {create: 'directly', sellerId: self.sellerId, goodsId: self.id, count: 1});
-    };
-    self.ClickGoods = function(){
-        Routing.SetHash('goods', self.fullName, {id : self.id});
-    };
-    self.ClickRemove = function(){
-        self.Confirm(Config.Favorites.message.confirmRemove, function(){
-            EventDispatcher.DispatchEvent('Favorites.clear.one', {goods:self, block:block, content:content});
+    self.Buy = function () {
+        Routing.SetHash('order', 'Оформление заказа', {
+            create: 'directly',
+            sellerId: self.sellerId,
+            goodsId: self.id,
+            count: 1
         });
     };
+    self.ClickGoods = function () {
+        Routing.SetHash('goods', self.fullName, {id: self.id});
+    };
+    self.ClickRemove = function () {
+        self.Confirm(settings.message.confirmRemove, function () {
+            DispatchEvent('Favorites.clear.one', {goods: self, block: block, content: content});
+        });
+    };
+
+    function DispatchEvent(name, data){
+        EventDispatcher.DispatchEvent(name, data);
+    }
 };
 
 var TestFavorites = {
-    Init : function(){
-        if(typeof Widget == 'function'){
+    Init: function () {
+        if (typeof Widget == 'function') {
             FavoritesWidget.prototype = new Widget();
             var favorites = new FavoritesWidget();
             favorites.Init(favorites);
         }
-        else{
-            setTimeout(function(){TestFavorites.Init()}, 100);
+        else {
+            setTimeout(function () {
+                TestFavorites.Init()
+            }, 100);
         }
     }
 }

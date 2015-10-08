@@ -19,28 +19,28 @@ var RegistrationFormViewModel = function() {
     self.submitEvent = ko.observable();
 
     self.SubmitForm = function() {
-        if (self.ValidationForm()) {
+        if (ValidationForm()) {
             EventDispatcher.DispatchEvent(self.submitEvent(), self);
         }
     };
-    self.ValidationForm = function() {
+    function ValidationForm() {
         var test = true;
-        if (!self.UsernameValidation())
+        if (!UsernameValidation())
             test = false;
-        if (!self.EmailValidation())
+        if (!EmailValidation())
             test = false;
-        if (!self.PhoneValidation())
+        if (!PhoneValidation())
             test = false;
-        if (!self.PasswordValidation())
+        if (!PasswordValidation())
             test = false;
-        if (!self.PasswordSecondValidation())
+        if (!PasswordSecondValidation())
             test = false;
-        if (!self.IsCheckedValidation())
+        if (!IsCheckedValidation())
             test = false;
 
         return test;
-    };
-    self.UsernameValidation = function() {
+    }
+    function UsernameValidation() {
         if (!self.username()) {
             self.errorUsername(Config.Registration.error.username.empty);
             return false;
@@ -59,8 +59,8 @@ var RegistrationFormViewModel = function() {
         }
         self.errorUsername(null);
         return true;
-    };
-    self.EmailValidation = function() {
+    }
+    function EmailValidation() {
         if (!self.email()) {
             self.errorEmail(Config.Registration.error.email.empty);
             return false;
@@ -75,8 +75,8 @@ var RegistrationFormViewModel = function() {
         }
         self.errorEmail(null);
         return true;
-    };
-    self.PhoneValidation = function() {
+    }
+    function PhoneValidation() {
         if (self.phone()) {
             if (!Config.Registration.regular.phone.test($.trim(self.phone()))) {
                 self.errorPhone(Config.Registration.error.phone.regular);
@@ -85,8 +85,8 @@ var RegistrationFormViewModel = function() {
         }
         self.errorPhone(null);
         return true;
-    };
-    self.PasswordValidation = function() {
+    }
+    function PasswordValidation() {
         self.firstPassword($('input#' + self.cssFirstPassword).val());
         if (!self.firstPassword()) {
             self.errorFirstPassword(Config.Registration.error.password.empty);
@@ -103,8 +103,8 @@ var RegistrationFormViewModel = function() {
 
         self.errorFirstPassword(null);
         return true;
-    };
-    self.PasswordSecondValidation = function() {
+    }
+    function PasswordSecondValidation() {
         self.secondPassword($('input#' + self.cssSecondPassword).val());
         if (!self.secondPassword()) {
             self.errorSecondPassword(Config.Registration.error.password.empty);
@@ -116,8 +116,8 @@ var RegistrationFormViewModel = function() {
         }
         self.errorSecondPassword(null);
         return true;
-    };
-    self.IsCheckedValidation = function() {
+    }
+    function IsCheckedValidation() {
         if (!self.isChecked()) {
             self.errorIsChecked(Config.Registration.error.isChecked.empty);
             return false;
@@ -162,21 +162,21 @@ var RegistrationConfirmFormViewModel = function(cache) {
     self.submitEvent = ko.observable();
 
     self.SubmitForm = function() {
-        if (self.ValidationForm()) {
+        if (ValidationForm()) {
             EventDispatcher.DispatchEvent(self.submitEvent(), self);
         }
     };
-    self.ValidationForm = function() {
+    function ValidationForm() {
         var test = true;
-        if (!self.EmailTokenValidation())
+        if (!EmailTokenValidation())
             test = false;
-        if (!self.PhoneTokenValidation())
+        if (!PhoneTokenValidation())
             test = false;
-        if (!self.EmptyConfirm())
+        if (!EmptyConfirm())
             test = false;
         return test;
-    };
-    self.EmailTokenValidation = function() {
+    }
+    function EmailTokenValidation() {
         self.mailToken($.trim(self.mailToken()));
         if (!self.mailConfirmLater()) {
             if (!self.mailToken()) {
@@ -187,8 +187,8 @@ var RegistrationConfirmFormViewModel = function(cache) {
 
         self.errorEmailConfirm(null);
         return true;
-    };
-    self.PhoneTokenValidation = function() {
+    }
+    function PhoneTokenValidation() {
         if (!self.phoneConfirmLater()) {
             if (!self.phoneToken()) {
                 self.errorPhoneConfirm(Config.Registration.error.phoneToken.empty);
@@ -198,8 +198,8 @@ var RegistrationConfirmFormViewModel = function(cache) {
 
         self.errorPhoneConfirm(null);
         return true;
-    };
-    self.EmptyConfirm = function() {
+    }
+    function EmptyConfirm() {
         if (self.phoneConfirmLater() && self.mailConfirmLater()) {
             self.errorConfirmLater(Config.Registration.error.confirmLater.empty);
             self.errorEmailConfirm(null);
@@ -210,7 +210,7 @@ var RegistrationConfirmFormViewModel = function(cache) {
             self.errorConfirmLater(null);
 
         return true;
-    };
+    }
     
     self.viewButtonSendToken = ko.observable(false);
     self.ShowButtonSendToken = function(){

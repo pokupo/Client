@@ -10,8 +10,11 @@ window.InfoSellerWidget = function () {
     self.InitWidget = InitWidget;
 
     var settings = {
-        tmpl: {},
-        animate: null,
+        tmpl: {
+            id : "infoSellerTmpl",
+            path : "infoSellerTmpl.html"
+        },
+        animate: typeof AnimateInfoSeller == 'function' ? AnimateInfoSeller : null,
         container: null,
         infoSeller: {},
         hash: null,
@@ -30,19 +33,6 @@ window.InfoSellerWidget = function () {
     }
     function SetParameters(data) {
         var params = data.options.params;
-
-        settings.tmpl = Config.InfoSeller.tmpl;
-        settings.container = data.element;
-        
-        var input = {};
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.infoSeller) {
-            input = WParameters.infoSeller;
-        }
-        if (!$.isEmptyObject(input)) {
-            if(input.animate)
-                settings.animate = input.animate;
-        }
-        
         for (var key in params) {
             if (key == 'tmpl' && params.tmpl) {
                 if (params.tmpl['path'])
@@ -57,23 +47,37 @@ window.InfoSellerWidget = function () {
             else
                 settings.infoSeller[key] = params[key];
         }
-        self.settings = settings;
+
+        settings.container = data.element;
+
+        var input = self.GetInputParameters('infoSeller');
+        if(!$.isEmptyObject(input)) {
+            settings = self.UpdateSettings1(settings, input);
+            if(input.show){
+                for(var i = 0; i <= input.show.length-1; i++){
+                    if(settings.show.hasOwnProperty(input.show[i]))
+                        settings.show[input.show[i]] = true;
+                }
+            }
+        }
+
+        Config.InfoSeller = settings;
         Parameters.cache.infoSellerCollection[params['uniq']] = true;
     }
     function LoadTmpl() {
         self.BaseLoad.Tmpl(settings.tmpl, function () {
             $.each(Parameters.cache.infoSellerCollection, function(i){
-                EventDispatcher.DispatchEvent('ISeller.tmpl.' + i);
+                self.DispatchEvent('ISeller.tmpl.' + i);
                 delete Parameters.cache.infoSellerCollection[i];
             })
         });
     }
     function RegisterEvents() {
-        EventDispatcher.AddEventListener('w.ready', function(){
+        self.AddEvent('w.ready', function(){
             LoadTmpl();
         });
 
-        EventDispatcher.AddEventListener('ISeller.tmpl.' + settings.hash, function (data) {
+        self.AddEvent('ISeller.tmpl.' + settings.hash, function (data) {
             if (settings.infoSeller['data']) {
                 InsertContainerContent();
                 Fill(settings.infoSeller['data'])
@@ -84,28 +88,26 @@ window.InfoSellerWidget = function () {
         });
     }
     function InsertContainerEmptyWidget() {
-        var temp = $(settings.container).find(self.SelectCustomContent().join(', ')).clone();
-        $(settings.container).empty().html(temp);
+        $(settings.container).empty().html('');
     }
     function InsertContainerContent() {
         InsertContainerEmptyWidget();
-        $(settings.container).append($('script#' + self.GetTmplName()).html());
+        $(settings.container).append($('script#' + self.GetTmplName1(settings)).html());
     }
     function Fill(data) {
         var info = new InfoSellerViewModel(data, settings.show);
         Render(info);
     }
     function Render(data) {
+        var container = $(settings.container);
         try {
-            ko.cleanNode($(settings.container).children()[0]);
-            ko.applyBindings(data, $(settings.container).children()[0]);
-            if(typeof AnimateInfoSeller == 'function')
-                new AnimateInfoSeller();
+            ko.cleanNode(container.children()[0]);
+            ko.applyBindings(data, container.children()[0]);
             if(settings.animate)
                 settings.animate();
         }
         catch (e) {
-            self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
+            self.Exception('Ошибка шаблона [' + self.GetTmplName1(settings) + ']', e);
             if (settings.tmpl.custom) {
                 delete settings.tmpl.custom;
                 self.BaseLoad.Tmpl(settings.tmpl, function () {

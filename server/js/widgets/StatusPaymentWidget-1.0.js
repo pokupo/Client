@@ -9,67 +9,35 @@ var StatusPaymentWidget = function () {
     self.InitWidget = InitWidget;
 
     var settings = {
-        container: null,
-        customContainer: null,
-        tmpl: {
-            path: null,
-            id: null
+        container: { widget: 'statusPaymentWidgetId', def: 'defaultStatusPaymentWidgetId'},
+        tmpl : {
+            path : 'statusPaymentTmpl.html', // файл шаблонов
+            id : 'statusPaymentPageTmpl' //id шаблона страницы статуса оплаты
         },
+        animate: typeof AnimateStatusPayment == 'function' ? AnimateStatusPayment : null,
         status: null,
         backUrl: ''
     };
     function InitWidget(){
-        settings.container = Config.Containers.statusPayment.widget;
-        settings.customContainer = Config.Containers.statusPayment.customClass;
-        settings.tmpl = Config.StatusPayment.tmpl;
-        RegisterEvents();
-        CheckRouteSearch();
         SetInputParameters();
+        RegisterEvents();
+        CheakRoute();
     }
     function SetInputParameters(){
-        var input = {};
-        if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/StatusPaymentWidget/);
-            if(temp.statusPayment){
-                input = temp.statusPayment;
-            }
-        }
-        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.statusPayment){
-            input = WParameters.statusPayment;
-        }
+        var input = self.GetInputParameters('statusPayment');
 
-        if(JSSettings.dev)
-            Logger.Console.VarDump(self.widgetName, "Input parameters", input);
+        if(!$.isEmptyObject(input))
+            settings = self.UpdateSettings1(settings, input);
 
-        if(!$.isEmptyObject(input)){
-
-            if(input.tmpl){
-                if(input.tmpl.path)
-                    settings.tmpl.path = input.tmpl.path;
-                if(input.tmpl.id)
-                    settings.tmpl.id = input.tmpl.id;
-            }
-            if(input.animate)
-                settings.animate = input.animate;
-
-            if (input.backUrl )
-                settings.backUrl  = input.backUrl;
-        }
-
-        if(JSSettings.dev)
-            Logger.Console.VarDump(self.widgetName, "Result settings", settings);
-
-        self.settings = settings;
+        Config.StatusPayment = settings;
     }
     function InsertContainerEmptyWidget(){
-        var temp = $("#" + settings.container).find(self.SelectCustomContent().join(', ')).clone();
-        $("#" + settings.container).empty().html(temp);
+        self.ClearContainer(settings);
     }
     function InsertContainerContent(){
-        InsertContainerEmptyWidget();
-        $("#" + settings.container).append($('script#' + self.GetTmplName()).html()).children().hide();
+        self.InsertContainer(settings);
     }
-    function CheckRouteSearch(){
+    function CheakRoute(){
         if(Routing.route == 'status_payment'){
             var orderId = $.cookie(Config.Base.cookie.orderId);
             var mailUser = $.cookie(Config.Base.cookie.userEmail);
@@ -88,20 +56,20 @@ var StatusPaymentWidget = function () {
                 });
             }
             else{
-                self.WidgetLoader(true, settings.container);
+                self.WidgetLoader(true, settings.container.widget);
                 alert('Нет параметров инициализации!');
             }
         }
         else{
-            self.WidgetLoader(true, settings.container);
+            self.WidgetLoader(true, settings.container.widget);
         }
     }
     function RegisterEvents(){
-        EventDispatcher.AddEventListener('w.change.route', function (data){
-            CheckRouteSearch();
+        self.AddEvent('w.change.route', function (data){
+            CheakRoute();
         });
-        EventDispatcher.AddEventListener('StatusPaymentWidget.update', function (data){
-            CheckRouteSearch();
+        self.AddEvent('StatusPaymentWidget.update', function (data){
+            CheakRoute();
         });
     }
     function Fill(data1, data2){
@@ -110,35 +78,15 @@ var StatusPaymentWidget = function () {
         Render(info);
     }
     function Render(data){
-        if ($('#' + settings.container).length > 0) {
-            try{
-                ko.cleanNode($('#' + settings.container)[0]);
-                ko.applyBindings(data, $('#' + settings.container)[0]);
-                self.WidgetLoader(true, settings.container);
-                if(typeof AnimateStatusPayment == 'function')
-                    new AnimateStatusPayment();
-                if (settings.animate)
-                    settings.animate();
+        self.RenderTemplate(data, settings, null,
+            function(data){
+                InsertContainerContent();
+                Render(data);
+            },
+            function(){
+                InsertContainerEmptyWidget();
             }
-            catch (e) {
-                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
-                if (settings.tmpl.custom) {
-                    delete settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(settings.tmpl, function () {
-                        InsertContainerContent();
-                        Render(data);
-                    });
-                }
-                else {
-                    InsertContainerEmptyWidget();
-                    self.WidgetLoader(true, settings.container);
-                }
-            }
-        }
-        else {
-            self.Exception('Ошибка. Не найден контейнер [' + settings.container + ']');
-            self.WidgetLoader(true, settings.container);
-        }
+        );
     }
 }
 

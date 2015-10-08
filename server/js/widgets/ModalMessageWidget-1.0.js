@@ -6,151 +6,116 @@ var ModalMessageWidget = function (type, message, callbackOk, callbackFail, hide
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
+    self.InitWidget = InitWidget;
+
+    var settings = {
         tmpl: {
-            path: null,
+            path: "modalMessageTmpl.html", // файл шаблонов
             id: {
-                confirm: null,
-                success: null,
-                error: null,
-                message: null
+                confirm: 'modalMessageConfirmTmpl',
+                success: 'modalMessageSuccessTmpl',
+                error: 'modalMessageErrorTmpl',
+                message: 'modalMessageMessageTmpl'
             }
         },
-        animate: null,
-        inputParameters: {},
-        containerId: null,
-        customContainer: null
+        animate: typeof AnimateModalMessage == 'function' ? AnimateModalMessage : null
     };
-    self.InitWidget = function () {
-        self.settings.tmpl = Config.ModalMessage.tmpl;
-        self.RegisterEvents();
-        self.SetInputParameters();
-        self.LoadTmpl();
-    };
-    self.SetInputParameters = function () {
-        var input = {};
-        if (Config.Base.sourceParameters == 'string') {
-            var temp = JSCore.ParserInputParameters(/ModalMessageWidget/);
-            if (temp.modalMessage) {
-                input = temp.modalMessage;
-            }
-        }
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.modalMessage) {
-            input = WParameters.modalMessage;
-        }
 
-        if(JSSettings.dev)
-            Logger.Console.VarDump(self.widgetName, "Input parameters", input);
+    function InitWidget() {
+        RegisterEvents();
+        SetInputParameters();
+        LoadTmpl();
+    }
+
+    function SetInputParameters() {
+        var input = self.GetInputParameters('modalMessage');
 
         if (!$.isEmptyObject(input)) {
-            if (input.animate)
-                self.settings.animate = input.animate;
-            if(input.tmpl){
-                if(input.tmpl.path)
-                    self.settings.tmpl.path = input.tmpl.path;
-                if(input.tmpl.id){
-                    for(var key in input.tmpl.id){
-                        self.settings.tmpl.id[key] = input.tmpl.id[key];
-                    }
-                }
-            }
+            settings = self.UpdateSettings1(settings, input);
         }
 
-        self.settings.inputParameters = input;
-    };
-    self.RegisterEvents = function () {
-        EventDispatcher.AddEventListener('w.change.route', function (data){
+        Config.ModalMessage = settings;
+    }
+
+    function RegisterEvents() {
+        self.AddEvent('w.change.route', function (data) {
             self.WidgetLoader(true);
         });
-    };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-            self.CreateWindow();
-        });
-    };
-    self.CreateWindow = function(){
-        self.InsertContainer.NewModal();
-        self.Fill(message);
-    };
-    self.InsertContainer = {
-        ClearWindow: function(){
-            var modal = $('#pokupoModalMessage');
-            if(modal.length > 0) {
-                modal.children().remove();
-            }
-            else{
-                $('body').append($('<div id="pokupoModalMessage"></div>'));
-            }
-        },
-        NewModal: function(){
-            self.InsertContainer.ClearWindow();
-            $('#pokupoModalMessage').html($('script#' + self.GetTmplName(type)).html());
-        }
-    };
-    self.Fill = function(){
-        var modal = new ModalMessageViewModel(message, callbackOk, callbackFail, hide);
-        self.Render(modal);
-    };
-    self.Render = function(data){
-        if ($("#" + data.idWindow).length > 0) {
-            try{
-                ko.cleanNode($("#" + data.idWindow)[0]);
-                ko.applyBindings(data, $("#" + data.idWindow)[0]);
-                $("#" + data.idWindow).children().show();
-                self.WidgetLoader(true);
-                if(typeof AnimateModalMessage == 'function')
-                    new AnimateModalMessage();
-                if(self.settings.animate)
-                    self.settings.animate();
+    }
 
-                if(hide){
-                    setTimeout(function(){
+    function LoadTmpl() {
+        self.BaseLoad.Tmpl(settings.tmpl, function () {
+            CreateWindow();
+        });
+    }
+
+    function CreateWindow() {
+        var modal = Fill(message);
+        InsertContainerNewModal(modal);
+        Render(modal);
+    }
+
+    function InsertContainerClearWindow(data) {
+        var modal = $('#' + data.idWindow);
+        if (modal.length > 0) {
+            modal.children().remove();
+        }
+        else {
+            $('body').append($('<div id="' + data.idWindow + '"></div>'));
+        }
+    }
+
+    function InsertContainerNewModal(modal) {
+        InsertContainerClearWindow(modal);
+        $('#' + modal.idWindow).html($('script#' + self.GetTmplName1(settings, type)).html());
+    }
+
+    function Fill() {
+        return new ModalMessageViewModel(message, callbackOk, callbackFail, hide);
+    }
+
+    function Render(data) {
+        self.RenderTemplate(data, settings,
+            function () {
+                if (hide) {
+                    setTimeout(function () {
                         data.Click.Close();
                     }, Config.Base.timeMessage);
                 }
-            }
-            catch(e){
-                self.Exception('Ошибка шаблона [' + self.GetTmplName(type) + ']', e);
-                if(self.settings.tmpl.custom){
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        self.InsertContainer.NewModal();
-                        self.Render(data);
-                    });
-                }
-                else{
-                    self.InsertContainer.ClearWindow();
-                    self.WidgetLoader(true);
-                }
-            }
-        }
-        else{
-            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-            self.WidgetLoader(true);
-        }
-    };
+            },
+            function (data) {
+                InsertContainerNewModal(data);
+                Render(data);
+            },
+            function () {
+                InsertContainerClearWindow(data);
+            },
+            null,
+            data.idWindow
+        );
+    }
 }
 
-var ModalMessageViewModel = function(message, callbackOk, callbackFail, hide){
+var ModalMessageViewModel = function (message, callbackOk, callbackFail, hide) {
     var self = this;
     self.message = ko.observable(message);
     self.idWindow = 'pokupoModalMessage';
     self.Click = {
-        Close: function(){
+        Close: function () {
             $('#' + self.idWindow).remove();
         },
-        Confirm: function(){
-            if(callbackOk)
-                 callbackOk();
+        Confirm: function () {
+            if (callbackOk)
+                callbackOk();
             self.Click.Close();
         },
-        NotConfirm: function(){
-            if(callbackFail)
+        NotConfirm: function () {
+            if (callbackFail)
                 callbackFail();
             self.Click.Close();
         },
-        GetMessage: function(){
-            if(callbackOk)
+        GetMessage: function () {
+            if (callbackOk)
                 callbackOk(self.message());
             self.Click.Close();
         }
@@ -158,12 +123,14 @@ var ModalMessageViewModel = function(message, callbackOk, callbackFail, hide){
 }
 
 var TestModalMessage = {
-    Init : function(){
-        if(typeof Widget == 'function'){
+    Init: function () {
+        if (typeof Widget == 'function') {
             ModalMessageWidget.prototype = new Widget();
         }
-        else{
-            setTimeout(function(){TestModalMessage.Init()}, 100);
+        else {
+            setTimeout(function () {
+                TestModalMessage.Init()
+            }, 100);
         }
     }
 }

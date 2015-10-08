@@ -6,157 +6,111 @@ var MenuPersonalCabinetWidget = function () {
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        containerMenuId: null,
-        tmpl: {
-            path: null,
-            id: null
-        },
-        showCart: null,
-        showRegSeller: null,
-        animate: null,
-        style: null,
-        customContainer: null
-    };
     self.active = null;
     self.subMenu = [];
-    self.InitWidget = function () {
-        self.settings.tmpl = Config.MenuPersonalCabinet.tmpl;
-        self.settings.containerMenuId = Config.Containers.menuPersonalCabinet.widget;
-        self.settings.customContainer = Config.Containers.menuPersonalCabinet.customClass;
-        self.settings.style = Config.MenuPersonalCabinet.style;
-        self.settings.showCart = Config.MenuPersonalCabinet.showCart;
-        self.settings.showRegSeller = Config.MenuPersonalCabinet.showRegSeller;
-        self.RegisterEvents();
-        self.SetPosition();
+    self.InitWidget = InitWidget;
+    self.AddMenu = AddMenu;
+    self.CheckRouteMenuProfile = CheckRouteMenuProfile;
+
+    var settings = {
+        container: {widget: 'menuPersonalCabinetWidgetId', def: 'defaultMenuPersonalCabinetWidgetId'},
+        showCart: true,
+        showRegSeller: true,
+        tmpl : {
+            path : "menuPersonalCabinetTmpl.html", // файл шаблонов
+            id : 'menuPersonalCabinetTmpl' // id шаблона меню личного кабинета
+        },
+        animate: typeof AnimateMenuPersonalCabinet == 'function' ? AnimateMenuPersonalCabinet : null
     };
-    self.SetInputParameters = function () {
-        var input = {};
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.menuPersonalCabinet) {
-            input = WParameters.menuPersonalCabinet;
-        }
-        if (input.tmpl) {
-            if (input.tmpl.path)
-                self.settings.tmpl.path = input.tmpl.path;
-            if (input.tmpl.id) {
-                for (var key in input.tmpl.id) {
-                    self.settings.tmpl.id[key] = input.tmpl.id[key];
-                }
-            }
-            if(input.showCart){
-                self.settings.showCart = input.showCart;
-            }
-            if(input.showRegSeller){
-                self.settings.showRegSeller = input.showRegSeller;
-            }
-            if(input.animate)
-                self.settings.animate = input.animate;
-        }
-    };
-    self.AddMenu = function (opt) {
+    function InitWidget() {
+        RegisterEvents();
+        SetInputParameters();
+    }
+    function SetInputParameters() {
+        var input = self.GetInputParameters('menuPersonalCabinet');
+
+        if(!$.isEmptyObject(input))
+            settings = self.UpdateSettings1(settings, input);
+
+        Config.MenuPersonalCabinet = settings;
+    }
+    function AddMenu(opt) {
         if (opt) {
             self.active = opt.active;
             self.subMenu = opt.menu;
         }
-    };
-    self.CheckRouteMenuProfile = function () {
-        if (Routing.route == 'profile'
-                || Routing.route == 'favorites'
-                || Routing.route == 'cabinet_cart'
-                || Routing.route == 'purchases'
-                || Routing.route == 'messages') {
-            self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                self.InsertContainer.Content();
-                self.Fill();
+    }
+    function CheckRouteMenuProfile() {
+        var route = Routing.route;
+        if (route == 'profile'
+            || route == 'favorites'
+            || route == 'cabinet_cart'
+            || route == 'purchases'
+            || route == 'messages') {
+            self.BaseLoad.Tmpl(settings.tmpl, function () {
+                InsertContainerContent();
+                Fill();
             });
         }
         else {
-            $("#" + self.settings.containerMenuId).empty()
+            $("#" + settings.container.widget).empty()
             self.WidgetLoader(true);
         }
-    };
-    self.RegisterEvents = function () {
-        EventDispatcher.AddEventListener('w.change.route', function () {
-            if (Routing.route != 'profile'
-                    && Routing.route != 'favorites'
-                    && Routing.route != 'cabinet_cart'
-                    && Routing.route != 'purchases'
-                    && Routing.route != 'messages') {
-                $("#" + self.settings.containerMenuId).empty();
+    }
+    function RegisterEvents() {
+        self.AddEvent('w.change.route', function () {
+            var route = Routing.route;
+            if (route != 'profile'
+                && route != 'favorites'
+                && route != 'cabinet_cart'
+                && route != 'purchases'
+                && route != 'messages') {
+                $("#" + settings.container.widget).empty();
                 self.WidgetLoader(true);
             }
-            if(Routing.route == 'cabinet_cart' && !self.settings.showCart){
-                $("#" + self.settings.containerMenuId).empty();
+            if (route == 'cabinet_cart' && !settings.showCart) {
+                $("#" + settings.container.widget).empty();
                 self.WidgetLoader(true);
             }
         })
-    };
-    self.InsertContainer = {
-        EmptyWidget: function () {
-            var temp = $("#" + self.settings.containerMenuId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.containerMenuId).empty().html(temp);
-        },
-        Content: function () {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerMenuId).html($('script#' + self.GetTmplName()).html()).children().hide();
-        }
-    };
-    self.Fill = function () {
+    }
+
+    function InsertContainerEmptyWidget() {
+        self.ClearContainer(settings)
+    }
+
+    function InsertContainerContent() {
+        self.InsertContainer(settings);
+    }
+
+    function Fill() {
         self.BaseLoad.MessageCountUnread(function (data) {
             Parameters.cache.message.countNewMessage(parseInt(data.count_unread_topic));
             var menu = new MenuPersonalCabinetViewModel(self);
             menu.AddSubMenu(self.subMenu, self.active);
-            self.Render(menu);
+            Render(menu);
         });
-    };
-    self.Render = function (menu) {
-        if ($("#" + self.settings.containerMenuId).length > 0) {
-            try {
-                self.WidgetLoader(true, self.settings.containerMenuId);
-                ko.cleanNode($("#" + self.settings.containerMenuId)[0]);
-                ko.applyBindings(menu, $("#" + self.settings.containerMenuId)[0]);
-                if(typeof AnimateMenuPersonalCabinet == 'function')
-                    new AnimateMenuPersonalCabinet();
-                if(self.settings.animate)
-                    self.settings.animate();
+    }
+    function Render(data) {
+        self.RenderTemplate(data, settings, null,
+            function(data){
+                InsertContainerContent();
+                Render(data);
+            },
+            function(){
+                InsertContainerEmptyWidget();
             }
-            catch (e) {
-                self.Exception('Ошибка шаблона [' + self.GetTmplName() + ']', e);
-                if (self.settings.tmpl.custom) {
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                        self.InsertContainer.Content();
-                        self.Render(menu);
-                    });
-                }
-                else {
-                    self.InsertContainer.EmptyWidget();
-                    self.WidgetLoader(true, self.settings.containerMenuId);
-                }
-            }
-        }
-        else{
-            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerMenuId + ']');
-            self.WidgetLoader(true, self.settings.containerMenuId);
-        }
-    };
-    self.SetPosition = function () {
-        if (self.settings.style.position == 'absolute') {
-            $().ready(function () {
-                for (var i = 0; i <= self.settings.containerFormId.length - 1; i++) {
-                    $("#" + self.settings.containerFormId[i]).css(self.settings.style);
-                }
-            });
-        }
-    };
+        );
+    }
 };
 
 var MenuPersonalCabinetViewModel = function (menu) {
-    var self = this;
+    var self = this,
+        user = Parameters.cache.userInformation,
+        route = Routing.route;
     self.subMenu = ko.observableArray();
-    var user = Parameters.cache.userInformation;
-    self.avatar = user ? user.route_icon_user: '';
-    self.username = user ? user.login: '';
+    self.avatar = user ? user.route_icon_user : '';
+    self.username = user ? user.login : '';
     self.countNewMessage = ko.computed(function () {
         return Parameters.cache.message.countNewMessage();
     }, this);
@@ -168,23 +122,23 @@ var MenuPersonalCabinetViewModel = function (menu) {
         }
     };
     self.activeProfile = ko.computed(function () {
-        if (Routing.route == 'profile')
+        if (route == 'profile')
             return 'active';
         return '';
     }, this);
     self.ClickProfile = function () {
-        Routing.SetHash('profile', 'Личный кабинет', {});
+        SetHash('profile', 'Личный кабинет', {});
     };
     self.activePurchases = ko.computed(function () {
-        if (Routing.route == 'purchases')
+        if (route == 'purchases')
             return 'active';
         return '';
     }, this);
     self.ClickPurchases = function () {
-        Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
+        SetHash('purchases', 'Мои покупки', {block: 'list'});
     };
     self.activeAuction = ko.computed(function () {
-        if (Routing.route == 'auction')
+        if (route == 'auction')
             return 'active';
         return '';
     }, this);
@@ -192,37 +146,41 @@ var MenuPersonalCabinetViewModel = function (menu) {
 
     };
     self.activeFavorites = ko.computed(function () {
-        if (Routing.route == 'favorites')
+        if (route == 'favorites')
             return 'active';
         return '';
     }, this);
     self.ClickFavorites = function () {
-        Routing.SetHash('favorites', 'Избранное', {});
+        SetHash('favorites', 'Избранное', {});
     };
     self.showCart = menu.settings.showCart;
     self.activeCart = ko.computed(function () {
-        if (Routing.route == 'cabinet_cart')
+        if (route == 'cabinet_cart')
             return 'active';
         return '';
     }, this);
     self.ClickCart = function () {
-        Routing.SetHash('cabinet_cart', 'Корзина', {});
+        SetHash('cabinet_cart', 'Корзина', {});
     };
     self.activeMessages = ko.computed(function () {
-        if (Routing.route == 'messages')
+        if (route == 'messages')
             return 'active';
         return '';
     }, this);
     self.ClickMessages = function () {
-        Routing.SetHash('messages', 'Сообщения', {});
+        SetHash('messages', 'Сообщения', {});
     };
     self.ClickBecomeSeller = function () {
         window.location.href = 'https://' + window.location.hostname + '/seller/register';
     };
     self.showRegSeller = menu.settings.showRegSeller;
-    self.ClickRegistrationSeller = function(){
-        Routing.SetHash('registration_seller', 'Стать продавцом', {});
+    self.ClickRegistrationSeller = function () {
+        SetHash('registration_seller', 'Стать продавцом', {});
     };
+
+    function SetHash(alias, title, params){
+        Routing.SetHash(alias, title, params)
+    }
 };
 
 var SubMenuViewModel = function (subMenu, active) {
