@@ -32,7 +32,7 @@ var FavoritesWidget = function () {
     function InitWidget() {
         RegisterEvents();
         SetInputParameters();
-        CheckRouteFavorites();
+        self.CheckRouteFavorites();
     }
 
     function SetInputParameters() {
@@ -51,7 +51,7 @@ var FavoritesWidget = function () {
         Config.Favorites = settings;
     }
 
-    function CheckRouteFavorites() {
+    self.CheckRouteFavorites = function() {
         if (Routing.route == 'favorites') {
             self.BaseLoad.Login(false, false, false, function (data) {
                 if (!data.err) {
@@ -73,7 +73,7 @@ var FavoritesWidget = function () {
 
     function RegisterEvents() {
         self.AddEvent('w.change.route', function () {
-            CheckRouteFavorites();
+            self.CheckRouteFavorites();
         });
 
         self.AddEvent('Favorites.empty', function () {

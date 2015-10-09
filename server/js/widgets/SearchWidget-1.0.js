@@ -23,7 +23,7 @@ var SearchWidget = function(){
     function InitWidget(){
         RegisterEvents();
         SetInputParameters();
-        CheckRoute();
+        CheckRouteSearch();
     }
     function SetInputParameters(){
         var input = self.GetInputParameters('search');
@@ -39,7 +39,7 @@ var SearchWidget = function(){
     function InsertContainerContent(){
         self.InsertContainer(settings);
     }
-    function CheckRoute(){
+    function CheckRouteSearch(){
         if(Routing.IsDefault() && self.HasDefaultContent()){
             self.WidgetLoader(true, settings.container.widget);
         }
@@ -65,7 +65,7 @@ var SearchWidget = function(){
         });
         
         self.AddEvent('w.change.route', function (data){
-            CheckRoute();
+            CheckRouteSearch();
         });
     }
     function Fill(data){

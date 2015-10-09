@@ -48,7 +48,7 @@ var MessageWidget = function () {
         settings.paging = Config.Paging;
         RegisterEvents();
         SetInputParameters();
-        CheckRouteMessage();
+        self.CheckRouteMessage();
     }
     function SetInputParameters() {
         var input = self.GetInputParameters('message');
@@ -62,7 +62,7 @@ var MessageWidget = function () {
         Config.Message = settings;
     }
 
-    function CheckRouteMessage() {
+    self.CheckRouteMessage = function() {
         if (Routing.route == 'messages') {
             self.BaseLoad.Login(false, false, false, function (data) {
                 if (!data.err) {
@@ -105,7 +105,7 @@ var MessageWidget = function () {
 
     function RegisterEvents() {
         self.AddEvent('w.change.route', function () {
-            CheckRouteMessage();
+            self.CheckRouteMessage();
         });
 
         self.AddEvent('Message.check.login', function (form) {

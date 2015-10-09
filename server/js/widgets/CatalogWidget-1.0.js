@@ -19,7 +19,7 @@ var CatalogWidget = function () {
     function InitWidget() {
         RegisterEvents();
         SetInputParameters();
-        CheckRouteCatalog();
+        self.CheckRouteCatalog();
     }
 
     function SetInputParameters() {
@@ -31,7 +31,7 @@ var CatalogWidget = function () {
         Config.Catalog = settings;
     }
 
-    function CheckRouteCatalog() {
+    self.CheckRouteCatalog = function() {
         if (Routing.route == 'catalog' || Routing.route == 'goods' || (Routing.IsDefault() && !self.HasDefaultContent())) {
             self.BaseLoad.Tmpl(settings.tmpl, function () {
                 self.BaseLoad.Roots(function () {
@@ -49,7 +49,7 @@ var CatalogWidget = function () {
         });
 
         self.AddEvent('w.change.route', function () {
-            CheckRouteCatalog();
+            self.CheckRouteCatalog();
         });
     }
 
