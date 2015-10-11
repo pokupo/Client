@@ -104,6 +104,7 @@ var Loader = {
     readyCount : 0,
     countAll : 0,
     containers : [],
+    test: [],
     widgets : {},
     action : null,
     Indicator : function(widget, isReady, container){
@@ -115,8 +116,9 @@ var Loader = {
             for(var key in this.widgets){
                 this.RegisterReady(key);
             }
+
             if(container)
-                this.containers.push({container: container, widgetName: widget});
+                Loader.containers.push({container: container, widgetName: widget});
             if(JSSettings.dev)
                 Logger.Console.VarDump('Loader', 'widgets', this.widgets);
             this.ShowLoading();
@@ -158,129 +160,84 @@ var Loader = {
     HideContent : function(){
         if(this.action != 'hide'){
             this.action = 'hide';
+
             for(var key in Config.Containers){
-                if(!Config.Containers[key].widget){
-                    for(var i in Config.Containers[key]){
-                        if(!Config.Containers[key][i].widget){
-                            for(var j in Config.Containers[key][i]){
-                                $("#" + Config.Containers[key][i][j].widget).children().hide();
+                var block = Config.Containers[key];
+                if(!block.widget){
+                    for(var i in block){
+                        if(!block[i].widget){
+                            for(var j in block[i]){
+                                $("#" + block[i][j].widget).children().hide();
                             }
                         }
                         else
-                            $("#" + Config.Containers[key][i].widget).children().hide();
+                            $("#" + block[i].widget).children().hide();
                     }
                 }
                 else{
-                    $("#" + Config.Containers[key].widget).children().hide();
+                    $("#" + block.widget).children().hide();
                 }
             }
         }
     },
     ShowContent : function(){
-        $.each(this.containers, function(i){
-            var children =  $('#' + Loader.containers[i].container).children();
-            if(children)
-                children.show();
-            Loader.ShowCustomContent(Loader.containers[i]);
+        $.each(Loader.containers, function(i, one){
+            if(one.container) {
+                var children = $('#' + one.container).children();
+                if (children)
+                    children.show();
+            }
         });
+
         this.action = 'show';
     },
     AddShowContainer : function(widget, id){
         this.containers.push({container: id, widgetName: widget});
     },
-    SelectCustomContent : function(){
-        var customContent = [];
-        for(var name in Config.Containers){
-            if(!Config.Containers[name].customClass){
-                for(var i in Config.Containers[name]){
-                    if($('#' + Config.Containers[name][i].widget).find('.' + Config.Containers[name][i].customClass).length > 0)
-                        customContent[customContent.length] = '.' + Config.Containers[name][i].customClass;
-                }
-            }
-            else{
-                if($('#' + Config.Containers[name].widget).find('.' + Config.Containers[name].customClass).length > 0)
-                    customContent[customContent.length] = '.' + Config.Containers[name].customClass;
-            }
-        }
-        return customContent;
-    },
-    ShowCustomContent : function(block){
-        var name = block.widgetName.charAt(0).toLowerCase() + block.widgetName.slice(1);
-        name = name.replace(/Widget/, '');
-        if(Config.Base.showCustomBlockOnDefault ||  Routing.IsDefault()){
-            if(!Config.Containers[name].customClass){
-                for(var i in Config.Containers[name]){
-                    var t = $('#' + block.container).find('.' + Config.Containers[name][i].customClass);
-                    if(t.length > 0){
-                        t.show();
-                    }
-                }
-            }
-            else{
-                var t = $('#' + block.container).find('.' + Config.Containers[name].customClass);
-                if(t.length > 0){
-                    t.show();
-                }
-            }
-        }
-    },
     ViewDefaultContent : function(){
         for(var key in Config.Containers){
-            if(!Config.Containers[key].def){
-                for(var key2 in Config.Containers[key]){
-                    if(Config.Containers[key][key2].def){
-                        if($("#" + Config.Containers[key][key2].def).length > 0){
+            var block = Config.Containers[key];
+            if(!block.def){
+                for(var key2 in block){
+                    if(block[key2].def){
+                        if($("#" + block[key2].def).length > 0){
                             if(key == 'content'){
-                                for(var key3 in Config.Containers[key]){
-                                    $("#" + Config.Containers[key][key3].def).children().show();
-                                    $("#" + Config.Containers[key][key3].widget).children().hide();
+                                for(var key3 in block){
+                                    $("#" + block[key3].def).children().show();
+                                    $("#" + block[key3].widget).children().hide();
                                 }
                             }
                             else{
-                                $("#" + Config.Containers[key][key2].def).children().show();
-                                $("#" + Config.Containers[key][key2].widget).children().hide();
+                                $("#" + block[key2].def).children().show();
+                                $("#" + block[key2].widget).children().hide();
                             }
                         }
                     }
                 }
             }
             else{
-                if($("#" + Config.Containers[key].def).length > 0){
-                    $("#" + Config.Containers[key].def).children().show();
-                    $("#" + Config.Containers[key].widget).children().hide();
+                if($("#" + block.def).length > 0){
+                    $("#" + block.def).children().show();
+                    $("#" + block.widget).children().hide();
                 }
             }
         }
     },
     HideDefaultContent : function(){
         for(var key in Config.Containers){
-            if(!Config.Containers[key].def){
-                for(var key2 in Config.Containers[key]){    
-                    if(Config.Containers[key][key2].def){
-                        if($("#" + Config.Containers[key][key2].def).length > 0){
-                            $("#" + Config.Containers[key][key2].def).children().hide();
+            var block = Config.Containers[key];
+            if(!block.def){
+                for(var key2 in block){
+                    if(block[key2].def){
+                        if($("#" + block[key2].def).length > 0){
+                            $("#" + block[key2].def).children().hide();
                         }
                     }
                 }
             }
             else{
-                if($("#" + Config.Containers[key].def).length > 0){
-                    $("#" + Config.Containers[key].def).children().hide();
-                }
-            }
-            
-            if(!Config.Containers[key].customClass){
-                for(var key2 in Config.Containers[key]){    
-                    if(Config.Containers[key][key2].customClass){
-                        if($("." + Config.Containers[key][key2].customClass).length > 0){
-                            $("." + Config.Containers[key][key2].customClass).hide();
-                        }
-                    }
-                }
-            }
-            else{
-                if($("." + Config.Containers[key].customClass).length > 0){
-                    $("." + Config.Containers[key].customClass).hide();
+                if($("#" + block.def).length > 0){
+                    $("#" + block.def).children().hide();
                 }
             }
         }
@@ -329,7 +286,7 @@ var Widget = function (){
                 }
             }
             else{
-                Loader.Indicator(widget.widgetName, true);
+                    Loader.Indicator(widget.widgetName, true);
                 Logger.Console.Exception('Widget', 'JSCore version = [' + JSCore.version + ']. For correct work of the widgets required version: min - [' + self.minCoreVersion + '] max - [' + self.maxCoreVersion + ']');
             }
         }else{
@@ -356,105 +313,99 @@ var Widget = function (){
             };
             Parameters.cache.message.countNewMessage = ko.observable();
             Parameters.sortingBlockContainer = Config.Base.sortingBlockContainer;
-            
+
             Parameters.loading = Config.Base.loading;
             if(JSSettings.inputParameters['imgLoader'])
                 Parameters.loading = JSSettings.inputParameters['imgLoader'];
-            
+
             this.RegistrCustomBindings();
-            this.UpdateSettings();
+            //this.UpdateSettings();
             Routing.ParserHash(true);
             this.Events();
             Parameters.shopId = JSSettings.inputParameters['shopId'];
         }
     };
-    this.CheckNameConfigParameter = function(config, name){
+    this.GetInputParameters = function(paramName){
+        var input = {};
+        if (Config.Base.sourceParameters == 'string') {
+            var regex = new RegExp(this.widgetName);
+            var temp = JSCore.ParserInputParameters(regex);
+            if (temp[paramName]) {
+                input = temp[paramName];
+            }
+        }
+        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters[paramName])
+            input = WParameters[paramName];
+
+        if(JSSettings.inputParameters.hasOwnProperty(paramName))
+            input = JSSettings.inputParameters[paramName];
+
+        return input;
+    };
+    this.CheckNameConfigParameter = function(config, name, input){
         try{
-            var parameter = config[name];
-            return parameter;
+            if(config.hasOwnProperty(name))
+                return input[name];
+            return false;
         }
         catch(e){
-            this.Exception('Error. Non-existent parameter [' + config.toString() + '[' + name + ']]');
+            this.Exception('Error. Non-existent parameter [' + config + '[' + name + ']]');
             return false;
         }
     };
-    this.UpdateSettings = function(){
-        if(typeof WParameters !== 'undefined'){
-            for(var key in WParameters){
-                if(WParameters[key].hasOwnProperty('tmpl')){
-                    var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
-                    if(parameter)
-                        parameter.tmpl.custom = WParameters[key].tmpl;
-                }
-                else{
-                    for(var key2 in WParameters[key]){
-                        if(WParameters[key][key2].hasOwnProperty('tmpl')){
-                            var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
-                            if(parameter){
-                                var parameter = this.CheckNameConfigParameter(parameter.tmpl, key2);
-                                if(parameter)
-                                    parameter.custom = WParameters[key][key2].tmpl;
-                            }
-                        }
+    this.UpdateSettings1 = function(defaultParams, input){
+        if(typeof input !== 'undefined') {
+            var customTmpl = null;
+            for (var key in input) {
+                var parameter = this.CheckNameConfigParameter(defaultParams, key, input);
+                if (parameter) {
+                    if(typeof parameter != 'object') {
+                        defaultParams[key] = input[key];
                     }
-                }
-                
-                if(WParameters[key].hasOwnProperty('container')){
-                    var parameter = this.CheckNameConfigParameter(Config.Containers, key);
-                    if(parameter){
-                        if(WParameters[key].container.widget)
-                            parameter.widget = WParameters[key].container.widget;
-                        if(WParameters[key].container.def)
-                            parameter.def = WParameters[key].container.def;
-                        if(WParameters[key].container.customClass)
-                            parameter.customClass = WParameters[key].container.customClass;
-                    }
-                }
-                else{
-                    for(var key2 in WParameters[key]){
-                        if(WParameters[key][key2].hasOwnProperty('container')){
-                            var parameter = this.CheckNameConfigParameter(Config.Containers, key);
-                            if(parameter){
-                                var parameter = this.CheckNameConfigParameter(parameter, key2);
-                                if(WParameters[key][key2].container.widget)
-                                    parameter.widget = WParameters[key][key2].container.widget;
-                                if(WParameters[key][key2].container.def)
-                                    parameter.def = WParameters[key][key2].container.def;
-                                if(WParameters[key][key2].container.customClass)
-                                    parameter.customClass = WParameters[key][key2].container.customClass;
-                            }
-                        }
+                    else {
+                        if(key == 'tmpl')
+                            customTmpl = input[key];
+                        else
+                            defaultParams[key] = this.UpdateSettings1(defaultParams[key], input[key])
                     }
                 }
             }
+            if(customTmpl)
+                defaultParams.tmpl.custom = customTmpl;
         }
+
+        return defaultParams;
     };
     this.Events = function(){
-        EventDispatcher.AddEventListener('w.ready', function(){
+        self.AddEvent('w.ready', function(){
             Routing.CheckRoute();
         });
 
-        EventDispatcher.AddEventListener('w.onload.script', function(data){
+        self.AddEvent('w.onload.script', function(data){
             window[data.options.widget].prototype = new Widget();
             var embed = new window[data.options.widget]();
             data.options.params['uniq'] = EventDispatcher.GetUUID();
             embed.SetParameters(data);
             embed.Init(embed, true);
         });
-        
-        EventDispatcher.AddEventListener('w.onload.menu', function(opt){
-            if(!Parameters.cache.profileMenu){
+
+        self.AddEvent('w.onload.menu', function(opt){
+            var cache = Parameters.cache.profileMenu;
+            if(!cache){
                 MenuPersonalCabinetWidget.prototype = new Widget();
-                Parameters.cache.profileMenu = new MenuPersonalCabinetWidget();
-                Parameters.cache.profileMenu.Init(Parameters.cache.profileMenu);
+                cache = new MenuPersonalCabinetWidget();
+                cache.Init(cache);
             }
-            Parameters.cache.profileMenu.CheckRouteMenuProfile();
-            Parameters.cache.profileMenu.AddMenu(opt);
+            cache.CheckRouteMenuProfile();
+            cache.AddMenu(opt);
+            Parameters.cache.profileMenu = cache;
         });
-        
-        EventDispatcher.AddEventListener('w.fav.add', function(data){
-            var inputDate = data;
-            if(Parameters.cache.userInformation && !Parameters.cache.userInformation.err){
+
+        self.AddEvent('w.fav.add', function(data){
+            var inputDate = data,
+                userInfo = Parameters.cache.userInformation,
+                message = Config.CartGoods.message;
+            if(userInfo && !userInfo.err){
                 self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
@@ -465,10 +416,10 @@ var Widget = function (){
                         }
                         else
                             inputDate.data.IsFavorite(true);
-                        self.ShowMessage(Config.CartGoods.message.addFavorites, false, false);
+                        self.ShowMessage(message.addFavorites, false, false);
                     }
                     else{
-                        self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, false);
+                        self.ShowMessage(message.failAddFavorites, false, false);
                     }
                 });
             }
@@ -476,8 +427,8 @@ var Widget = function (){
                 self.ShowMessage(Config.Authentication.message.pleaseLogIn , false, false);
             }
         });
-        
-        EventDispatcher.AddEventListener('w.cart.add', function(data){
+
+        self.AddEvent('w.cart.add', function(data){
             var sellerId = data.sellerId ? data.sellerId : false;
             var count = data.count ? data.count : false;
             var goodsId = data.goodsId;
@@ -487,13 +438,13 @@ var Widget = function (){
                 }
                 else{
                     self.ShowMessage('Товар успешно добавлен в корзину', function(){
-                        EventDispatcher.DispatchEvent('widgets.cart.infoUpdate', data);
+                        self.DispatchEvent('widgets.cart.infoUpdate', data);
                     }, false);
                 }
             });
         });
-        
-        EventDispatcher.AddEventListener('w.change.count.mess', function() {
+
+        self.AddEvent('w.change.count.mess', function() {
             self.BaseLoad.MessageCountUnread(
                 function(data){
                     Parameters.cache.message.countNewMessage(data.count_unread_topic);
@@ -501,8 +452,9 @@ var Widget = function (){
         });
     };
     this.CreateContainer = function(){
-        if($('#' + self.settings.containerIdForTmpl).length == 0)
-            $('body').append("<div id='" + self.settings.containerIdForTmpl + "'></div>");
+        var c = self.settings.containerIdForTmpl;
+        if($('#' + c).length == 0)
+            $('body').append("<div id='" + c + "'></div>");
     };
     this.RegistrCustomBindings = function(){
         ko.bindingHandlers.embedWidget = {
@@ -511,12 +463,12 @@ var Widget = function (){
                 var widgetName = options.widget.split('-');
                 if(typeof(window[widgetName[0]]) == 'function'){
                     options.widget = widgetName[0];
-                    EventDispatcher.DispatchEvent('w.onload.script', {element: element, options: options});
+                    self.DispatchEvent('w.onload.script', {element: element, options: options});
                 }
                 else {
                     self.BaseLoad.Script('widgets/' + options.widget + '.js', function () {
                         options.widget = options.widget.split('-')[0];
-                        EventDispatcher.DispatchEvent('w.onload.script', {element: element, options: options});
+                        self.DispatchEvent('w.onload.script', {element: element, options: options});
                     });
                 }
             }
@@ -524,6 +476,24 @@ var Widget = function (){
         ko.global = {
             route : Routing.route
         };
+    };
+    this.ClearContainer = function(settings, container){
+        if(!container)
+            container = settings.container.widget;
+        $("#" + container).empty().html('');
+    };
+    this.InsertContainer = function(settings, name, container){
+        if(!container)
+            container = settings.container.widget;
+        $("#" + container).html($('script#' + self.GetTmplName1(settings, name)).html()).children().hide();
+    };
+    this.AppendContainer = function(settings, name, block, container){
+        if(!container)
+            container = settings.container.widget;
+        $("#" + container).append($('script#' + self.GetTmplName1(settings, name, block)).html()).children().hide();
+    };
+    this.ShowContent = function(containers, show){
+        Loader.test[this.widgetName].containers[containers] = show;
     };
     this.WidgetLoader = function(test, container){
         Loader.Indicator(this.widgetName, test, container);
@@ -556,63 +526,111 @@ var Widget = function (){
         }
         return false;
     };
-    this.SelectCustomContent = function(){
-        var customContent = [];
-        for(var name in Config.Containers){
-            if(!Config.Containers[name].customClass){
-                for(var i in Config.Containers[name]){
-                    if($('#' + Config.Containers[name][i].widget).find('.' + Config.Containers[name][i].customClass).length > 0)
-                        customContent[customContent.length] = '.' + Config.Containers[name][i].customClass;
-                }
-            }
-            else{
-                if($('#' + Config.Containers[name].widget).find('.' + Config.Containers[name].customClass).length > 0)
-                    customContent[customContent.length] = '.' + Config.Containers[name].customClass;
-            }
-        }
-        return customContent;
-    };
     this.ScrollTop = function(elementId, speed){
         if(Loader.countAll == Loader.readyCount){
-            $('html, body').animate({scrollTop: $("#" + elementId).offset().top}, speed); 
+            $('html, body').animate({scrollTop: $("#" + elementId).offset().top}, speed);
         }
         else{
-            setTimeout(function() {self.ScrollTop(elementId);}, 100); 
+            setTimeout(function() {self.ScrollTop(elementId);}, 100);
         }
     };
-    this.GetTmplName = function(name, block){
-        var tmplName = '';
+    this.GetTmplName1 = function(settings, name, block){
+        var tmplName = '',
+            custom = '';
         if(name){
             if(!block){
-                tmplName = this.settings.tmpl.id[name];
-                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id && this.settings.tmpl.custom.id[name])
-                    tmplName = this.settings.tmpl.custom.id[name];
+                tmplName = settings.tmpl.id[name],
+                custom = settings.tmpl.custom;
+                if(custom && custom.id && custom.id[name])
+                    tmplName = custom.id[name];
             }
             else{
-                tmplName = this.settings.tmpl[block].id[name];
-                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id && this.settings.tmpl[block].custom.id[name])
-                    tmplName = this.settings.tmpl[block].custom.id[name];
+                tmplName = settings.tmpl[block].id[name],
+                custom = settings.tmpl[block].custom;
+                if(custom && custom.id && custom.id[name])
+                    tmplName = custom.id[name];
             }
         }
         else{
             if(!block){
-                tmplName = this.settings.tmpl.id;
-                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id)
-                    tmplName = this.settings.tmpl.custom.id;
+                tmplName = settings.tmpl.id,
+                custom = settings.tmpl.custom;
+                if(custom && custom.id)
+                    tmplName = custom.id;
             }
             else{
-                tmplName = this.settings.tmpl[block].id;
-                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id)
-                    tmplName = this.settings.tmpl[block].custom.id;
+                tmplName = settings.tmpl[block].id,
+                custom = settings.tmpl[block].custom;
+                if(custom && custom.id)
+                    tmplName = custom.id;
             }
         }
         return tmplName;
+    };
+    this.RenderTemplate = function(data, settings, callbackSuccess, callbackError, callbackDefault, name, container, block){
+        if(!container) {
+            if(block)
+                container = settings.container[block].widget;
+            else
+                container = settings.container.widget;
+        }
+
+        if ($("#" + container).length > 0) {
+            try {
+                ko.cleanNode($("#" + container)[0]);
+                ko.applyBindings(data, $("#" + container)[0]);
+                self.WidgetLoader(true, container);
+                if(block && settings.animate[block])
+                    settings.animate[block]();
+                else if (settings.animate)
+                    settings.animate();
+                if(callbackSuccess)
+                    callbackSuccess(data);
+            }
+            catch (e) {
+                self.Exception('Ошибка шаблона [' + self.GetTmplName1(settings, name, block) + ']', e);
+
+                if (settings.tmpl.custom || settings.tmpl[block].custom) {
+                    if(block)
+                        delete settings.tmpl[block].custom;
+                    else
+                        delete settings.tmpl.custom;
+
+                    var tmpl = settings.tmpl;
+                    if(block)
+                        tmpl = settings.tmpl[block];
+
+                    self.BaseLoad.Tmpl(tmpl, function () {
+                        if(callbackError)
+                            callbackError(data);
+                    });
+                }
+                else {
+                    if(callbackDefault)
+                        callbackDefault(data);
+                    self.WidgetLoader(true, container);
+                }
+            }
+        }
+        else {
+            self.Exception('Ошибка. Не найден контейнер [' + container + ']');
+            self.WidgetLoader(true, container);
+        }
+    };
+    this.AddEvent = function(event, callback){
+        EventDispatcher.AddEventListener(event, callback);
+    };
+    this.DispatchEvent = function(event, data){
+        EventDispatcher.DispatchEvent(event, data);
+    };
+    this.HashCode = function(string){
+        return EventDispatcher.HashCode(string);
     };
     this.Exception = function(text, exeption){
         Logger.Console.Exception(this.widgetName, text, exeption);
     };
     this.NewModal = function(type, message, callback, callbackFail, hide){
-        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+        self.BaseLoad.Script(PokupoWidgets.list.modalMessage, function() {
             var information = new ModalMessageWidget(type, message, callback, callbackFail, hide);
             information.Init(information);
         });
@@ -657,7 +675,7 @@ var Widget = function (){
             return false;
         }
         Parameters.cache.tmpl[hash] = 'error';
-       
+
         Loader.Indicator(self.widgetName, true);
         delete Loader.widgets[self.widgetName];
         return true;
@@ -696,7 +714,7 @@ var Widget = function (){
                         Parameters.cache.childrenCategory[parentId] = data;
                         if(callback)
                             callback({
-                                'data' : data, 
+                                'data' : data,
                                 'parentId' : parentId
                             });
                     });
@@ -704,7 +722,7 @@ var Widget = function (){
                 else{
                     if(callback)
                         callback({
-                            'data' : Parameters.cache.childrenCategory[parentId], 
+                            'data' : Parameters.cache.childrenCategory[parentId],
                             'parentId' : parentId
                         });
                 }
@@ -738,7 +756,7 @@ var Widget = function (){
             }
         },
         Content : function(categoryId, query, callback){
-            var queryHash = categoryId + EventDispatcher.HashCode(query);
+            var queryHash = categoryId + self.HashCode(query);
             if(!Parameters.cache.content[queryHash]){
                 XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.catalogPathApi + categoryId + '/goods/' + query), function(data){
                     Parameters.cache.content[queryHash] = {"categoryId" : categoryId , "content" : data};
@@ -752,7 +770,7 @@ var Widget = function (){
             }
         },
         SearchContent : function(shopId, query, callback){
-            var queryHash = shopId + EventDispatcher.HashCode(query);
+            var queryHash = shopId + self.HashCode(query);
             if(!Parameters.cache.searchContent[queryHash]){
                 XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.goodsPathApi + shopId + '/search/' + query), function(data){
                     Parameters.cache.searchContent[queryHash] = data;
@@ -786,7 +804,7 @@ var Widget = function (){
         },
         Tmpl : function(tmpl, callback){
             function Default (){
-                var hash = EventDispatcher.HashCode(tmpl.path);
+                var hash = self.HashCode(tmpl.path);
                 if(!Parameters.cache.tmpl[hash]){
                     self.CreateContainer();
                     XDMTransport.Load.Tmpl(tmpl.path,function(data){
@@ -823,9 +841,9 @@ var Widget = function (){
                     if(Parameters.cache.tmpl[hash] != 'error')
                         if(callback)callback();
                 }
-            };
+            }
             function Custom (){
-                var hash = EventDispatcher.HashCode(tmpl.custom.path);
+                var hash = self.HashCode(tmpl.custom.path);
                 if(!Parameters.cache.tmpl[hash]){
                     self.CreateContainer();
                     XDMTransport.Load.Tmpl(tmpl.custom.path,function(data){
@@ -833,7 +851,7 @@ var Widget = function (){
                             var id = 'temp_' + hash;
                             var temp = $('<div id="' + id + '"></div>');
                             temp.append(data);
-                            
+
                             if(tmpl.custom.id){
                                 if($.type(tmpl.id) == 'object'){
                                     if($.type(tmpl.custom.id) == 'object'){
@@ -863,7 +881,7 @@ var Widget = function (){
                                         Default ();
                                         return false;
                                     }
-                                }   
+                                }
                                 else{
                                     if($(data).find('script#' + tmpl.custom.id).length != 1){
                                         Logger.Console.Exception(self.widgetName,'Settings id for tmpl - [' + tmpl.custom.path + ']. No search template with id [' + tmpl.custom.id + ']');
@@ -901,7 +919,7 @@ var Widget = function (){
                                             break;
                                         }
                                     }
-                                }   
+                                }
                                 else{
                                     if(temp.find('script#' + tmpl.id).length != 1){
                                         Logger.Console.Exception(self.widgetName,'Settings id for tmpl - [' + tmpl.path + ']. No search template with id [' + tmpl.id + ']');
@@ -934,15 +952,12 @@ var Widget = function (){
                     if(Parameters.cache.tmpl[hash] != 'error')
                         if(callback)callback();
                 }
-            };
-            
-            
-            if(tmpl.custom && tmpl.custom.path){
+            }
+
+            if(tmpl.custom && tmpl.custom.path)
                 Custom();
-            }
-            else{
+            else
                 Default();
-            }
         },
         Path : function(categoryId, callback){
             if(categoryId){
@@ -973,7 +988,7 @@ var Widget = function (){
             }
         },
         Script : function(script, callback){
-            var hash = EventDispatcher.HashCode(script);
+            var hash = self.HashCode(script);
             if(!Parameters.cache.scripts[hash]){
                 if(!$.isArray(script))
                     script = [script];
@@ -985,7 +1000,7 @@ var Widget = function (){
             }
         },
         RelatedGoods : function(id, query, callback){
-            var queryHash = id + EventDispatcher.HashCode(query);
+            var queryHash = id + self.HashCode(query);
             if(!Parameters.cache.relatedGoods[queryHash]){
                 XDMTransport.Load.Data(encodeURIComponent(self.settings.hostApi + self.settings.goodsPathApi+ id +'/link/' + query + '/'), function(data){
                     Parameters.cache.relatedGoods[queryHash] = data;
@@ -1071,14 +1086,14 @@ var Widget = function (){
         },
         AddGoodsToCart : function(idGoods, sellerId, count, callback){
             var opt = self.ProtocolPreparation();
-            
+
             var str = '';
             if(sellerId){
                 str = sellerId + '/';
                 if(count >= 0)
                     str = str + count + '/';
             }
-            
+
             XDMTransport.Load.Data(opt.host + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
                 if(callback)
                     callback(data);
@@ -1110,7 +1125,7 @@ var Widget = function (){
         },
         ClearCart : function(sellerId, goodsId, callback){
             var opt = self.ProtocolPreparation();
-            
+
             var str = '';
             if(sellerId){
                 str = sellerId + '/';
@@ -1118,13 +1133,13 @@ var Widget = function (){
             if(goodsId){
                 str = str + '?idGoods=' + goodsId;
             }
-            
+
             XDMTransport.Load.Data(opt.host + self.settings.cartPathApi + 'clear/' + Parameters.shopId + '/' + str, function(data){
                 if(callback)
                     callback(data);
             }, opt.protokol);
         },
-        UniqueUser : function(str, callback){ 
+        UniqueUser : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.userPathApi + 'unique/' + str), function(data){
                 if(callback)
                     callback(data);
@@ -1157,7 +1172,7 @@ var Widget = function (){
         EditProfile : function(form, callback){
             if(form.find('#registration_data_query').length == 0)
                 form.append('<input type="text" id="registration_data_query" style="display: none" name="query" value="' + self.settings.httpsHostApi + self.settings.userPathApi + 'edit/profile/"/>');
-            EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
+            self.AddEvent(self.HashCode(form.toString()), function(data){
                 callback(data)
             });
             XDMTransport.Load.DataPost(form, true);
@@ -1233,7 +1248,7 @@ var Widget = function (){
         ChangePassword : function(form, callback){
             if(form.find('#change_password_query').length == 0)
                 form.append('<input type="text" id="change_password_query" style="display: none" name="query" value="' + self.settings.hostApi + self.settings.userPathApi + 'npass/"/>');
-            EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
+            self.AddEvent(self.HashCode(form.toString()), function(data){
                 callback(data)
             });
             XDMTransport.Load.DataPost(form, true);
@@ -1322,7 +1337,7 @@ var Widget = function (){
             }, true);
         },
         OrderList : function(query, callback){
-            var queryHash = EventDispatcher.HashCode(query);
+            var queryHash = self.HashCode(query);
             if(!(queryHash in Parameters.cache.orderList)){
                 XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.orderPathApi + 'user/' + Parameters.shopId + query), function(data){
                     Parameters.cache.orderList[queryHash] = data;
@@ -1396,7 +1411,7 @@ var Widget = function (){
                     callback(data);
             }, true);
         },
-        
+
         TopicList : function(str, callback){
             XDMTransport.Load.Data(encodeURIComponent(self.settings.httpsHostApi + self.settings.messagePathApi + 'topic/list/' + str), function(data){
                 Parameters.cache.message.topicList = data;
@@ -1454,7 +1469,7 @@ var Widget = function (){
         MessageAdd : function(form, callback){
             if(form.find('#add_message_query').length == 0)
                 form.append('<input type="text" id="add_message_query" style="display: none" name="query" value="' + self.settings.httpsHostApi + self.settings.messagePathApi + 'add/"/>');
-            EventDispatcher.AddEventListener(EventDispatcher.HashCode(form.toString()), function(data){
+            self.AddEvent(self.HashCode(form.toString()), function(data){
                 if(callback)
                     callback(data)
             });
@@ -1472,7 +1487,7 @@ var Widget = function (){
                     callback(data);
             }, true);
         }
-        
+
     };
 };
 

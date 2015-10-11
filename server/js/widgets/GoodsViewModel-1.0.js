@@ -1,12 +1,12 @@
-var GoodsViewModel  = function(){
+var GoodsViewModel  = function(settings){
     var self = this;
     self.id = Routing.params.id;
     self.blocks = {};
     self.sellerInfo = {};
-    self.cssBlockGallery = Config.Goods.galleryId;
+    self.cssBlockGallery = settings.galleryId;
     self.moreBlock = [];
     self.ShowGallery = function(){
-        if($.inArray('gallery', Config.Goods.showBlocks) >= 0 && self.blocks.gallery)
+        if($.inArray('gallery', settings.showBlocks) >= 0 && self.blocks.gallery)
             return true;
         return false;
     };
@@ -15,20 +15,20 @@ var GoodsViewModel  = function(){
         this.blocks[name] = data;
     }
     self.SetListMoreBlock = function(prefix){
-        for(var key in Config.Goods.moreBlocks){
-            if($.inArray(key, Config.Goods.showBlocks) >= 0)
-                self.moreBlock.push(new GoodsListMoreBlockViewModel(key, self.blocks[key], prefix));
+        for(var key in settings.moreBlocks){
+            if($.inArray(key, settings.showBlocks) >= 0)
+                self.moreBlock.push(new GoodsListMoreBlockViewModel(key, self.blocks[key], prefix, settings));
         }
     }
 }
 
-var GoodsListMoreBlockViewModel = function(key, data, prefix){
+var GoodsListMoreBlockViewModel = function(key, data, prefix, settings){
     var self = this;
     self.prefix = 'goods';
     if(prefix)
         self.prefix = prefix + 'Goods';
     self.key = key;
-    self.title = Config.Goods.moreBlocks[key];
+    self.title = settings.moreBlocks[key];
     self.content = data ? data : null;
     self.classTabs = self.prefix + 'Tabs';
     self.classBlocks = self.prefix + 'Blocks';
@@ -43,7 +43,7 @@ var GoodsListMoreBlockViewModel = function(key, data, prefix){
     }
 }
 
-var GoodsMainBlockViewModel = function(data, ordered){
+var GoodsMainBlockViewModel = function(data, settings){
     var self = this;
     self.id = data.id;
     self.sellerId = 0;
@@ -112,7 +112,7 @@ var GoodsMainBlockViewModel = function(data, ordered){
         Routing.SetHash('registration', 'Регистрация пользователя', {step: 1});
     };
     self.showSelectionCount = ko.computed(function(){
-        if($.inArray('selectionCount', Config.Goods.showBlocks) >= 0 && self.count() && self.count() != 0)
+        if($.inArray('selectionCount', settings.showBlocks) >= 0 && self.count() && self.count() != 0)
             return true;
         return false;
     }, this);
@@ -121,14 +121,14 @@ var GoodsMainBlockViewModel = function(data, ordered){
             self.ordered(self.ordered() + 1);
         }
         else
-            self.ShowMessage(Config.Goods.message.maxIsReached, false, false);
+            self.ShowMessage(settings.message.maxIsReached, false, false);
     };
     self.ClickMinus = function(){
         if(self.ordered() > 0)
             self.ordered(self.ordered() - 1);
     };
     self.showAddToCart = ko.computed(function(){
-        if($.inArray('addToCart', Config.Goods.showBlocks) >= 0 && self.count() != 0)
+        if($.inArray('addToCart', settings.showBlocks) >= 0 && self.count() != 0)
             return true;
         return false;
     }, this);
@@ -138,7 +138,7 @@ var GoodsMainBlockViewModel = function(data, ordered){
         EventDispatcher.DispatchEvent('w.cart.add', {goodsId : self.id, sellerId : self.shopId, count: self.ordered(), hash : self.uniq})
     };
     self.showBuy = ko.computed(function(){
-        if($.inArray('buy', Config.Goods.showBlocks) >= 0 && self.count() != 0)
+        if($.inArray('buy', settings.showBlocks) >= 0 && self.count() != 0)
             return true;
         return false;
     }, this);
@@ -155,7 +155,7 @@ var GoodsMainBlockViewModel = function(data, ordered){
 
     };
     self.showFavorites = ko.computed(function(){
-        if($.inArray('favorites', Config.Goods.showBlocks) >= 0 && self.count() != 0)
+        if($.inArray('favorites', settings.showBlocks) >= 0 && self.count() != 0)
             return true;
         return false;
     }, this);

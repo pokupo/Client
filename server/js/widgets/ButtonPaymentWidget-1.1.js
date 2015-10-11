@@ -6,160 +6,130 @@ window.ButtonPaymentWidget = function () {
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        tmpl: {
-            path: null,
-            id: {
-                content: null,
-                skin: null
+    self.InitWidget = InitWidget;
+
+    var settings = {
+        container:  {widget: 'content', def: 'defaultPaymentWidgetId'},
+        containerButton: null,
+        tmpl : {
+            path : 'buttonPaymentTmpl.html', // файл шаблонов
+            id : {
+                content : 'paymentPageTmpl', //id шаблона страницы оплаты
+                skin : 'buttonPaymentImpl' //id шаблона кнопки
             }
         },
-        animate: null,
-        inputParameters: {},
-        containerId: null,
-        containerButton: null,
-        title: null,
+        Error : {
+            required : 'Поле обязательно для заполнения.',
+            regExp : 'Недопустимое значение.',
+            maxlength : 'Максимум %s% символов.'
+        },
+        animate: typeof AnimateButtonPayment == 'function' ? AnimateButtonPayment : null,
+        title : "Оплатить", // заголовок кнопки
         skinFromMemory: false,
         uniq: null,
         source: null,
         sourceVal: null
     };
-    self.InitWidget = function () {
-        self.settings.containerId = Config.Containers.buttonPayment.widget;
-        self.settings.tmpl = Config.ButtonPayment.tmpl;
-        self.settings.title = Config.ButtonPayment.title;
-        self.SetInputParameters();
-        self.RegisterEvents();
-        self.CheckRouteButtonPayment();
-    };
-    self.Loader = function () {
-        Loader.InsertContainer(self.settings.containerButton);
-    };
-    self.SetInputParameters = function() {
-        var input = {};
-        if (Config.Base.sourceParameters == 'string') {
-            var temp = JSCore.ParserInputParameters(/ButtonPaymentWidget/);
-            if (temp.buttonPayment) {
-                input = temp.buttonPayment;
-            }
-        }
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.buttonPayment) {
-            input = WParameters.buttonPayment;
-        }
+    function InitWidget() {
+        SetInputParameters();
+        RegisterEvents();
+        CheckRouteButtonPayment();
+    }
 
-        if(!$.isEmptyObject(input)){
-            if(input.tmpl){
-                if(input.tmpl.path)
-                    self.settings.tmpl.path = input.tmpl.path;
-                if(input.tmpl.id){
-                    for(var key in input.tmpl.id){
-                        self.settings.tmpl.id[key] = input.tmpl.id[key];
-                    }
-                }
-            }
-            if (input.title)
-                self.settings.title = input.title;
-            if(input.container)
-                self.settings.containerId = input.container;
-            if(input.animate)
-                self.settings.animate = input.animate;
-        }
+    function SetInputParameters() {
+        var input = self.GetInputParameters('buttonPayment');
 
-        self.settings.inputParameters = input;
-    };
+        if(!$.isEmptyObject(input))
+            settings = self.UpdateSettings1(settings, input);
+
+        Config.Containers.buttonPayment = settings.container;
+    }
+
     self.SetParameters = function (data) {
-        self.settings.containerButton = data.element;
+        settings.containerButton = data.element;
 
-        var input = {};
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.buttonPayment) {
-            input = WParameters.buttonPayment;
-        }
+        var input = self.GetInputParameters('buttonPayment');
+
         if (!$.isEmptyObject(input)) {
-            if (input.tmpl && input.tmpl.id && input.tmpl.id.skin) {
-                self.settings.skinFromMemory = true;
-            }
-            if (input.title)
-                self.settings.title = input.title;
-            if(input.animate)
-                self.settings.animate = input.animate;
+            if (input.tmpl && input.tmpl.id && input.tmpl.id.skin)
+                settings.skinFromMemory = true;
+            settings = self.UpdateSettings1(settings, input);
         }
-        self.settings.inputParameters = input;
 
-        for (var key in data.options.params) {
+        var options = data.options.params;
+        for (var key in options) {
             switch (key) {
                 case 'tmpl':
-                    if (data.options.params['tmpl']) {
-                        if (data.options.params['tmpl'].path)
-                            self.settings.tmpl.path = data.options.params['tmpl'].path;
-                        if (data.options.params['tmpl'].id) {
-                            for (var key in data.options.params['tmpl'].id) {
-                                self.settings.tmpl.id[key] = data.options.params['tmpl'].id[key];
+                    if (options['tmpl']) {
+                        if (options['tmpl'].path)
+                            settings.tmpl.path = options['tmpl'].path;
+                        if (options['tmpl'].id) {
+                            for (var key in options['tmpl'].id) {
+                                settings.tmpl.id[key] = options['tmpl'].id[key];
                             }
                         }
                     }
                     break;
                 case 'title':
-                    self.settings.title = data.options.params['title'];
+                    settings.title = options['title'];
                     break;
                 case 'uniq':
-                    self.settings.uniq = data.options.params['uniq'];
+                    settings.uniq = options['uniq'];
                     break;
                 case 'orderId':
-                    self.settings.source = 'order';
-                    self.settings.sourceVal = data.options.params['orderId'];
+                    settings.source = 'order';
+                    settings.sourceVal = options['orderId'];
                     break;
                 case 'goodsId':
-                    self.settings.source = 'goods';
-                    self.settings.sourceVal = data.options.params['goodsId'];
+                    settings.source = 'goods';
+                    settings.sourceVal = options['goodsId'];
                     break;
                 case 'amount':
-                    self.settings.source = 'amount';
-                    self.settings.sourceVal = data.options.params['amount'];
+                    settings.source = 'amount';
+                    settings.sourceVal = options['amount'];
                     break;
-                default:
-                    self.settings.inputParameters[key] = data.options.params[key];
             }
         }
+        Config.ButtonPayment = settings;
     };
-    self.CheckRouteButtonPayment = function () {
+    function CheckRouteButtonPayment() {
         if (Routing.route == 'payment') {
-            self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                self.InsertContainer.Content();
-                if (Routing.params.orderId)
-                    self.GetData.Order(Routing.params.orderId);
-                if (Routing.params.goodsId)
-                    self.GetData.Goods(Routing.params.goodsId);
-                if (Routing.params.amount)
-                    self.GetData.Amount(Routing.params.amount);
+            self.BaseLoad.Tmpl(settings.tmpl, function () {
+                InsertContainerContent();
+                var params = Routing.params;
+                if (params.orderId)
+                    GetDataOrder(params.orderId);
+                if (params.goodsId)
+                    GetDataGoods(params.goodsId);
+                if (params.amount)
+                    GetDataAmount(params.amount);
             });
         }
         else
             self.WidgetLoader(true);
-    };
-    self.LoadTmpl = function () {
-        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-            EventDispatcher.DispatchEvent('BPayment.tmpl_' + self.settings.uniq)
-        });
-    };
-    self.RegisterEvents = function () {
-        EventDispatcher.AddEventListener('BPayment.tmpl_' + self.settings.uniq, function (data) {
-            self.InsertContainer.Button();
-            self.Fill.Button();
+    }
+
+    function RegisterEvents() {
+        self.AddEvent('BPayment.tmpl_' + settings.uniq, function (data) {
+            InsertContainerButton();
+            FillButton();
         });
 
-        EventDispatcher.AddEventListener('w.change.route', function () {
-            self.CheckRouteButtonPayment();
+        self.AddEvent('w.change.route', function () {
+            CheckRouteButtonPayment();
         });
 
-        EventDispatcher.AddEventListener('w.ready', function(){
-            if(self.settings.containerButton != null){
-                self.Loader();
-                self.LoadTmpl();
+        self.AddEvent('w.ready', function () {
+            if (settings.containerButton != null) {
+                Loader.InsertContainer(settings.containerButton);
+                self.BaseLoad.Tmpl(settings.tmpl, function () {
+                    self.DispatchEvent('BPayment.tmpl_' + settings.uniq)
+                });
             }
         });
 
-        EventDispatcher.AddEventListener('BPayment.submit', function (form) {
-            self.InsertContainer.Content();
+        self.AddEvent('BPayment.submit', function (form) {
+            InsertContainerContent();
             var dataStr = [];
             $.each(form.inData(), function (i) {
                 if (form.inData()[i].name() == 'MOBILE_PHONE')
@@ -172,149 +142,139 @@ window.ButtonPaymentWidget = function () {
             var p = Routing.params;
             if (p.orderId) {
                 str = p.orderId + '?' + str;
-                self.GetData.Order(str);
+                GetDataOrder(str);
             }
             if (p.goodsId) {
                 str = p.goodsId + '?' + str;
-                self.GetData.Goods(str);
+                GetDataGoods(str);
             }
             if (p.amount) {
                 str = p.amount + '/' + Parameters.shopId + '?' + str;
-                self.GetData.Amount(str);
+                GetDataAmount(str);
             }
         });
-    };
-    self.GetData = {
-        Order: function (id) {
-            self.BaseLoad.InvoicesOrder(id, function (data) {
-                if(self.QueryError(data, function(){ self.GetData.Order(id)}, function(){Routing.SetHash('default', 'Домашняя', {}); })){
-                    self.Fill.Content(data);
-                }
-            });
-        },
-        Goods: function (id) {
-            self.BaseLoad.InvoicesGoods(id, function (data) {
-                self.Fill.Content(data);
-            });
-        },
-        Amount: function (sum) {
-            self.BaseLoad.InvoicesAmount(sum + '/' + Parameters.shopId, function (data) {
-                self.Fill.Content(data);
-            });
-        }
-    };
-    self.InsertContainer = {
-        EmptyWidget: function (container) {
-            var temp = $(container).find(self.SelectCustomContent().join(', ')).clone();
-            $(container).empty().html(temp);
-        },
-        Button: function () {
-            self.InsertContainer.EmptyWidget(self.settings.containerButton);
-            $(self.settings.containerButton).html($('script#' + self.GetTmplName('skin')).html());
-        },
-        Content: function () {
-            self.InsertContainer.EmptyWidget("#" + self.settings.containerId.widget);
-            $("#" + self.settings.containerId.widget).html($('script#' + self.GetTmplName('content')).html()).hide();
-        }
-    };
-    self.Fill = {
-        Button: function () {
-            var button = new ButtonPaymentViewModel(self.settings);
-            self.Render.Button(button);
-        },
-        Content: function (data) {
-            var content = new PaymentViewModel(self.settings);
+    }
 
-            var str = [];
-            var fields = data.pay_form.hidden_field;
-            $.each(fields, function(i){
-                str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
-            });
-            if(str)
-                $.cookie(Config.Base.cookie.orderId, str.join('&'));
+    function GetDataOrder(id) {
+        self.BaseLoad.InvoicesOrder(id, function (data) {
+            if (self.QueryError(data, function () {
+                    GetDataOrder(id)
+                }, function () {
+                    Routing.SetHash('default', 'Домашняя', {});
+                })) {
+                FillContent(data);
+            }
+        });
+    }
 
-            content.AddContent(data);
-            self.Render.Content(content);
+    function GetDataGoods(id) {
+        self.BaseLoad.InvoicesGoods(id, function (data) {
+            FillContent(data);
+        });
+    }
+
+    function GetDataAmount(sum) {
+        self.BaseLoad.InvoicesAmount(sum + '/' + Parameters.shopId, function (data) {
+            FillContent(data);
+        });
+    }
+
+    function InsertContainerEmptyWidget() {
+        self.ClearContainer(settings)
+    }
+
+    function InsertContainerButton() {
+        $(settings.containerButton).html($('script#' + self.GetTmplName1(settings, 'skin')).html());
+    }
+
+    function InsertContainerContent() {
+        self.InsertContainer(settings, 'content');
+    }
+
+    function FillButton() {
+        var button = new ButtonPaymentViewModel(settings);
+        RenderButton(button);
+    }
+
+    function FillContent(data) {
+        var content = new PaymentViewModel(settings);
+
+        var str = [];
+        var fields = data.pay_form.hidden_field;
+        $.each(fields, function (i) {
+            str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
+        });
+        if (str)
+            $.cookie(Config.Base.cookie.orderId, str.join('&'));
+
+        content.AddContent(data);
+        RenderContent(content);
+    }
+
+    function RenderButton(data) {
+        var container = $(settings.containerButton);
+        try {
+            ko.cleanNode(container.children()[0]);
+            ko.applyBindings(data, container.children()[0]);
+            if (settings.animate)
+                settings.animate();
         }
-    };
-    self.Render = {
-        Button: function (data) {
-            try {
-                ko.cleanNode($(self.settings.containerButton).children()[0]);
-                ko.applyBindings(data, $(self.settings.containerButton).children()[0]);
-                if(typeof AnimateButtonPayment == 'function')
-                    new AnimateButtonPayment();
-                if(self.settings.animate)
-                    self.settings.animate();
+        catch (e) {
+            self.Exception('Ошибка шаблона [' + self.GetTmplName1(settings, 'skin') + ']', e);
+            if (settings.tmpl.custom) {
+                delete settings.tmpl.custom;
+                self.BaseLoad.Tmpl(settings.tmpl, function () {
+                    InsertContainerButton();
+                    RenderButton(data);
+                });
             }
-            catch (e) {
-                self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
-                if (self.settings.tmpl.custom) {
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                        self.InsertContainer.Button();
-                        self.Render.Button(data);
-                    });
-                }
-                else {
-                    self.InsertContainer.EmptyWidget();
-                    self.WidgetLoader(true);
-                }
-            }
-        },
-        Content: function (data) {
-            if ($("#" + self.settings.containerId.widget).length > 0) {
-                try {
-                    ko.cleanNode($("#" + self.settings.containerId.widget)[0]);
-                    ko.applyBindings(data, $("#" + self.settings.containerId.widget)[0]);
-                    $.each(data.inData(), function (i) {
-                        if (data.inData()[i].mask()) {
-                            $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
-                        }
-                    });
-                    $("#" + self.settings.containerId.widget).show();
-                    self.WidgetLoader(true, self.settings.containerId.widget);
-                    if(typeof AnimateButtonPayment == 'function')
-                        new AnimateButtonPayment();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch (e) {
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('skin') + ']', e);
-                    if (self.settings.tmpl.custom) {
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                            self.InsertContainer.Content();
-                            self.Render.Content(data);
-                        });
-                    }
-                    else {
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-                self.WidgetLoader(true, self.settings.containerId);
+            else {
+                container.html('');
+                self.WidgetLoader(true);
             }
         }
-    };
+    }
+
+    function RenderContent(data) {
+        self.RenderTemplate(data, settings,
+            function(data){
+                $.each(data.inData(), function (i) {
+                    if (data.inData()[i].mask()) {
+                        $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
+                    }
+                });
+            },
+            function(data){
+                InsertContainerContent();
+                RenderContent(data);
+            },
+            function(){
+                InsertContainerEmptyWidget();
+            },
+            'content'
+        );
+    }
 };
 
 var ButtonPaymentViewModel = function (opt) {
-    var self = this;
+    var self = this,
+        alias = 'payment',
+        title = 'Оплата заказа';
     self.title = opt.title;
 
     self.ClickPay = function () {
         Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 1];
         if (opt.source == 'order')
-            Routing.SetHash('payment', 'Оплата заказа', {orderId: opt.sourceVal});
+            SetHash({orderId: opt.sourceVal});
         if (opt.source == 'goods')
-            Routing.SetHash('payment', 'Оплата заказа', {goodsId: opt.sourceVal});
+            SetHash({goodsId: opt.sourceVal});
         if (opt.source == 'amount')
-            Routing.SetHash('payment', 'Оплата заказа', {amount: opt.sourceVal});
+            SetHash({amount: opt.sourceVal});
     };
+
+    function SetHash(params){
+        Routing.SetHash(alias, title, params);
+    }
 };
 
 var PaymentViewModel = function (opt) {
@@ -367,11 +327,11 @@ var PaymentViewModel = function (opt) {
         Routing.SetHash(Routing.route, Routing.title, Routing.params, true);
     };
     self.ClickSubmit = function () {
-        if (self.ValidationFrom()) {
+        if (ValidationFrom()) {
             EventDispatcher.DispatchEvent('BPayment.submit', self);
         }
     };
-    self.ValidationFrom = function () {
+    function ValidationFrom() {
         var test = true;
         $.each(self.inData(), function (i) {
             if (!self.inData()[i].ValidateField()) {
@@ -380,7 +340,7 @@ var PaymentViewModel = function (opt) {
             }
         })
         return test;
-    };
+    }
     self.AddContent = function (data) {
         self.instruction(null);
         if (data.hasOwnProperty('instruction'))
@@ -409,7 +369,7 @@ var PaymentViewModel = function (opt) {
             }
             $.each(data.pay_form.hidden_field, function (i) {
                 var params = data.pay_form.hidden_field[i];
-                if(!data.pay_form.hidden_field[i].hasOwnProperty('value'))
+                if (!data.pay_form.hidden_field[i].hasOwnProperty('value'))
                     params.value = '';
                 self.payForm.field.push(data.pay_form.hidden_field[i]);
             });
@@ -501,7 +461,7 @@ var PaymentFieldViewModel = function () {
 }
 
 var TestButtonPayment = {
-    Init: function() {
+    Init: function () {
         if (typeof Widget == 'function') {
             window.ButtonPaymentWidget.prototype = new Widget();
             var buttonPayment = new window.ButtonPaymentWidget();
@@ -509,7 +469,7 @@ var TestButtonPayment = {
             buttonPayment.Init(buttonPayment);
         }
         else {
-            setTimeout(function() {
+            setTimeout(function () {
                 TestButtonPayment.Init()
             }, 100);
         }
