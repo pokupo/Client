@@ -48,7 +48,7 @@ var FavoritesWidget = function () {
             }
         }
 
-        Config.Favorites = settings;
+        Config.Containers.favorites = settings.container;
     }
 
     self.CheckRouteFavorites = function() {

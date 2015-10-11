@@ -45,7 +45,7 @@ var CartWidget = function () {
                 }
             }
         }
-        Config.Cart = settings;
+        Config.Containers.cart = settings.container;
     }
 
     function InsertContainerEmptyWidget() {

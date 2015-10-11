@@ -64,6 +64,41 @@ var OrderWidget = function () {
                 regular: 'Строка не является адресом электронной почты',
                 uniq: 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
             },
+            password: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Пароль должен быть не менее 6 символов',
+                maxLength: 'Пароль должен быть не более 64 символов',
+                equal: 'Пароль не совпадает с образцом'
+            },
+            isChecked: {
+                empty: 'Вам необходимо прочитать и принять условия соглашения'
+            },
+            firstName: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 2 символа',
+                maxLength: 'Максимум 20 символов',
+                regular: 'Только буквы латинского или русского алфавита'
+            },
+            lastName: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 2 символа',
+                maxLength: 'Максимум 20 символов',
+                regular: 'Только буквы латинского или русского алфавита'
+            },
+            middleName: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 2 символа',
+                maxLength: 'Максимум 20 символов',
+                regular: 'Только буквы латинского или русского алфавита'
+            },
+            birthDay: {
+                empty: 'Поле обязательно для заполнения',
+                minDate: 'Возраст пользователя должен быть не менее 18 лет.',
+                maxDate: 'Возраст пользователя может быть не старше 101 года'
+            },
+            gender: {
+                empty: 'Поле обязательно для заполнения'
+            },
             country: {
                 empty: 'Поле обязательно для заполнения'
             },
@@ -99,7 +134,10 @@ var OrderWidget = function () {
             phoneToken: {
                 empty: 'Поле обязательно для заполнения',
                 confirm: 'Указанный код не принят системой'
-            }
+            },
+            confirmLater: {
+                empty: 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи'
+            },
         },
         animate: typeof AnimateOrder == 'function' ? AnimateOrder : null
     },
@@ -132,7 +170,7 @@ var OrderWidget = function () {
         if (!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.Order = settings;
+        Config.Containers.order = settings.container;
     }
 
     function CheckRouteOrder() {
@@ -888,7 +926,7 @@ var OrderWidget = function () {
         if ($.isEmptyObject(form)) {
             self.BaseLoad.Script(PokupoWidgets.model.registration, function () {
                 self.BaseLoad.Script(PokupoWidgets.model.auth, function () {
-                    form = new OrderFormStep1ViewModel();
+                    form = new OrderFormStep1ViewModel(settings);
                     Parameters.cache.order.step1.reg = form;
                 });
             });
@@ -905,7 +943,7 @@ var OrderWidget = function () {
         RegistrationConfirmFormViewModel.prototype.Back = function () {
             self.DispatchEvent('Order.step1.view1');
         };
-        var form = new RegistrationConfirmFormViewModel(cache.reg);
+        var form = new RegistrationConfirmFormViewModel(cache.reg, settings);
         form.submitEvent('Order.step1.confirm');
         form.ShowButtonSendToken();
 
@@ -923,7 +961,7 @@ var OrderWidget = function () {
         RegistrationProfileFormViewModel.prototype.SpecifyLater = function () {
             self.DispatchEvent('Order.step1.later');
         };
-        var form = new RegistrationProfileFormViewModel();
+        var form = new RegistrationProfileFormViewModel(settings);
         form.submitEvent('Order.step1.profile');
         form.AddContent(data);
         RenderStep1Profile(form);
@@ -1271,12 +1309,12 @@ var OrderWidget = function () {
     }
 }
 
-var OrderFormStep1ViewModel = function () {
+var OrderFormStep1ViewModel = function (settings) {
     var self = this;
     var form = new AuthenticationViewModel();
     form.subminEvent('Order.step1.authentication');
     self.loginForm = form;
-    self.registrationForm = new RegistrationFormViewModel();
+    self.registrationForm = new RegistrationFormViewModel(settings);
     self.registrationForm.submitEvent('Order.step1.registration');
 };
 

@@ -10,7 +10,7 @@ var StandaloneGoodsWidget = function () {
     self.hasButton = false;
     self.InitWidget = InitWidget;
     var settings = {
-        container: {widget: 'standaloneGoodsWidgetId', def: 'defaultStandaloneGoodsWidgetId'},
+        container: {widget: 'content', def: 'defaultStandaloneGoodsWidgetId'},
         tmpl: {
             path: "standaloneGoodsTmpl.html", // файл шаблона
             id: "standaloneGoodsTmpl" // id шаблона виджета карточки товара по умолчанию
@@ -53,9 +53,7 @@ var StandaloneGoodsWidget = function () {
     function SetInputParameters() {
         var input = self.GetInputParameters('standaloneGoods');
 
-        var rParams = Routing.params,
-            settings = settings;
-
+        var rParams = Routing.params;
 
         if (rParams.id)
             settings.idGoods = rParams.id;
@@ -74,16 +72,12 @@ var StandaloneGoodsWidget = function () {
 
         if (!$.isEmptyObject(input)) {
             settings = self.UpdateSettings1(settings, input);
-
             if (input.show) {
                 for (var i = 0; i <= input.show.length - 1; i++) {
                     if ($.inArray(input.show[i], settings.showBlocks) < 0)
                         settings.showBlocks.push(input.show[i]);
                 }
             }
-
-            if (input.button)
-                settings.button.active = input.button;
         }
 
         var arrayParams = ["blockIdGoods", "blockShortName", "blockFullName", "blockGallery", "blockShop", "blockInfoSeller",
@@ -107,14 +101,16 @@ var StandaloneGoodsWidget = function () {
                 }
             }
         }
-
-        Config.StandaloneGoods = settings;
+        Config.Containers.standaloneGoods = settings.container;
     }
 
     function CheckRouteGoods() {
         if (Routing.route == 'goods' || Routing.IsDefault()) {
+            console.log(settings.tmpl);
             self.BaseLoad.Tmpl(settings.tmpl, function () {
+                console.log('templete');
                 self.BaseLoad.Script(PokupoWidgets.model.goods, function () {
+                    console.log('model');
                     Update();
                 });
             });
@@ -136,6 +132,7 @@ var StandaloneGoodsWidget = function () {
     function Update() {
         self.BaseLoad.GoodsInfo(settings.idGoods, settings.infoBlock, function (data) {
             self.DispatchEvent('SGoods.onload.info', data)
+            console.log('ddd');
         })
     }
 
@@ -149,7 +146,7 @@ var StandaloneGoodsWidget = function () {
 
     var fill = {
         Content: function (data) {
-            StandaloneGoodsViewModel.prototype = new GoodsViewModel();
+            StandaloneGoodsViewModel.prototype = new GoodsViewModel(settings);
             self.goods = new StandaloneGoodsViewModel(settings);
 
             for (var key in data) {
@@ -171,7 +168,7 @@ var StandaloneGoodsWidget = function () {
         },
         Main: function (data) {
             GoodsMainBlockViewModel.prototype = new Widget();
-            self.goods.AddBlock('main', new GoodsMainBlockViewModel(data));
+            self.goods.AddBlock('main', new GoodsMainBlockViewModel(data, settings));
             if ($.inArray('blockDescription', settings.showBlocks) >= 0) {
                 var key = 'blockDescription';
                 self.goods.AddBlock(key, data.description);
@@ -316,10 +313,13 @@ var StandaloneGoodsViewModel = function (settings) {
     self.SetListMoreBlock = function (prefix) {
         for (var key in settings.moreBlocks) {
             if (inShowBlocks(key)) {
-                StandaloneGoodsListMoreBlockViewModel.prototype = new GoodsListMoreBlockViewModel(key, self.blocks[key], prefix);
+                StandaloneGoodsListMoreBlockViewModel.prototype = new GoodsListMoreBlockViewModel(key, self.blocks[key], prefix, settings);
                 self.moreBlock.push(new StandaloneGoodsListMoreBlockViewModel(settings));
             }
         }
+    }
+    function inShowBlocks(key){
+        return $.inArray(key, settings.showBlocks) >= 0
     }
     self.Buy = function () {
         var params = {

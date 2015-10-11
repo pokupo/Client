@@ -161,49 +161,34 @@ var Loader = {
         if(this.action != 'hide'){
             this.action = 'hide';
 
-            for(var key in Loader.test){
-                for(var id in Loader.test[key].containers){
-                    $('#' + id).children().hide();
-                }
-            }
-
             for(var key in Config.Containers){
-                if(!Config.Containers[key].widget){
-                    for(var i in Config.Containers[key]){
-                        if(!Config.Containers[key][i].widget){
-                            for(var j in Config.Containers[key][i]){
-                                $("#" + Config.Containers[key][i][j].widget).children().hide();
+                var block = Config.Containers[key];
+                if(!block.widget){
+                    for(var i in block){
+                        if(!block[i].widget){
+                            for(var j in block[i]){
+                                $("#" + block[i][j].widget).children().hide();
                             }
                         }
                         else
-                            $("#" + Config.Containers[key][i].widget).children().hide();
+                            $("#" + block[i].widget).children().hide();
                     }
                 }
                 else{
-                    $("#" + Config.Containers[key].widget).children().hide();
+                    $("#" + block.widget).children().hide();
                 }
             }
         }
     },
     ShowContent : function(){
-        console.log(Loader.containers);
         $.each(Loader.containers, function(i, one){
-            console.log(one.container);
-            var children =  $('#' + one.container).children();
-            if(children)
-                children.show();
-        });
-        //------
-
-        for(var key in Loader.test){
-            var ids = Loader.test[key].containers;
-            for(var id in ids){
-                if(ids[id])
-                    $('#' + id).children().show();
-                else
-                    $('#' + id).children().hide();
+            if(one.container) {
+                var children = $('#' + one.container).children();
+                if (children)
+                    children.show();
             }
-        }
+        });
+
         this.action = 'show';
     },
     AddShowContainer : function(widget, id){
@@ -211,46 +196,48 @@ var Loader = {
     },
     ViewDefaultContent : function(){
         for(var key in Config.Containers){
-            if(!Config.Containers[key].def){
-                for(var key2 in Config.Containers[key]){
-                    if(Config.Containers[key][key2].def){
-                        if($("#" + Config.Containers[key][key2].def).length > 0){
+            var block = Config.Containers[key];
+            if(!block.def){
+                for(var key2 in block){
+                    if(block[key2].def){
+                        if($("#" + block[key2].def).length > 0){
                             if(key == 'content'){
-                                for(var key3 in Config.Containers[key]){
-                                    $("#" + Config.Containers[key][key3].def).children().show();
-                                    $("#" + Config.Containers[key][key3].widget).children().hide();
+                                for(var key3 in block){
+                                    $("#" + block[key3].def).children().show();
+                                    $("#" + block[key3].widget).children().hide();
                                 }
                             }
                             else{
-                                $("#" + Config.Containers[key][key2].def).children().show();
-                                $("#" + Config.Containers[key][key2].widget).children().hide();
+                                $("#" + block[key2].def).children().show();
+                                $("#" + block[key2].widget).children().hide();
                             }
                         }
                     }
                 }
             }
             else{
-                if($("#" + Config.Containers[key].def).length > 0){
-                    $("#" + Config.Containers[key].def).children().show();
-                    $("#" + Config.Containers[key].widget).children().hide();
+                if($("#" + block.def).length > 0){
+                    $("#" + block.def).children().show();
+                    $("#" + block.widget).children().hide();
                 }
             }
         }
     },
     HideDefaultContent : function(){
         for(var key in Config.Containers){
-            if(!Config.Containers[key].def){
-                for(var key2 in Config.Containers[key]){    
-                    if(Config.Containers[key][key2].def){
-                        if($("#" + Config.Containers[key][key2].def).length > 0){
-                            $("#" + Config.Containers[key][key2].def).children().hide();
+            var block = Config.Containers[key];
+            if(!block.def){
+                for(var key2 in block){
+                    if(block[key2].def){
+                        if($("#" + block[key2].def).length > 0){
+                            $("#" + block[key2].def).children().hide();
                         }
                     }
                 }
             }
             else{
-                if($("#" + Config.Containers[key].def).length > 0){
-                    $("#" + Config.Containers[key].def).children().hide();
+                if($("#" + block.def).length > 0){
+                    $("#" + block.def).children().hide();
                 }
             }
         }
@@ -355,13 +342,14 @@ var Widget = function (){
 
         return input;
     };
-    this.CheckNameConfigParameter = function(config, name){
+    this.CheckNameConfigParameter = function(config, name, input){
         try{
-            var parameter = config[name];
-            return parameter;
+            if(config.hasOwnProperty(name))
+                return input[name];
+            return false;
         }
         catch(e){
-            this.Exception('Error. Non-existent parameter [' + config.toString() + '[' + name + ']]');
+            this.Exception('Error. Non-existent parameter [' + config + '[' + name + ']]');
             return false;
         }
     };
@@ -369,10 +357,11 @@ var Widget = function (){
         if(typeof input !== 'undefined') {
             var customTmpl = null;
             for (var key in input) {
-                var parameter = this.CheckNameConfigParameter(defaultParams, key);
+                var parameter = this.CheckNameConfigParameter(defaultParams, key, input);
                 if (parameter) {
-                    if(typeof parameter != 'object')
+                    if(typeof parameter != 'object') {
                         defaultParams[key] = input[key];
+                    }
                     else {
                         if(key == 'tmpl')
                             customTmpl = input[key];
@@ -386,57 +375,6 @@ var Widget = function (){
         }
 
         return defaultParams;
-    };
-    this.UpdateSettings = function(){
-        var params = null;
-        if(typeof WParameters !== 'undefined')
-            params = WParameters;
-        if(JSSettings.inputParameters)
-            params = JSSettings.inputParameters;
-
-        for(var key in params){
-            if(params[key].hasOwnProperty('tmpl')){
-                var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
-                if(parameter)
-                    parameter.tmpl.custom = params[key].tmpl;
-            }
-            else{
-                for(var key2 in params[key]){
-                    if(params[key][key2].hasOwnProperty('tmpl')){
-                        var parameter = this.CheckNameConfigParameter(Config, key.charAt(0).toUpperCase() + key.slice(1));
-                        if(parameter){
-                            var parameter = this.CheckNameConfigParameter(parameter.tmpl, key2);
-                            if(parameter)
-                                parameter.custom = params[key][key2].tmpl;
-                        }
-                    }
-                }
-            }
-
-            if(params[key].hasOwnProperty('container')){
-                var parameter = this.CheckNameConfigParameter(Config.Containers, key);
-                if(parameter){
-                    if(params[key].container.widget)
-                        parameter.widget = params[key].container.widget;
-                    if(params[key].container.def)
-                        parameter.def = params[key].container.def;
-                }
-            }
-            else{
-                for(var key2 in params[key]){
-                    if(params[key][key2].hasOwnProperty('container')){
-                        var parameter = this.CheckNameConfigParameter(Config.Containers, key);
-                        if(parameter){
-                            var parameter = this.CheckNameConfigParameter(parameter, key2);
-                            if(params[key][key2].container.widget)
-                                parameter.widget = params[key][key2].container.widget;
-                            if(params[key][key2].container.def)
-                                parameter.def = params[key][key2].container.def;
-                        }
-                    }
-                }
-            }
-        }
     };
     this.Events = function(){
         self.AddEvent('w.ready', function(){
@@ -452,18 +390,22 @@ var Widget = function (){
         });
 
         self.AddEvent('w.onload.menu', function(opt){
-            if(!Parameters.cache.profileMenu){
+            var cache = Parameters.cache.profileMenu;
+            if(!cache){
                 MenuPersonalCabinetWidget.prototype = new Widget();
-                Parameters.cache.profileMenu = new MenuPersonalCabinetWidget();
-                Parameters.cache.profileMenu.Init(Parameters.cache.profileMenu);
+                cache = new MenuPersonalCabinetWidget();
+                cache.Init(cache);
             }
-            Parameters.cache.profileMenu.CheckRouteMenuProfile();
-            Parameters.cache.profileMenu.AddMenu(opt);
+            cache.CheckRouteMenuProfile();
+            cache.AddMenu(opt);
+            Parameters.cache.profileMenu = cache;
         });
 
         self.AddEvent('w.fav.add', function(data){
-            var inputDate = data;
-            if(Parameters.cache.userInformation && !Parameters.cache.userInformation.err){
+            var inputDate = data,
+                userInfo = Parameters.cache.userInformation,
+                message = Config.CartGoods.message;
+            if(userInfo && !userInfo.err){
                 self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
                     self.WidgetLoader(true);
                     if(data.result == 'ok'){
@@ -474,10 +416,10 @@ var Widget = function (){
                         }
                         else
                             inputDate.data.IsFavorite(true);
-                        self.ShowMessage(Config.CartGoods.message.addFavorites, false, false);
+                        self.ShowMessage(message.addFavorites, false, false);
                     }
                     else{
-                        self.ShowMessage(Config.CartGoods.message.failAddFavorites, false, false);
+                        self.ShowMessage(message.failAddFavorites, false, false);
                     }
                 });
             }
@@ -534,9 +476,6 @@ var Widget = function (){
         ko.global = {
             route : Routing.route
         };
-    };
-    this.InitWidgetContainers = function(containers){
-        Loader.test[this.widgetName] = {containers: containers};
     };
     this.ClearContainer = function(settings, container){
         if(!container)
@@ -596,57 +535,34 @@ var Widget = function (){
         }
     };
     this.GetTmplName1 = function(settings, name, block){
-        var tmplName = '';
+        var tmplName = '',
+            custom = '';
         if(name){
             if(!block){
-                tmplName = settings.tmpl.id[name];
-                if(settings.tmpl.custom && settings.tmpl.custom.id && settings.tmpl.custom.id[name])
-                    tmplName = settings.tmpl.custom.id[name];
+                tmplName = settings.tmpl.id[name],
+                custom = settings.tmpl.custom;
+                if(custom && custom.id && custom.id[name])
+                    tmplName = custom.id[name];
             }
             else{
-                tmplName = settings.tmpl[block].id[name];
-                if(settings.tmpl[block].custom && settings.tmpl[block].custom.id && settings.tmpl[block].custom.id[name])
-                    tmplName = settings.tmpl[block].custom.id[name];
+                tmplName = settings.tmpl[block].id[name],
+                custom = settings.tmpl[block].custom;
+                if(custom && custom.id && custom.id[name])
+                    tmplName = custom.id[name];
             }
         }
         else{
             if(!block){
-                tmplName = settings.tmpl.id;
-                if(settings.tmpl.custom && settings.tmpl.custom.id)
-                    tmplName = settings.tmpl.custom.id;
+                tmplName = settings.tmpl.id,
+                custom = settings.tmpl.custom;
+                if(custom && custom.id)
+                    tmplName = custom.id;
             }
             else{
-                tmplName = settings.tmpl[block].id;
-                if(settings.tmpl[block].custom && settings.tmpl[block].custom.id)
-                    tmplName = settings.tmpl[block].custom.id;
-            }
-        }
-        return tmplName;
-    };
-    this.GetTmplName = function(name, block){
-        var tmplName = '';
-        if(name){
-            if(!block){
-                tmplName = this.settings.tmpl.id[name];
-                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id && this.settings.tmpl.custom.id[name])
-                    tmplName = this.settings.tmpl.custom.id[name];
-            }
-            else{
-                tmplName = this.settings.tmpl[block].id[name];
-                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id && this.settings.tmpl[block].custom.id[name])
-                    tmplName = this.settings.tmpl[block].custom.id[name];
-            }
-        }
-        else{
-            if(!block){
-                tmplName = this.settings.tmpl.id;
-                if(this.settings.tmpl.custom && this.settings.tmpl.custom.id)
-                    tmplName = this.settings.tmpl.custom.id;
-            }
-            else{
-                tmplName = this.settings.tmpl[block].id;
-                if(this.settings.tmpl[block].custom && this.settings.tmpl[block].custom.id)
-                    tmplName = this.settings.tmpl[block].custom.id;
+                tmplName = settings.tmpl[block].id,
+                custom = settings.tmpl[block].custom;
+                if(custom && custom.id)
+                    tmplName = custom.id;
             }
         }
         return tmplName;
@@ -714,7 +630,7 @@ var Widget = function (){
         Logger.Console.Exception(this.widgetName, text, exeption);
     };
     this.NewModal = function(type, message, callback, callbackFail, hide){
-        self.BaseLoad.Script('widgets/ModalMessageWidget-1.0.js', function() {
+        self.BaseLoad.Script(PokupoWidgets.list.modalMessage, function() {
             var information = new ModalMessageWidget(type, message, callback, callbackFail, hide);
             information.Init(information);
         });
@@ -1177,7 +1093,6 @@ var Widget = function (){
                 if(count >= 0)
                     str = str + count + '/';
             }
-            console.log(count);
 
             XDMTransport.Load.Data(opt.host + self.settings.cartPathApi + 'add/' + Parameters.shopId + '/' + idGoods + '/' + str, function(data){
                 if(callback)

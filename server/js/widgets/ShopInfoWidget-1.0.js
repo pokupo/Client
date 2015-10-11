@@ -39,7 +39,7 @@ var ShopInfoWidget = function () {
                     settings.show.title = input.show.title;
             }
         }
-        Config.ShopInfo = settings;
+        Config.Containers.shopInfo = settings.container;
     }
 
     function RegisterEvents() {

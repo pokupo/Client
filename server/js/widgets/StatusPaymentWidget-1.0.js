@@ -9,7 +9,7 @@ var StatusPaymentWidget = function () {
     self.InitWidget = InitWidget;
 
     var settings = {
-        container: { widget: 'statusPaymentWidgetId', def: 'defaultStatusPaymentWidgetId'},
+        container: { widget: 'content', def: 'defaultStatusPaymentWidgetId'},
         tmpl : {
             path : 'statusPaymentTmpl.html', // файл шаблонов
             id : 'statusPaymentPageTmpl' //id шаблона страницы статуса оплаты
@@ -29,7 +29,7 @@ var StatusPaymentWidget = function () {
         if(!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.StatusPayment = settings;
+        Config.Containers.statusPayment = settings.container;
     }
     function InsertContainerEmptyWidget(){
         self.ClearContainer(settings);

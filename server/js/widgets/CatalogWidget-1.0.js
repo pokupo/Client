@@ -28,7 +28,7 @@ var CatalogWidget = function () {
         if(!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.Catalog = settings;
+        Config.Containers.catalog = settings.container;
     }
 
     self.CheckRouteCatalog = function() {

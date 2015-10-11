@@ -44,7 +44,7 @@ var CartGoodsWidget = function () {
         if (!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.CartGoods = settings;
+        Config.Containers.cartGoods = settings.container;
     }
 
     function CheckRouteCartGoods() {
@@ -118,7 +118,7 @@ var CartGoodsWidget = function () {
 
     var fill = {
         Content: function (data) {
-            var content = new CartGoodsViewModel();
+            var content = new CartGoodsViewModel(settings);
             for (var j in data) {
                 BlockGoodsForSellerViewModel.prototype = new Widget();
                 self.cart = new BlockGoodsForSellerViewModel(content, settings);

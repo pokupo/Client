@@ -75,7 +75,7 @@ var SearchResultWidget = function () {
             }
         }
 
-        Config.SearchResult = settings;
+        Config.Containers.searchResult = settings.container;
     }
 
     function CheckRoutingSearch() {
@@ -401,7 +401,7 @@ var ListSearchResultViewModel = function (settings) {
     self.paging = ko.observableArray();
     self.GetSort = function () {
         var s = new SortSearchResultListViewModel();
-        s.AddContent(Config.SearchResult.sortList);
+        s.AddContent(settings.sortList);
         s.SetDefault(Parameters.filter.orderBy);
         return s;
     };

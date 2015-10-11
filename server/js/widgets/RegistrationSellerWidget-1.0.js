@@ -78,7 +78,7 @@ var RegistrationSellerWidget = function () {
 
         if (!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
-        Config.RegistrationSeller = settings;
+        Config.Containers.registrationSeller = settings.container;
     }
 
     function CheckRouteRegistrationSeller() {

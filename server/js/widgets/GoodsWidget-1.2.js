@@ -53,7 +53,7 @@ var GoodsWidget = function () {
                 }
             }
         }
-        Config.Goods = settings;
+        Config.Containers.goods = settings.container;
     }
     function CheckRouteGoods() {
         if (Routing.route == 'goods') {
@@ -96,7 +96,7 @@ var GoodsWidget = function () {
 
     var fill = {
         Content: function (data) {
-            self.goods = new GoodsViewModel();
+            self.goods = new GoodsViewModel(settings);
             for (var key in data) {
                 if (typeof fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()] == 'function')
                     fill[key.charAt(0).toUpperCase() + key.substr(1).toLowerCase()](data[key]);
@@ -110,7 +110,7 @@ var GoodsWidget = function () {
         },
         Main: function (data) {
             GoodsMainBlockViewModel.prototype = new Widget();
-            self.goods.AddBlock('main', new GoodsMainBlockViewModel(data));
+            self.goods.AddBlock('main', new GoodsMainBlockViewModel(data, settings));
             var key = 'description';
             self.goods.AddBlock(key, data.description);
             if (data.description && data.description.match(/data-bind/))

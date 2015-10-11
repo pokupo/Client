@@ -132,7 +132,7 @@ var RegistrationWidget = function () {
         if (!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.Registration = settings;
+        Config.Containers.registration = settings.container;
     }
 
     function CheckRouteRegistration() {
@@ -446,7 +446,7 @@ var RegistrationWidget = function () {
                 else
                     SetHash('default', 'Домашняя', {});
             };
-            form = new RegistrationFormViewModel();
+            form = new RegistrationFormViewModel(settings);
             form.submitEvent('RegistrationWidget.step1.checking');
         }
         RenderStep1(form);
@@ -463,7 +463,7 @@ var RegistrationWidget = function () {
                 else
                     SetHash('default', 'Домашняя', {});
             };
-            var step1 = new RegistrationFormViewModel();
+            var step1 = new RegistrationFormViewModel(settings);
             step1.username(pRoute.username);
             step1.submitEvent('RegistrationWidget.step1.checking');
             Parameters.cache.reg.step1 = step1;
@@ -472,7 +472,7 @@ var RegistrationWidget = function () {
         RegistrationConfirmFormViewModel.prototype.Back = function () {
             self.DispatchEvent('RegistrationWidget.step1.view');
         };
-        var form = new RegistrationConfirmFormViewModel(Parameters.cache.reg.step1);
+        var form = new RegistrationConfirmFormViewModel(Parameters.cache.reg.step1, settings);
         form.submitEvent('RegistrationWidget.step2.checking');
 
         if (pRoute.username && pRoute.mail_token) {
@@ -492,7 +492,7 @@ var RegistrationWidget = function () {
             RegistrationProfileFormViewModel.prototype.SpecifyLater = function () {
                 self.DispatchEvent('RegistrationWidget.step3.later');
             };
-            form = new RegistrationProfileFormViewModel();
+            form = new RegistrationProfileFormViewModel(settings);
             form.submitEvent('RegistrationWidget.step3.checking');
         }
         RenderStep3(form);

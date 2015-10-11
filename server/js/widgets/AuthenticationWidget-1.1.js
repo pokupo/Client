@@ -35,7 +35,7 @@ var AuthenticationWidget = function(){
             if(input.https)
                 Parameters.cache.https = input.https;
         }
-        Config.Authentication = settings;
+        Config.Containers.authentication = settings.container;
     }
     function CheckAuthenticationRoute(){
         if(Routing.route == 'login'){

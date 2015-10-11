@@ -32,7 +32,7 @@ var MenuPersonalCabinetWidget = function () {
         if(!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.MenuPersonalCabinet = settings;
+        Config.Containers.menuPersonalCabinet = settings.container;
     }
     function AddMenu(opt) {
         if (opt) {

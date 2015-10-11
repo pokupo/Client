@@ -30,7 +30,7 @@ var BreadCrumbWidget = function () {
             settings = self.UpdateSettings1(settings, input);
         }
 
-        Config.BreadCrumb = settings;
+        Config.Containers.breadCrumb = settings.container;
     }
 
     function InsertContainerEmptyWidget(i) {

@@ -115,7 +115,7 @@ var ContentWidget = function () {
                     settings.animate.content = content.animate;
             }
         }
-        Config.Content = settings;
+        Config.Containers.content = settings.container;
     }
 
     function CheckContentRouting() {
@@ -538,7 +538,7 @@ var ListContentViewModel = function (settings) {
     self.paging = ko.observableArray();
     self.GetSort = function () {
         var s = new SortContentListViewModel();
-        s.AddContent(Config.Content.sortList);
+        s.AddContent(settings.sortList);
         s.SetDefault(Routing.GetMoreParameter('orderBy') ? Routing.GetMoreParameter('orderBy') : settings.orderBy);
         return s;
     };

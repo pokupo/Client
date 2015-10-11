@@ -61,7 +61,6 @@ window.InfoSellerWidget = function () {
             }
         }
 
-        Config.InfoSeller = settings;
         Parameters.cache.infoSellerCollection[params['uniq']] = true;
     }
     function LoadTmpl() {

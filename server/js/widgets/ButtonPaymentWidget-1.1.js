@@ -42,7 +42,7 @@ window.ButtonPaymentWidget = function () {
         if(!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.ButtonPayment = settings;
+        Config.Containers.buttonPayment = settings.container;
     }
 
     self.SetParameters = function (data) {

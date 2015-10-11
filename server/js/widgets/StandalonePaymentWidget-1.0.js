@@ -162,7 +162,7 @@ var StandalonePaymentWidget = function () {
 
         }
 
-        Config.StandalonePayment = settings;
+        Config.Containers.standalonePayment = settings.container;
     }
 
     function CheckRouteStandalonePayment() {
@@ -589,7 +589,7 @@ var StandalonePaymentListViewModel = function (settings) {
         self.error.count(null);
         self.show.errorCount(false);
         return true;
-    };
+    }
     function AmountValidation() {
         var error = settings.Error.coast;
         if (!self.amount()) {
@@ -615,7 +615,7 @@ var StandalonePaymentListViewModel = function (settings) {
         self.error.amount(null);
         self.show.errorAmount(false);
         return true;
-    };
+    }
     function EmailValidation() {
         var error = settings.Error.email;
         if (!self.mailUser()) {
@@ -636,7 +636,7 @@ var StandalonePaymentListViewModel = function (settings) {
         self.error.email(null);
         self.show.errorEmail(false);
         return true;
-    };
+    }
 
     EventDispatcher.AddEventListener('SPayment.payment.validate', function (data) {
         var test = true;
@@ -654,6 +654,7 @@ var StandalonePaymentListViewModel = function (settings) {
     self.Back = function () {
         window.location.href = settings.backUrl;
     }
+    self.AmountValidation = AmountValidation;
 }
 
 var StandalonePaymentItemViewModel = function (obj, data) {

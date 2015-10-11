@@ -59,7 +59,7 @@ var MessageWidget = function () {
                 settings.paging.itemsPerPage = input.defaultCount;
         }
 
-        Config.Message = settings;
+        Config.Containers.message = settings.container;
     }
 
     self.CheckRouteMessage = function() {

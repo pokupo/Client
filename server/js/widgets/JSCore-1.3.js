@@ -123,14 +123,17 @@ var JSLoader = {
             setTimeout(function(){JSLoader.OnReady()}, 100);
         }
     },
-    Load : function(scripts, callback){
+    Load : function(scripts, callback, pathToJs){
         var head = document.getElementsByTagName("head")[0] || document.documentElement;
 
         for(var i in scripts){
             var script = document.createElement("script");
             script.async = true;
             script.type = 'text/javascript';
-            script.src = this.pathToJs + scripts[i];
+            if(pathToJs)
+                script.src = pathToJs + scripts[i];
+            else
+                script.src = this.pathToJs + scripts[i];
             script.async = true;
 
             if (script.readyState) { //IE
@@ -397,28 +400,41 @@ var PokupoWidgets = {
         order: 'widgets/OrderWidget-1.1.min.js',
         orderList: 'widgets/OrderListWidget-1.0.min.js',
         profile: 'widgets/ProfileWidget-1.0.min.js',
-        registration: 'widgets/RegistrationWidget-1.0.js',
+        registration: 'widgets/RegistrationWidget-1.0.min.js',
         registrationSeller: 'widgets/RegistrationSellerWidget-1.0.min.js',
         relatedGoods: 'widgets/RelatedGoodsWidget-1.0.min.js',
         search: 'widgets/SearchWidget-1.0.min.js',
         searchResult: 'widgets/SearchResultWidget-1.1.min.js',
         userInformation: 'widgets/UserInformationWidget-1.1.min.js',
+        standaloneGoods: 'widgets/StandaloneGoodsWidget-1.0.min.js',
         standalonePayment: 'widgets/StandalonePaymentWidget-1.0.min.js',
         statusPayment: 'widgets/StatusPaymentWidget-1.0.min.js',
         modalMessage: 'widgets/ModalMessageWidget-1.0.min.js',
         shopInfo: 'widgets/ShopInfoWidget-1.0.min.js'
     },
+    libs: {
+        ya: {
+            path: '//yandex.st/share/',
+            name: 'share.js'
+        }
+    },
     Init: function(widgets, params){
         JSCore.Init(params);
 
-        if (typeof jQuery == 'undefined'){
-            JSLoader.Load(["jquery-1.11.2.js"], function(){
-                PokupoWidgets.Load(widgets);
-            })
-        }
-        else{
-            PokupoWidgets.Load(widgets);
-        }
+        JSLoader.Load(
+            [PokupoWidgets.libs.ya.name],
+            function(){
+                if (typeof jQuery == 'undefined'){
+                    JSLoader.Load(["jquery-1.11.2.js"], function(){
+                        PokupoWidgets.Load(widgets);
+                    })
+                }
+                else{
+                    PokupoWidgets.Load(widgets);
+                }
+            },
+            PokupoWidgets.libs.ya.path
+        );
     },
     Load: function(widgets){
         var scripts = JSSettings.scripts;
@@ -427,18 +443,20 @@ var PokupoWidgets = {
 
         JSLoader.LoadCss(JSSettings.styles);
 
+        EventDispatcher.AddEventListener('onload.scripts', function(){
+            if(PokupoWidgets.TestAll(widgets))
+                JSLoader.Load([PokupoWidgets.list.all]);
+            else {
+                for (var key in widgets) {
+                    var path = PokupoWidgets.list[widgets[key]];
+                    if (path)
+                        JSLoader.Load([path]);
+                }
+            }
+        })
+
         for(var key in scripts){
             JSLoader.Load([scripts[key]], JSLoader.RegisterLoaded(scripts));
-        }
-
-        if(PokupoWidgets.TestAll(widgets))
-            JSLoader.Load([PokupoWidgets.list.all]);
-        else {
-            for (var key in widgets) {
-                var path = PokupoWidgets.list[widgets[key]];
-                if (path)
-                    JSLoader.Load([path]);
-            }
         }
     },
     TestAll: function(widgets){

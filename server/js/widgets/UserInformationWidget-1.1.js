@@ -40,7 +40,7 @@ var UserInformationWidget = function () {
                 }
             }
         }
-        Config.UserInformation = settings;
+        Config.Containers.userInformation = settings.container;
     }
     function LoadTmpl() {
         self.BaseLoad.Tmpl(settings.tmpl, function () {

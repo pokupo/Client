@@ -31,7 +31,7 @@ var SearchWidget = function(){
         if(!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.Search = settings;
+        Config.Containers.search = settings.container;
     }
     function InsertContainerEmptyWidget(){
         self.ClearContainer(settings);

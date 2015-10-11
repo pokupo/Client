@@ -42,7 +42,7 @@ var CabinetCartGoodsWidget = function () {
         if (!$.isEmptyObject(input))
             settings = self.UpdateSettings1(settings, input);
 
-        Config.CabinetCartGoods = settings;
+        Config.Containers.cabinetCartGoods = settings.container;
     }
 
     function CheckRouteCabinerCartGoods() {

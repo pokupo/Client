@@ -52,7 +52,7 @@ var OrderListWidget = function () {
             }
         }
 
-        Config.OrderList = settings;
+        Config.Containers.orderList = settings.container;
     }
 
     function CheckRouteListOrder() {
@@ -128,9 +128,9 @@ var OrderListWidget = function () {
                 if (data.err) {
                     self.ShowMessage(data.msg, function () {
                         if (data.err == "Not defined Payment Method")
-                            SetHash(alias, title, {step: 4, id: opt.id});
-                        else
                             SetHash(alias, title, {step: 2, id: opt.id});
+                        else
+                            SetHash(alias, title, {step: 4, id: opt.id});
                     });
                 }
                 else {
