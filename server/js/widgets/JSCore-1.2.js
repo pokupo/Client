@@ -36,7 +36,15 @@ var JSSettings = {
         'widgets/Widget-1.1.js'
     ],
     scripts: [
-        'widgets/widgets.lib.min.js'
+        //'widgets/widgets.lib.min.js'
+        'easyXDM.min.js',
+        'knockout-3.2.0.js',
+        'jquery.cookie.js',
+        'jquery.textchange.min.js',
+        'widgets/Config-1.1.js',
+        'widgets/Routing-1.0.js',
+        'widgets/Paging-1.0.js',
+        'widgets/Widget-1.1.js'
     ],
     inputParameters : {}
 }
@@ -118,11 +126,31 @@ var JSLoader = {
         }
     },
     Load : function(scripts, callback){
+        var head = document.getElementsByTagName("head")[0] || document.documentElement;
+
         for(var i in scripts){
-            $.getScript(this.pathToJs + scripts[i], function(){
-                if(callback)
-                    callback();
-            });
+            var script = document.createElement("script");
+            script.async = true;
+            script.type = 'text/javascript';
+            script.src = this.pathToJs + scripts[i];
+            script.async = true;
+
+            if (script.readyState) { //IE
+                script.onreadystatechange = function () {
+                    if (script.readyState == "loaded" || script.readyState == "complete") {
+                        script.onreadystatechange = null;
+                        callback();
+                    }
+                };
+            } else { // Non IE
+                script.onload = function () {
+                    if(callback)
+                        script.onload = callback();
+                };
+            }
+
+
+            head.appendChild(script);
         }
     }
 }
@@ -132,14 +160,11 @@ var JSCore = {
     isReady : false,
     shopId : null,
     dev : false,
-    Init : function(){
+    Init : function(params){
         if(document.location.protocol == 'https:')
             JSSettings.protocolHTTP = JSSettings.protocolHTTPS;
-        JSCore.SetInputParameters();
-        var scripts = JSSettings.scripts;
-        if(JSSettings.dev)
-            scripts = JSSettings.devScripts;
-        JSLoader.Init(scripts, JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS);
+        JSCore.SetInputParameters(params);
+        JSLoader.pathToJs = JSSettings.protocolHTTP + JSSettings.host + JSSettings.pathToJS;
         JSCore.shopId = JSSettings.shopId;
         XDMTransport.Init(JSSettings.host + JSSettings.pathToCore);
         JSCore.isReady = true;
@@ -147,10 +172,15 @@ var JSCore = {
     
     ParserInputParameters : function(scriptName){
         var obj = {};
-        
-        var attr = $('script').filter(function(){
-            return scriptName.test($(this).attr('src'));
-        }).attr('src');
+        var list = document.getElementsByTagName("script");
+        var attr = '';
+        for(var i=0; i <= list.length-1; i++){
+            if(list[i].hasAttribute("src")) {
+                attr = list[i].getAttributeNode("src").value;
+                if (scriptName.test(attr))
+                    break;
+            }
+        }
         
         if(attr){
             var string = attr.split('?');
@@ -167,9 +197,9 @@ var JSCore = {
             return obj;
         return null;
     },
-    SetInputParameters : function(){
+    SetInputParameters : function(params){
         var input = JSCore.ParserInputParameters(/JSCore/);
-        if($.isEmptyObject(input))
+        if(Object.keys(input).length == 0)
             input = JSCore.ParserInputParameters(/pokupo.widgets.[a-z0-9]{32}.min.js/);
         if(input){
             for(var key in input){
@@ -185,6 +215,16 @@ var JSCore = {
                 }
             }
         }
+        if(params){
+            for(var key in params.core){
+                if(JSSettings.hasOwnProperty(key)){
+                    JSSettings[key] = params.core[key];
+                }
+            }
+        }
+
+        JSSettings.inputParameters = params;
+
         JSSettings.inputParameters['shopId'] = JSSettings.shopId;
     }
 };
@@ -321,6 +361,79 @@ var Logger = {
     }
 }
 
-$().ready(function(){
-   JSCore.Init();
-})
+var PokupoWidgets = {
+    model: {
+        order: 'widgets/OrderViewModel-1.0.min.js',
+        auth: 'widgets/AuthenticationViewModel-1.1.min.js',
+        menu: 'widgets/MenuPersonalCabinetWidget-1.1.js',
+        content: 'widgets/ContentViewModel-1.0.min.js',
+        goods: 'widgets/GoodsViewModel-1.0.min.js',
+        registration: 'widgets/RegistrationViewModel-1.0.min.js'
+    },
+    list: {
+        all: 'widgets/pokupo.widgets.min.js',
+        authentication: 'widgets/AuthenticationWidget-1.1.js',
+        cart: 'widgets/CartWidget-1.0.js',
+        catalog: 'widgets/CatalogWidget-1.0.js',
+        breadCrumb: 'widgets/BreadCrumbWidget-1.0.js',
+        buttonPayment: 'widgets/ButtonPaymentWidget-1.1.js',
+        content: 'widgets/ContentWidget-1.1.js',
+        cartGoods: 'widgets/CartGoodsWidget-1.0.js',
+        cabinetCartGoods: 'widgets/CabinetCartGoodsWidget-1.0.js',
+        favorites: 'widgets/FavoritesWidget-1.0.js',
+        goods: 'widgets/GoodsWidget-1.2.js',
+        infoSeller: 'widgets/InfoSellerWidget-1.0.js',
+        menuPersonalCabinet: 'widgets/MenuPersonalCabinetWidget-1.1.js',
+        message: 'widgets/MessageWidget-1.0.js',
+        order: 'widgets/OrderWidget-1.1.js',
+        orderList: 'widgets/OrderListWidget-1.0.js',
+        profile: 'widgets/ProfileWidget-1.0.js',
+        registration: 'widgets/RegistrationWidget-1.0.js',
+        registrationSeller: 'widgets/RegistrationSellerWidget-1.0.js',
+        relatedGoods: 'widgets/RelatedGoodsWidget-1.0.js',
+        search: 'widgets/SearchWidget-1.0.js',
+        searchResult: 'widgets/SearchResultWidget-1.1.js',
+        userInformation: 'widgets/UserInformationWidget-1.1.js',
+        standalonePayment: 'widgets/StandalonePaymentWidget-1.0.js',
+        statusPayment: 'widgets/StatusPaymentWidget-1.0.js',
+        modalMessage: 'widgets/ModalMessageWidget-1.0.js',
+        shopInfo: 'widgets/ShopInfoWidget-1.0.js'
+    },
+    Init: function(widgets, params){
+        JSCore.Init(params);
+
+        if (typeof jQuery == 'undefined'){
+            JSLoader.Load(["jquery-1.11.2.js"], function(){
+                PokupoWidgets.Load(widgets);
+            })
+        }
+        else{
+            PokupoWidgets.Load(widgets);
+        }
+    },
+    Load: function(widgets){
+        var scripts = JSSettings.scripts;
+        if(JSSettings.dev)
+            scripts = JSSettings.devScripts;
+        for(var key in scripts){
+            JSLoader.Load([scripts[key]], JSLoader.RegisterLoaded(scripts));
+        }
+
+        if(PokupoWidgets.TestAll(widgets))
+            JSLoader.Load([PokupoWidgets.list.all]);
+        else {
+            for (var key in widgets) {
+                var path = PokupoWidgets.list[widgets[key]];
+                if (path)
+                    JSLoader.Load([path]);
+            }
+        }
+    },
+    TestAll: function(widgets){
+        for(var i = 0; i <= widgets.length - 1; i++ ){
+            if(widgets[i] == 'all')
+                return true;
+        }
+        return false;
+    }
+}

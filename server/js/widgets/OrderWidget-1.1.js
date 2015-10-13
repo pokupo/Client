@@ -1,4 +1,4 @@
-var OrderWidget = function() {
+var OrderWidget = function () {
     var self = this;
     self.widgetName = 'OrderWidget';
     self.version = 1.1;
@@ -6,27 +6,142 @@ var OrderWidget = function() {
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        containerFormId: null,
-        tmpl : {
-            path: null,
-            id : {
-                step1 : null,
-                step1Confirm : null,
-                step1Profile : null,
-                step2 : null,
-                step2Form : null,
-                step3 : null,
-                step4 : null,
-                step5 : null
+    var settings = {
+        container: {widget: 'content', def: 'defaultOrderWidgetId'},
+        tmpl: {
+            path: "orderTmpl.html", // файл шаблонов
+            id: {
+                step1: "orderFormStep1Tmpl", //id шаблона формы заказа шаг 1
+                step1Confirm: "orderConfirmFormStep1Tmpl", //id шаблона формы активации аккаунта при заказе шаг 1
+                step1Profile: 'orderProfileFormStep1Tmpl', // id шаблона формы персоональных данных
+                step2: "orderFormStep2Tmpl", //id шаблона формы заказа шаг 2
+                step2Form: 'orderDeliveryFormStep2Tmpl',
+                step3: "orderFormStep3Tmpl", //id шаблона формы заказа шаг 3
+                step4: "orderFormStep4Tmpl", //id шаблона формы заказа шаг 4
+                step5: "orderFormStep5Tmpl" //id шаблона формы заказа шаг 5
             }
         },
-        animate: null,
-        inputParameters: {},
-        style: null,
-        customContainer: null
-    };
-    self.order = {
+        regular: { // регулярные выражения полей
+            username: /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
+            email: /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+            phone: /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/,
+            firstName: /^[a-zёа-яА-ЯЁA-Z]+$/,
+            lastName: /^[a-zа-яёА-ЯЁA-Z]+$/,
+            middleName: /^[a-zа-яёА-ЯЁA-Z]+$/,
+            birthDay: /^[\d]{2}.[\d]{2}.[\d]{4}$/,
+            gender: /^[mw]$/,
+            addressee: /^[a-zа-яёА-ЯЁA-Z\s]+$/,
+            postIndex: /^[0-9]+$/
+        },
+        message: {
+            addAddressDelivery: 'Данные успешно сохранены.',
+            failAddAddressDelivery: 'Данные не сохранены. Попробуйте повторить запрос позднее.',
+            deleteAddressDelivery: 'Адрес доставки успешно удален.',
+            confirmDeleteAddressDelivery: "Вы уверены, что хотите удалить адрес?",
+            failDeleteAddressDelivery: 'Адрес доставки не удален. Попробуйте повторить запрос позднее.',
+            setDefaultDelivery: 'Данные успешно обновлены.',
+            failSetDefaultDelivery: 'Данные не обновлены.',
+            orderConfirm: 'Ваш заказ подтвержден.',
+            selectMethodPayment: 'Необходимо выбрать способ оплаты.',
+            selectAddress: 'Необходимо выбрать метод доставки.',
+            selectMethodShipping: 'Необходимо выбрать метод доставки.',
+            confirmDeleteOrder: 'Вы уверны, что хотите удалить заказ?',
+            deleteOrderConfirm: 'Ваш заказ удален.',
+            sendToken: 'Код активации успешно выслан по указанным данным.',
+            failSendToken: 'Код не был отправлен. Попробуйте повторить запрос позднее.'
+        },
+        error: { // сообщения об ошибках при валидации формы регистрации
+            username: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 4 символа',
+                maxLength: 'Максимум 40 символов',
+                regular: 'Только буквы латинского или русского алфавита',
+                uniq: 'К сожалению это имя уже занято, попробуйте указать другой вариант'
+            },
+            email: {
+                empty: 'Поле обязательно для заполнения',
+                maxLength: 'Максимум 64 символа',
+                regular: 'Строка не является адресом электронной почты',
+                uniq: 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+            },
+            password: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Пароль должен быть не менее 6 символов',
+                maxLength: 'Пароль должен быть не более 64 символов',
+                equal: 'Пароль не совпадает с образцом'
+            },
+            isChecked: {
+                empty: 'Вам необходимо прочитать и принять условия соглашения'
+            },
+            firstName: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 2 символа',
+                maxLength: 'Максимум 20 символов',
+                regular: 'Только буквы латинского или русского алфавита'
+            },
+            lastName: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 2 символа',
+                maxLength: 'Максимум 20 символов',
+                regular: 'Только буквы латинского или русского алфавита'
+            },
+            middleName: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 2 символа',
+                maxLength: 'Максимум 20 символов',
+                regular: 'Только буквы латинского или русского алфавита'
+            },
+            birthDay: {
+                empty: 'Поле обязательно для заполнения',
+                minDate: 'Возраст пользователя должен быть не менее 18 лет.',
+                maxDate: 'Возраст пользователя может быть не старше 101 года'
+            },
+            gender: {
+                empty: 'Поле обязательно для заполнения'
+            },
+            country: {
+                empty: 'Поле обязательно для заполнения'
+            },
+            region: {
+                empty: 'Поле обязательно для заполнения'
+            },
+            city: {
+                empty: 'Поле обязательно для заполнения'
+            },
+            address: {
+                empty: 'Поле обязательно для заполнения'
+            },
+            postIndex: {
+                empty: 'Поле обязательно для заполнения',
+                length: 'В почтовом индексе должно быть 5 или 6 цифр',
+                regular: 'Только цифры'
+            },
+            addressee: {
+                empty: 'Поле обязательно для заполнения',
+                minLength: 'Минимум 2 символа',
+                maxLength: 'Максимум 20 символов',
+                regular: 'Только буквы латинского или русского алфавита'
+            },
+            phone: {
+                empty: 'Поле обязательно для заполнения',
+                regular: 'Не верный формат телефона',
+                uniq: 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="#">Восстановить доступ</a>'
+            },
+            emailToken: {
+                empty: 'Поле обязательно для заполнения',
+                confirm: 'Указанный код не принят системой'
+            },
+            phoneToken: {
+                empty: 'Поле обязательно для заполнения',
+                confirm: 'Указанный код не принят системой'
+            },
+            confirmLater: {
+                empty: 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи'
+            },
+        },
+        animate: typeof AnimateOrder == 'function' ? AnimateOrder : null
+    },
+    order = {
         type: null, // fromCart || directly
         id: null,
         sellerId: null,
@@ -36,157 +151,147 @@ var OrderWidget = function() {
         delivery: {},
         shipping: {},
         payment: {}
-    };
-    self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.order.widget;
-        self.settings.customContainer = Config.Containers.order.customClass;
-        self.settings.tmpl = Config.Order.tmpl;
-        self.settings.style = Config.Order.style;
-        self.SetInputParameters();
-        self.RegisterEvents();
-        self.CheckRouteOrder();
-        self.SetPosition();
-    };
-    self.SetInputParameters = function() {
-        var input = {};
-        if (Config.Base.sourceParameters == 'string') {
-            var temp = JSCore.ParserInputParameters(/OrderWidget/);
-            if (temp.order) {
-                input = temp.order;
-            }
-        }
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.order) {
-            input = WParameters.order;
-        }
-        
-        if(!$.isEmptyObject(input)){
-            if(input.tmpl){
-                if(input.tmpl.path)
-                    self.settings.tmpl.path = input.tmpl.path;
-                if(input.tmpl.id){
-                    for(var key in input.tmpl.id){
-                        self.settings.tmpl.id[key] = input.tmpl.id[key];
-                    }
-                }
-            }
-            if(input.animate)
-                self.settings.animate = input.animate;
-        }
+    },
+        alias = 'order',
+        title = 'Оформление заказа';
 
-        self.settings.inputParameters = input;
-    };
-    self.CheckRouteOrder = function() {
-        if (Routing.route == 'order') {
+
+    self.InitWidget = InitWidget;
+
+    function InitWidget() {
+        SetInputParameters();
+        RegisterEvents();
+        CheckRouteOrder();
+    }
+
+    function SetInputParameters() {
+        var input = self.GetInputParameters(order);
+
+        if (!$.isEmptyObject(input))
+            settings = self.UpdateSettings1(settings, input);
+
+        Config.Containers.order = settings.container;
+    }
+
+    function CheckRouteOrder() {
+        var pRoute = Routing.params,
+            cache = Parameters.cache;
+        if (Routing.route == alias) {
             self.WidgetLoader(false);
-            if(Routing.params.sellerId)
-                self.order.sellerId = Routing.params.sellerId;
-            if (Routing.params.create) {
-                self.BaseLoad.Login(false, false, false, function(data) {
-                    if (Routing.params.create == 'fromCart') {
+            if (pRoute.sellerId)
+                order.sellerId = pRoute.sellerId;
+            if (pRoute.create) {
+                self.BaseLoad.Login(false, false, false, function (data) {
+                    if (pRoute.create == 'fromCart') {
                         if (data.err) {
-                            self.order.type = 'cart';
-                            self.order.goodsId = null;
-                            self.order.count = null
+                            order.type = 'cart';
+                            order.goodsId = null;
+                            order.count = null
 
-                            setTimeout(function() {
-                                Parameters.cache.history.pop();
-                                var link = Parameters.cache.history.pop();
-                                if(link.route == 'order' && link.data.create)
-                                    link = Parameters.cache.history.pop();
-                                if(link.route == 'login')
-                                    link = Parameters.cache.history.pop();
-                                Routing.SetHash(link.route, link.title, link.data, true);
+                            setTimeout(function () {
+                                cache.history.pop();
+                                var link = cache.history.pop();
+                                if (link.route == alias && link.data.create)
+                                    link = cache.history.pop();
+                                if (link.route == 'login')
+                                    link = cache.history.pop();
+                                SetHash(link.route, link.title, link.data, true);
                             }, 1000);
                         }
                         else {
-                            self.DataOrder.Create(
-                                    {create: 'fromCart', sellerId: self.order.sellerId},
-                            function() {
-                                self.order.type = 'cart';
-                                self.DataOrder.Cart(function() {
-                                    Routing.SetHash('order', 'Оформление заказа', {step: 2});
-                                });
-                            }
+                            DataOrderCreate(
+                                {create: 'fromCart', sellerId: order.sellerId},
+                                function () {
+                                    order.type = 'cart';
+                                    DataOrderCart(function () {
+                                        SetHash(alias, title, {step: 2});
+                                    });
+                                }
                             );
                         }
                     }
-                    else if (Routing.params.create == 'directly') {
+                    else if (pRoute.create == 'directly') {
                         if (data.err) {
-                            self.order.type = 'directly';
-                            self.order.goodsId = Routing.params.goodsId;
-                            self.order.count = Routing.params.count;
+                            order.type = 'directly';
+                            order.goodsId = pRoute.goodsId;
+                            order.count = pRoute.count;
 
-                            setTimeout(function() {
-                                Parameters.cache.history.pop();
-                                var link = Parameters.cache.history.pop();
-                                if(link.route == 'order' && link.data.create)
-                                    link = Parameters.cache.history.pop();
-                                if(link.route == 'login')
-                                    link = Parameters.cache.history.pop();
-                                Routing.SetHash(link.route, link.title, link.data, true);
+                            setTimeout(function () {
+                                cache.history.pop();
+                                var link = cache.history.pop();
+                                if (link.route == alias && link.data.create)
+                                    link = cache.history.pop();
+                                if (link.route == 'login')
+                                    link = cache.history.pop();
+                                SetHash(link.route, link.title, link.data, true);
                             }, 1000);
                         }
                         else {
-                            self.DataOrder.Create(
-                                    {create: 'directly', sellerId: self.order.sellerId, goodsId: Routing.params.goodsId, count: Routing.params.count},
-                            function() {
-                                self.order.type = 'directly';
-                                self.order.goodsId = Routing.params.goodsId;
-                                self.order.count = Routing.params.count;
-                                self.DataOrder.Directly(function() {
-                                    Routing.SetHash('order', 'Оформление заказа', {step: 2});
-                                });
-                            }
+                            DataOrderCreate(
+                                {
+                                    create: 'directly',
+                                    sellerId: order.sellerId,
+                                    goodsId: pRoute.goodsId,
+                                    count: pRoute.count
+                                },
+                                function () {
+                                    order.type = 'directly';
+                                    order.goodsId = pRoute.goodsId;
+                                    order.count = pRoute.count;
+                                    DataOrderDirectly(function () {
+                                        SetHash(alias, title, {step: 2});
+                                    });
+                                }
                             );
                         }
                     }
                     else
-                        Routing.SetHash('default', 'Домашняя', {});
+                        SetHash('default', 'Домашняя', {});
                 });
             }
-            if (Routing.params.step) {
-                self.BaseLoad.Login(false, false, false, function(data) {
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                        if(Routing.params.id)
-                            self.order.id = Routing.params.id;
+            if (pRoute.step) {
+                self.BaseLoad.Login(false, false, false, function (data) {
+                    self.BaseLoad.Tmpl(settings.tmpl, function () {
+                        if (pRoute.id)
+                            order.id = pRoute.id;
 
-                        if (Routing.params.step == 1 && !Routing.params.block) {
+                        if (pRoute.step == 1 && !pRoute.block) {
                             if (data.err)
-                                self.Step.Step1();
+                                Step1();
                             else
-                                Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                                SetHash(alias, title, {step: 2});
                         }
-                        else if (Routing.params.step == 1 && Routing.params.block == 'confirm') {
-                            self.Step.Step1Confirm();
+                        else if (pRoute.step == 1 && pRoute.block == 'confirm') {
+                            Step1Confirm();
                         }
-                        else if (!data.err && Routing.params.step == 1 && Routing.params.block == 'profile' && self.order.id) {
-                            self.Step.Step1Profile();
+                        else if (!data.err && pRoute.step == 1 && pRoute.block == 'profile' && order.id) {
+                            Step1Profile();
                         }
-                        else if (!data.err && Routing.params.step == 2 && !Routing.params.block && self.order.id)
-                            self.Step.Step2();
-                        else if (!data.err && Routing.params.step == 2 && Routing.params.block == 'add' && self.order.id)
-                            self.Step.Step2Form();
-                        else if (!data.err && Routing.params.step == 3 && self.order.id)
-                            self.Step.Step3();
-                        else if (!data.err && Routing.params.step == 4 && self.order.id)
-                            self.Step.Step4();
-                        else if (Routing.params.step == 5)
-                            self.Step.Step5();
+                        else if (!data.err && pRoute.step == 2 && !pRoute.block && order.id)
+                            Step2();
+                        else if (!data.err && pRoute.step == 2 && pRoute.block == 'add' && order.id)
+                            Step2Form();
+                        else if (!data.err && pRoute.step == 3 && order.id)
+                            Step3();
+                        else if (!data.err && pRoute.step == 4 && order.id)
+                            Step4();
+                        else if (pRoute.step == 5)
+                            Step5();
                         else
-                            Routing.SetHash('default', 'Домашняя', {});
+                            SetHash('default', 'Домашняя', {});
                     });
                 });
             }
         }
         else
             self.WidgetLoader(true);
-    };
-    self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('w.change.route', function() {
-            self.CheckRouteOrder();
+    }
+    function RegisterEvents() {
+        self.AddEvent('w.change.route', function () {
+            CheckRouteOrder();
         });
 
-        EventDispatcher.AddEventListener('UInfo.logout', function() {
+        self.AddEvent('UInfo.logout', function () {
             Parameters.cache.order.step1.login = {};
             Parameters.cache.order.step1.reg = {};
             Parameters.cache.order.step1.confirm = {};
@@ -199,50 +304,50 @@ var OrderWidget = function() {
             Parameters.cache.shipping = null;
             Parameters.cache.delivery = null;
             Parameters.cache.profile.personal = {};
-            self.order.type = null;
-            self.order.id = null;
-            self.order.sellerId = null;
-            self.order.goodsId = null;
-            self.order.count = null;
-            self.order.content = null;
-            self.order.delivery = {};
-            self.order.shipping = {};
-            self.order.payment = {};
+            order.type = null;
+            order.id = null;
+            order.sellerId = null;
+            order.goodsId = null;
+            order.count = null;
+            order.content = null;
+            order.delivery = {};
+            order.shipping = {};
+            order.payment = {};
         });
-        
-        EventDispatcher.AddEventListener('OrderWidget.step1.authentication', function(data) {
-            self.BaseLoad.Login(data.username, data.password, data.rememberMe, function(request) {
+
+        self.AddEvent('Order.step1.authentication', function (data) {
+            self.BaseLoad.Login(data.username, data.password, data.rememberMe, function (request) {
                 if (request.err) {
                     Parameters.cache.order.step1.reg.loginForm.error("Ошибка в логине или пароле");
                     Parameters.cache.order.step1.reg.loginForm.password = null;
-                    self.Render.Step1(Parameters.cache.order.step1.reg);
+                    RenderStep1(Parameters.cache.order.step1.reg);
                 }
                 else {
-                    if (self.order.type == 'directly') {
-                        self.DataOrder.Create(
-                                {create: 'directly', sellerId: self.order.sellerId, goodsId: self.order.goodsId, count: self.order.count},
-                        function() {
-                            self.DataOrder.Directly(function() {
-                                Routing.SetHash('order', 'Оформление заказа', {step: 2});
-                            });
-                        }
+                    if (order.type == 'directly') {
+                        DataOrderCreate(
+                            {create: 'directly', sellerId: order.sellerId, goodsId: order.goodsId, count: order.count},
+                            function () {
+                                DataOrderDirectly(function () {
+                                    SetHash(alias, title, {step: 2});
+                                });
+                            }
                         );
                     }
-                    if (self.order.type == 'cart') {
-                        self.DataOrder.Create(
-                                {create: 'directly', sellerId: self.order.sellerId},
-                        function() {
-                            self.DataOrder.Cart(function() {
-                                Routing.SetHash('order', 'Оформление заказа', {step: 2});
-                            });
-                        }
+                    if (order.type == 'cart') {
+                        DataOrderCreate(
+                            {create: 'directly', sellerId: order.sellerId},
+                            function () {
+                                DataOrderCart(function () {
+                                    SetHash(alias, title, {step: 2});
+                                });
+                            }
                         );
                     }
                 }
             })
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step1.registration', function(step1) {
+        self.AddEvent('Order.step1.registration', function (step1) {
             self.WidgetLoader(false);
             var params = [];
             if (step1.username())
@@ -254,16 +359,16 @@ var OrderWidget = function() {
             if (params.length > 0)
                 var str = '?' + params.join('&');
 
-            self.BaseLoad.UniqueUser(str, function(data) {
+            self.BaseLoad.UniqueUser(str, function (data) {
                 var test = true;
-                if (self.QueryError(data, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step1.registration', step1)
-                })) {
-                    if (!self.Validate.Username(data, step1))
+                if (self.QueryError(data, function () {
+                        EventDispatcher.DispatchEvent('Order.step1.registration', step1)
+                    })) {
+                    if (!ValidateUsername(data, step1))
                         test = false;
-                    if (!self.Validate.Email(data, step1))
+                    if (!ValidateEmail(data, step1))
                         test = false;
-                    if (!self.Validate.Phone(data, step1))
+                    if (!ValidatePhone(data, step1))
                         test = false;
                 }
                 else
@@ -281,17 +386,17 @@ var OrderWidget = function() {
                         params.push('password=' + encodeURIComponent(step1.firstPassword()));
                     if (params.length > 0)
                         var str = '?' + params.join('&');
-                    self.BaseLoad.Registration(str, function(data) {
+                    self.BaseLoad.Registration(str, function (data) {
                         Parameters.cache.order.step1.reg = step1;
-                        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'confirm'});
+                        SetHash(alias, title, {step: 1, block: 'confirm'});
                     });
                 }
                 else
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true, settings.container.widget);
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step1.confirm', function(step1confirm) {
+        self.AddEvent('Order.step1.confirm', function (step1confirm) {
             self.WidgetLoader(false);
             var params = [];
             params.push('username=' + encodeURIComponent(step1confirm.username));
@@ -301,95 +406,102 @@ var OrderWidget = function() {
                 params.push('sms_token=' + step1confirm.phoneToken());
             var str = '?' + params.join('&');
 
-            self.BaseLoad.ActivateUser(str, function(data) {
+            self.BaseLoad.ActivateUser(str, function (data) {
                 var test = true;
-                if (self.QueryError(data, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step1.confirm', step1confirm)
-                })) {
-                    if (!self.Validate.MailToken(data, step1confirm))
+                if (self.QueryError(data, function () {
+                        EventDispatcher.DispatchEvent('Order.step1.confirm', step1confirm)
+                    })) {
+                    if (!ValidateMailToken(data, step1confirm))
                         test = false;
-                    if (!self.Validate.PhoneToken(data, step1confirm))
+                    if (!ValidatePhoneToken(data, step1confirm))
                         test = false;
                 }
                 else
                     test = false;
 
-                if (test) { 
-                    self.BaseLoad.Login(false, false, false, function(request) {
+                if (test) {
+                    self.BaseLoad.Login(false, false, false, function (request) {
                         Parameters.cache.order.step1.confirm = step1confirm;
                         if (!request.err) {
-                            if (self.order.type == 'directly') {
-                                self.DataOrder.Create(
-                                        {create: 'directly', sellerId: self.order.sellerId, goodsId: self.order.goodsId, count: self.order.count},
-                                function() {
-                                    self.DataOrder.Directly(function() {
-                                        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-                                    });
-                                }
+                            if (order.type == 'directly') {
+                                DataOrderCreate(
+                                    {
+                                        create: 'directly',
+                                        sellerId: order.sellerId,
+                                        goodsId: order.goodsId,
+                                        count: order.count
+                                    },
+                                    function () {
+                                        DataOrderDirectly(function () {
+                                            SetHash(alias, title, {step: 1, block: 'profile'});
+                                        });
+                                    }
                                 );
                             }
-                            if (self.order.type == 'fromCart') {
-                                self.DataOrder.Create(
-                                        {create: 'directly', sellerId: self.order.sellerId},
-                                function() {
-                                    self.DataOrder.Cart(function() {
-                                        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-                                    });
-                                }
+                            if (order.type == 'fromCart') {
+                                DataOrderCreate(
+                                    {create: 'directly', sellerId: order.sellerId},
+                                    function () {
+                                        DataOrderCart(function () {
+                                            SetHash(alias, title, {step: 1, block: 'profile'});
+                                        });
+                                    }
                                 );
                             }
                         }
                     });
                 }
                 else
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true, settings.container.widget);
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step1.view1', function() {
-            Routing.SetHash('order', 'Оформление заказа', {step: 1});
+        self.AddEvent('Order.step1.view1', function () {
+            SetHash(alias, title, {step: 1});
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step1.later', function() {
-            Routing.SetHash('order', 'Оформление заказа', {step: 2});
+        self.AddEvent('Order.step1.later', function () {
+            SetHash(alias, title, {step: 2});
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step1.profile', function(step1) {
+        self.AddEvent('Order.step1.profile', function (step1) {
             self.WidgetLoader(false);
             var day = step1.birthDay().split('.');
             var birthDay = day[2] + '-' + day[1] + '-' + day[0];
             step1.birthDayHiddenField(birthDay);
-            self.BaseLoad.EditProfile($('form#' + step1.cssRegistrationDataForm), function(data) {
+            self.BaseLoad.EditProfile($('form#' + step1.cssRegistrationDataForm), function (data) {
                 var test = true;
-                if (!self.QueryError(data, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step1.profile', step1)
-                }))
+                if (!self.QueryError(data, function () {
+                        self.DispatchEvent('Order.step1.profile', step1)
+                    }))
                     test = false;
 
                 if (test) {
                     Parameters.cache.profile.personal = {};
                     Parameters.cache.order.step1.profile = step1;
-                    Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                    SetHash(alias, title, {step: 2});
                 }
                 else
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true, settings.container.widget);
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step3.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '/?id_method_shipping=' + data.id, function(result) {
-                if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step3.change', data)})){
-                    self.order.shipping = data.selected;
+        self.AddEvent('Order.step3.change', function (data) {
+            self.BaseLoad.EditOrder(order.id + '/?id_method_shipping=' + data.id, function (result) {
+                if (self.QueryError(result, function () {
+                        self.DispatchEvent('Order.step3.change', data)
+                    })) {
+                    order.shipping = data.selected;
                     data.fn();
                 }
             })
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step3.message', function() {
-            self.ShowError(Config.Order.message.selectMethodShipping, false, false);
+        self.AddEvent('Order.step3.message', function () {
+            self.ShowError(settings.message.selectMethodShipping, false, false);
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step2.add', function(data) {
+        self.AddEvent('Order.step2.add', function (data) {
             var str = '?id_country=' + encodeURIComponent($.trim(data.country().id));
             if (data.region())
                 str = str + '&code_region=' + encodeURIComponent($.trim(data.region().regioncode));
@@ -400,995 +512,885 @@ var OrderWidget = function() {
             else
                 str = str + '&name_city=' + encodeURIComponent($.trim(data.customCity()));
             str = str + '&address=' + encodeURIComponent($.trim(data.customAddress())) +
-                    '&post_code=' + encodeURIComponent($.trim(data.postCode())) +
-                    '&addressee=' + encodeURIComponent($.trim(data.addressee())) +
-                    '&contact_phone=' + encodeURIComponent($.trim(data.contactPhone())) +
-                    '&is_default=' + encodeURIComponent(data.isDefault() ? 'yes' : 'no');
+                '&post_code=' + encodeURIComponent($.trim(data.postCode())) +
+                '&addressee=' + encodeURIComponent($.trim(data.addressee())) +
+                '&contact_phone=' + encodeURIComponent($.trim(data.contactPhone())) +
+                '&is_default=' + encodeURIComponent(data.isDefault() ? 'yes' : 'no');
 
-            self.BaseLoad.AddDelivaryAddress(str, function(response) {
+            self.BaseLoad.AddDelivaryAddress(str, function (response) {
                 if (response.result == 'ok') {
-                    self.ShowMessage(Config.Order.message.addAddressDelivery, function() {
+                    self.ShowMessage(settings.message.addAddressDelivery, function () {
                         Parameters.cache.order.step2 = {};
                         Parameters.cache.delivery = null;
-                        Routing.SetHash('order', 'Оформление заказа', {step: 2});
+                        SetHash(alias, title, {step: 2});
                     }, false);
                 }
                 else {
                     if (!response.err)
-                        response.err = Config.Order.message.failAddAddressDelivery;
-                    self.QueryError(response, function() {
-                        EventDispatcher.DispatchEvent('OrderWidget.step2.add', data)
+                        response.err = settings.message.failAddAddressDelivery;
+                    self.QueryError(response, function () {
+                        self.DispatchEvent('Order.step2.add', data)
                     })
                 }
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step2.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '/?id_shipping_address=' + data.id, function(result) {
-                if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step2.change', data)})) {
+        self.AddEvent('Order.step2.change', function (data) {
+            self.BaseLoad.EditOrder(order.id + '/?id_shipping_address=' + data.id, function (result) {
+                if (self.QueryError(result, function () {
+                        self.DispatchEvent('Order.step2.change', data)
+                    })) {
                     Parameters.cache.delivery = null;
-                    self.order.delivery = data.selected;
+                    order.delivery = data.selected;
                     data.fn();
                 }
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step2.delete', function(delivery) {
-            self.BaseLoad.DeleteDeliveryAddress(delivery.address.id, function(data) {
+        self.AddEvent('Order.step2.delete', function (delivery) {
+            self.BaseLoad.DeleteDeliveryAddress(delivery.address.id, function (data) {
                 if (data.result == 'ok') {
-                    self.ShowMessage(Config.Order.message.deleteAddressDelivery, function() {
+                    self.ShowMessage(settings.message.deleteAddressDelivery, function () {
                         Parameters.cache.order.step2 = {};
                         Parameters.cache.delivery = null;
                         delivery.list.remove(delivery.address);
-                        
+
                     }, false);
                 }
                 else {
                     if (!data.err)
-                        data.err = Config.Order.message.failDeleteAddressDelivery;
-                    self.QueryError(data, function() {
-                        EventDispatcher.DispatchEvent('OrderWidget.step2.delete', delivery)
+                        data.err = settings.message.failDeleteAddressDelivery;
+                    self.QueryError(data, function () {
+                        self.DispatchEvent('Order.step2.delete', delivery)
                     })
                 }
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step2.message', function() {
-            self.ShowError(Config.Order.message.selectAddress, false, false);
+        self.AddEvent('Order.step2.message', function () {
+            self.ShowError(settings.message.selectAddress, false, false);
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step4.change', function(data) {
-            self.BaseLoad.EditOrder(self.order.id + '/?id_method_payment=' + data.id, function(result) {
-                if (self.QueryError(result, function() {EventDispatcher.DispatchEvent('OrderWidget.step4.change', data)})){
-                    self.order.payment = data.selected;
+        self.AddEvent('Order.step4.change', function (data) {
+            self.BaseLoad.EditOrder(order.id + '/?id_method_payment=' + data.id, function (result) {
+                if (self.QueryError(result, function () {
+                        self.DispatchEvent('Order.step4.change', data)
+                    })) {
+                    order.payment = data.selected;
                     data.fn();
                 }
             });
         });
 
-        EventDispatcher.AddEventListener('OrderWidget.step4.message', function() {
-            self.ShowError(Config.Order.message.selectMethodPayment, false, false);
+        self.AddEvent('Order.step4.message', function () {
+            self.ShowError(settings.message.selectMethodPayment, false, false);
         });
 
 
-        EventDispatcher.AddEventListener('OrderWidget.step5.confirm', function(text) {
-            var str = self.order.id;
-            if(text.comment)
+        self.AddEvent('Order.step5.confirm', function (text) {
+            var str = order.id;
+            if (text.comment)
                 str = str + '?comment_buyer=' + encodeURIComponent(text.comment);
-            self.BaseLoad.ConfirmOrder(str, function(data) {
-                if (self.QueryError(data, function() {
-                    EventDispatcher.DispatchEvent('OrderWidget.step5.confirm', text)
-                }))
-                    self.ShowMessage(Config.Order.message.orderConfirm, function() {
-                        Routing.SetHash('purchases', 'Мои покупки', {block: 'detail', id: self.order.id});
+            self.BaseLoad.ConfirmOrder(str, function (data) {
+                if (self.QueryError(data, function () {
+                        self.DispatchEvent('Order.step5.confirm', text)
+                    }))
+                    self.ShowMessage(settings.message.orderConfirm, function () {
+                        SetHash('purchases', 'Мои покупки', {block: 'detail', id: order.id});
                     }, false);
-                })
+            })
         });
-        
-        EventDispatcher.AddEventListener('OrderWidget.step5.delete', function(){
-            self.Confirm(Config.Order.message.confirmDeleteOrder, function(){
-                self.BaseLoad.DeleteOrder(self.order.id + '/yes', function(data){
-                    if (self.QueryError(data, function() {EventDispatcher.DispatchEvent('OrderWidget.step5.delete')})){
-                        self.ShowMessage(Config.Order.message.deleteOrderConfirm, function() {
-                            Routing.SetHash('default', 'Домашняя', {});
+
+        self.AddEvent('Order.step5.delete', function () {
+            self.Confirm(settings.message.confirmDeleteOrder, function () {
+                self.BaseLoad.DeleteOrder(order.id + '/yes', function (data) {
+                    if (self.QueryError(data, function () {
+                            self.DispatchEvent('Order.step5.delete')
+                        })) {
+                        self.ShowMessage(settings.message.deleteOrderConfirm, function () {
+                            SetHash('default', 'Домашняя', {});
                         }, false);
                     }
                 });
             })
         });
-        
-        EventDispatcher.AddEventListener('OrderWidget.send.token', function(type){
-            self.BaseLoad.SendToken(type, function(data){
-                if(data.result == 'ok'){
-                    self.ShowMessage(Config.Order.message.sendToken, false, false);
+
+        self.AddEvent('Order.send.token', function (type) {
+            self.BaseLoad.SendToken(type, function (data) {
+                if (data.result == 'ok') {
+                    self.ShowMessage(settings.message.sendToken, false, false);
                 }
-                else{
-                    if(!data.err)
-                        data.err = Config.Order.message.failSendToken;
-                    self.QueryError(data, function(){EventDispatcher.DispatchEvent('OrderWidget.send.token', type)})
+                else {
+                    if (!data.err)
+                        data.err = settings.message.failSendToken;
+                    self.QueryError(data, function () {
+                        self.DispatchEvent('Order.send.token', type)
+                    })
                 }
             });
         });
-    };
-    self.Validate = {
-        Username: function(data, step1) {
-            var test = false;
-            if (data.check_username) {
-                if (data.check_username == 'on' || data.check_username == 'ban' || data.check_username == 'off')
-                    step1.errorUsername(Config.Order.error.username.uniq);
-                if (data.check_username == 'yes')
-                    test = true;
-            }
+    }
 
-            return test;
-        },
-        Phone: function(data, step1) {
-            var test = false;
-            if (data.check_phone) {
-                if (data.check_phone == 'on' || data.check_phone == 'ban' || data.check_phone == 'off')
-                    step1.errorPhone(Config.Order.error.phone.uniq);
-                if (data.check_phone == 'yes')
-                    test = true;
-            }
-            else
+    function ValidateUsername(data, step1) {
+        var test = false;
+        if (data.check_username) {
+            if (data.check_username == 'on' || data.check_username == 'ban' || data.check_username == 'off')
+                step1.errorUsername(settings.error.username.uniq);
+            if (data.check_username == 'yes')
                 test = true;
-
-            return test;
-        },
-        Email: function(data, step1) {
-            var test = false;
-            if (data.check_email) {
-                if (data.check_email == 'on' || data.check_email == 'ban' || data.check_email == 'off')
-                    step1.errorEmail(Config.Order.error.email.uniq);
-                if (data.check_email == 'yes')
-                    test = true;
-            }
-
-            return test;
-        },
-        MailToken: function(data, step2) {
-            if (data.confirm_email) {
-                if (data.confirm_email == 'no') {
-                    step2.errorEmailConfirm(Config.Order.error.emailToken.confirm);
-                    return false;
-                }
-            }
-
-            return true;
-        },
-        PhoneToken: function(data, step2) {
-            if (data.confirm_phone) {
-                if (data.confirm_phone == 'no') {
-                    step2.errorPhoneConfirm(Config.Order.error.phoneToken.confirm);
-                    return false;
-                }
-            }
-
-            return true;
-        },
-        Profile: function(data, step3) {
-            if (data.err) {
-                step3.errorAddress(data.err);
-                return false;
-            }
-
-            return true;
-        },
-        Address: function(data, step4) {
-            if (data.err) {
-                step4.errorAddress(data.err);
-                return false;
-            }
-
-            return true;
         }
-    };
-    self.DataOrder = {
-        Create: function(params, callback) {
-            var str = params.sellerId;
-            if (params.goodsId)
-                str = str + '/' + params.goodsId + '/' + params.count;
-            self.BaseLoad.NewOrder(str, function(data) {
+
+        return test;
+    }
+
+    function ValidatePhone(data, step1) {
+        var test = false;
+        if (data.check_phone) {
+            if (data.check_phone == 'on' || data.check_phone == 'ban' || data.check_phone == 'off')
+                step1.errorPhone(settings.error.phone.uniq);
+            if (data.check_phone == 'yes')
+                test = true;
+        }
+        else
+            test = true;
+
+        return test;
+    }
+
+    function ValidateEmail(data, step1) {
+        var test = false;
+        if (data.check_email) {
+            if (data.check_email == 'on' || data.check_email == 'ban' || data.check_email == 'off')
+                step1.errorEmail(settings.error.email.uniq);
+            if (data.check_email == 'yes')
+                test = true;
+        }
+
+        return test;
+    }
+
+    function ValidateMailToken(data, step2) {
+        if (data.confirm_email) {
+            if (data.confirm_email == 'no') {
+                step2.errorEmailConfirm(settings.error.emailToken.confirm);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function ValidatePhoneToken(data, step2) {
+        if (data.confirm_phone) {
+            if (data.confirm_phone == 'no') {
+                step2.errorPhoneConfirm(settings.error.phoneToken.confirm);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    function ValidateProfile(data, step3) {
+        if (data.err) {
+            step3.errorAddress(data.err);
+            return false;
+        }
+
+        return true;
+    }
+
+    function ValidateAddress(data, step4) {
+        if (data.err) {
+            step4.errorAddress(data.err);
+            return false;
+        }
+
+        return true;
+    }
+
+    function DataOrderCreate(params, callback) {
+        var str = params.sellerId;
+        if (params.goodsId)
+            str = str + '/' + params.goodsId + '/' + params.count;
+        self.BaseLoad.NewOrder(str, function (data) {
+            if (self.QueryError(data,
+                    function () {
+                        SetHash(alias, title, params);
+                    },
+                    function () {
+                        var last = Parameters.cache.lastPage;
+                        SetHash(last.route, last.title, last.data)
+                    })) {
+                if (data.msg) {
+                    self.ShowMessage(data.msg,
+                        function () {
+                            var last = Parameters.cache.lastPage;
+                            SetHash(last.route, last.title, last.data);
+                        }, false);
+                }
+                else {
+                    order.id = data.id;
+                    if (callback)
+                        callback();
+                }
+            }
+        });
+    }
+
+    function DataOrderCart(callback) {
+        self.BaseLoad.CartGoods(order.sellerId, function (data) {
+            order.content = data;
+            order.content.main = data[0].goods;
+            if (callback)
+                callback();
+        });
+    }
+
+    function DataOrderDirectly(callback) {
+        self.BaseLoad.GoodsInfo(order.goodsId, '1000000', function (data) {
+            order.content = data;
+            order.content.main = [data.main];
+            if (callback)
+                callback();
+        })
+    }
+
+    function DataOrderIsRealGoods() {
+        var test = false;
+        var goods = [];
+        if (order.type == 'cart') {
+            goods = order.content[0].goods;
+        }
+        else {
+            if (!$.isArray(order.content.main))
+                goods[0] = order.content.main;
+            else
+                goods = order.content.main;
+        }
+        $.each(goods, function (i) {
+            if (goods[i].is_egoods != 'yes') {
+                test = true;
+                return false;
+            }
+        })
+        return test;
+    }
+
+    function Step1() {
+        InsertContainerStep1();
+        FillStep1();
+    }
+
+    function Step1Confirm() {
+        InsertContainerStep1Confirm();
+        FillStep1Confirm();
+    }
+
+    function Step1Profile() {
+        self.BaseLoad.Profile(function (data) {
+            InsertContainerStep1Profile();
+            FillStep1Profile(data);
+        });
+    }
+
+    function Step2() {
+        if (Routing.params.id) {
+            self.BaseLoad.OrderInfo(order.id + '/yes', function (data) {
                 if (self.QueryError(data,
-                        function() {Routing.SetHash('order', 'Оформление заказа', params);},
-                        function() {var last = Parameters.cache.lastPage; Routing.SetHash(last.route, last.title, last.data)}))
-                {
+                        function () {
+                            SetHash(alias, title, Routing.params);
+                        },
+                        function () {
+                            var last = Parameters.cache.lastPage;
+                            SetHash(last.route, last.title, last.data)
+                        })) {
                     if (data.msg) {
                         self.ShowMessage(data.msg,
-                                function() {
-                                    var last = Parameters.cache.lastPage;
-                                    Routing.SetHash(last.route, last.title, last.data);
-                                }, false);
+                            function () {
+                                var last = Parameters.cache.lastPage;
+                                if (last)
+                                    SetHash(last.route, last.title, last.data);
+                                else
+                                    SetHash('default', Routing.defaultTitle, {});
+                            }, false);
                     }
                     else {
-                        self.order.id = data.id;
-                        if (callback)
-                            callback();
+                        order.content = {};
+                        order.content.main = data.goods;
+                        Step2Getdata();
                     }
                 }
             });
-        },
-        Cart: function(callback) {
-            self.BaseLoad.CartGoods(self.order.sellerId, function(data) {
-                self.order.content = data;
-                self.order.content.main = data[0].goods;
-                if (callback)
-                    callback();
+        }
+        else
+            Step2Getdata();
+    }
+
+    function Step2Getdata() {
+        if (DataOrderIsRealGoods())
+            self.BaseLoad.DeliveryAddressList(function (data) {
+                InsertContainerStep2();
+                FillStep2(data);
             });
-        },
-        Directly: function(callback) {
-            self.BaseLoad.GoodsInfo(self.order.goodsId, '1000000', function(data) {
-                self.order.content = data;
-                self.order.content.main = [data.main];
-                if (callback)
-                    callback();
-            })
-        },
-        IsRealGoods: function() {
-            var test = false;
-            var goods = [];
-            if (self.order.type == 'cart') {
-                goods = self.order.content[0].goods;
+        else
+            SetHash(alias, title, {step: 4});
+    }
+
+    function Step2Form() {
+        if (DataOrderIsRealGoods()) {
+            var form = new OrderDeliveryFormStep2ViewModel(settings);
+            var shopId = Parameters.shopId;
+
+            self.BaseLoad.Country(shopId, function (data) {
+                InsertContainerStep2Form();
+                FillStep2Form(form, data);
+            });
+        }
+        else
+            SetHash(alias, title, {step: 4});
+    }
+
+    function Step3() {
+        if (DataOrderIsRealGoods()) {
+            self.BaseLoad.GoodsInfo(order.content.main[0].id, '1010000', function (goodsInfo) {
+                order.sellerId = goodsInfo.shop.id;
+                self.BaseLoad.Shipping(order.sellerId + '/' + order.id + '/', function (data) {
+                    InsertContainerStep3();
+                    FillStep3(data);
+                });
+            });
+        }
+        else
+            SetHash(alias, title, {step: 4});
+    }
+
+    function Step4() {
+        self.BaseLoad.GoodsInfo(order.content.main[0].id, '1010000', function (goodsInfo) {
+            order.sellerId = goodsInfo.shop.id;
+            self.BaseLoad.Payment(order.sellerId + '/' + order.id, function (data) {
+                InsertContainerStep4();
+                FillStep4(data);
+            });
+        });
+    }
+
+    function Step5() {
+        self.BaseLoad.Script(PokupoWidgets.model.order, function () {
+            self.BaseLoad.OrderInfo(order.id + '/yes', function (data) {
+                InsertContainerStep5();
+                FillStep5(data);
+            });
+        });
+    }
+
+    function InsertContainerEmptyWidget() {
+        self.ClearContainer(settings);
+    }
+
+    function InsertContainerStep1() {
+        self.InsertContainer(settings, 'step1');
+    }
+
+    function InsertContainerStep1Confirm() {
+        self.InsertContainer(settings, 'step1Confirm');
+    }
+
+    function InsertContainerStep1Profile() {
+        self.InsertContainer(settings, 'step1Profile');
+    }
+
+    function InsertContainerStep2() {
+        self.InsertContainer(settings, 'step2');
+    }
+
+    function InsertContainerStep2Form() {
+        self.InsertContainer(settings, 'step2Form');
+    }
+
+    function InsertContainerStep3() {
+        self.InsertContainer(settings, 'step3');
+    }
+
+    function InsertContainerStep4() {
+        self.InsertContainer(settings, 'step4');
+    }
+
+    function InsertContainerStep5() {
+        self.InsertContainer(settings, 'step5');
+    }
+
+
+    function FillStep1() {
+        var form = Parameters.cache.order.step1.reg;
+        if ($.isEmptyObject(form)) {
+            self.BaseLoad.Script(PokupoWidgets.model.registration, function () {
+                self.BaseLoad.Script(PokupoWidgets.model.auth, function () {
+                    form = new OrderFormStep1ViewModel(settings);
+                    Parameters.cache.order.step1.reg = form;
+                });
+            });
+        }
+        RenderStep1(form);
+    }
+
+    function FillStep1Confirm() {
+        var pRoute = Routing.params,
+            cache = Parameters.cache.order.step1;
+        if (pRoute.username && pRoute.mail_token)
+            cache.reg.username(pRoute.username);
+
+        RegistrationConfirmFormViewModel.prototype.Back = function () {
+            self.DispatchEvent('Order.step1.view1');
+        };
+        var form = new RegistrationConfirmFormViewModel(cache.reg, settings);
+        form.submitEvent('Order.step1.confirm');
+        form.ShowButtonSendToken();
+
+        if (pRoute.username && pRoute.mail_token) {
+            form.mailToken(pRoute.mail_token);
+            self.DispatchEvent('Order.step1.confirm', form);
+        }
+        RenderStep1Confirm(form);
+    }
+
+    function FillStep1Profile(data) {
+        RegistrationProfileFormViewModel.prototype.Back = function () {
+            self.DispatchEvent('Order.step1.view2');
+        };
+        RegistrationProfileFormViewModel.prototype.SpecifyLater = function () {
+            self.DispatchEvent('Order.step1.later');
+        };
+        var form = new RegistrationProfileFormViewModel(settings);
+        form.submitEvent('Order.step1.profile');
+        form.AddContent(data);
+        RenderStep1Profile(form);
+    }
+
+    function FillStep2(data) {
+        if (!data.err) {
+            var form = Parameters.cache.order.step2;
+            if ($.isEmptyObject(form)) {
+                form = new OrderFormStep2ViewModel(settings);
             }
-            else {
-                if(!$.isArray(self.order.content.main))
-                    goods[0] = self.order.content.main;
+            form.AddContent(data, order);
+
+            RenderStep2(form);
+            Parameters.cache.order.step2 = form;
+        }
+        else
+            SetHash(alias, title, {step: 2, block: 'add'});
+    }
+
+    function FillStep2Form(form, data) {
+        form.AddCountryList(data);
+        if (form.idCountry()) {
+            $.grep(form.countryList(), function (data) {
+                if (data.id == form.idCountry()) {
+                    form.country(data);
+                }
+            })
+        }
+        RenderStep2Form(form);
+    }
+
+    function FillStep3(data) {
+        var form = Parameters.cache.order.step3;
+        if ($.isEmptyObject(form)) {
+            form = new OrderFormStep3ViewModel();
+        }
+        form.AddShipping(data);
+        Parameters.cache.order.step3 = form;
+        RenderStep3(form);
+    }
+
+    function FillStep4(data) {
+        var form = Parameters.cache.order.step4;
+        if ($.isEmptyObject(form)) {
+            form = new OrderFormStep4ViewModel();
+        }
+        form.AddPayment(data);
+        Parameters.cache.order.step4 = form;
+        RenderStep4(form);
+    }
+
+    function FillStep5(data) {
+        var form = Parameters.cache.order.step5;
+        if ($.isEmptyObject(form)) {
+            OrderViewModel.prototype.Back = function () {
+                SetHash(alias, title, {step: 4});
+            };
+            OrderViewModel.prototype.ClickDelete = function () {
+                self.DispatchEvent('Order.step5.delete');
+            };
+            OrderViewModel.prototype.ClickStep1 = function () {
+                SetHash(alias, title, {step: 1, block: 'profile'});
+            };
+            OrderViewModel.prototype.ClickStep2 = function () {
+                SetHash(alias, title, {step: 2});
+            };
+            OrderViewModel.prototype.ClickStep3 = function () {
+                SetHash(alias, title, {step: 3});
+            };
+            OrderViewModel.prototype.ClickStep4 = function () {
+                SetHash(alias, title, {step: 4});
+            };
+            OrderViewModel.prototype.ClickAddAddress = function () {
+                SetHash(alias, title, {step: 1, block: 'add'});
+            };
+            form = new OrderViewModel();
+
+            Parameters.cache.order.step5 = form;
+        }
+        form.AddContent(data);
+
+        RenderStep5(form);
+    }
+
+    function RenderStep1(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep1();
+                RenderStep1(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step1'
+        );
+    }
+
+    function RenderStep1Confirm(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep1Confirm();
+                RenderStep1Confirm(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step1Confirm'
+        );
+    }
+
+    function RenderStep1Profile(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep1Profile();
+                RenderStep1Profile(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step1Profile'
+        );
+    }
+
+    function RenderStep2(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep2();
+                RenderStep2(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step2'
+        );
+    }
+
+    function RenderStep2Form(delivery) {
+        self.RenderTemplate(delivery, settings,
+            function () {
+                CallbackRenderStep2Form(delivery)
+            },
+            function (delivery) {
+                InsertContainerStep2Form();
+                RenderStep2Form(delivery);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step2Form'
+        );
+    }
+
+    function RenderStep3(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep3();
+                RenderStep3(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step3'
+        );
+    }
+
+    function RenderStep4(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep4();
+                RenderStep4(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step4'
+        );
+    }
+
+    function RenderStep5(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep5();
+                RenderStep5(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step5'
+        );
+    }
+
+    function CallbackRenderStep2Form(delivery) {
+        $('#' + delivery.cssRegionList).autocomplete({
+            source: function (request, response) {
+                self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function (data) {
+                    if (!data.err) {
+                        response($.map(data, function (item) {
+                            return {
+                                value: $.trim(item.formalname + ' ' + item.shortname),
+                                region: item
+                            };
+                        }));
+                    }
+                    else {
+                        $('#' + delivery.cssRegionList).autocomplete("close");
+                        return false;
+                    }
+                });
+            },
+            select: function (event, ui) {
+                delivery.region(ui.item.region);
+                delivery.customRegion(ui.item.value);
+                if (ui.item.region && ui.item.region.postalcode != 0)
+                    delivery.postCode(ui.item.region.postalcode);
+                else {
+                    delivery.postCode(null);
+                }
+            }
+        });
+
+        $('#' + delivery.cssCityList).autocomplete({
+            source: function (request, response) {
+                if (delivery.region()) {
+                    self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function (data) {
+                        if (!data.err) {
+                            response($.map(data, function (item) {
+                                return {
+                                    value: $.trim(item.shortname + '. ' + item.formalname),
+                                    city: item
+                                };
+                            }));
+                        }
+                        else {
+                            $('#' + delivery.cssCityList).autocomplete("close");
+                            return false;
+                        }
+                    });
+                }
+            },
+            select: function (event, ui) {
+                delivery.city(ui.item.city);
+                delivery.customCity(ui.item.value);
+                if (ui.item.city && ui.item.city.postalcode != 0)
+                    delivery.postCode(ui.item.city.postalcode);
                 else
-                    goods = self.order.content.main;
+                    delivery.postCode(null);
             }
-            $.each(goods, function(i) {
-                if (goods[i].is_egoods != 'yes') {
-                    test = true;
-                    return false;
+        });
+
+        $('#' + delivery.cssAddress).autocomplete({
+            source: function (request, response) {
+                if (delivery.region()) {
+                    self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function (data) {
+                        if (!data.err) {
+                            response($.map(data, function (item) {
+                                return {
+                                    value: $.trim(item.shortname + '. ' + item.formalname),
+                                    street: item
+                                };
+                            }));
+                        }
+                        else {
+                            $('#' + delivery.cssAddress).autocomplete("close");
+                            return false;
+                        }
+                    });
+                }
+            },
+            select: function (event, ui) {
+                delivery.address(ui.item.street);
+                delivery.customAddress(ui.item.value);
+                if (ui.item.street && ui.item.street.postalcode != 0)
+                    delivery.postCode(ui.item.street.postalcode);
+                else
+                    delivery.postCode(null);
+            }
+        });
+        $('#' + delivery.cssCountryList).change(function () {
+            var v = $('#' + delivery.cssCountryList + ' option:selected').val();
+            if (v) {
+                delivery.errorCountry('');
+                delivery.errorRegion('');
+                delivery.errorCity('');
+                delivery.errorAddress('');
+                delivery.errorPostCode('');
+            }
+            $.grep(delivery.countryList(), function (data) {
+                if (data.id == v) {
+                    delivery.country(data);
+                    delivery.customRegion(null);
+                    delivery.region(null);
+                    delivery.customCity(null);
+                    delivery.city(null);
+                    delivery.customAddress(null)
+                    delivery.address(null);
+                    delivery.postCode(null);
                 }
             })
-            return test;
-        }
-    };
-    self.Step = {
-        Step1: function() {
-            self.InsertContainer.Step1();
-            self.Fill.Step1();
-        },
-        Step1Confirm: function() {
-            self.InsertContainer.Step1Confirm();
-            self.Fill.Step1Confirm();
-        },
-        Step1Profile: function() {
-            self.BaseLoad.Profile(function(data) {
-                self.InsertContainer.Step1Profile();
-                self.Fill.Step1Profile(data);
-            });
-        },
-        Step2: function() {
-            if(Routing.params.id){
-                self.BaseLoad.OrderInfo(self.order.id + '/yes', function(data) {
-                    if (self.QueryError(data,
-                        function() {Routing.SetHash('order', 'Оформление заказа', Routing.params);},
-                        function() {var last = Parameters.cache.lastPage; Routing.SetHash(last.route, last.title, last.data)}))
-                    {
-                        if (data.msg) {
-                            self.ShowMessage(data.msg,
-                                function() {
-                                    var last = Parameters.cache.lastPage;
-                                    if(last)
-                                        Routing.SetHash(last.route, last.title, last.data);
-                                    else
-                                        Routing.SetHash('default', Routing.defaultTitle, {});
-                                }, false);
-                        }
-                        else{
-                            self.order.content = {};
-                            self.order.content.main = data.goods;
-                            self.Step.Step2Getdata();
-                        }
-                    }
-                });
-            }
-            else
-                self.Step.Step2Getdata();
-        },
-        Step2Getdata: function(){
-            if (self.DataOrder.IsRealGoods())
-                self.BaseLoad.DeliveryAddressList(function(data) {
-                    self.InsertContainer.Step2();
-                    self.Fill.Step2(data);
-                });
-            else
-                Routing.SetHash('order', 'Оформление заказа', {step: 4});
-        },
-        Step2Form: function() {
-            if (self.DataOrder.IsRealGoods()) {
-                var form = new OrderDeliveryFormStep2ViewModel();
-                var shopId = Parameters.shopId;
+        });
 
-                self.BaseLoad.Country(shopId, function(data) {
-                    self.InsertContainer.Step2Form();
-                    self.Fill.Step2Form(form, data);
-                });
-            }
-            else
-                Routing.SetHash('order', 'Оформление заказа', {step: 4});
-        },
-        Step3: function() {
-            if (self.DataOrder.IsRealGoods()) {
-                self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function(goodsInfo) {
-                    self.order.sellerId = goodsInfo.shop.id;
-                    self.BaseLoad.Shipping(self.order.sellerId + '/' + self.order.id + '/', function (data) {
-                        self.InsertContainer.Step3();
-                        self.Fill.Step3(data);
-                    });
-                });
-            }
-            else
-                Routing.SetHash('order', 'Оформление заказа', {step: 4});
-        },
-        Step4: function () {
-            self.BaseLoad.GoodsInfo(self.order.content.main[0].id, '1010000', function (goodsInfo) {
-                self.order.sellerId = goodsInfo.shop.id;
-                self.BaseLoad.Payment(self.order.sellerId + '/' + self.order.id, function (data) {
-                    self.InsertContainer.Step4();
-                    self.Fill.Step4(data);
-                });
-            });
-        },
-        Step5: function() {
-            self.BaseLoad.Script('widgets/OrderViewModel-1.0.min.js', function() {
-                self.BaseLoad.OrderInfo(self.order.id + '/yes', function (data) {
-                    self.InsertContainer.Step5();
-                    self.Fill.Step5(data);
-                });
-            });
-        }
-    };
-    self.InsertContainer = {
-        EmptyWidget : function(){
-            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.containerFormId).empty().html(temp);
-        },
-        Step1: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1')).html()).children().hide();
-        },
-        Step1Confirm: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Confirm')).html()).children().hide();
-        },
-        Step1Profile: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1Profile')).html()).children().hide();
-        },
-        Step2: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html()).children().hide();
-        },
-        Step2Form: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2Form')).html()).children().hide();
-        },
-        Step3: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
-        },
-        Step4: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html()).children().hide();
-        },
-        Step5: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step5')).html()).children().hide();
-        }
-    };
-    self.Fill = {
-        Step1: function() {
-            var form = Parameters.cache.order.step1.reg;
-            if ($.isEmptyObject(form)) {
-                self.BaseLoad.Script('widgets/RegistrationViewModel-1.0.min.js', function() {
-                    self.BaseLoad.Script('widgets/AuthenticationViewModel-1.1.min.js', function() {
-                        form = new OrderFormStep1ViewModel();
-                        Parameters.cache.order.step1.reg = form;
-                    });
-                });
-            }
-            self.Render.Step1(form);
-        },
-        Step1Confirm: function() {
-            if (Routing.params.username && Routing.params.mail_token) 
-                Parameters.cache.order.step1.reg.username(Routing.params.username);
+        $('#' + delivery.cssRegionList).bind('textchange', function (event, previousText) {
+            delivery.errorRegion('');
+            delivery.errorCity('');
+            delivery.errorAddress('');
+            delivery.errorPostCode('');
+            delivery.customRegion($(this).val());
+            delivery.customCity(null);
+            delivery.city(null);
+            delivery.customAddress(null)
+            delivery.address(null);
+            delivery.postCode(null);
+        });
 
-            RegistrationConfirmFormViewModel.prototype.Back = function() {
-                EventDispatcher.DispatchEvent('OrderWidget.step1.view1');
-            };
-            var form = new RegistrationConfirmFormViewModel(Parameters.cache.order.step1.reg);
-            form.submitEvent('OrderWidget.step1.confirm');
-            form.ShowButtonSendToken();
-            
-            if (Routing.params.username && Routing.params.mail_token) {
-                form.mailToken(Routing.params.mail_token);
-                EventDispatcher.DispatchEvent('OrderWidget.step1.confirm', form);
-            }
-            self.Render.Step1Confirm(form);
-        },
-        Step1Profile: function(data) {
-            RegistrationProfileFormViewModel.prototype.Back = function() {
-                EventDispatcher.DispatchEvent('OrderWidget.step1.view2');
-            };
-            RegistrationProfileFormViewModel.prototype.SpecifyLater = function() {
-                EventDispatcher.DispatchEvent('OrderWidget.step1.later');
-            };
-            var form = new RegistrationProfileFormViewModel();
-            form.submitEvent('OrderWidget.step1.profile');
-            form.AddContent(data);
-            self.Render.Step1Profile(form);
-        },
-        Step2: function(data) {
-            if(!data.err){
-                var form = Parameters.cache.order.step2;
-                if ($.isEmptyObject(form)) {
-                    form = new OrderFormStep2ViewModel();
-                }
-                form.AddContent(data, self.order);
+        $('#' + delivery.cssCityList).bind('textchange', function (event, previousText) {
+            delivery.errorCity('');
+            delivery.errorAddress('');
+            delivery.errorPostCode('');
+            delivery.customCity($(this).val());
+            delivery.customAddress(null)
+            delivery.address(null);
+            delivery.postCode(null);
+        });
 
-                self.Render.Step2(form);
-                Parameters.cache.order.step2 = form;
-            }
-            else
-                Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
-        },
-        Step2Form: function(form, data) {
-            form.AddCountryList(data);
-            if (form.idCountry()) {
-                $.grep(form.countryList(), function(data) {
-                    if (data.id == form.idCountry()) {
-                        form.country(data);
-                    }
-                })
-            }
-            self.Render.Step2Form(form);
-        },
-        Step3: function(data) {
-            var form = Parameters.cache.order.step3;
-            if ($.isEmptyObject(form)) {
-                form = new OrderFormStep3ViewModel();
-            }
-            form.AddShipping(data);
-            Parameters.cache.order.step3 = form;
-            self.Render.Step3(form);
-        },
-        Step4: function(data) {
-            var form = Parameters.cache.order.step4;
-            if ($.isEmptyObject(form)) {
-                form = new OrderFormStep4ViewModel();
-            }
-            form.AddPayment(data);
-            Parameters.cache.order.step4 = form;
-            self.Render.Step4(form);
-        },
-        Step5: function(data) {
-            var form = Parameters.cache.order.step5;
-            if ($.isEmptyObject(form)) {
-                OrderViewModel.prototype.Back = function(){
-                    Routing.SetHash('order', 'Оформление заказа', {step: 4});
-                };
-                OrderViewModel.prototype.ClickDelete = function(){
-                    EventDispatcher.DispatchEvent('OrderWidget.step5.delete');
-                };
-                OrderViewModel.prototype.ClickStep1 = function(){
-                    Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-                };
-                OrderViewModel.prototype.ClickStep2 = function() {
-                    Routing.SetHash('order', 'Оформление заказа', {step: 2});
-                };
-                OrderViewModel.prototype.ClickStep3 = function() {
-                    Routing.SetHash('order', 'Оформление заказа', {step: 3});
-                };
-                OrderViewModel.prototype.ClickStep4 = function() {
-                    Routing.SetHash('order', 'Оформление заказа', {step: 4});
-                };
-                OrderViewModel.prototype.ClickAddAddress = function(){
-                    Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'add'});
-                };
-                form = new OrderViewModel();
+        $('#' + delivery.cssAddressList).bind('textchange', function (event, previousText) {
+            delivery.errorAddress('');
+            delivery.errorPostCode('');
+        });
 
-                Parameters.cache.order.step5 = form;
-            }
-            form.AddContent(data);
+        $('#' + delivery.cssPostCode).bind('textchange', function (event, previousText) {
+            delivery.errorPostCode('');
+        });
 
-            self.Render.Step5(form);
-        }
-    };
-    self.Render = {
-        Step1: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try {
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if (self.settings.animate)
-                        self.settings.animate();
-                    delete form;
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                }
-                catch (e) {
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']', e);
-                    if (self.settings.tmpl.custom) {
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                            self.InsertContainer.Step1();
-                            self.Render.Step1(form);
-                        });
-                    }
-                    else {
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step1Confirm: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true,  self.settings.containerFormId);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1Confirm') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step1Confirm();
-                            self.Render.Step1Confirm(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step1Profile: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1Profile') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step1Profile();
-                            self.Render.Step1Profile(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step2: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step2();
-                            self.Render.Step2(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step2Form: function(delivery) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                    try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(delivery, $("#" + self.settings.containerFormId)[0]);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if(self.settings.animate)
-                        self.settings.animate();
+        $('#' + delivery.cssAddressee).bind('textchange', function (event, previousText) {
+            delivery.errorAddressee('');
+        });
 
-                    $('#' + delivery.cssRegionList).autocomplete({
-                        source: function(request, response) {
-                            self.BaseLoad.Region(delivery.country().id + '/' + encodeURIComponent(request.term), function(data) {
-                                if (!data.err) {
-                                    response($.map(data, function(item) {
-                                        return {
-                                            value: $.trim(item.formalname + ' ' + item.shortname),
-                                            region: item
-                                        };
-                                    }));
-                                }
-                                else {
-                                    $('#' + delivery.cssRegionList).autocomplete("close");
-                                    return false;
-                                }
-                            });
-                        },
-                        select: function(event, ui) {
-                            delivery.region(ui.item.region);
-                            delivery.customRegion(ui.item.value);
-                            if (ui.item.region && ui.item.region.postalcode != 0)
-                                delivery.postCode(ui.item.region.postalcode);
-                            else {
-                                delivery.postCode(null);
-                            }
-                        }
-                    });
+        $('#' + delivery.cssContactPhone).bind('textchange', function (event, previousText) {
+            delivery.errorContactPhone('');
+        })
+    }
 
-                    $('#' + delivery.cssCityList).autocomplete({
-                        source: function(request, response) {
-                            if (delivery.region()) {
-                                self.BaseLoad.City(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                                    if (!data.err) {
-                                        response($.map(data, function(item) {
-                                            return {
-                                                value: $.trim(item.shortname + '. ' + item.formalname),
-                                                city: item
-                                            };
-                                        }));
-                                    }
-                                    else {
-                                        $('#' + delivery.cssCityList).autocomplete("close");
-                                        return false;
-                                    }
-                                });
-                            }
-                        },
-                        select: function(event, ui) {
-                            delivery.city(ui.item.city);
-                            delivery.customCity(ui.item.value);
-                            if (ui.item.city && ui.item.city.postalcode != 0)
-                                delivery.postCode(ui.item.city.postalcode);
-                            else
-                                delivery.postCode(null);
-                        }
-                    });
-
-                    $('#' + delivery.cssAddress).autocomplete({
-                        source: function(request, response) {
-                            if (delivery.region()) {
-                                self.BaseLoad.Street(delivery.country().id + '/' + encodeURIComponent(delivery.region().regioncode) + '/' + encodeURIComponent(delivery.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                                    if (!data.err) {
-                                        response($.map(data, function(item) {
-                                            return {
-                                                value: $.trim(item.shortname + '. ' + item.formalname),
-                                                street: item
-                                            };
-                                        }));
-                                    }
-                                    else {
-                                        $('#' + delivery.cssAddress).autocomplete("close");
-                                        return false;
-                                    }
-                                });
-                            }
-                        },
-                        select: function(event, ui) {
-                            delivery.address(ui.item.street);
-                            delivery.customAddress(ui.item.value);
-                            if (ui.item.street && ui.item.street.postalcode != 0)
-                                delivery.postCode(ui.item.street.postalcode);
-                            else
-                                delivery.postCode(null);
-                        }
-                    });
-                    $('#' + delivery.cssCountryList).change(function() {
-                        var v = $('#' + delivery.cssCountryList + ' option:selected').val();
-                        if(v) {
-                            delivery.errorCountry('');
-                            delivery.errorRegion('');
-                            delivery.errorCity('');
-                            delivery.errorAddress('');
-                            delivery.errorPostCode('');
-                        }
-                        $.grep(delivery.countryList(), function(data) {
-                            if (data.id == v) {
-                                delivery.country(data);
-                                delivery.customRegion(null);
-                                delivery.region(null);
-                                delivery.customCity(null);
-                                delivery.city(null);
-                                delivery.customAddress(null)
-                                delivery.address(null);
-                                delivery.postCode(null);
-                            }
-                        })
-                    });
-
-                    $('#' + delivery.cssRegionList).bind('textchange', function(event, previousText) {
-                        delivery.errorRegion('');
-                        delivery.errorCity('');
-                        delivery.errorAddress('');
-                        delivery.errorPostCode('');
-                        delivery.customRegion($(this).val());
-                        delivery.customCity(null);
-                        delivery.city(null);
-                        delivery.customAddress(null)
-                        delivery.address(null);
-                        delivery.postCode(null);
-                    });
-
-                    $('#' + delivery.cssCityList).bind('textchange', function(event, previousText) {
-                        delivery.errorCity('');
-                        delivery.errorAddress('');
-                        delivery.errorPostCode('');
-                        delivery.customCity($(this).val());
-                        delivery.customAddress(null)
-                        delivery.address(null);
-                        delivery.postCode(null);
-                    });
-
-                    $('#' + delivery.cssAddressList).bind('textchange', function(event, previousText) {
-                        delivery.errorAddress('');
-                        delivery.errorPostCode('');
-                    });
-
-                    $('#' + delivery.cssPostCode).bind('textchange', function(event, previousText) {
-                        delivery.errorPostCode('');
-                    });
-
-                    $('#' + delivery.cssAddressee).bind('textchange', function(event, previousText) {
-                        delivery.errorAddressee('');
-                    });
-
-                    $('#' + delivery.cssContactPhone).bind('textchange', function(event, previousText) {
-                        delivery.errorContactPhone('');
-                    })
-
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2Form') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step2Form();
-                            self.Render.Step2Form(delivery);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-            
-        },
-        Step3: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step3();
-                            self.Render.Step3(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step4: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step4();
-                            self.Render.Step4(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step5: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateOrder == 'function')
-                        new AnimateOrder();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step5') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step5();
-                            self.Render.Step5(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        }
-    };
-    self.SetPosition = function() {
-        if (self.settings.inputParameters['position'] == 'absolute') {
-            for (var key in self.settings.inputParameters) {
-                if (self.settings.style[key])
-                    self.settings.style[key] = self.settings.inputParameters[key];
-            }
-            $().ready(function() {
-                for (var i = 0; i <= Config.Containers.registration.length - 1; i++) {
-                    $("#" + Config.Containers.registration[i]).css(self.settings.style);
-                }
-            });
-        }
-    };
+    function SetHash(alias, title, params){
+        Routing.SetHash(alias, title, params);
+    }
 }
 
-var OrderFormStep1ViewModel = function() {
+var OrderFormStep1ViewModel = function (settings) {
     var self = this;
     var form = new AuthenticationViewModel();
-    form.subminEvent('OrderWidget.step1.authentication');
+    form.subminEvent('Order.step1.authentication');
     self.loginForm = form;
-    self.registrationForm = new RegistrationFormViewModel();
-    self.registrationForm.submitEvent('OrderWidget.step1.registration');
+    self.registrationForm = new RegistrationFormViewModel(settings);
+    self.registrationForm.submitEvent('Order.step1.registration');
 };
 
-var OrderFormStep2ViewModel = function() {
-    var self = this;
+var OrderFormStep2ViewModel = function (settings) {
+    var self = this,
+        title = 'Оформление заказа',
+        alias = 'order';
     self.addressList = ko.observableArray();
     self.cssAddressList = 'delivary_address_list';
     self.checked = ko.observable();
     self.selectedItem = ko.observable();
 
-    self.ClickAddAddress = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
+    self.ClickAddAddress = function () {
+        SetHash(alias, title, {step: 2, block: 'add'});
     };
-    self.AddContent = function(data, order) {
+    self.AddContent = function (data, order) {
         if (!data.err)
             self.addressList = ko.observableArray();
-            for (var key in data) {
-                OrderItemFormStep2ViewModel.prototype = new Widget();
-                var address = new OrderItemFormStep2ViewModel(data[key], self)
-                self.addressList.push(address);
-                if (data[key].is_default == 'yes'){
-                    order.delivery = address;
-                }
-                if(data.length == 1)
-                    address.ClickItem();
+        for (var key in data) {
+            OrderItemFormStep2ViewModel.prototype = new Widget();
+            var address = new OrderItemFormStep2ViewModel(data[key], self, settings)
+            self.addressList.push(address);
+            if (data[key].is_default == 'yes') {
+                order.delivery = address;
             }
+            if (data.length == 1)
+                address.ClickItem();
+        }
     };
-    self.HasAddress = function() {
+    self.Back = function () {
+        if ($.isEmptyObject(Parameters.cache.order.step1.profile)) {
+            var t = Parameters.cache.history;
+            for (var i = 0; i <= t.length - 1; i++) {
+                var link = t.pop();
+                if (link.route != 'order') {
+                    SetHash(link.route, link.title, link.data, true);
+                    return false;
+                }
+            }
+        }
+        else
+            SetHash(alias, title, {step: 1, block: 'profile'});
+    };
+    self.Submit = function () {
+        if (HasAddress()) {
+            EventDispatcher.DispatchEvent('Order.step2.change', {
+                id: self.checked(),
+                selected: self.selectedItem(),
+                fn: function () {
+                    SetHash(alias, title, {step: 3});
+                }
+            });
+        }
+        else
+            EventDispatcher.DispatchEvent('Order.step2.message');
+    };
+    self.ClickStep1 = function () {
+        SetHash(alias, title, {step: 1, block: 'profile'});
+    };
+
+    function HasAddress() {
         var test = false;
-        $.each(self.addressList(), function(i) {
+        $.each(self.addressList(), function (i) {
             if (self.addressList()[i].isDefault()) {
                 test = true;
                 return false;
             }
         })
         return test;
-    };
-    self.Back = function() {
-        if($.isEmptyObject(Parameters.cache.order.step1.profile)){
-            var t = Parameters.cache.history;
-            for(var i = 0; i <= t.length-1; i++){
-                var link = t.pop();
-                if(link.route != 'order'){ 
-                    Routing.SetHash(link.route, link.title, link.data, true);
-                    return false;
-                }
-            }
-        }
-        else
-             Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-    self.Submit = function() {
-        if (self.HasAddress()){
-            EventDispatcher.DispatchEvent('OrderWidget.step2.change', {
-                id : self.checked(),
-                selected : self.selectedItem(),
-                fn : function(){
-                    Routing.SetHash('order', 'Оформление заказа', {step: 3});
-                }
-            });
-        }
-        else
-            EventDispatcher.DispatchEvent('OrderWidget.step2.message');
-    };
-    self.ClickStep1 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
+    }
+    function SetHash(alias, title, params){
+        Routing.SetHash(alias, title, params);
+    }
 };
 
-var OrderItemFormStep2ViewModel = function(data, list) {
+var OrderItemFormStep2ViewModel = function (data, list, settings) {
     var self = this;
     if (data.id)
         self.id = data.id;
@@ -1418,13 +1420,13 @@ var OrderItemFormStep2ViewModel = function(data, list) {
         self.cssIsDefault = ko.observable('delivery_address_is_default');
     }
 
-    self.Delete = function() {
-        self.Confirm(Config.Order.message.confirmDeleteAddressDelivery, function() {
-            EventDispatcher.DispatchEvent('OrderWidget.step2.delete', {address: self, list: list.addressList});
+    self.Delete = function () {
+        self.Confirm(settings.message.confirmDeleteAddressDelivery, function () {
+            EventDispatcher.DispatchEvent('Order.step2.delete', {address: self, list: list.addressList});
         }, false);
     };
-    self.ClickItem = function() {
-        $.each(self.list, function(i) {
+    self.ClickItem = function () {
+        $.each(self.list, function (i) {
             self.list[i].cssIsDefault('delivery_address_is_default');
             self.list[i].isDefault(false);
         });
@@ -1438,8 +1440,10 @@ var OrderItemFormStep2ViewModel = function(data, list) {
 
 };
 
-var OrderDeliveryFormStep2ViewModel = function(data) {
-    var self = this;
+var OrderDeliveryFormStep2ViewModel = function (settings) {
+    var self = this,
+        title = 'Оформление заказа',
+        alias = 'order';
     self.id = ko.observable();
     self.idCountry = ko.observable();
     self.country = ko.observable();
@@ -1451,8 +1455,8 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
     self.customRegion = ko.observable();
     self.cssRegionList = 'delivery_region';
     self.errorRegion = ko.observable(null);
-    self.showRegion = ko.computed(function(){
-        if(self.country())
+    self.showRegion = ko.computed(function () {
+        if (self.country())
             return false;
         return true;
     }, this);
@@ -1462,8 +1466,8 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
     self.customCity = ko.observable();
     self.cssCityList = 'delivery_city';
     self.errorCity = ko.observable(null);
-    self.showCity = ko.computed(function(){
-        if(self.customRegion())
+    self.showCity = ko.computed(function () {
+        if (self.customRegion())
             return false;
         return true;
     }, this);
@@ -1472,8 +1476,8 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
     self.customAddress = ko.observable();
     self.cssAddress = 'delivery_cssAddress';
     self.errorAddress = ko.observable(null);
-    self.showAddress = ko.computed(function(){
-        if(self.customCity())
+    self.showAddress = ko.computed(function () {
+        if (self.customCity())
             return false;
         return true;
     }, this);
@@ -1481,8 +1485,8 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
     self.postCode = ko.observable();
     self.cssPostCode = 'delivery_post_index';
     self.errorPostCode = ko.observable(null);
-    self.showPostIndex = ko.computed(function(){
-        if(self.customAddress())
+    self.showPostIndex = ko.computed(function () {
+        if (self.customAddress())
             return false;
         return true;
     }, this);
@@ -1499,7 +1503,7 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
 
     self.countryList = ko.observableArray();
 
-    self.AddCountryList = function(data) {
+    self.AddCountryList = function (data) {
         if (data.length > 0) {
             for (var i = 0; i <= data.length - 1; i++) {
                 self.countryList.push(new CountryListViewModel(data[i]));
@@ -1507,7 +1511,7 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
         }
     };
 
-    self.AddContent = function(data) {
+    self.AddContent = function (data) {
         self.id(data.id);
         self.idCountry(data.idCountry);
         self.region({regioncode: data.codeRegion});
@@ -1520,176 +1524,187 @@ var OrderDeliveryFormStep2ViewModel = function(data) {
         self.isDefault(data.isDefault());
         self.contactPhone(data.contactPhone);
     };
-    self.Submit = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('OrderWidget.step2.add', self);
+    self.Submit = function () {
+        if (ValidationForm()) {
+            EventDispatcher.DispatchEvent('Order.step2.add', self);
         }
     };
-    self.ValidationForm = function() {
+    self.Back = function () {
+        SetHash(alias, title, {step: 2});
+    };
+    self.ClickStep1 = function () {
+        SetHash(title, alias, {step: 1, block: 'profile'});
+    };
+    self.ClickStep2 = function () {
+        SetHash(title, alias, {step: 2});
+    };
+    function SetHash(alias, title, params){
+        Routing.SetHash(alias, title, params);
+    }
+    function ValidationForm() {
         var test = true;
-        if (!self.PhoneValidation())
+        if (!PhoneValidation())
             test = false;
-        if (!self.UsernameValidation())
+        if (!UsernameValidation())
             test = false;
-        if (!self.CountryValidation())
+        if (!CountryValidation())
             test = false;
-        if (!self.RegionValidation())
+        if (!RegionValidation())
             test = false;
-        if (!self.CityValidation())
+        if (!CityValidation())
             test = false;
-        if (!self.AddressValidation())
+        if (!AddressValidation())
             test = false;
-        if (!self.PostIndexValidation())
+        if (!PostIndexValidation())
             test = false;
 
         return test;
-    };
-    self.CountryValidation = function() {
+    }
+    function CountryValidation() {
         if (!self.country()) {
-            self.errorCountry(Config.Order.error.country.empty);
+            self.errorCountry(settings.error.country.empty);
             return false;
         }
         self.errorCountry(null);
         return true;
-    };
-    self.RegionValidation = function() {
+    }
+    function RegionValidation() {
         if (!self.customRegion()) {
-            self.errorRegion(Config.Order.error.region.empty);
+            self.errorRegion(settings.error.region.empty);
             return false;
         }
         self.errorRegion(null);
         return true;
-    };
-    self.CityValidation = function() {
+    }
+    function CityValidation() {
         if (!self.customCity()) {
-            self.errorCity(Config.Order.error.city.empty);
+            self.errorCity(settings.error.city.empty);
             return false;
         }
         self.errorCity(null);
         return true;
-    };
-    self.AddressValidation = function() {
+    }
+    function AddressValidation() {
         if (!self.customAddress()) {
-            self.errorAddress(Config.Order.error.address.empty);
+            self.errorAddress(settings.error.address.empty);
             return false;
         }
         self.errorAddress(null);
         return true;
-    };
-    self.PostIndexValidation = function() {
+    }
+    function PostIndexValidation() {
+        var error = settings.error.postIndex;
         if (!self.postCode()) {
-            self.errorPostCode(Config.Order.error.postIndex.empty);
+            self.errorPostCode(error.empty);
             return false;
         }
-        if (5 > self.postCode().length  || self.postCode().length > 6) {
-            self.errorPostCode(Config.Order.error.postIndex.length);
+        if (5 > self.postCode().length || self.postCode().length > 6) {
+            self.errorPostCode(error.length);
             return false;
         }
-        if (!Config.Order.regular.postIndex.test(self.postCode())) {
-            self.errorPostCode(Config.Order.error.postIndex.regular);
+        if (!settings.regular.postIndex.test(self.postCode())) {
+            self.errorPostCode(error.regular);
             return false;
         }
         self.errorPostCode(null);
         return true;
-    };
-    self.UsernameValidation = function() {
+    }
+    function UsernameValidation() {
+        var error = settings.error.addressee;
         if (!self.addressee()) {
-            self.errorAddressee(Config.Order.error.addressee.empty);
+            self.errorAddressee(error.empty);
             return false;
         }
         if (self.addressee().length < 3) {
-            self.errorAddressee(Config.Order.error.addressee.minLength);
+            self.errorAddressee(error.minLength);
             return false;
         }
         if (self.addressee().length > 40) {
-            self.errorAddressee(Config.Order.error.addressee.maxLength);
+            self.errorAddressee(error.maxLength);
             return false;
         }
-        if (!Config.Order.regular.addressee.test(self.addressee())) {
-            self.errorAddressee(Config.Order.error.addressee.regular);
+        if (!settings.regular.addressee.test(self.addressee())) {
+            self.errorAddressee(error.regular);
             return false;
         }
         self.errorAddressee(null);
         return true;
-    };
-    self.PhoneValidation = function() {
+    }
+    function PhoneValidation() {
+        var error = settings.error.phone;
         if (!self.contactPhone()) {
-            self.errorContactPhone(Config.Order.error.phone.empty);
+            self.errorContactPhone(error.empty);
             return false;
         }
-        if (!Config.Order.regular.phone.test($.trim(self.contactPhone()))) {
-            self.errorContactPhone(Config.Order.error.phone.regular);
+        if (!settings.regular.phone.test($.trim(self.contactPhone()))) {
+            self.errorContactPhone(error.regular);
             return false;
         }
 
         self.errorContactPhone(null);
         return true;
-    };
-    self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
-    };
-    self.ClickStep1 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-    self.ClickStep2 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
-    };
+    }
 };
 
-var OrderFormStep3ViewModel = function() {
-    var self = this;
+var OrderFormStep3ViewModel = function () {
+    var self = this,
+        title = 'Оформление заказа',
+        alias = 'order';
     self.shipping = ko.observableArray();
     self.checked = ko.observable();
     self.selectedItem = ko.observable();
 
-    self.AddShipping = function(data) {
+    self.AddShipping = function (data) {
         self.shipping = ko.observableArray();
         for (var i = 0; i <= data.length - 1; i++) {
             var item = new OrderItemFormStep3ViewModel(self);
             item.AddContent(data[i]);
             self.shipping.push(item);
-            if(data.length == 1)
+            if (data.length == 1)
                 item.ClickItem();
         }
     };
-    self.HasShipping = function() {
+    self.Back = function () {
+        SetHash(alias, title, {step: 2});
+    };
+    self.Submit = function () {
+        if (HasShipping()) {
+            EventDispatcher.DispatchEvent('Order.step3.change', {
+                id: self.checked(),
+                selected: self.selectedItem(),
+                fn: function () {
+                    SetHash(alias, title, {step: 4});
+                }
+            });
+        }
+        else
+            EventDispatcher.DispatchEvent('Order.step3.message');
+    };
+    self.ClickStep1 = function () {
+        SetHash(alias, title, {step: 1, block: 'profile'});
+    };
+    self.ClickStep2 = function () {
+        SetHash(alias, title, {step: 2});
+    };
+    self.ClickAddAddress = function () {
+        SetHash(alias, title, {step: 2, block: 'add'});
+    };
+    function HasShipping() {
         var test = false;
-        $.each(self.shipping(), function(i) {
+        $.each(self.shipping(), function (i) {
             if (self.shipping()[i].isActive()) {
                 test = true;
                 return false;
             }
         })
         return test;
-    };
-    self.Back = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
-    };
-    self.Submit = function() {
-        if (self.HasShipping()){
-            EventDispatcher.DispatchEvent('OrderWidget.step3.change', {
-                id: self.checked(),
-                selected : self.selectedItem(),
-                fn: function(){
-                    Routing.SetHash('order', 'Оформление заказа', {step: 4});
-                }
-            });
-        }
-        else
-            EventDispatcher.DispatchEvent('OrderWidget.step3.message');
-    };
-    self.ClickStep1 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-    self.ClickStep2 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
-    };
-    self.ClickAddAddress = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
-    };
+    }
+    function SetHash(alias, title, params){
+        Routing.SetHash(alias, title, params);
+    }
 };
 
-var OrderItemFormStep3ViewModel = function(parent) {
+var OrderItemFormStep3ViewModel = function (parent) {
     var self = this;
     self.nameShippingCompany = ko.observable();
     self.siteShippingCompany = ko.observable();
@@ -1701,7 +1716,7 @@ var OrderItemFormStep3ViewModel = function(parent) {
     self.cssActive = ko.observable('shipping_row');
     self.isActive = ko.observable(false);
 
-    self.AddContent = function(data ) {
+    self.AddContent = function (data) {
         if (data.hasOwnProperty('name_shipping_company'))
             self.nameShippingCompany(data.name_shipping_company);
         if (data.hasOwnProperty('site_shipping_company'))
@@ -1717,8 +1732,8 @@ var OrderItemFormStep3ViewModel = function(parent) {
         if (data.hasOwnProperty('cost_shipping'))
             self.costShipping(data.cost_shipping);
     };
-    self.ClickItem = function() {
-        $.each(parent.shipping(), function(i) {
+    self.ClickItem = function () {
+        $.each(parent.shipping(), function (i) {
             parent.shipping()[i].cssActive('shipping_row');
             parent.shipping()[i].isActive(false);
         });
@@ -1730,76 +1745,81 @@ var OrderItemFormStep3ViewModel = function(parent) {
     }
 };
 
-var OrderFormStep4ViewModel = function() {
-    var self = this;
+var OrderFormStep4ViewModel = function () {
+    var self = this,
+        title = 'Оформление заказа',
+        alias = 'order';
     self.payment = ko.observableArray();
     self.checked = ko.observable();
     self.selectedItem = ko.observable();
 
-    self.AddPayment = function(data) {
+    self.AddPayment = function (data) {
         self.payment = ko.observableArray();
         for (var i = 0; i <= data.length - 1; i++) {
             var item = new OrderItemFormStep4ViewModel(self);
             item.AddContent(data[i]);
             self.payment.push(item);
-            if(data.length == 1)
+            if (data.length == 1)
                 item.ClickItem();
         }
     };
-    self.HasPayment = function() {
+    self.Back = function () {
+        if ($.isEmptyObject(Parameters.cache.order.step1.profile)) {
+            var t = Parameters.cache.history;
+            for (var i = 0; i <= t.length - 1; i++) {
+                var link = t.pop();
+                if (link.route != 'order') {
+                    SetHash(link.route, link.title, link.data, true);
+                    return false;
+                }
+                else
+                    SetHash(alias, title, {step: 3});
+            }
+        }
+        else
+            SetHash(alias, title, {step: 3});
+    };
+    self.Submit = function () {
+        if (HasPayment()) {
+            EventDispatcher.DispatchEvent('Order.step4.change', {
+                id: self.checked(),
+                selected: self.selectedItem(),
+                fn: function () {
+                    SetHash(alias, title, {step: 5});
+                }
+            });
+        }
+        else
+            EventDispatcher.DispatchEvent('Order.step4.message');
+    };
+    self.ClickStep1 = function () {
+        SetHash(alias, title, {step: 1, block: 'profile'});
+    };
+    self.ClickStep2 = function () {
+        SetHash(alias, title, {step: 2});
+    };
+    self.ClickStep3 = function () {
+        SetHash(alias, title, {step: 3});
+    };
+    self.ClickAddAddress = function () {
+        SetHash(alias, title, {step: 2, block: 'add'});
+    };
+    function HasPayment() {
         var test = false;
-        $.each(self.payment(), function(i) {
+        $.each(self.payment(), function (i) {
             if (self.payment()[i].isActive()) {
                 test = true;
                 return false;
             }
         })
         return test;
-    };
-    self.Back = function() {
-        if($.isEmptyObject(Parameters.cache.order.step1.profile)){
-            var t = Parameters.cache.history;
-            for(var i = 0; i <= t.length-1; i++){
-                var link = t.pop();
-                if(link.route != 'order'){ 
-                    Routing.SetHash(link.route, link.title, link.data, true);
-                    return false;
-                }
-                else
-                    Routing.SetHash('order', 'Оформление заказа', {step: 3});
-            }
-        }
-        else
-             Routing.SetHash('order', 'Оформление заказа', {step: 3});
-    };
-    self.Submit = function() {
-        if (self.HasPayment()){
-            EventDispatcher.DispatchEvent('OrderWidget.step4.change', {
-                id: self.checked(),
-                selected : self.selectedItem(),
-                fn: function(){
-                    Routing.SetHash('order', 'Оформление заказа', {step: 5});
-                }
-            });
-        }
-        else
-            EventDispatcher.DispatchEvent('OrderWidget.step4.message');
-    };
-    self.ClickStep1 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 1, block: 'profile'});
-    };
-    self.ClickStep2 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2});
-    };
-    self.ClickStep3 = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 3});
-    };
-    self.ClickAddAddress = function() {
-        Routing.SetHash('order', 'Оформление заказа', {step: 2, block: 'add'});
-    };
+    }
+    function SetHash(alias, title, params){
+        Routing.SetHash(alias, title, params);
+    }
 };
 
-var OrderItemFormStep4ViewModel = function(parent) {
+var OrderItemFormStep4ViewModel = function (parent) {
     var self = this;
     self.id = ko.observable();
     self.logoPayment = ko.observable();
@@ -1810,7 +1830,7 @@ var OrderItemFormStep4ViewModel = function(parent) {
     self.cssActive = ko.observable('payment_row');
     self.isActive = ko.observable(false);
 
-    self.AddContent = function(data, parent) {
+    self.AddContent = function (data, parent) {
         self.id(data.id);
         if (data.hasOwnProperty('logo_payment'))
             self.logoPayment(data.logo_payment);
@@ -1823,8 +1843,8 @@ var OrderItemFormStep4ViewModel = function(parent) {
         if (data.hasOwnProperty('cost_payment'))
             self.costPayment(data.cost_payment);
     };
-    self.ClickItem = function() {
-        $.each(parent.payment(), function(i) {
+    self.ClickItem = function () {
+        $.each(parent.payment(), function (i) {
             parent.payment()[i].cssActive('payment_row');
             parent.payment()[i].isActive(false);
         });
@@ -1837,14 +1857,14 @@ var OrderItemFormStep4ViewModel = function(parent) {
 };
 
 var TestOrder = {
-    Init: function() {
+    Init: function () {
         if (typeof Widget == 'function') {
             OrderWidget.prototype = new Widget();
             var order = new OrderWidget();
             order.Init(order);
         }
         else {
-            setTimeout(function() {
+            setTimeout(function () {
                 TestOrder.Init()
             }, 100);
         }

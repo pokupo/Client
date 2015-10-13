@@ -1,4 +1,4 @@
-window.RelatedGoodsWidget = function(){
+window.RelatedGoodsWidget = function () {
     var self = this;
     self.widgetName = 'RelatedGoodsWidget';
     self.version = 1.0;
@@ -6,203 +6,187 @@ window.RelatedGoodsWidget = function(){
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        tmpl : {
-            path : null,
+    self.InitWidget = InitWidget;
+
+    var settings = {
+        container: null,
+        tmpl:{
+            path : "relatedGoodsTmpl.html", // файл шаблонов связанных товаров
             id : {
-                table : null,
-                list : null,
-                tile : null,
-                slider : null,
-                carousel : null
-            }
-        },
-        animate: null,
-        inputParameters : {},
-        container : null,
-        relatedGoods : {
-            id : null,
-            count : null,
-            countTile : null,
-            typeView : null,
-            orderBy : null,
-            start : null
-        },
-        uniq : null
-    };
-    self.InitWidget = function(){
-        self.Loader();
-        self.RegisterEvents();
-        if(Loader.IsReady())
-            self.LoadTmpl();
-    };
-    self.Loader = function(){
-        Loader.InsertContainer(self.settings.container);
-    };
-    self.SetParameters = function(data){
-        self.settings.tmpl.path = Config.RelatedGoods.tmpl.path;
-        self.settings.tmpl.id = Config.RelatedGoods.tmpl.id = {
                 table : "relatedGoodsTableTmpl", // id шаблона таблицы
                 list : "relatedGoodsListTmpl", // id шаблона списка
                 tile : "relatedGoodsTileTmpl", // id шаблона плитки
                 slider : "relatedGoodsSliderTmpl", // id шаблона слайдера
                 carousel : "relatedGoodsCarouselTmpl" // id шаблона карусели
-        };
-        self.settings.relatedGoods = Config.RelatedGoods;
-        self.settings.container = data.element;
-        
-        var input = {};
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.relatedGoods) {
-            input = WParameters.relatedGoods;
-        }
-        if (!$.isEmptyObject(input)) {
-            if(input.animate)
-                self.settings.animate = input.animate;
-        }
-        self.settings.inputParameters = input;
+            }
+        },
+        animate: typeof AnimateRelatedGoods == 'function' ? AnimateRelatedGoods : null,
+        id: null,
+        count : 6, // максимальное кол-во товаров в блоке
+        countTile : 5, // кол-во плиток в строке
+        orderBy : 'rating', // сортировка
+        start : 0, // начальная позиция в запросе
+        typeView : 'carousel', // тип отображения по умолчанию
+        uniq: null
+    };
+    function InitWidget() {
+        Loader.InsertContainer(settings.container);
+        RegisterEvents();
+        if (Loader.IsReady())
+            LoadTmpl();
+    }
 
-        for(var key in data.options.params){
-            if(key == 'tmpl' && data.options.params['tmpl']){
-                if(data.options.params.tmpl['path'])
-                    self.settings.tmpl.path = data.options.params.tmpl['path'];
-                if(data.options.params.tmpl['id']) {
-                    self.settings.tmpl.id = data.options.params.tmpl['id'];
+    self.SetParameters = function (data) {
+        settings.container = data.element;
+        var params = data.options.params;
+        for (var key in params) {
+            if (key == 'tmpl' && params['tmpl']) {
+                if (params.tmpl['path'])
+                    settings.tmpl.path = params.tmpl['path'];
+                if (params.tmpl['id']) {
+                    settings.tmpl.id = params.tmpl['id'];
                 }
             }
-            else if (key == 'uniq' && data.options.params['uniq'])
-                self.settings.uniq = data.options.params['uniq'];
-            else if (key == 'animate' && data.options.params['animate'])
-                self.settings.animate = data.options.params['animate'];
-            else if(key == 'id')
-                self.settings.relatedGoods.id = data.options.params['id'];
-            self.settings.relatedGoods[key] = data.options.params[key];
+            else if (key == 'uniq' && params['uniq'])
+                settings.uniq = params['uniq'];
+            else if (key == 'animate' && params['animate'])
+                settings.animate = params['animate'];
+            else if (key == 'id')
+                settings.id = params['id'];
         }
+
+        var input = self.GetInputParameters('relatedGoods');
+        if(!$.isEmptyObject(input))
+            settings = self.UpdateSettings1(settings, input);
+
+        Config.RelatedGoods = settings;
     };
-    self.LoadTmpl = function(){
-        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-            self.BaseLoad.Script('widgets/ContentViewModel-1.0.min.js', function() {
-                EventDispatcher.DispatchEvent('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq)
+    function LoadTmpl() {
+        self.BaseLoad.Tmpl(settings.tmpl, function () {
+            self.BaseLoad.Script(PokupoWidgets.model.content, function () {
+                self.DispatchEvent('RGoods.onload.tmpl_' + settings.uniq)
             });
         });
-    };
-    self.RegisterEvents = function(){
-        EventDispatcher.AddEventListener('w.ready', function(){
-            if(self.settings.container)
-                self.LoadTmpl();
+    }
+
+    function RegisterEvents() {
+        self.AddEvent('w.ready', function () {
+            if (settings.container)
+                LoadTmpl();
         });
 
-        EventDispatcher.AddEventListener('RelatedGoodsWidget.onload.tmpl_' + self.settings.uniq, function (data){
-            var query = self.settings.relatedGoods.start + '/' + self.settings.relatedGoods.count + '/' + self.settings.relatedGoods.orderBy;
-            self.BaseLoad.RelatedGoods(self.settings.relatedGoods.id, query, function(data){
-                self.CheckData(data);
+        self.AddEvent('RGoods.onload.tmpl_' + settings.uniq, function (data) {
+            var query = settings.start + '/' + settings.count + '/' + settings.orderBy;
+            self.BaseLoad.RelatedGoods(settings.id, query, function (data) {
+                CheckData(data);
             })
         });
-        
-        EventDispatcher.AddEventListener('RelatedGoodsWidget.fill.block_' + self.settings.uniq, function (data){
-            self.Render(data);
+
+        self.AddEvent('RGoods.fill.block_' + settings.uniq, function (data) {
+            Render(data);
         });
-        EventDispatcher.AddEventListener('w.change.route', function() {
-            self.settings.container = null;
+        self.AddEvent('w.change.route', function () {
+            settings.container = null;
         });
-    };
-    self.InsertContainer = {
-        EmptyWidget : function(){
-            var temp = $("#" + self.settings.container).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.container).empty().html(temp);
-        },
-        Content : function(type){
-            if(type == 'slider')
-                $(self.settings.container).html($('script#' + self.GetTmplName('slider')).html());
-            if(type == 'carousel')
-                $(self.settings.container).html($('script#' + self.GetTmplName('carousel')).html());
-            if(type == 'tile')
-                $(self.settings.container).html($('script#' + self.GetTmplName('tile')).html());
-            if(type == 'table') 
-                $(self.settings.container).html($('script#' + self.GetTmplName('table')).html());
-            if(type == 'list')
-                $(self.settings.container).html($('script#' + self.GetTmplName('list')).html());
-            if(type == 'empty')
-                $(self.settings.container).html('');
+    }
+
+    function InsertContainerEmptyWidget() {
+        $(settings.container).html();
+    }
+
+    function InsertContainerContent(type) {
+        if (type == 'slider')
+            $(settings.container).html($('script#' + self.GetTmplName1(settings, 'slider')).html());
+        if (type == 'carousel')
+            $(settings.container).html($('script#' + self.GetTmplName1(settings, 'carousel')).html());
+        if (type == 'tile')
+            $(settings.container).html($('script#' + self.GetTmplName1(settings, 'tile')).html());
+        if (type == 'table')
+            $(settings.container).html($('script#' + self.GetTmplName1(settings, 'table')).html());
+        if (type == 'list')
+            $(settings.container).html($('script#' + self.GetTmplName1(settings, 'list')).html());
+        if (type == 'empty')
+            $(settings.container).html('');
+    }
+
+    function CheckData(data) {
+        if (!data.err) {
+            InsertContainerContent(settings.typeView);
+            Fill(settings, data)
         }
-    };
-    self.CheckData = function(data){ 
-        if(!data.err ){
-            self.InsertContainer.Content(self.settings.relatedGoods.typeView);
-            self.Fill(self.settings.relatedGoods, data)
+        else {
+            InsertContainerContent('empty');
         }
-        else{
-            self.InsertContainer.Content('empty');
-        }
-    };
-    self.Fill = function(settings, data){
+    }
+
+    function Fill(settings, data) {
         var related = new RelatedGoodsViewModel(settings, data);
         related.AddContent();
-    };
-    self.Render = function(data){
-        try{
-            ko.cleanNode($(self.settings.container).children()[0]);
-            ko.applyBindings(data, $(self.settings.container).children()[0]);
-            if(typeof AnimateRelatedGoods == 'function')
-                new AnimateRelatedGoods();
-            if(self.settings.animate)
-                self.settings.animate();
+    }
+
+    function Render(data) {
+        try {
+            ko.cleanNode($(settings.container).children()[0]);
+            ko.applyBindings(data, $(settings.container).children()[0]);
+            if (settings.animate)
+                settings.animate();
         }
-        catch(e){
-            self.Exception('Ошибка шаблона [' + self.GetTmplName(data.typeView) + ']', e);
-            if(self.settings.tmpl.custom){
-                delete self.settings.tmpl.custom;
-                self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                    self.InsertContainer.Content(data.typeView);
-                    self.Render.Content(data);
+        catch (e) {
+            self.Exception('Ошибка шаблона [' + self.GetTmplName1(settings, data.typeView) + ']', e);
+            if (settings.tmpl.custom) {
+                delete settings.tmpl.custom;
+                self.BaseLoad.Tmpl(settings.tmpl, function () {
+                    InsertContainerContent(data.typeView);
+                    Render(data);
                 });
             }
-            else{
-                self.InsertContainer.EmptyWidget();
+            else {
+                InsertContainerEmptyWidget();
             }
         }
-    };
+    }
 }
 
-var RelatedGoodsViewModel = function(settings, data){
+var RelatedGoodsViewModel = function (settings, data) {
     var self = this;
-    self.typeView      = settings.typeView;
-    self.countGoods    = settings.count;
-    self.countTile     = settings.countTile;
-    self.content       = ko.observableArray();
-    self.cssBlockContainer  = 'relatedGoodsContainer_';
-    
-    self.AddContent = function(){
-        if(data && data.length >= 1){
+    self.typeView = settings.typeView;
+    self.countGoods = settings.count;
+    self.countTile = settings.countTile;
+    self.content = ko.observableArray();
+    self.cssBlockContainer = 'relatedGoodsContainer_';
+
+    self.AddContent = function () {
+        if (data && data.length >= 1) {
             var first = data.shift()
-            self.countGoods  = first.count_goods;
-        
-            if(data.length < self.countGoods)
+            self.countGoods = first.count_goods;
+
+            if (data.length < self.countGoods)
                 self.countGoods = data.length;
-            
+
             var f = 0;
-            for(var i = 0; i <= self.countGoods-1; i++){
-                if(self.typeView == 'tile'){
+            for (var i = 0; i <= self.countGoods - 1; i++) {
+                if (self.typeView == 'tile') {
                     var str = new BlockTrForTableViewModel();
-                    for(var j = 0; j <= self.countTile-1; j++){
-                        if(data[f]){
+                    for (var j = 0; j <= self.countTile - 1; j++) {
+                        if (data[f]) {
                             str.AddStr(new ContentViewModel(data[f], f));
                             f++;
                         }
                         else
                             break;
                     }
-                    if(str.str().length > 0)
+                    if (str.str().length > 0)
                         self.content.push(str);
                     delete str;
                 }
-                else{
+                else {
                     self.content.push(new ContentViewModel(data[i], i));
                 }
             }
-            self.cssBlockContainer  = self.cssBlockContainer + EventDispatcher.HashCode(data.toString());
+            self.cssBlockContainer = self.cssBlockContainer + EventDispatcher.HashCode(data.toString());
             data.unshift(first);
         }
-        EventDispatcher.DispatchEvent('RelatedGoodsWidget.fill.block_' + settings.uniq, self);
+        EventDispatcher.DispatchEvent('RGoods.fill.block_' + settings.uniq, self);
     }
 }
 

@@ -1,4 +1,4 @@
-var RegistrationWidget = function() {
+var RegistrationWidget = function () {
     var self = this;
     self.widgetName = 'RegistrationWidget';
     self.version = 1.0;
@@ -6,78 +6,169 @@ var RegistrationWidget = function() {
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        containerFormId: null,
-        tmpl : {
-            path : null,
-            id : {
-                step1: null,
-                step2: null,
-                step3: null,
-                step4: null
-            }
+    self.InitWidget = InitWidget;
+    var settings = {
+            container: {widget: 'content', def: 'defaultRegistrationWidgetId'},
+            tmpl : {
+                path : "registrationTmpl.html", // файл шаблонов
+                id: {
+                    step1 : "registrationFromStep1Tmpl", //id шаблона формы регистрации шаг 1
+                    step2 : "registrationFromStep2Tmpl", //id шаблона формы регистрации шаг 2
+                    step3 : "registrationFromStep3Tmpl", //id шаблона формы регистрации шаг 3
+                    step4 : "registrationFromStep4Tmpl" //id шаблона формы регистрации шаг 4
+                }
+            },
+            regular: { // регулярные выражения полей
+                username: /^[а-яёa-zА-ЯЁA-Z0-9_\-\.\s]+$/,
+                email: /^[-._a-zA-Z0-9]+@(?:[a-z0-9][-a-z0-9]+\.)+[a-z]{2,6}$/,
+                phone: /^([\d]{1})\s([\d]{3})\s([\d]{3})\s([\d]{2})\s([\d]{2})(\s([\d]{2}))?$/,
+                firstName: /^[a-zёа-яА-ЯЁA-Z]+$/,
+                lastName: /^[a-zа-яёА-ЯЁA-Z]+$/,
+                middleName: /^[a-zа-яёА-ЯЁA-Z]+$/,
+                birthDay: /^[\d]{2}.[\d]{2}.[\d]{4}$/,
+                gender: /^[mw]$/,
+                postIndex: /^[0-9]+$/
+            },
+            message: {
+                registrationSuccessful: "Вы успешно зарегистрировались в магазине"
+            },
+            error: { // сообщения об ошибках при валидации формы регистрации
+                username: {
+                    empty: 'Поле обязательно для заполнения',
+                    minLength: 'Минимум 4 символа',
+                    maxLength: 'Максимум 40 символов',
+                    regular: 'Только буквы латинского или русского алфавита',
+                    uniq: 'К сожалению это имя уже занято, попробуйте указать другой вариант'
+                },
+                email: {
+                    empty: 'Поле обязательно для заполнения',
+                    maxLength: 'Максимум 64 символа',
+                    regular: 'Строка не является адресом электронной почты',
+                    uniq: 'Аккаунт для этого почтового ящика уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+                },
+                phone: {
+                    regular: 'Не верный формат телефона',
+                    uniq: 'Аккаунт для этого номера телефона уже существует, рекомендуем пройти процедуру восстановления доступа. <a href="https://pokupo.ru/resetting/request">Восстановить доступ</a>'
+                },
+                password: {
+                    empty: 'Поле обязательно для заполнения',
+                    minLength: 'Пароль должен быть не менее 6 символов',
+                    maxLength: 'Пароль должен быть не более 64 символов',
+                    equal: 'Пароль не совпадает с образцом'
+                },
+                isChecked: {
+                    empty: 'Вам необходимо прочитать и принять условия соглашения'
+                },
+                emailToken: {
+                    empty: 'Поле обязательно для заполнения',
+                    confirm: 'Указанный код не принят системой'
+                },
+                phoneToken: {
+                    empty: 'Поле обязательно для заполнения',
+                    confirm: 'Указанный код не принят системой'
+                },
+                confirmLater: {
+                    empty: 'Для активации аккаунта требуется подтвердить хотя бы один из способов связи'
+                },
+                firstName: {
+                    empty: 'Поле обязательно для заполнения',
+                    minLength: 'Минимум 2 символа',
+                    maxLength: 'Максимум 20 символов',
+                    regular: 'Только буквы латинского или русского алфавита'
+                },
+                lastName: {
+                    empty: 'Поле обязательно для заполнения',
+                    minLength: 'Минимум 2 символа',
+                    maxLength: 'Максимум 20 символов',
+                    regular: 'Только буквы латинского или русского алфавита'
+                },
+                middleName: {
+                    empty: 'Поле обязательно для заполнения',
+                    minLength: 'Минимум 2 символа',
+                    maxLength: 'Максимум 20 символов',
+                    regular: 'Только буквы латинского или русского алфавита'
+                },
+                birthDay: {
+                    empty: 'Поле обязательно для заполнения',
+                    minDate: 'Возраст пользователя должен быть не менее 18 лет.',
+                    maxDate: 'Возраст пользователя может быть не старше 101 года'
+                },
+                gender: {
+                    empty: 'Поле обязательно для заполнения'
+                },
+                country: {
+                    empty: 'Поле обязательно для заполнения'
+                },
+                region: {
+                    empty: 'Поле обязательно для заполнения'
+                },
+                city: {
+                    empty: 'Поле обязательно для заполнения'
+                },
+                address: {
+                    empty: 'Поле обязательно для заполнения'
+                },
+                postIndex: {
+                    empty: 'Поле обязательно для заполнения',
+                    length: 'В почтовом индексе должно быть 5 или 6 цифр',
+                    regular: 'Только цифры'
+                }
+            },
+            animate: typeof AnimateRegistration == 'function' ? AnimateRegistration : null,
+            geoShop: 0,
         },
-        animate: null,
-        inputParameters: {},
-        geoShop: 0,
-        style: null,
-        customContainer: null
-    };
-    self.InitWidget = function() {
-        self.settings.containerFormId = Config.Containers.registration.widget;
-        self.settings.customContainer = Config.Containers.registration.customClass;
-        self.settings.tmpl = Config.Registration.tmpl;
-        self.settings.style = Config.Registration.style;
-        self.SetInputParameters();
-        self.RegisterEvents();
-        self.CheckRouteRegistration();
-        self.SetPosition();
-    };
-    self.SetInputParameters = function() {
-        var input = {};
-        if(Config.Base.sourceParameters == 'string'){
-            var temp = JSCore.ParserInputParameters(/RegistrationWidget/);
-            if(temp.registration){
-                input = temp.registration;
-            }
-        }
-        if(Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.registration){
-            input = WParameters.registration;
-        }
+        alias = 'registration',
+        title = 'Регистрация пользователя';
 
-        if(!$.isEmptyObject(input)){
-            if(input.geoShop)
-                self.settings.geoShop = input.geoShop;
-            if(input.animate)
-                self.settings.animate = input.animate;
-        }
-        self.settings.inputParameters = input;
-    };
-    self.CheckRouteRegistration = function() {
-        if (Routing.route == 'registration') {
-            self.BaseLoad.Tmpl(self.settings.tmpl, function() {
-                self.BaseLoad.Script('widgets/RegistrationViewModel-1.0.min.js', function () {
-                    if (Routing.params.step == 1)
-                        self.Step.Step1();
-                    if (Routing.params.step == 2)
-                        self.Step.Step2();
-                    if (Routing.params.step == 3)
-                        self.Step.Step3();
-                    if (Routing.params.step == 4)
-                        self.Step.Step4();
+    function InitWidget() {
+        SetInputParameters();
+        RegisterEvents();
+        CheckRouteRegistration();
+    }
+
+    function SetInputParameters() {
+        var input = self.GetInputParameters(alias);
+
+        if (!$.isEmptyObject(input))
+            settings = self.UpdateSettings1(settings, input);
+
+        Config.Containers.registration = settings.container;
+    }
+
+    function CheckRouteRegistration() {
+        if (Routing.route == alias) {
+            var pRoute = Routing.params;
+            self.BaseLoad.Tmpl(settings.tmpl, function () {
+                self.BaseLoad.Script(PokupoWidgets.model.registration, function () {
+                    if (pRoute.step == 1) {
+                        InsertContainerStep1();
+                        FillStep1();
+                    }
+                    if (pRoute.step == 2) {
+                        InsertContainerStep2();
+                        FillStep2();
+                    }
+                    if (pRoute.step == 3) {
+                        InsertContainerStep3();
+                        FillStep3();
+                    }
+                    if (pRoute.step == 4) {
+                        InsertContainerStep4();
+                        FillStep4();
+                    }
                 });
             });
         }
         else
             self.WidgetLoader(true);
-    };
+    }
 
-    self.RegisterEvents = function() {
-        EventDispatcher.AddEventListener('w.change.route', function() {
-            self.CheckRouteRegistration();
+    function RegisterEvents() {
+        self.AddEvent('w.change.route', function () {
+            CheckRouteRegistration();
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step1.checking', function(step1) {
+        self.AddEvent('RegistrationWidget.step1.checking', function (step1) {
             self.WidgetLoader(false);
             var params = [];
             if (step1.username())
@@ -89,14 +180,16 @@ var RegistrationWidget = function() {
             if (params.length > 0)
                 var str = '?' + params.join('&');
 
-            self.BaseLoad.UniqueUser(str, function(data) {
+            self.BaseLoad.UniqueUser(str, function (data) {
                 var test = true;
-                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationWidget.step1.checking', step1)})){
-                    if (!self.Validate.Username(data, step1))
+                if (self.QueryError(data, function () {
+                        self.DispatchEvent('RegistrationWidget.step1.checking', step1)
+                    })) {
+                    if (!ValidateUsername(data, step1))
                         test = false;
-                    if (!self.Validate.Email(data, step1))
+                    if (!ValidateEmail(data, step1))
                         test = false;
-                    if (!self.Validate.Phone(data, step1))
+                    if (!ValidatePhone(data, step1))
                         test = false;
                 }
                 else
@@ -113,23 +206,23 @@ var RegistrationWidget = function() {
                         params.push('password=' + encodeURIComponent(step1.firstPassword()));
                     if (params.length > 0)
                         var str = '?' + params.join('&');
-                    self.BaseLoad.Registration(str, function(data) {
-                        self.BaseLoad.LoginForProxy(step1.username(), step1.firstPassword(), 'no', function(request2){
+                    self.BaseLoad.Registration(str, function (data) {
+                        self.BaseLoad.LoginForProxy(step1.username(), step1.firstPassword(), 'no', function (request2) {
                             Parameters.cache.reg.step1 = step1;
-                            Routing.SetHash('registration', 'Регистрация пользователя', {step: 2});
+                            SetHash(alias, title, {step: 2});
                         })
                     });
                 }
                 else
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true, settings.container.widget);
             });
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step1.view', function() {
-            Routing.SetHash('registration', 'Регистрация пользователя', {step: 1});
+        self.AddEvent('RegistrationWidget.step1.view', function () {
+            SetHash(alias, title, {step: 1});
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step2.checking', function(step2) {
+        self.AddEvent('RegistrationWidget.step2.checking', function (step2) {
             self.WidgetLoader(false);
             var params = [];
             params.push('username=' + encodeURIComponent(step2.username));
@@ -139,63 +232,67 @@ var RegistrationWidget = function() {
                 params.push('sms_token=' + step2.phoneToken());
             var str = '?' + params.join('&');
 
-            self.BaseLoad.ActivateUser(str, function(data) {
+            self.BaseLoad.ActivateUser(str, function (data) {
                 var test = true;
-                if (self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationWidget.step2.checking', step2)})){
-                    if (!self.Validate.MailToken(data, step2))
+                if (self.QueryError(data, function () {
+                        EventDispatcher.DispatchEvent('RegistrationWidget.step2.checking', step2)
+                    })) {
+                    if (!ValidateMailToken(data, step2))
                         test = false;
-                    if (!self.Validate.PhoneToken(data, step2))
+                    if (!ValidatePhoneToken(data, step2))
                         test = false;
                 }
                 else
                     test = false;
-                
+
                 if (test) {
                     Parameters.cache.reg.step2 = step2;
-                    self.BaseLoad.Login(false, false, false, function(request) {
-                        EventDispatcher.DispatchEvent('w.auth.ok', {request: request});
+                    self.BaseLoad.Login(false, false, false, function (request) {
+                        self.DispatchEvent('w.auth.ok', {request: request});
                         if (!request.err)
-                            Routing.SetHash('registration', 'Регистрация пользователя', {step: 3});
+                            SetHash(alias, title, {step: 3});
                     });
                 }
                 else
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true, settings.container.widget);
             });
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step2.view', function() {
-            Routing.SetHash('registration', 'Регистрация пользователя', {step: 2});
+        self.AddEvent('RegistrationWidget.step2.view', function () {
+            SetHash(alias, title, {step: 2});
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step3.later', function() {
-            Routing.SetHash('registration', 'Регистрация пользователя', {step: 4});
+        self.AddEvent('RegistrationWidget.step3.later', function () {
+            SetHash(alias, title, {step: 4});
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step3.checking', function(step3) {
+        self.AddEvent('RegistrationWidget.step3.checking', function (step3) {
             self.WidgetLoader(false);
             var day = step3.birthDay().split('.');
             var birthDay = day[2] + '-' + day[1] + '-' + day[0];
             step3.birthDayHiddenField(birthDay);
-            self.BaseLoad.EditProfile( $('form#' + step3.cssRegistrationDataForm), function(data) {
+            self.BaseLoad.EditProfile($('form#' + step3.cssRegistrationDataForm), function (data) {
                 var test = true;
-                if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationWidget.step3.checking', step3)}))
+                if (!self.QueryError(data, function () {
+                        EventDispatcher.DispatchEvent('RegistrationWidget.step3.checking', step3)
+                    }))
                     test = false;
 
                 if (test) {
                     Parameters.cache.reg.step3 = step3;
-                    Routing.SetHash('registration', 'Регистрация пользователя', {step: 4});
+                    SetHash(alias, title, {step: 4});
                 }
                 else
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true, settings.container.widget);
             });
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step3.view', function() {
-            Routing.SetHash('registration', 'Регистрация пользователя', {step: 3});
+        self.AddEvent('RegistrationWidget.step3.view', function () {
+            SetHash(alias, title, {step: 3});
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step4.later', function(data) {
-            self.ShowMessage(Config.Registration.message.registrationSuccessful, function(){
+        self.AddEvent('RegistrationWidget.step4.later', function (data) {
+            self.ShowMessage(settings.message.registrationSuccessful, function () {
                 Parameters.cache.reg = {
                     step1: {},
                     step2: {},
@@ -204,13 +301,13 @@ var RegistrationWidget = function() {
                 }
                 var link = Parameters.cache.lastPage;
                 if (!$.isEmptyObject(link))
-                    Routing.SetHash(link.route, link.title, link.data, true);
+                    SetHash(link.route, link.title, link.data, true);
                 else
-                    Routing.SetHash('default', 'Домашняя', {});
+                    SetHash('default', 'Домашняя', {});
             })
         });
 
-        EventDispatcher.AddEventListener('RegistrationWidget.step4.checking', function(step4) {
+        self.AddEvent('RegistrationWidget.step4.checking', function (step4) {
             self.WidgetLoader(false);
             var str = '?id_country=' + encodeURIComponent($.trim(step4.idCountry()));
             if (step4.region() && step4.region().regioncode)
@@ -223,9 +320,11 @@ var RegistrationWidget = function() {
                 str = str + '&name_city=' + encodeURIComponent($.trim(step4.customCity()));
             str = str + '&address=' + encodeURIComponent($.trim(step4.customAddress())) + '&post_code=' + encodeURIComponent($.trim(step4.postIndex()));
 
-            self.BaseLoad.EditAddress(str, function(data) {
+            self.BaseLoad.EditAddress(str, function (data) {
                 var test = true;
-                if (!self.QueryError(data, function(){EventDispatcher.DispatchEvent('RegistrationWidget.step4.checking', step4)}))
+                if (!self.QueryError(data, function () {
+                        EventDispatcher.DispatchEvent('RegistrationWidget.step4.checking', step4)
+                    }))
                     test = false;
 
                 if (test) {
@@ -233,476 +332,382 @@ var RegistrationWidget = function() {
                     EventDispatcher.DispatchEvent('RegistrationWidget.step4.later');
                 }
                 else
-                    self.WidgetLoader(true, self.settings.containerFormId);
+                    self.WidgetLoader(true, settings.container.widget);
             });
         });
-    };
-    self.Validate = {
-        Username: function(data, step1) {
-            var test = false;
-            if (data.check_username) {
-                if (data.check_username == 'on' || data.check_username == 'ban' || data.check_username == 'off')
-                    step1.errorUsername(Config.Registration.error.username.uniq);
-                if (data.check_username == 'yes')
-                    test = true;
-            }
+    }
 
-            return test;
-        },
-        Phone: function(data, step1) {
-            var test = false;
-            if (data.check_phone) {
-                if (data.check_phone == 'on' || data.check_phone == 'ban' || data.check_phone == 'off')
-                    step1.errorPhone(Config.Registration.error.phone.uniq);
-                if (data.check_phone == 'yes')
-                    test = true;
-            }
-            else
+    function ValidateUsername(data, step1) {
+        var test = false;
+        if (data.check_username) {
+            if (data.check_username == 'on' || data.check_username == 'ban' || data.check_username == 'off')
+                step1.errorUsername(settings.error.username.uniq);
+            if (data.check_username == 'yes')
                 test = true;
+        }
 
-            return test;
-        },
-        Email: function(data, step1) {
-            var test = false;
-            if (data.check_email) {
-                if (data.check_email == 'on' || data.check_email == 'ban' || data.check_email == 'off')
-                    step1.errorEmail(Config.Registration.error.email.uniq);
-                if (data.check_email == 'yes')
-                    test = true;
-            }
+        return test;
+    }
 
-            return test;
-        },
-        MailToken: function(data, step2) {
-            if (data.confirm_email) {
-                if (data.confirm_email == 'no') {
-                    step2.errorEmailConfirm(Config.Registration.error.emailToken.confirm);
-                    return false;
-                }
-            }
+    function ValidatePhone(data, step1) {
+        var test = false;
+        if (data.check_phone) {
+            if (data.check_phone == 'on' || data.check_phone == 'ban' || data.check_phone == 'off')
+                step1.errorPhone(settings.error.phone.uniq);
+            if (data.check_phone == 'yes')
+                test = true;
+        }
+        else
+            test = true;
 
-            return true;
-        },
-        PhoneToken: function(data, step2) {
-            if (data.confirm_phone) {
-                if (data.confirm_phone == 'no') {
-                    step2.errorPhoneConfirm(Config.Registration.error.phoneToken.confirm);
-                    return false;
-                }
-            }
+        return test;
+    }
 
-            return true;
-        },
-        Profile: function(data, step3) {
-            if (data.err) {
-                step3.errorAddress(data.err);
+    function ValidateEmail(data, step1) {
+        var test = false;
+        if (data.check_email) {
+            if (data.check_email == 'on' || data.check_email == 'ban' || data.check_email == 'off')
+                step1.errorEmail(settings.error.email.uniq);
+            if (data.check_email == 'yes')
+                test = true;
+        }
+
+        return test;
+    }
+
+    function ValidateMailToken(data, step2) {
+        if (data.confirm_email) {
+            if (data.confirm_email == 'no') {
+                step2.errorEmailConfirm(settings.error.emailToken.confirm);
                 return false;
             }
+        }
 
-            return true;
-        },
-        Address: function(data, step4) {
-            if (data.err) {
-                step4.errorAddress(data.err);
+        return true;
+    }
+
+    function ValidatePhoneToken(data, step2) {
+        if (data.confirm_phone) {
+            if (data.confirm_phone == 'no') {
+                step2.errorPhoneConfirm(settings.error.phoneToken.confirm);
                 return false;
             }
+        }
 
-            return true;
-        }
-    };
-    self.Step = {
-        Step1: function() {
-            self.InsertContainer.Step1();
-            self.Fill.Step1();
-        },
-        Step2: function() {
-            self.InsertContainer.Step2();
-            self.Fill.Step2();
-        },
-        Step3: function() {
-            self.InsertContainer.Step3();
-            self.Fill.Step3();
-        },
-        Step4: function() {
-            self.InsertContainer.Step4();
-            self.Fill.Step4();
-        }
-    };
-    self.InsertContainer = {
-        EmptyWidget : function(){
-            var temp = $("#" + self.settings.containerFormId).find(self.SelectCustomContent().join(', ')).clone();
-            $("#" + self.settings.containerFormId).empty().html(temp);
-        },
-        Step1: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step1')).html()).children().hide();
-        },
-        Step2: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step2')).html()).children().hide();
-        },
-        Step3: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step3')).html()).children().hide();
-        },
-        Step4: function() {
-            self.InsertContainer.EmptyWidget();
-            $("#" + self.settings.containerFormId).append($('script#' + self.GetTmplName('step4')).html()).children().hide();
-        }
-    };
-    self.Fill = {
-        Step1: function() {
-            var form = Parameters.cache.reg.step1;
-            if ($.isEmptyObject(form)){
-                RegistrationFormViewModel.prototype.Back = function() {
-                    Parameters.cache.history.pop();
-                    var link = Parameters.cache.history.pop();
-                    if (link)
-                        Routing.SetHash(link.route, link.title, link.data, true);
-                    else
-                        Routing.SetHash('default', 'Домашняя', {});
-                };
-                form = new RegistrationFormViewModel();
-                form.submitEvent('RegistrationWidget.step1.checking');
-            }
-            self.Render.Step1(form);
-        },
-        Step2: function() {
-            if (Routing.params.username && Routing.params.mail_token) {
-                RegistrationFormViewModel.prototype.Back = function() {
-                    Parameters.cache.history.pop();
-                    var link = Parameters.cache.history.pop();
-                    if (link)
-                        Routing.SetHash(link.route, link.title, link.data, true);
-                    else
-                        Routing.SetHash('default', 'Домашняя', {});
-                };
-                var step1 = new RegistrationFormViewModel();
-                step1.username(Routing.params.username);
-                step1.submitEvent('RegistrationWidget.step1.checking');
-                Parameters.cache.reg.step1 = step1;
-            }
+        return true;
+    }
 
-            RegistrationConfirmFormViewModel.prototype.Back = function() {
-                EventDispatcher.DispatchEvent('RegistrationWidget.step1.view');
+    function ValidateProfile(data, step3) {
+        if (data.err) {
+            step3.errorAddress(data.err);
+            return false;
+        }
+
+        return true;
+    }
+
+    function ValidateAddress(data, step4) {
+        if (data.err) {
+            step4.errorAddress(data.err);
+            return false;
+        }
+
+        return true;
+    }
+
+    function InsertContainerEmptyWidget() {
+        self.ClearContainer(settings);
+    }
+
+    function InsertContainerStep1() {
+        self.InsertContainer(settings, 'step1');
+    }
+
+    function InsertContainerStep2() {
+        self.InsertContainer(settings, 'step2');
+    }
+
+    function InsertContainerStep3() {
+        self.InsertContainer(settings, 'step3');
+    }
+
+    function InsertContainerStep4() {
+        self.InsertContainer(settings, 'step4');
+    }
+
+    function FillStep1() {
+        var form = Parameters.cache.reg.step1;
+        if ($.isEmptyObject(form)) {
+            RegistrationFormViewModel.prototype.Back = function () {
+                Parameters.cache.history.pop();
+                var link = Parameters.cache.history.pop();
+                if (link)
+                    SetHash(link.route, link.title, link.data, true);
+                else
+                    SetHash('default', 'Домашняя', {});
             };
-            var form = new RegistrationConfirmFormViewModel(Parameters.cache.reg.step1);
-            form.submitEvent('RegistrationWidget.step2.checking');
-            
-            if (Routing.params.username && Routing.params.mail_token) {
-                form.mailToken(Routing.params.mail_token);
-                EventDispatcher.DispatchEvent('RegistrationWidget.step2.checking', form);
-            }
-            
-            self.Render.Step2(form);
-        },
-        Step3: function() {
-            var form = Parameters.cache.reg.step3;
-            if ($.isEmptyObject(form)){
-                RegistrationProfileFormViewModel.prototype.Back = function() {
-                    EventDispatcher.DispatchEvent('RegistrationWidget.step2.view');
-                };
-                RegistrationProfileFormViewModel.prototype.SpecifyLater = function() {
-                    EventDispatcher.DispatchEvent('RegistrationWidget.step3.later');
-                };
-                form = new RegistrationProfileFormViewModel();
-                form.submitEvent('RegistrationWidget.step3.checking');
-            }
-            self.Render.Step3(form);
-        },
-        Step4: function() {
-            var shopId = Parameters.shopId;
-            if (self.settings.geoShop == 0)
-                shopId = 0;
-            self.BaseLoad.Country(shopId, function(data) {
-                var form = new RegistrationFormStep4ViewModel();
-                form.AddCountryList(data);
-                self.Render.Step4(form);
-            });
+            form = new RegistrationFormViewModel(settings);
+            form.submitEvent('RegistrationWidget.step1.checking');
         }
-    };
-    self.Render = {
-        Step1: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateRegistration == 'function')
-                        new AnimateRegistration();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step1') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step1();
-                            self.Render.Step1(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step2: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateRegistration == 'function')
-                        new AnimateRegistration();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step2') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step2();
-                            self.Render.Step2(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step3: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateRegistration == 'function')
-                        new AnimateRegistration();
-                    if(self.settings.animate)
-                        self.settings.animate();
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step3') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step3();
-                            self.Render.Step3(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
-        },
-        Step4: function(form) {
-            if ($("#" + self.settings.containerFormId).length > 0) {
-                try{
-                    ko.cleanNode($("#" + self.settings.containerFormId)[0]);
-                    ko.applyBindings(form, $("#" + self.settings.containerFormId)[0]);
+        RenderStep1(form);
+    }
 
-                    self.WidgetLoader(true, self.settings.containerFormId);
-                    if(typeof AnimateRegistration == 'function')
-                        new AnimateRegistration();
-                    if(self.settings.animate)
-                        self.settings.animate();
-
-                    $('#' + form.cssRegionList).autocomplete({
-                        source: function(request, response) {
-                            self.BaseLoad.Region(form.idCountry() + '/' + encodeURIComponent(request.term), function(data) {
-                                if (!data.err) {
-                                    response($.map(data, function(item) {
-                                        return {
-                                            value: $.trim(item.formalname + ' ' + item.shortname),
-                                            region: item
-                                        };
-                                    }));
-                                }
-                                else {
-                                    $('#' + form.cssRegionList).autocomplete("close");
-                                    return false;
-                                }
-                            });
-                        },
-                        select: function(event, ui) {
-                            form.region(ui.item.region);
-                            form.customRegion(ui.item.value);
-                            if (ui.item.region && ui.item.region.postalcode != 0)
-                                form.postIndex(ui.item.region.postalcode);
-                            else {
-                                form.postIndex(null);
-                            }
-                        }
-                    });
-
-                    $('#' + form.cssCityList).autocomplete({
-                        source: function(request, response) {
-                            if (form.region()) {
-                                self.BaseLoad.City(form.idCountry() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function(data) {
-                                    if (!data.err) {
-                                        response($.map(data, function(item) {
-                                            return {
-                                                value: $.trim(item.shortname + '. ' + item.formalname),
-                                                city: item
-                                            };
-                                        }));
-                                    }
-                                    else {
-                                        $('#' + form.cssCityList).autocomplete("close");
-                                        return false;
-                                    }
-                                });
-                            }
-                        },
-                        select: function(event, ui) {
-                            form.city(ui.item.city);
-                            form.customCity(ui.item.value);
-                            if (ui.item.city && ui.item.city.postalcode != 0)
-                                form.postIndex(ui.item.city.postalcode);
-                            else
-                                form.postIndex(null);
-                        }
-                    });
-
-                    $('#' + form.cssAddress).autocomplete({
-                        source: function(request, response) {
-                            if (form.region()) {
-                                self.BaseLoad.Street(form.idCountry() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function(data) {
-                                    if (!data.err) {
-                                        response($.map(data, function(item) {
-                                            return {
-                                                value: $.trim(item.shortname + '. ' + item.formalname),
-                                                street: item
-                                            };
-                                        }));
-                                    }
-                                    else {
-                                        $('#' + form.cssAddress).autocomplete("close");
-                                        return false;
-                                    }
-                                });
-                            }
-                        },
-                        select: function(event, ui) {
-                            form.address(ui.item.street);
-                            form.customAddress(ui.item.value);
-                            if (ui.item.street && ui.item.street.postalcode != 0)
-                                form.postIndex(ui.item.street.postalcode);
-                            else
-                                form.postIndex(null);
-                        }
-                    });
-
-                    $('#' + form.cssCountryList).change(function() {
-                        if(form.idCountry()) {
-                            form.errorCountry('');
-                            form.errorRegion('');
-                            form.errorCity('');
-                            form.errorAddress('');
-                            form.errorPostIndex('');
-                        }
-                        $.grep(form.countryList(), function(data) {
-                            if (data.id == form.idCountry()) {
-                                form.customRegion(null);
-                                form.region(null);
-                                form.customCity(null);
-                                form.city(null);
-                                form.customAddress(null)
-                                form.address(null);
-                                form.postIndex(null);
-                            }
-                        })
-                    });
-
-                    $('#' + form.cssRegionList).bind('textchange', function(event, previousText) {
-                        form.errorRegion('');
-                        form.errorCity('');
-                        form.errorAddress('');
-                        form.errorPostIndex('');
-                        form.customRegion($(this).val());
-                        form.customCity(null);
-                        form.city(null);
-                        form.customAddress(null)
-                        form.address(null);
-                        form.postIndex(null);
-                    });
-
-                    $('#' + form.cssCityList).bind('textchange', function(event, previousText) {
-                        form.errorCity('');
-                        form.errorAddress('');
-                        form.errorPostIndex('');
-                        form.customCity($(this).val());
-                        form.customAddress(null)
-                        form.address(null);
-                        form.postIndex(null);
-                    });
-
-                    $('#' + form.cssAddress).bind('textchange', function(event, previousText) {
-                        form.errorAddress('');
-                        form.errorPostIndex('');
-                    });
-
-                    $('#' + form.cssPostIndex).bind('textchange', function(event, previousText) {
-                        form.errorPostIndex('');
-                    });
-                }
-                catch(e){
-                    self.Exception('Ошибка шаблона [' + self.GetTmplName('step4') + ']', e);
-                    if(self.settings.tmpl.custom){
-                        delete self.settings.tmpl.custom;
-                        self.BaseLoad.Tmpl(self.settings.tmpl, function(){
-                            self.InsertContainer.Step4();
-                            self.Render.Step4(form);
-                        });
-                    }
-                    else{
-                        self.InsertContainer.EmptyWidget();
-                        self.WidgetLoader(true, self.settings.containerFormId);
-                    }
-                }
-            }
-            else{
-                self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerFormId + ']');
-                self.WidgetLoader(true, self.settings.containerFormId);
-            }
+    function FillStep2() {
+        var pRoute = Routing.params;
+        if (pRoute.username && pRoute.mail_token) {
+            RegistrationFormViewModel.prototype.Back = function () {
+                Parameters.cache.history.pop();
+                var link = Parameters.cache.history.pop();
+                if (link)
+                    SetHash(link.route, link.title, link.data, true);
+                else
+                    SetHash('default', 'Домашняя', {});
+            };
+            var step1 = new RegistrationFormViewModel(settings);
+            step1.username(pRoute.username);
+            step1.submitEvent('RegistrationWidget.step1.checking');
+            Parameters.cache.reg.step1 = step1;
         }
-    };
-    self.SetPosition = function() {
-        if (self.settings.inputParameters['position'] == 'absolute') {
-            for (var key in self.settings.inputParameters) {
-                if (self.settings.style[key])
-                    self.settings.style[key] = self.settings.inputParameters[key];
-            }
-            $().ready(function() {
-                for (var i = 0; i <= Config.Containers.registration.length - 1; i++) {
-                    $("#" + Config.Containers.registration[i]).css(self.settings.style);
-                }
-            });
+
+        RegistrationConfirmFormViewModel.prototype.Back = function () {
+            self.DispatchEvent('RegistrationWidget.step1.view');
+        };
+        var form = new RegistrationConfirmFormViewModel(Parameters.cache.reg.step1, settings);
+        form.submitEvent('RegistrationWidget.step2.checking');
+
+        if (pRoute.username && pRoute.mail_token) {
+            form.mailToken(pRoute.mail_token);
+            self.DispatchEvent('RegistrationWidget.step2.checking', form);
         }
-    };
+
+        RenderStep2(form);
+    }
+
+    function FillStep3() {
+        var form = Parameters.cache.reg.step3;
+        if ($.isEmptyObject(form)) {
+            RegistrationProfileFormViewModel.prototype.Back = function () {
+                self.DispatchEvent('RegistrationWidget.step2.view');
+            };
+            RegistrationProfileFormViewModel.prototype.SpecifyLater = function () {
+                self.DispatchEvent('RegistrationWidget.step3.later');
+            };
+            form = new RegistrationProfileFormViewModel(settings);
+            form.submitEvent('RegistrationWidget.step3.checking');
+        }
+        RenderStep3(form);
+    }
+
+    function FillStep4() {
+        var shopId = Parameters.shopId;
+        if (settings.geoShop == 0)
+            shopId = 0;
+        self.BaseLoad.Country(shopId, function (data) {
+            var form = new RegistrationFormStep4ViewModel(settings);
+            form.AddCountryList(data);
+            RenderStep4(form);
+        });
+    }
+
+    function RenderStep1(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep1();
+                RenderStep1(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step1'
+        );
+    }
+
+    function RenderStep2(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep2();
+                RenderStep2(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step2');
+    }
+
+    function RenderStep3(data) {
+        self.RenderTemplate(data, settings, null,
+            function (data) {
+                InsertContainerStep3();
+                RenderStep3(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step3');
+    }
+
+    function RenderStep4(data) {
+        self.RenderTemplate(data, settings,
+            function(data){
+                CallbackRenderStep4(data);
+            },
+            function (data) {
+                InsertContainerStep4();
+                RenderStep4(data);
+            },
+            function () {
+                InsertContainerEmptyWidget();
+            },
+            'step4');
+    }
+
+    function CallbackRenderStep4(form){
+        $('#' + form.cssRegionList).autocomplete({
+            source: function (request, response) {
+                self.BaseLoad.Region(form.idCountry() + '/' + encodeURIComponent(request.term), function (data) {
+                    if (!data.err) {
+                        response($.map(data, function (item) {
+                            return {
+                                value: $.trim(item.formalname + ' ' + item.shortname),
+                                region: item
+                            };
+                        }));
+                    }
+                    else {
+                        $('#' + form.cssRegionList).autocomplete("close");
+                        return false;
+                    }
+                });
+            },
+            select: function (event, ui) {
+                form.region(ui.item.region);
+                form.customRegion(ui.item.value);
+                if (ui.item.region && ui.item.region.postalcode != 0)
+                    form.postIndex(ui.item.region.postalcode);
+                else {
+                    form.postIndex(null);
+                }
+            }
+        });
+
+        $('#' + form.cssCityList).autocomplete({
+            source: function (request, response) {
+                if (form.region()) {
+                    self.BaseLoad.City(form.idCountry() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(request.term), function (data) {
+                        if (!data.err) {
+                            response($.map(data, function (item) {
+                                return {
+                                    value: $.trim(item.shortname + '. ' + item.formalname),
+                                    city: item
+                                };
+                            }));
+                        }
+                        else {
+                            $('#' + form.cssCityList).autocomplete("close");
+                            return false;
+                        }
+                    });
+                }
+            },
+            select: function (event, ui) {
+                form.city(ui.item.city);
+                form.customCity(ui.item.value);
+                if (ui.item.city && ui.item.city.postalcode != 0)
+                    form.postIndex(ui.item.city.postalcode);
+                else
+                    form.postIndex(null);
+            }
+        });
+
+        $('#' + form.cssAddress).autocomplete({
+            source: function (request, response) {
+                if (form.region()) {
+                    self.BaseLoad.Street(form.idCountry() + '/' + encodeURIComponent(form.region().regioncode) + '/' + encodeURIComponent(form.city().aoguid) + '/' + encodeURIComponent(request.term), function (data) {
+                        if (!data.err) {
+                            response($.map(data, function (item) {
+                                return {
+                                    value: $.trim(item.shortname + '. ' + item.formalname),
+                                    street: item
+                                };
+                            }));
+                        }
+                        else {
+                            $('#' + form.cssAddress).autocomplete("close");
+                            return false;
+                        }
+                    });
+                }
+            },
+            select: function (event, ui) {
+                form.address(ui.item.street);
+                form.customAddress(ui.item.value);
+                if (ui.item.street && ui.item.street.postalcode != 0)
+                    form.postIndex(ui.item.street.postalcode);
+                else
+                    form.postIndex(null);
+            }
+        });
+
+        $('#' + form.cssCountryList).change(function () {
+            if (form.idCountry()) {
+                form.errorCountry('');
+                form.errorRegion('');
+                form.errorCity('');
+                form.errorAddress('');
+                form.errorPostIndex('');
+            }
+            $.grep(form.countryList(), function (data) {
+                if (data.id == form.idCountry()) {
+                    form.customRegion(null);
+                    form.region(null);
+                    form.customCity(null);
+                    form.city(null);
+                    form.customAddress(null)
+                    form.address(null);
+                    form.postIndex(null);
+                }
+            })
+        });
+
+        $('#' + form.cssRegionList).bind('textchange', function (event, previousText) {
+            form.errorRegion('');
+            form.errorCity('');
+            form.errorAddress('');
+            form.errorPostIndex('');
+            form.customRegion($(this).val());
+            form.customCity(null);
+            form.city(null);
+            form.customAddress(null)
+            form.address(null);
+            form.postIndex(null);
+        });
+
+        $('#' + form.cssCityList).bind('textchange', function (event, previousText) {
+            form.errorCity('');
+            form.errorAddress('');
+            form.errorPostIndex('');
+            form.customCity($(this).val());
+            form.customAddress(null)
+            form.address(null);
+            form.postIndex(null);
+        });
+
+        $('#' + form.cssAddress).bind('textchange', function (event, previousText) {
+            form.errorAddress('');
+            form.errorPostIndex('');
+        });
+
+        $('#' + form.cssPostIndex).bind('textchange', function (event, previousText) {
+            form.errorPostIndex('');
+        });
+    }
+
+    function SetHash(alias, title, params) {
+        Routing.SetHash(alias, title, params)
+    }
 };
 
-var RegistrationFormStep4ViewModel = function() {
+var RegistrationFormStep4ViewModel = function (settings) {
     var self = this;
     self.idCountry = ko.observable();
     self.cssCountryList = 'country_list';
@@ -712,8 +717,8 @@ var RegistrationFormStep4ViewModel = function() {
     self.customRegion = ko.observable();
     self.cssRegionList = 'region_list';
     self.errorRegion = ko.observable(null);
-    self.showRegion = ko.computed(function(){
-        if(self.idCountry())
+    self.showRegion = ko.computed(function () {
+        if (self.idCountry())
             return false;
         return true;
     }, this);
@@ -722,8 +727,8 @@ var RegistrationFormStep4ViewModel = function() {
     self.customCity = ko.observable();
     self.cssCityList = 'city_list';
     self.errorCity = ko.observable(null);
-    self.showCity = ko.computed(function(){
-        if(self.customRegion())
+    self.showCity = ko.computed(function () {
+        if (self.customRegion())
             return false;
         return true;
     }, this);
@@ -732,8 +737,8 @@ var RegistrationFormStep4ViewModel = function() {
     self.customAddress = ko.observable();
     self.cssAddress = 'address';
     self.errorAddress = ko.observable(null);
-    self.showAddress = ko.computed(function(){
-        if(self.customCity())
+    self.showAddress = ko.computed(function () {
+        if (self.customCity())
             return false;
         return true;
     }, this);
@@ -741,106 +746,111 @@ var RegistrationFormStep4ViewModel = function() {
     self.postIndex = ko.observable();
     self.cssPostIndex = 'post_index';
     self.errorPostIndex = ko.observable(null);
-    self.showPostIndex = ko.computed(function(){
-        if(self.customAddress())
+    self.showPostIndex = ko.computed(function () {
+        if (self.customAddress())
             return false;
         return true;
     }, this);
 
     self.countryList = ko.observableArray();
 
-    self.AddCountryList = function(data) {
+    self.AddCountryList = function (data) {
         if (data.length > 0) {
             for (var i = 0; i <= data.length - 1; i++) {
                 self.countryList.push(new CountryListViewModel(data[i]));
             }
         }
     };
-    self.SpecifyLater = function() {
-        EventDispatcher.DispatchEvent('RegistrationWidget.step4.later', self);
+    self.SpecifyLater = function () {
+        DispatchEvent('RegistrationWidget.step4.later', self);
     };
-    self.SubmitForm = function() {
-        if (self.ValidationForm()) {
-            EventDispatcher.DispatchEvent('RegistrationWidget.step4.checking', self);
+    self.SubmitForm = function () {
+        if (ValidationForm()) {
+            DispatchEvent('RegistrationWidget.step4.checking', self);
         }
     };
-    self.Back = function() {
-        EventDispatcher.DispatchEvent('RegistrationWidget.step3.view');
+    self.Back = function () {
+        DispatchEvent('RegistrationWidget.step3.view');
     };
-    self.ValidationForm = function() {
+
+    function DispatchEvent(alias, params){
+        EventDispatcher.DispatchEvent(alias, params)
+    }
+    function ValidationForm() {
         var test = true;
-        if (!self.CountryValidation())
+        if (!CountryValidation())
             test = false;
-        if (!self.RegionValidation())
+        if (!RegionValidation())
             test = false;
-        if (!self.CityValidation())
+        if (!CityValidation())
             test = false;
-        if (!self.AddressValidation())
+        if (!AddressValidation())
             test = false;
-        if (!self.PostIndexValidation())
+        if (!PostIndexValidation())
             test = false;
 
         return test;
-    };
-    self.CountryValidation = function() {
+    }
+    function CountryValidation() {
         if (!self.idCountry()) {
-            self.errorCountry(Config.Registration.error.country.empty);
+            self.errorCountry(settings.error.country.empty);
             return false;
         }
         self.errorCountry(null);
         return true;
-    };
-    self.RegionValidation = function() {
+    }
+    function RegionValidation() {
         if (!self.customRegion()) {
-            self.errorRegion(Config.Registration.error.region.empty);
+            self.errorRegion(settings.error.region.empty);
             return false;
         }
         self.errorRegion(null);
         return true;
-    };
-    self.CityValidation = function() {
+    }
+    function CityValidation() {
         if (!self.customCity()) {
-            self.errorCity(Config.Registration.error.city.empty);
+            self.errorCity(settings.error.city.empty);
             return false;
         }
         self.errorCity(null);
         return true;
-    };
-    self.AddressValidation = function() {
+    }
+    function AddressValidation() {
         if (!self.customAddress()) {
-            self.errorAddress(Config.Registration.error.address.empty);
+            self.errorAddress(settings.error.address.empty);
             return false;
         }
         self.errorAddress(null);
         return true;
-    };
-    self.PostIndexValidation = function() {
+    }
+    function PostIndexValidation() {
+        var error = settings.error.postIndex;
         if (!self.postIndex()) {
-            self.errorPostIndex(Config.Registration.error.postIndex.empty);
+            self.errorPostIndex(error.empty);
             return false;
         }
-        if (5 > self.postIndex().length  || self.postIndex().length > 6) {
-            self.errorPostIndex(Config.Registration.error.postIndex.length);
+        if (5 > self.postIndex().length || self.postIndex().length > 6) {
+            self.errorPostIndex(error.length);
             return false;
         }
-        if (!Config.Registration.regular.postIndex.test(self.postIndex())) {
-            self.errorPostIndex(Config.Registration.error.postIndex.regular);
+        if (!settings.regular.postIndex.test(self.postIndex())) {
+            self.errorPostIndex(error.regular);
             return false;
         }
         self.errorPostIndex(null);
         return true;
-    };
+    }
 };
 
 var TestRegistration = {
-    Init: function() {
+    Init: function () {
         if (typeof Widget == 'function') {
             RegistrationWidget.prototype = new Widget();
             var reg = new RegistrationWidget();
             reg.Init(reg);
         }
         else {
-            setTimeout(function() {
+            setTimeout(function () {
                 TestRegistration.Init()
             }, 100);
         }

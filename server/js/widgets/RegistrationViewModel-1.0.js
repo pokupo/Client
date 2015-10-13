@@ -1,4 +1,4 @@
-var RegistrationFormViewModel = function() {
+var RegistrationFormViewModel = function(settings) {
     var self = this;
     self.username = ko.observable(null);
     self.errorUsername = ko.observable(null);
@@ -19,107 +19,111 @@ var RegistrationFormViewModel = function() {
     self.submitEvent = ko.observable();
 
     self.SubmitForm = function() {
-        if (self.ValidationForm()) {
+        if (ValidationForm()) {
             EventDispatcher.DispatchEvent(self.submitEvent(), self);
         }
     };
-    self.ValidationForm = function() {
+    function ValidationForm() {
         var test = true;
-        if (!self.UsernameValidation())
+        if (!UsernameValidation())
             test = false;
-        if (!self.EmailValidation())
+        if (!EmailValidation())
             test = false;
-        if (!self.PhoneValidation())
+        if (!PhoneValidation())
             test = false;
-        if (!self.PasswordValidation())
+        if (!PasswordValidation())
             test = false;
-        if (!self.PasswordSecondValidation())
+        if (!PasswordSecondValidation())
             test = false;
-        if (!self.IsCheckedValidation())
+        if (!IsCheckedValidation())
             test = false;
 
         return test;
-    };
-    self.UsernameValidation = function() {
+    }
+    function UsernameValidation() {
+        var error = settings.error.username;
         if (!self.username()) {
-            self.errorUsername(Config.Registration.error.username.empty);
+            self.errorUsername(error.empty);
             return false;
         }
         if (self.username().length < 3) {
-            self.errorUsername(Config.Registration.error.username.minLength);
+            self.errorUsername(error.minLength);
             return false;
         }
         if (self.username().length > 40) {
-            self.errorUsername(Config.Registration.error.username.maxLength);
+            self.errorUsername(error.maxLength);
             return false;
         }
-        if (!Config.Registration.regular.username.test(self.username())) {
-            self.errorUsername(Config.Registration.error.username.regular);
+        if (!settings.regular.username.test(self.username())) {
+            self.errorUsername(error.regular);
             return false;
         }
         self.errorUsername(null);
         return true;
-    };
-    self.EmailValidation = function() {
+    }
+    function EmailValidation() {
+        var error = settings.error.email;
         if (!self.email()) {
-            self.errorEmail(Config.Registration.error.email.empty);
+            self.errorEmail(error.empty);
             return false;
         }
         if (self.email().length > 64) {
-            self.errorUsername(Config.Registration.error.email.maxLength);
+            self.errorUsername(error.maxLength);
             return false;
         }
-        if (!Config.Registration.regular.email.test(self.email())) {
-            self.errorEmail(Config.Registration.error.email.regular);
+        if (!settings.regular.email.test(self.email())) {
+            self.errorEmail(error.regular);
             return false;
         }
         self.errorEmail(null);
         return true;
-    };
-    self.PhoneValidation = function() {
+    }
+    function PhoneValidation() {
         if (self.phone()) {
-            if (!Config.Registration.regular.phone.test($.trim(self.phone()))) {
-                self.errorPhone(Config.Registration.error.phone.regular);
+            if (!settings.regular.phone.test($.trim(self.phone()))) {
+                self.errorPhone(settings.error.phone.regular);
                 return false;
             }
         }
         self.errorPhone(null);
         return true;
-    };
-    self.PasswordValidation = function() {
+    }
+    function PasswordValidation() {
+        var error = settings.error.password;
         self.firstPassword($('input#' + self.cssFirstPassword).val());
         if (!self.firstPassword()) {
-            self.errorFirstPassword(Config.Registration.error.password.empty);
+            self.errorFirstPassword(error.empty);
             return false;
         }
         if (self.firstPassword().length < 6) {
-            self.errorFirstPassword(Config.Registration.error.password.minLength);
+            self.errorFirstPassword(error.minLength);
             return false;
         }
         if (self.firstPassword().length > 64) {
-            self.errorFirstPassword(Config.Registration.error.password.maxLength);
+            self.errorFirstPassword(Config.error.maxLength);
             return false;
         }
 
         self.errorFirstPassword(null);
         return true;
-    };
-    self.PasswordSecondValidation = function() {
+    }
+    function PasswordSecondValidation() {
+        var error = settings.error.password;
         self.secondPassword($('input#' + self.cssSecondPassword).val());
         if (!self.secondPassword()) {
-            self.errorSecondPassword(Config.Registration.error.password.empty);
+            self.errorSecondPassword(error.empty);
             return false;
         }
         if (self.firstPassword() != self.secondPassword()) {
-            self.errorSecondPassword(Config.Registration.error.password.equal);
+            self.errorSecondPassword(error.equal);
             return false;
         }
         self.errorSecondPassword(null);
         return true;
-    };
-    self.IsCheckedValidation = function() {
+    }
+    function IsCheckedValidation() {
         if (!self.isChecked()) {
-            self.errorIsChecked(Config.Registration.error.isChecked.empty);
+            self.errorIsChecked(settings.error.isChecked.empty);
             return false;
         }
 
@@ -134,7 +138,7 @@ var RegistrationFormViewModel = function() {
     self.refund = 'http://' + window.location.hostname + '/refund';
 };
 
-var RegistrationConfirmFormViewModel = function(cache) {
+var RegistrationConfirmFormViewModel = function(cache, settings) {
     var self = this;
     self.username = cache.username();
 
@@ -162,46 +166,46 @@ var RegistrationConfirmFormViewModel = function(cache) {
     self.submitEvent = ko.observable();
 
     self.SubmitForm = function() {
-        if (self.ValidationForm()) {
+        if (ValidationForm()) {
             EventDispatcher.DispatchEvent(self.submitEvent(), self);
         }
     };
-    self.ValidationForm = function() {
+    function ValidationForm() {
         var test = true;
-        if (!self.EmailTokenValidation())
+        if (!EmailTokenValidation())
             test = false;
-        if (!self.PhoneTokenValidation())
+        if (!PhoneTokenValidation())
             test = false;
-        if (!self.EmptyConfirm())
+        if (!EmptyConfirm())
             test = false;
         return test;
-    };
-    self.EmailTokenValidation = function() {
+    }
+    function EmailTokenValidation() {
         self.mailToken($.trim(self.mailToken()));
         if (!self.mailConfirmLater()) {
             if (!self.mailToken()) {
-                self.errorEmailConfirm(Config.Registration.error.emailToken.empty);
+                self.errorEmailConfirm(settings.error.emailToken.empty);
                 return false;
             }
         }
 
         self.errorEmailConfirm(null);
         return true;
-    };
-    self.PhoneTokenValidation = function() {
+    }
+    function PhoneTokenValidation() {
         if (!self.phoneConfirmLater()) {
             if (!self.phoneToken()) {
-                self.errorPhoneConfirm(Config.Registration.error.phoneToken.empty);
+                self.errorPhoneConfirm(settings.error.phoneToken.empty);
                 return false;
             }
         }
 
         self.errorPhoneConfirm(null);
         return true;
-    };
-    self.EmptyConfirm = function() {
+    }
+    function EmptyConfirm() {
         if (self.phoneConfirmLater() && self.mailConfirmLater()) {
-            self.errorConfirmLater(Config.Registration.error.confirmLater.empty);
+            self.errorConfirmLater(settings.error.confirmLater.empty);
             self.errorEmailConfirm(null);
             self.errorPhoneConfirm(null);
             return false;
@@ -210,7 +214,7 @@ var RegistrationConfirmFormViewModel = function(cache) {
             self.errorConfirmLater(null);
 
         return true;
-    };
+    }
     
     self.viewButtonSendToken = ko.observable(false);
     self.ShowButtonSendToken = function(){
@@ -229,7 +233,7 @@ var RegistrationConfirmFormViewModel = function(cache) {
     };
 };
 
-var RegistrationProfileFormViewModel = function() {
+var RegistrationProfileFormViewModel = function(settings) {
     var self = this;
     self.lastName = ko.observable();
     self.errorLastName = ko.observable(null);
@@ -262,11 +266,11 @@ var RegistrationProfileFormViewModel = function() {
         }
     };
     self.SubmitForm = function() {
-        if (self.ValidationForm()) {
+        if (ValidationForm()) {
             EventDispatcher.DispatchEvent(self.submitEvent(), self);
         }
     };
-    self.ValidationForm = function() {
+    function ValidationForm() {
         var test = true;
         if (!self.FirstNameValidation())
             test = false;
@@ -280,72 +284,76 @@ var RegistrationProfileFormViewModel = function() {
             test = false;
 
         return test;
-    };
-    self.FirstNameValidation = function() {
+    }
+    function FirstNameValidation() {
+        var error = settings.error.firstName;
         if (!self.firstName()) {
-            self.errorFirstName(Config.Registration.error.firstName.empty);
+            self.errorFirstName(error.empty);
             return false;
         }
         if (self.firstName().length < 2) {
-            self.errorFirstName(Config.Registration.error.firstName.minLength);
+            self.errorFirstName(error.minLength);
             return false;
         }
         if (self.firstName().length > 20) {
-            self.errorFirstName(Config.Registration.error.firstName.maxLength);
+            self.errorFirstName(error.maxLength);
             return false;
         }
-        if (!Config.Registration.regular.firstName.test(self.firstName())) {
-            self.errorFirstName(Config.Registration.error.firstName.regular);
+        if (!settings.regular.firstName.test(self.firstName())) {
+            self.errorFirstName(error.regular);
             return false;
         }
         self.errorFirstName(null);
         return true;
-    };
-    self.LastNameValidation = function() {
+    }
+    function LastNameValidation() {
+        var error = settings.error.lastName;
         if (!self.lastName()) {
-            self.errorLastName(Config.Registration.error.lastName.empty);
+            self.errorLastName(error.empty);
             return false;
         }
         if (self.lastName().length < 2) {
-            self.errorLastName(Config.Registration.error.lastName.minLength);
+            self.errorLastName(error.minLength);
             return false;
         }
         if (self.lastName().length > 20) {
-            self.errorLastName(Config.Registration.error.lastName.maxLength);
+            self.errorLastName(error.maxLength);
             return false;
         }
-        if (!Config.Registration.regular.lastName.test(self.lastName())) {
-            self.errorLastName(Config.Registration.error.lastName.regular);
+        if (!settings.regular.lastName.test(self.lastName())) {
+            self.errorLastName(error.regular);
             return false;
         }
         self.errorLastName(null);
         return true;
-    };
-    self.MiddleNameValidation = function() {
+    }
+    function MiddleNameValidation() {
+        var error = settings.error.middleName;
         if (self.middleName()) {
             if (self.middleName().length < 2) {
-                self.errorMiddleName(Config.Registration.error.middleName.minLength);
+                self.errorMiddleName(error.minLength);
                 return false;
             }
             if (self.middleName().length > 20) {
-                self.errorMiddleName(Config.Registration.error.middleName.maxLength);
+                self.errorMiddleName(error.maxLength);
                 return false;
             }
-            if (!Config.Registration.regular.middleName.test(self.middleName())) {
-                self.errorMiddleName(Config.Registration.error.middleName.regular);
+            if (!settings.regular.middleName.test(self.middleName())) {
+                self.errorMiddleName(error.regular);
                 return false;
             }
         }
         self.errorMiddleName(null);
         return true;
-    };
-    self.BirthDayValidation = function() {
+    }
+    function BirthDayValidation() {
+        var error = settings.error.birthDay;
         if (!self.birthDay()) {
-            self.errorBirthDay(Config.Registration.error.birthDay.empty);
+            self.errorBirthDay(error.empty);
             return false;
         }
-        if (!Config.Registration.regular.birthDay.test(self.birthDay())) {
-            self.errorBirthDay(Config.Registration.error.birthDay.regular);
+        if (!settings.regular.birthDay.test(self.birthDay())) {
+            self.errorBirthDay(error.regular);
             return false;
         }
         var dateArray = self.birthDay().split('.');
@@ -354,32 +362,33 @@ var RegistrationProfileFormViewModel = function() {
         var now = new Date();
         var minDate = new Date(now.getYear() - 18, now.getMonth(), now.getDate());
         if (minDate < date) {
-            self.errorBirthDay(Config.Registration.error.birthDay.minDate);
+            self.errorBirthDay(error.minDate);
             return false;
         }
 
         var now = new Date();
         var maxDate = new Date(now.getYear() - 101, now.getMonth(), now.getDate());
         if (maxDate > date) {
-            self.errorBirthDay(Config.Registration.error.birthDay.maxDate);
+            self.errorBirthDay(error.maxDate);
             return false;
         }
 
         self.errorBirthDay(null);
         return true;
-    };
-    self.GanderValidation = function() {
+    }
+    function GanderValidation() {
+        var error = settings.error.gender;
         if (!self.gender()) {
-            self.errorGender(Config.Registration.error.gender.empty);
+            self.errorGender(error.empty);
             return false;
         }
-        if (!Config.Registration.regular.gender.test(self.gender())) {
-            self.errorGender(Config.Registration.error.gender.regular);
+        if (!settings.regular.gender.test(self.gender())) {
+            self.errorGender(error.regular);
             return false;
         }
         self.errorGender(null);
         return true;
-    };
+    }
 };
 
 

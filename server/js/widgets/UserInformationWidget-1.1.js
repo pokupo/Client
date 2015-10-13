@@ -6,73 +6,59 @@ var UserInformationWidget = function () {
     self.maxWidgetVersion = 2.0;
     self.minTmplVersion = 1.0;
     self.maxTmplVersion = 2.0;
-    self.settings = {
-        containerId: null,
-        tmpl: {
-            path: null,
-            id: {
-                info: null,
-                auth: null
+    self.InitWidget = InitWidget;
+
+    var settings = {
+        container: {widget: 'userInformationWidgetId', def: 'defaultUserInformationWidgetId'},
+        tmpl : {
+            path : "userInformationTmpl.html", // файл шаблонов
+            id : {
+                info : "userInformationTmpl", //id шаблона вывода информации о пользователе
+                auth : "authorizationLinkTmpl" //id шаблона с сылками войти/регистрация
             }
         },
-        animate: null,
-        inputParameters: {},
-        showBlocks: null,
-        style: null,
-        customContainer: null
+        message: {
+            confirmLogOut : 'Вы действительно хотите выйти?'
+        },
+        showBlocks : ['login'],
+        animate: typeof AnimateUserInformation == 'function' ? AnimateUserInformation : null
     };
-    self.InitWidget = function () {
-        self.settings.containerId = Config.Containers.userInformation.widget;
-        self.settings.customContainer = Config.Containers.userInformation.customClass;
-        self.settings.tmpl = Config.UserInformation.tmpl;
-        self.settings.showBlocks = Config.UserInformation.showBlocks;
-        self.settings.style = Config.UserInformation.style;
+    function InitWidget() {
         RegisterEvents();
-        self.SetInputParameters();
+        SetInputParameters();
         LoadTmpl();
-        SetPosition();
     };
-    self.SetInputParameters = function () {
-        var input = {};
-        if (Config.Base.sourceParameters == 'string') {
-            var temp = JSCore.ParserInputParameters(/UserInformationWidget/);
-            if (temp.userInformation) {
-                input = temp.userInformation;
-            }
-        }
-        if (Config.Base.sourceParameters == 'object' && typeof WParameters !== 'undefined' && WParameters.userInformation) {
-            input = WParameters.userInformation;
-        }
+    function SetInputParameters() {
+        var input = self.GetInputParameters('userInformation');
 
         if (!$.isEmptyObject(input)) {
+            settings = self.UpdateSettings1(settings, input);
             if (input.show) {
                 for (var i = 0; i <= input.show.length - 1; i++) {
-                    if ($.inArray(input.show[i], self.settings.showBlocks) < 0)
-                        self.settings.showBlocks.push(input.show[i]);
+                    if ($.inArray(input.show[i], settings.showBlocks) < 0)
+                        settings.showBlocks.push(input.show[i]);
                 }
             }
-            if (input.animate)
-                self.settings.animate = input.animate;
         }
-        self.settings.inputParameters = input;
-    };
+        Config.Containers.userInformation = settings.container;
+    }
     function LoadTmpl() {
-        self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-            EventDispatcher.DispatchEvent('UInfo.tmpl')
+        self.BaseLoad.Tmpl(settings.tmpl, function () {
+            self.DispatchEvent('UInfo.tmpl')
         });
     };
     function RegisterEvents() {
-        EventDispatcher.AddEventListener('UInfo.tmpl', function () {
+        self.AddEvent('UInfo.tmpl', function () {
             self.BaseLoad.Login(false, false, false, function (data) {
                 CheckAuthorization(data);
             });
         });
 
-        EventDispatcher.AddEventListener('w.auth.ok', function (data) {
+        self.AddEvent('w.auth.ok', function (data) {
             CheckAuthorization(data.request);
         });
 
-        EventDispatcher.AddEventListener('UInfo.logout', function () {
+        self.AddEvent('UInfo.logout', function () {
             self.BaseLoad.Logout(function (data) {
                 if (data.result == 'ok' || data.result == 'fail') {
                     self.BaseLoad.LogoutForProxy();
@@ -81,12 +67,12 @@ var UserInformationWidget = function () {
             });
         });
 
-        EventDispatcher.AddEventListener('w.change.route', function (data) {
-            self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                EventDispatcher.DispatchEvent('UInfo.tmpl');
+        self.AddEvent('w.change.route', function (data) {
+            self.BaseLoad.Tmpl(settings.tmpl, function () {
+                self.DispatchEvent('UInfo.tmpl');
             });
         });
-    };
+    }
     function CheckAuthorization(data) {
         if (Routing.IsDefault() && self.HasDefaultContent()) {
             self.WidgetLoader(true);
@@ -103,18 +89,15 @@ var UserInformationWidget = function () {
         }
     }
     function InsertContainerEmptyWidget() {
-        var temp = $("#" + self.settings.containerId).find(self.SelectCustomContent().join(', ')).clone();
-        $("#" + self.settings.containerId).empty().html(temp);
+        self.ClearContainer(settings)
     }
 
     function InsertContainerAuthBlock() {
-        InsertContainerEmptyWidget();
-        $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('auth')).html()).children().hide();
+        self.InsertContainer(settings, 'auth')
     }
 
     function InsertContainerInfoBlock() {
-        InsertContainerEmptyWidget();
-        $("#" + self.settings.containerId).append($('script#' + self.GetTmplName('info')).html()).children().hide();
+        self.InsertContainer(settings, 'info')
     }
 
     function FillAuthBlock() {
@@ -126,89 +109,34 @@ var UserInformationWidget = function () {
         self.BaseLoad.MessageCountUnread(function (messages) {
             Parameters.cache.message.countNewMessage(parseInt(messages.count_unread_topic));
             UserInformationBlockViewModel.prototype = new Widget();
-            var block = new UserInformationBlockViewModel(data);
+            var block = new UserInformationBlockViewModel(data, settings);
             RenderInfoBlock(block);
         });
     }
 
     function RenderAuthBlock(data) {
-        if ($("#" + self.settings.containerId).length > 0) {
-            try {
-                ko.cleanNode($("#" + self.settings.containerId)[0]);
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                self.WidgetLoader(true, self.settings.containerId);
-                if (typeof AnimateUserInformation == 'function')
-                    new AnimateUserInformation();
-                if (self.settings.animate)
-                    self.settings.animate();
+        self.RenderTemplate(data, settings, null,
+            function(data){
+                InsertContainerAuthBlock();
+                RenderAuthBlock(data);
+            },
+            function(){
+                InsertContainerEmptyWidget();
             }
-            catch (e) {
-                self.Exception('Ошибка шаблона [' + self.GetTmplName('auth') + ']', e);
-                if (self.settings.tmpl.custom) {
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                        InsertContainerAuthBlock();
-                        RenderAuthBlock(data);
-                    });
-                }
-                else {
-                    InsertContainerEmptyWidget();
-                    self.WidgetLoader(true, self.settings.containerId);
-                }
-            }
-        }
-        else {
-            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-            self.WidgetLoader(true, self.settings.containerId);
-        }
+        );
     }
 
     function RenderInfoBlock(data) {
-        if ($("#" + self.settings.containerId).length > 0) {
-            try {
-                ko.cleanNode($("#" + self.settings.containerId)[0]);
-                ko.applyBindings(data, $("#" + self.settings.containerId)[0]);
-                self.WidgetLoader(true, self.settings.containerId);
-                if (typeof AnimateUserInformation == 'function')
-                    new AnimateUserInformation();
-                if (self.settings.animate)
-                    self.settings.animate();
+        self.RenderTemplate(data, settings, null,
+            function(data){
+                InsertContainerInfoBlock();
+                RenderInfoBlock(data);
+            },
+            function(){
+                InsertContainerEmptyWidget();
             }
-            catch (e) {
-                self.Exception('Error of the template [' + self.GetTmplName('info') + ']', e);
-                if (self.settings.tmpl.custom) {
-                    delete self.settings.tmpl.custom;
-                    self.BaseLoad.Tmpl(self.settings.tmpl, function () {
-                        InsertContainerInfoBlock();
-                        RenderInfoBlock(data);
-                    });
-                }
-                else {
-                    InsertContainerEmptyWidget();
-                    self.WidgetLoader(true, self.settings.containerId);
-                }
-            }
-        }
-        else {
-            self.Exception('Ошибка. Не найден контейнер [' + self.settings.containerId + ']');
-            self.WidgetLoader(true, self.settings.containerId);
-        }
+        );
     }
-
-    function SetPosition() {
-        if (self.settings.inputParameters['position'] == 'absolute') {
-
-            for (var key in self.settings.inputParameters) {
-                if (self.settings.style[key])
-                    self.settings.style[key] = self.settings.inputParameters[key];
-            }
-            $().ready(function () {
-                if ($("#" + self.settings.containerId).length > 0) {
-                    $("#" + self.settings.containerId).css(self.settings.style);
-                }
-            });
-        }
-    };
 };
 
 var UserAuthorizationBlockViewModel = function () {
@@ -223,7 +151,7 @@ var UserAuthorizationBlockViewModel = function () {
     };
 };
 
-var UserInformationBlockViewModel = function (data) {
+var UserInformationBlockViewModel = function (data, settings) {
     var self = this;
     self.email = data.email;
     self.login = data.login;
@@ -232,7 +160,7 @@ var UserInformationBlockViewModel = function (data) {
         return Parameters.cache.message.countNewMessage();
     }, this);
     self.showIcon = function () {
-        if (!data.route_icon_user || $.inArray('icon', Config.UserInformation.showBlocks) < 0)
+        if (!data.route_icon_user || $.inArray('icon', settings.showBlocks) < 0)
             return false;
         return true;
     };
@@ -247,39 +175,43 @@ var UserInformationBlockViewModel = function (data) {
     }
 
     self.showRaiting = function () {
-        if ($.inArray('raiting', Config.UserInformation.showBlocks) < 0)
+        if ($.inArray('raiting', settings.showBlocks) < 0)
             return false;
         return true;
     };
     self.ratingUser = data.rating_user;
 
     self.showProfile = function () {
-        if ($.inArray('profile', Config.UserInformation.showBlocks) < 0)
+        if ($.inArray('profile', settings.showBlocks) < 0)
             return false;
         return true;
     };
 
     self.ClickLogout = function () {
-        self.Confirm(Config.Authentication.message.confirmLogOut, function () {
+        self.Confirm(settings.message.confirmLogOut, function () {
             Loader.Indicator('UserInformationWidget', false);
             EventDispatcher.DispatchEvent('UInfo.logout');
         }, false);
     };
     self.ClickPrivateOffice = function () {
-        Routing.SetHash('profile', 'Личный кабинет', {});
+        SetHash('profile', 'Личный кабинет', {});
     };
     self.ClickMessages = function () {
-        Routing.SetHash('messages', 'Сообщения', {});
+        SetHash('messages', 'Сообщения', {});
     };
     self.ClickFavorites = function () {
-        Routing.SetHash('favorites', 'Избранное', {});
+        SetHash('favorites', 'Избранное', {});
     };
     self.ClickPurchases = function () {
-        Routing.SetHash('purchases', 'Мои покупки', {block: 'list'});
+        SetHash('purchases', 'Мои покупки', {block: 'list'});
     };
     self.ClickProfile = function () {
-        Routing.SetHash('profile', 'Личный кабинет', {});
+        SetHash('profile', 'Личный кабинет', {});
     };
+
+    function SetHash(alias, title, params){
+        Routing.SetHash(alias, title, params);
+    }
 };
 
 var TestUserInformation = {
