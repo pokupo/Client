@@ -569,8 +569,12 @@ var Widget = function (){
     };
     this.RenderTemplate = function(data, settings, callbackSuccess, callbackError, callbackDefault, name, container, block){
         if(!container) {
-            if(block)
-                container = settings.container[block].widget;
+            if(block) {
+                if(name && settings.container[block][name])
+                    container = settings.container[block][name].widget;
+                else
+                    container = settings.container[block].widget;
+            }
             else
                 container = settings.container.widget;
         }

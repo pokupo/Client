@@ -34,8 +34,11 @@ var CatalogWidget = function () {
     self.CheckRouteCatalog = function() {
         if (Routing.route == 'catalog' || Routing.route == 'goods' || (Routing.IsDefault() && !self.HasDefaultContent())) {
             self.BaseLoad.Tmpl(settings.tmpl, function () {
-                self.BaseLoad.Roots(function () {
-                    Update();
+                self.BaseLoad.Roots(function (data) {
+                    if(!data.err)
+                        Update();
+                    else
+                        self.WidgetLoader(true);
                 })
             });
         }
