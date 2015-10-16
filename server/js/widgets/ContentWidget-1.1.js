@@ -120,8 +120,14 @@ var ContentWidget = function () {
 
     function CheckContentRouting() {
         if (Routing.route == 'catalog' || Routing.IsDefault()) {
-            self.BaseLoad.Roots(function () {
-                SelectTypeContent();
+            self.BaseLoad.Roots(function (data) {
+                if(!data.err)
+                    SelectTypeContent();
+                else{
+                    var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'categoriesNotCreated'});
+                    InsertContainerBlock(0, block.typeView);
+                    RenderNoResultsBlock(block);
+                }
             });
         }
         else
@@ -242,7 +248,7 @@ var ContentWidget = function () {
     self.CheckData = function (data) {
         InsertContainerEmptyBlockWidget();
         if (data.err || data == false) {
-            if (data.err == 'categoriesNotCreated') {
+            if (data.err) {
                 var block = new EmptyViewBlock({titleBlock: Routing.GetTitle(), typeView: 'categoriesNotCreated'});
                 InsertContainerBlock(0, block.typeView);
                 RenderNoResultsBlock(block);
