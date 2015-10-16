@@ -362,7 +362,7 @@ var RegistrationSellerFormViewModel = function (settings) {
         return true;
     };
     self.EmailValidation = function () {
-        var error = Config.Registration.error.email;
+        var error = settings.error.email;
         if (!self.email()) {
             self.errorEmail(error.empty);
             return false;
