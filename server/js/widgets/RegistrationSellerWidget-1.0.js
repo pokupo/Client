@@ -83,6 +83,7 @@ var RegistrationSellerWidget = function () {
 
     function CheckRouteRegistrationSeller() {
         if (Routing.route == alias) {
+            Loader.HideDefaultContent();
             var pRoute = Routing.params;
             if (!pRoute.step)
                 pRoute.step = 1;
