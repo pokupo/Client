@@ -214,7 +214,7 @@ var ProfileWidget = function () {
                 str = str + '&code_city=' + PrepareData(data.city().aoguid);
             else
                 str = str + '&name_city=' + PrepareData(data.customCity());
-            str = str + '&address=' + PrepareData(data.customAddress()) + '&post_code=' + PrepareDatam(data.postIndex());
+            str = str + '&address=' + PrepareData(data.customAddress()) + '&post_code=' + PrepareData(data.postIndex());
 
             self.BaseLoad.EditAddress(str, function (request) {
                 if (request.result == 'ok') {
@@ -420,7 +420,7 @@ var ProfileWidget = function () {
 
         self.AddEvent('Profile.delivery.edit', function (data) {
             self.BaseLoad.Script(PokupoWidgets.model.content, function () {
-                var form = new DeliveryAddressFormViewModel();
+                var form = new DeliveryAddressFormViewModel(settings);
                 form.AddContent(data);
                 FillDeliveryForm(form);
             });
@@ -906,7 +906,6 @@ var ProfileDataRegistrationViewModel = function (settings) {
         else
             return 'женский';
     }, this);
-    ;
     self.errorGender = ko.observable(null);
     self.lastName = ko.observable();
     self.firstName = ko.observable();
