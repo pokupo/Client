@@ -304,7 +304,9 @@ var RegistrationWidget = function () {
                     SetHash(link.route, link.title, link.data, true);
                 else
                     SetHash('default', 'Домашняя', {});
+
             })
+            self.WidgetLoader(true, settings.container.widget);
         });
 
         self.AddEvent('RegistrationWidget.step4.checking', function (step4) {
@@ -326,7 +328,6 @@ var RegistrationWidget = function () {
                         EventDispatcher.DispatchEvent('RegistrationWidget.step4.checking', step4)
                     }))
                     test = false;
-
                 if (test) {
                     Parameters.cache.reg.step4 = step4;
                     EventDispatcher.DispatchEvent('RegistrationWidget.step4.later');
