@@ -405,6 +405,7 @@ var Widget = function (){
             var inputDate = data,
                 userInfo = Parameters.cache.userInformation,
                 message = Config.CartGoods.message;
+
             if(userInfo && !userInfo.err){
                 self.BaseLoad.AddToFavorite(data.goodsId, data.comment, function(data){
                     self.WidgetLoader(true);

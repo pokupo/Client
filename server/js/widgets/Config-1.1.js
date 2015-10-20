@@ -64,6 +64,17 @@ var Config = {
         cssPrev: 'first',
         cssNext: 'last',
         startContent: 0
+    },
+    CartGoods: {
+        message: {
+            addFavorites: 'Выбранные товары добавлены в избранное.',
+            failAddFavorites: 'Произошла ошибка при добавлении товара в избранное. Попробуйте еще раз.'
+        }
+    },
+    Authentication: {
+        message: {
+            pleaseLogIn : 'Необходимо авторизоваться.'
+        }
     }
 };
 
