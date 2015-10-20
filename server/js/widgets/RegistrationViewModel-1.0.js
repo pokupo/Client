@@ -194,6 +194,7 @@ var RegistrationConfirmFormViewModel = function(cache, settings) {
     }
     function PhoneTokenValidation() {
         if (!self.phoneConfirmLater()) {
+            self.phoneToken($.trim(self.phoneToken()));
             if (!self.phoneToken()) {
                 self.errorPhoneConfirm(settings.error.phoneToken.empty);
                 return false;
@@ -272,15 +273,15 @@ var RegistrationProfileFormViewModel = function(settings) {
     };
     function ValidationForm() {
         var test = true;
-        if (!self.FirstNameValidation())
+        if (!FirstNameValidation())
             test = false;
-        if (!self.LastNameValidation())
+        if (!LastNameValidation())
             test = false;
-        if (!self.MiddleNameValidation())
+        if (!MiddleNameValidation())
             test = false;
-        if (!self.BirthDayValidation())
+        if (!BirthDayValidation())
             test = false;
-        if (!self.GanderValidation())
+        if (!GanderValidation())
             test = false;
 
         return test;
