@@ -200,12 +200,14 @@ window.ButtonPaymentWidget = function () {
         var content = new PaymentViewModel(settings);
 
         var str = [];
-        var fields = data.pay_form.hidden_field;
-        $.each(fields, function (i) {
-            str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
-        });
-        if (str)
-            $.cookie(Config.Base.cookie.orderId, str.join('&'));
+        if( data.pay_form ) {
+            var fields = data.pay_form.hidden_field;
+            $.each(fields, function (i) {
+                str.push(fields[i].name + '=' + encodeURIComponent(fields[i].value));
+            });
+            if (str)
+                $.cookie(Config.Base.cookie.orderId, str.join('&'));
+        }
 
         content.AddContent(data);
         RenderContent(content);
@@ -379,7 +381,7 @@ var PaymentViewModel = function (opt) {
         if (data.hasOwnProperty('in_data')) {
             self.isInData(true);
             $.each(data.in_data, function (i) {
-                var field = new PaymentFieldViewModel();
+                var field = new PaymentFieldViewModel(opt);
                 field.AddContent(data.in_data[i])
                 self.inData.push(field);
             });
@@ -391,7 +393,7 @@ var PaymentViewModel = function (opt) {
     };
 };
 
-var PaymentFieldViewModel = function () {
+var PaymentFieldViewModel = function (settings) {
     var self = this;
     self.label = ko.observable();
     self.help = ko.observable();
@@ -439,20 +441,20 @@ var PaymentFieldViewModel = function () {
     self.ValidateField = function () {
         if (self.required()) {
             if (!self.value()) {
-                self.error(Config.ButtonPayment.Error.required);
+                self.error(settings.Error.required);
                 return false;
             }
         }
-//        if(self.regExp()){
-//            var reg = new RegExp(self.regExp(), 'gi');
-//            if(! reg.test(self.value())){
-//                self.error(Config.ButtonPayment.Error.regExp);
-//                return false;
-//            }
-//        }
+        if(self.regExp()){
+            var reg = new RegExp(self.regExp(), 'gi');
+            if(! reg.test(self.value())){
+                self.error(settings.Error.regExp);
+                return false;
+            }
+        }
         if (self.maxlength()) {
             if (self.value().length > self.maxlength()) {
-                self.error(Config.ButtonPayment.Error.maxlength.replace('%s%', self.maxlength()));
+                self.error(settings.Error.maxlength.replace('%s%', self.maxlength()));
                 return false;
             }
         }

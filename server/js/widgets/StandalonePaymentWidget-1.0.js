@@ -184,7 +184,7 @@ var StandalonePaymentWidget = function () {
                     GetDataService();
             }
             else if (settings.showButton && Routing.route != 'status_payment') {
-                self.InsertContainer.Button();
+                InsertContainerButton();
                 FillButton();
             }
             else {
@@ -228,7 +228,7 @@ var StandalonePaymentWidget = function () {
         });
 
         self.AddEvent('SPayment.form.submit', function (form) {
-            self.InsertContainer.Content();
+            InsertContainerContent();
             var dataStr = [];
             $.each(form.inData(), function (i) {
                 if (form.inData()[i].name() == 'MOBILE_PHONE')
@@ -238,17 +238,14 @@ var StandalonePaymentWidget = function () {
             });
             var str = dataStr.join('&');
 
-            if (Routing.params.orderId) {
-                str = Routing.params.orderId + '?' + str;
-                GetDataOrder(str);
+            if (settings.idGoods != null) {
+                if (settings.idShopPartner == null)
+                    GetDataGoods(str);
+                if (settings.idShopPartner != null)
+                    GetDataPartnerGoods(str);
             }
-            if (Routing.params.goodsId) {
-                str = Routing.params.goodsId + '?' + str;
-                GetDataGoods(str);
-            }
-            if (Routing.params.amount) {
-                str = Routing.params.amount + '/' + Parameters.shopId + '?' + str;
-                self.GetData.Amount(str);
+            if (settings.idShop != null) {
+                GetDataService(str);
             }
         });
     }
@@ -285,7 +282,7 @@ var StandalonePaymentWidget = function () {
         });
     }
 
-    function GetDataGoods() {
+    function GetDataGoods(moreStr) {
         var str = settings.idGoods + '/';
         if (settings.count)
             str = str + settings.count + '/';
@@ -294,8 +291,10 @@ var StandalonePaymentWidget = function () {
             parameters.push('mailUser=' + settings.mailUser);
         if (settings.idMethodPayment)
             parameters.push('idMethodPayment=' + settings.idMethodPayment);
-        if (settings.userParams)
+        if (settings.userParams != {})
             parameters.push('userParams=' + GetDataUserParametrs());
+        if(moreStr)
+            parameters.push(moreStr);
         if (parameters.length > 0)
             str = str + '?' + parameters.join('&');
         self.BaseLoad.InvoicesGoods(str, function (data) {
@@ -303,7 +302,7 @@ var StandalonePaymentWidget = function () {
         });
     }
 
-    function GetDataPartnerGoods() {
+    function GetDataPartnerGoods(moreStr) {
         var str = settings.idGoods + '/';
         if (settings.count)
             str = str + settings.count + '/';
@@ -314,8 +313,10 @@ var StandalonePaymentWidget = function () {
             parameters.push('mailUser=' + settings.mailUser);
         if (settings.idMethodPayment)
             parameters.push('idMethodPayment=' + settings.idMethodPayment);
-        if (settings.userParams)
+        if (settings.userParams != {})
             parameters.push('userParams=' + GetDataUserParametrs());
+        if(moreStr)
+            parameters.push(moreStr);
         if (parameters.length > 0)
             str = str + '?' + parameters.join('&');
         self.BaseLoad.InvoicesPartnerGoods(str, function (data) {
@@ -323,7 +324,7 @@ var StandalonePaymentWidget = function () {
         });
     }
 
-    function GetDataService() {
+    function GetDataService(moreStr) {
         var str = settings.idShop + '/';
         if (settings.idShopPartner)
             str = str + settings.idShopPartner + '/';
@@ -337,9 +338,11 @@ var StandalonePaymentWidget = function () {
             parameters.push('mailUser=' + settings.mailUser);
         if (settings.idMethodPayment)
             parameters.push('idMethodPayment=' + settings.idMethodPayment);
-        if (settings.userParams)
+        if (settings.userParams != {})
             parameters.push('userParams=' + GetDataUserParametrs());
         parameters.push('description=' + settings.description);
+        if(moreStr)
+            parameters.push(moreStr);
         if (parameters.length > 0)
             str = str + '?' + parameters.join('&');
 
@@ -379,7 +382,7 @@ var StandalonePaymentWidget = function () {
             FillError(data);
         }
         else {
-            if (!data.hasOwnProperty('pay_form')) {
+            if (!data.hasOwnProperty('pay_form') && !data.hasOwnProperty('in_data')) {
                 var list = new StandalonePaymentListViewModel(settings);
                 list.error.base('');
                 list.show.errorBase(false);
@@ -420,6 +423,7 @@ var StandalonePaymentWidget = function () {
 
         content.paymentInfo = settings.paymentInfo;
         content.AddContent(data);
+
         RenderContent(content);
     }
 
@@ -475,7 +479,14 @@ var StandalonePaymentWidget = function () {
     }
 
     function RenderContent(data) {
-        self.RenderTemplate(data, settings, null,
+        self.RenderTemplate(data, settings,
+            function(data){
+                $.each(data.inData(), function (i) {
+                    if (data.inData()[i].mask()) {
+                        $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
+                    }
+                });
+            },
             function(data){
                 InsertContainerContent();
                 RenderContent(data);
@@ -869,6 +880,13 @@ var StandalonePaymentFieldViewModel = function (settings) {
         if (self.maxlength()) {
             if (self.value().length > self.maxlength()) {
                 self.error(settings.Error.maxlength.replace('%s%', self.maxlength()));
+                return false;
+            }
+        }
+        if(self.regExp()){
+            var pattern = new RegExp(self.regExp(), 'i');
+            if(!pattern.test(self.value())) {
+                self.error(settings.Error.regExp);
                 return false;
             }
         }
