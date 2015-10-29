@@ -14,6 +14,7 @@ var StandalonePaymentWidget = function () {
             button: {widget: 'standalonePaymentWidgetId', def: 'defaultStandalonePaymentWidgetId'}
         },
         showButton: false,
+        routeName: 'standalone_payment',
         title: "Оплатить", // заголовок кнопки
         tmpl: {
             path: 'standalonePaymentTmpl.html', // файл шаблонов
@@ -169,7 +170,7 @@ var StandalonePaymentWidget = function () {
         SetInputParameters();
         RegisterEvents();
         self.BaseLoad.Tmpl(settings.tmpl, function () {
-            if (Routing.route == 'standalone_payment') {
+            if (Routing.route == settings.routeName) {
                 if (settings.idGoods != null) {
                     self.BaseLoad.GoodsInfo(settings.idGoods, '1000000', function (data) {
                         settings.goodsInfo = data;
@@ -518,7 +519,7 @@ var StandaloneButtonPaymentViewModel = function (opt) {
 
     self.ClickPay = function () {
         Parameters.cache.lastPage = Parameters.cache.history[Parameters.cache.history.length - 1];
-        Routing.SetHash('standalone_payment', 'Оплата товара', {});
+        Routing.SetHash(opt.routeName, 'Оплата товара', {});
     };
 };
 

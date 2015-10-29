@@ -15,6 +15,7 @@ var StatusPaymentWidget = function () {
             id : 'statusPaymentPageTmpl' //id шаблона страницы статуса оплаты
         },
         animate: typeof AnimateStatusPayment == 'function' ? AnimateStatusPayment : null,
+        routeName: 'status_payment',
         status: null,
         backUrl: ''
     };
@@ -38,7 +39,7 @@ var StatusPaymentWidget = function () {
         self.InsertContainer(settings);
     }
     function CheakRoute(){
-        if(Routing.route == 'status_payment'){
+        if(Routing.route == settings.routeName){
             var orderId = $.cookie(Config.Base.cookie.orderId);
             var mailUser = $.cookie(Config.Base.cookie.userEmail);
             if(orderId){
