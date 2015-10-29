@@ -22,6 +22,7 @@ var JSSettings = {
     orderPathApi : "order/", // префикс API заказов
     paymentPathApi : "payment/", // префикс API оплаты
     messagePathApi : "message/", // префикс API сообщений
+    loadThema: true,
     dev: false,
     
     sourceData : 'api', //варианты api, proxy
@@ -33,17 +34,23 @@ var JSSettings = {
         'widgets/Config-1.1.js',
         'widgets/Routing-1.0.js',
         'widgets/Paging-1.0.js',
-        'widgets/Widget-1.1.js',
-        'promo/widgets.animate.min.js'
+        'widgets/Widget-1.1.js'
     ],
     scripts: [
-        'promo/pokupo.components.min.js',
         'widgets/pokupo.widgets.lib.min.js',
-        'promo/pokupo.widgets.animate.min.js'
     ],
-    styles: [
-        'https://pokupo.ru/assetic/css/compiled/theme.min.css'
-    ],
+    themeFiles: {
+        default: {
+            styles: [
+                'http://pokupo-promo.asmsoft.ru/styles/theme.min.css'
+            ],
+            scripts: [
+                'promo/pokupo.components.min.js',
+                'promo/pokupo.widgets.animate.min.js'
+            ]
+        }
+    },
+
     inputParameters : {}
 }
 
@@ -441,7 +448,14 @@ var PokupoWidgets = {
         if(JSSettings.dev)
             scripts = JSSettings.devScripts;
 
-        JSLoader.LoadCss(JSSettings.styles);
+        if(JSSettings.loadThema){
+            JSLoader.LoadCss(JSSettings.themeFiles[JSSettings.theme].styles);
+
+            var themeScripts = JSSettings.themeFiles[JSSettings.theme].scripts;
+            for(var key in themeScripts){
+                JSLoader.Load([themeScripts[key]]);
+            }
+        }
 
         EventDispatcher.AddEventListener('onload.scripts', function(){
             if(PokupoWidgets.TestAll(widgets))

@@ -37,7 +37,7 @@ var AnimateUserInformation = function(){
             }
         }
     });
-    $('[rel=tooltip]').tooltip();
+    $('.icon-user').tooltip();
 }
 
 
