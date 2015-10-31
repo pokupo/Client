@@ -109,6 +109,13 @@ var CartWidget = function () {
     function Fill(data) {
         var info = new CartViewModel(settings);
         info.AddContent(data);
+        $.each(data.goods, function (i) {
+            $.each(data.goods[i].goods, function (j) {
+                self.BaseLoad.GoodsInfo(data.goods[i].goods[j].id, 1001000, function(goodsInfo){
+                    info.AddGoods(goodsInfo)
+                })
+            });
+        });
         Render(info);
     }
     function Render(data) {
@@ -170,19 +177,16 @@ var CartViewModel = function (settings) {
 
     self.AddContent = function (data) {
         var info = data.info;
-        var goods = data.goods;
         if (!info.err) {
             self.count(info.count);
             self.baseCost(info.base_cost);
             self.finalCost(info.final_cost);
         }
+    };
+    self.AddGoods = function(goods){
         if (goods && !goods.err) {
             ShortBlockCartGoodsSellersViewModel.prototype = new Widget();
-            $.each(goods, function (i) {
-                $.each(goods[i].goods, function (j) {
-                    self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods[i].goods[j], goods[i].seller.id, self, settings));
-                });
-            });
+            self.goods.push(new ShortBlockCartGoodsSellersViewModel(goods.main, goods.seller.id, self, settings));
         }
     };
     self.ClickCart = function () {
@@ -218,6 +222,14 @@ var ShortBlockCartGoodsSellersViewModel = function (data, sellerId, cart, settin
     }, this);
     self.isEgoods = ko.computed(function(){
         if(data.is_egoods =='yes')
+            return true;
+        return false;
+    }, this);
+    if(self.isEgoods() && !self.count){
+        self.ordered(1);
+    }
+    self.showSelectionCount = ko.computed(function(){
+        if(data.count && data.count != 0)
             return true;
         return false;
     }, this);
