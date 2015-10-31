@@ -149,6 +149,11 @@ var CabinetCartGoodsWidget = function () {
         },
         Goods: function (data) {
             self.cart.AddContent(data);
+            for (var i = 0; i <= data.length - 1; i++) {
+                self.BaseLoad.GoodsInfo(data[i].id, 1001000, function(goodsInfo){
+                    self.cart.AddGoods(goodsInfo);
+                })
+            }
         },
         Seller: function (data) {
             self.cart.sellerInfo['seller'] = data;
@@ -221,13 +226,12 @@ var BlockCabinetGoodsForSellerViewModel = function (content, settings) {
         return (self.totalSum() - self.tatalForPayment()).toFixed(2);
     }, this);
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
-
     self.AddContent = function (data) {
-        for (var i = 0; i <= data.length - 1; i++) {
-            BlockCabinetCartGoodsSellersViewModel.prototype = new Widget();
-            self.goods.push(new BlockCabinetCartGoodsSellersViewModel(data[i], self, content, settings));
-        }
         self.finalCost = data.final_cost;
+    };
+    self.AddGoods = function(data){
+        BlockCabinetCartGoodsSellersViewModel.prototype = new Widget();
+        self.goods.push(new BlockCabinetCartGoodsSellersViewModel(data.main, self, content, settings));
     };
     self.comment = ko.observable();
     self.ClickButchFavorites = function () {
@@ -399,6 +403,14 @@ var BlockCabinetCartGoodsSellersViewModel = function (data, block, content, sett
     }, this);
     self.isEgoods = ko.computed(function(){
         if(data.is_egoods =='yes')
+            return true;
+        return false;
+    }, this);
+    if(self.isEgoods() && !self.count){
+        self.ordered(1);
+    }
+    self.showSelectionCount = ko.computed(function(){
+        if(data.count && data.count != 0)
             return true;
         return false;
     }, this);

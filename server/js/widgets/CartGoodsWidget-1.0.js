@@ -133,6 +133,11 @@ var CartGoodsWidget = function () {
         },
         Goods: function (data) {
             self.cart.AddContent(data);
+            for (var i = 0; i <= data.length - 1; i++) {
+                self.BaseLoad.GoodsInfo(data[i].id, 1001000, function(goodsInfo){
+                    self.cart.AddGoods(goodsInfo);
+                })
+            }
         },
         Seller: function (data) {
             self.cart.sellerInfo['seller'] = data;
@@ -206,11 +211,11 @@ var BlockGoodsForSellerViewModel = function (content, settings) {
     self.uniq = EventDispatcher.HashCode(new Date().getTime().toString());
 
     self.AddContent = function (data) {
-        for (var i = 0; i <= data.length - 1; i++) {
-            BlockCartGoodsSellersViewModel.prototype = new Widget();
-            self.goods.push(new BlockCartGoodsSellersViewModel(data[i], self, content, settings));
-        }
         self.finalCost = data.final_cost;
+    };
+    self.AddGoods = function(data){
+        BlockCartGoodsSellersViewModel.prototype = new Widget();
+        self.goods.push(new BlockCartGoodsSellersViewModel(data.main, self, content, settings));
     };
     self.comment = ko.observable();
     self.ClickButchFavorites = function () {
@@ -382,6 +387,14 @@ var BlockCartGoodsSellersViewModel = function (data, block, content, settings) {
     }, this);
     self.isEgoods = ko.computed(function(){
         if(data.is_egoods =='yes')
+            return true;
+        return false;
+    }, this);
+    if(self.isEgoods() && !self.count){
+        self.ordered(1);
+    }
+    self.showSelectionCount = ko.computed(function(){
+        if(data.count && data.count != 0)
             return true;
         return false;
     }, this);
