@@ -109,13 +109,15 @@ var CartWidget = function () {
     function Fill(data) {
         var info = new CartViewModel(settings);
         info.AddContent(data);
-        $.each(data.goods, function (i) {
-            $.each(data.goods[i].goods, function (j) {
-                self.BaseLoad.GoodsInfo(data.goods[i].goods[j].id, 1001000, function(goodsInfo){
-                    info.AddGoods(goodsInfo)
-                })
+        if(!data.goods.hasOwnProperty('err')) {
+            $.each(data.goods, function (i) {
+                $.each(data.goods[i].goods, function (j) {
+                    self.BaseLoad.GoodsInfo(data.goods[i].goods[j].id, 1001000, function (goodsInfo) {
+                        info.AddGoods(goodsInfo)
+                    })
+                });
             });
-        });
+        }
         Render(info);
     }
     function Render(data) {
