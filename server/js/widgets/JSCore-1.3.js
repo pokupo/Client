@@ -42,7 +42,37 @@ var JSSettings = {
     themeFiles: {
         default: {
             styles: [
-                'http://pokupo-promo.asmsoft.ru/styles/theme.min.css'
+                'https://pokupo.ru/styles/theme.min.css',
+            ],
+            scripts: [
+                'promo/pokupo.components.min.js',
+                'promo/pokupo.widgets.animate.min.js'
+            ]
+        },
+        dark: {
+            styles: [
+                'https://pokupo.ru/styles/theme.min.css',
+                'https://pokupo.ru/styles/payment_dark.css'
+            ],
+            scripts: [
+                'promo/pokupo.components.min.js',
+                'promo/pokupo.widgets.animate.min.js'
+            ]
+        },
+        company: {
+            styles: [
+                'https://pokupo.ru/styles/theme.min.css',
+                'https://pokupo.ru/styles/payment_company.css'
+            ],
+            scripts: [
+                'promo/pokupo.components.min.js',
+                'promo/pokupo.widgets.animate.min.js'
+            ]
+        },
+        company_white: {
+            styles: [
+                'https://pokupo.ru/styles/theme.min.css',
+                'https://pokupo.ru/styles/payment_company_white.css'
             ],
             scripts: [
                 'promo/pokupo.components.min.js',
