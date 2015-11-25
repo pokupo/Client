@@ -470,7 +470,7 @@ var StandalonePaymentWidget = function () {
                 $('#' + data.cssCount).bind('textchange', function (event, previousText) {
                     data.count($(this).val());
                 })
-                var input = $("form input");
+                var input = $("#" + data.cssForm).find('input');
                 if(input.length > 0)
                     $(input[0]).focus();
             },
@@ -541,6 +541,7 @@ var StandalonePaymentListViewModel = function (settings) {
     self.formatAmount = ko.observable();
     self.cssAmount = 'pokupo_amount';
     self.cssCount = 'pokupo_count';
+    self.cssForm = 'pokupo_payment_form';
 
     if (settings.idGoods) {
         self.title(settings.goodsInfo.main.chort_name);
