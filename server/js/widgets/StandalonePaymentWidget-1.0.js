@@ -16,6 +16,7 @@ var StandalonePaymentWidget = function () {
         showButton: false,
         routeName: 'standalone_payment',
         title: "Оплатить", // заголовок кнопки
+        captionSubmit: "Обновить",
         tmpl: {
             path: 'standalonePaymentTmpl.html', // файл шаблонов
             id: {
@@ -383,6 +384,8 @@ var StandalonePaymentWidget = function () {
             FillError(data);
         }
         else {
+            if(data.caption_submit)
+                settings.captionSubmit = data.caption_submit;
             if (!data.hasOwnProperty('pay_form') && !data.hasOwnProperty('in_data')) {
                 var list = new StandalonePaymentListViewModel(settings);
                 list.error.base('');
@@ -467,6 +470,9 @@ var StandalonePaymentWidget = function () {
                 $('#' + data.cssCount).bind('textchange', function (event, previousText) {
                     data.count($(this).val());
                 })
+                var input = $("form input");
+                if(input.length > 0)
+                    $(input[0]).focus();
             },
             function(data){
                 InsertContainerPaymentList()();
@@ -487,6 +493,8 @@ var StandalonePaymentWidget = function () {
                         $('#' + data.inData()[i].cssField()).mask(data.inData()[i].mask(), {placeholder: "_"});
                     }
                 });
+                if(data.inData()[0])
+                    $('#' + data.inData()[0].cssField()).focus()
             },
             function(data){
                 InsertContainerContent();
@@ -719,6 +727,7 @@ var StandalonePaymentViewModel = function (settings) {
     self.inData = ko.observableArray();
     self.isInData = ko.observable(false);
     self.cssInDataForm = 'in_data_block';
+    self.captionSubmit = settings.captionSubmit;
 
     self.payForm = {
         action: ko.observable(),
@@ -745,7 +754,10 @@ var StandalonePaymentViewModel = function (settings) {
         self.Print(self.cssInvoice);
     };
     self.Back = function () {
-        EventDispatcher.DispatchEvent('SPayment.back');
+        if(settings.paymentList)
+            EventDispatcher.DispatchEvent('SPayment.back');
+        else
+            window.location.href = settings.backUrl;
     };
     self.ClickPay = function () {
         $('#' + self.payForm.cssPayForm).submit();
@@ -872,6 +884,8 @@ var StandalonePaymentFieldViewModel = function (settings) {
             self.maxlength(data.maxlength);
     };
     self.ValidateField = function () {
+        if($('#' + self.cssField()).length)
+            self.value($('#' + self.cssField()).val());
         if (self.required()) {
             if (!self.value()) {
                 self.error(settings.Error.required);
