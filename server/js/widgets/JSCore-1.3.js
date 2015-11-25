@@ -40,7 +40,7 @@ var JSSettings = {
         'widgets/pokupo.widgets.lib.min.js',
     ],
     themeFiles: {
-        default: {
+        'default': {
             styles: [
                 'https://pokupo.ru/styles/theme.min.css',
             ],
