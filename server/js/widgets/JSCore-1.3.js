@@ -49,9 +49,8 @@ var JSSettings = {
                 'promo/pokupo.widgets.animate.min.js'
             ]
         },
-        dark: {
+        payment_dark: {
             styles: [
-                'https://pokupo.ru/styles/theme.min.css',
                 'https://pokupo.ru/styles/payment_dark.css'
             ],
             scripts: [
@@ -59,9 +58,8 @@ var JSSettings = {
                 'promo/pokupo.widgets.animate.min.js'
             ]
         },
-        company: {
+        payment_company: {
             styles: [
-                'https://pokupo.ru/styles/theme.min.css',
                 'https://pokupo.ru/styles/payment_company.css'
             ],
             scripts: [
@@ -69,9 +67,8 @@ var JSSettings = {
                 'promo/pokupo.widgets.animate.min.js'
             ]
         },
-        company_white: {
+        payment_company_white: {
             styles: [
-                'https://pokupo.ru/styles/theme.min.css',
                 'https://pokupo.ru/styles/payment_company_white.css'
             ],
             scripts: [
