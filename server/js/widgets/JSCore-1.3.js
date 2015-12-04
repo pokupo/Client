@@ -476,11 +476,23 @@ var PokupoWidgets = {
             scripts = JSSettings.devScripts;
 
         if(JSSettings.loadThema){
-            JSLoader.LoadCss(JSSettings.themeFiles[JSSettings.theme].styles);
+            if(JSSettings.themeFiles[JSSettings.theme]) {
+                JSLoader.LoadCss(JSSettings.themeFiles[JSSettings.theme].styles);
 
-            var themeScripts = JSSettings.themeFiles[JSSettings.theme].scripts;
-            for(var key in themeScripts){
-                JSLoader.Load([themeScripts[key]]);
+                var themeScripts = JSSettings.themeFiles[JSSettings.theme].scripts;
+                for (var key in themeScripts) {
+                    JSLoader.Load([themeScripts[key]]);
+                }
+            }
+            else{
+                var css = [];
+                css[0] = JSSettings.theme;
+                JSLoader.LoadCss(css);
+
+                var themeScripts = JSSettings.themeFiles.default.scripts;
+                for (var key in themeScripts) {
+                    JSLoader.Load([themeScripts[key]]);
+                }
             }
         }
 
